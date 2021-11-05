@@ -39,6 +39,8 @@ module.exports = {
     'react/jsx-one-expression-per-line': 'off',
     'react/require-default-props': 'off',
     'react/prop-types': 'off',
+    'react/jsx-uses-react': 'off',
+    'react/react-in-jsx-scope': 'off',
   },
   settings: {
     'import/resolver': {
