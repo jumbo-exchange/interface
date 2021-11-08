@@ -7,15 +7,19 @@ import {
 } from 'react-router-dom';
 import { LANDING } from 'utils/routes';
 import Landing from 'components/Landing';
+import { ThemeProvider } from 'styled-components';
+import theme from 'theme';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Router>
-      <Switch>
-        <Route path={LANDING}><Landing /></Route>
-        <Redirect to={LANDING} />
-      </Switch>
-    </Router>
+    <ThemeProvider theme={theme}>
+      <Router>
+        <Switch>
+          <Route path={LANDING}><Landing /></Route>
+          <Redirect to={LANDING} />
+        </Switch>
+      </Router>
+    </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('root'),
 );
