@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import Header from 'components/Header';
-import { ReactComponent as Background } from 'assets/images/intersect.svg';
 import { ReactComponent as NearLogo } from 'assets/images/near-logo.svg';
 
 const benefitsList = [
@@ -64,7 +63,6 @@ export default function Landing() {
         </MainTitle>
         {benefitsList.map((el) => <ListElement key={el}>{el}</ListElement>)}
       </MainInformation>
-      <Background style={{ position: 'absolute', top: '0' }} />
     </>
   );
 }

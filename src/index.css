@@ -13,12 +13,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-image: url(./assets/images/intersect.svg);
   background-position: top left;
-  background-repeat: repeat-x;
-  background-size:100% 100%;
+  background-repeat: repeat;
 }
 
 #root{
   min-height: 100vh;
   position: relative;
-  overflow: hidden;
 }
