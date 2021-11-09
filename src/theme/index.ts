@@ -25,6 +25,8 @@ export interface ThemeColors {
   white: string;
   yellowHapi: string;
   greyText: string;
+  greyCard: string;
+  greyCardShadow: string;
 }
 
 export const colors: ThemeColors = {
@@ -34,6 +36,8 @@ export const colors: ThemeColors = {
   white: '#ffffff',
   yellowHapi: '#FDEE2D',
   greyText: '#91949D',
+  greyCard: '#5A5E6D',
+  greyCardShadow: 'rgba(19, 19, 19, 0.6)',
 };
 
 function theme(): DefaultTheme {

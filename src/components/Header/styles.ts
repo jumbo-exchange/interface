@@ -7,6 +7,13 @@ const HeaderContainer = styled.header`
   flex-direction: row;
   justify-content: space-between;
   padding: 0 208px;
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+      padding: 0 72px;
+  `}
+  
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+      padding: 0 24px;
+  `}
 `;
 
 const LogoContainer = styled.div`
@@ -18,6 +25,13 @@ const LogoContainer = styled.div`
   & > svg {
     margin-right: 7px;
   }
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    flex: 3;
+  `}
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    flex: 1;
+  `}
 `;
 
 const DocsButton = styled.a`
@@ -38,6 +52,14 @@ const DocsButton = styled.a`
     margin-right: 11px;
   }
   white-space: nowrap;
+  & > span {
+    margin-right: 8px;
+  }
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    & > span {
+      display: none;
+    }
+  `}
 `;
 
 const HapiButton = styled.a`
@@ -60,12 +82,19 @@ const HapiButton = styled.a`
 `;
 
 const InformationContainer = styled.div`
-  flex:1;
+  flex: 1;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   min-width: 200px;
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    flex: 2;
+  `}
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    flex: 1;
+  `}
 `;
 
 const HapiLogoContainer = styled.div`
@@ -79,6 +108,9 @@ const LogoTitle = styled.h1`
   font-size: 2rem;
   line-height: 39px;
   color: ${({ theme }) => theme.white};
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    display: none;
+  `}
 `;
 
 const HapiTitle = styled.p`
