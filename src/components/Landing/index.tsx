@@ -140,8 +140,10 @@ const BlackCardContainer = styled.div`
   );
   border-radius: 240px 240px 0 0;
   box-shadow: 0px 0px 72px #41444d;
+  margin-top: 34px;
   ${({ theme }) => theme.mediaWidth.upToMedium`
     border-radius: 120px 120px 0 0;
+    margin-top: 56px;
   `}
   ${({ theme }) => theme.mediaWidth.upToSmall`
     border-radius: 48px 48px 0 0;
@@ -157,6 +159,9 @@ const Title = styled.div`
   color: ${({ theme }) => theme.white};
   padding-top: 72px;
   margin-bottom: 24px;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    padding-top: 48px;
+  `}
 `;
 
 const Label = styled.div`
@@ -167,6 +172,13 @@ const Label = styled.div`
   color: ${({ theme }) => theme.blackCardText};
   margin-top: 24px;
   margin-bottom: 72px;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    font-style: normal;
+    font-size: 1rem;
+    line-height: 22px;
+    margin-top: 16px;
+    margin-bottom: 48px;
+  `}
 `;
 
 const BlockInformation = styled.div`
@@ -347,7 +359,8 @@ export default function Landing() {
         <BlackCardContainer>
           <Title>Ecosystem</Title>
           <Label>
-            Jumbo provides Ecosystem-Wide Liquidity for users and projects
+            Jumbo provides Ecosystem-Wide <br />
+            Liquidity for users and projects
           </Label>
           {getMiddleBlock()}
           <Footer />

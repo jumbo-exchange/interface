@@ -31,6 +31,7 @@ const ChildContainer = styled.div`
   align-items: center;
   align-self: normal;
   white-space: nowrap;
+  margin: ${isMobile ? '24px 0' : '0'};
 `;
 
 const LogoContainer = styled.div`
