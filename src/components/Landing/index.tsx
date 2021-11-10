@@ -7,7 +7,10 @@ import { ReactComponent as FarmingLogo } from 'assets/images/farming-icon.svg';
 import { ReactComponent as CentralArrow } from 'assets/images/arrow-central.svg';
 import { ReactComponent as LowerLeftArrow } from 'assets/images/arrow-lower-left.svg';
 import { ReactComponent as LowerRightArrow } from 'assets/images/arrow-lower-right.svg';
+import tabletImg from 'assets/images/tablet-image.png';
+import mobileImg from 'assets/images/mobile-image.png';
 import Footer from 'components/Footer';
+import { isMobile, isTablet } from 'utils/userAgent';
 
 const benefitsList = [
   'Instanteneous Swaps',
@@ -71,7 +74,13 @@ const ListElement = styled.li`
 const GreyCardContainer = styled.section`
   background-color:  ${({ theme }) => theme.greyCard};
   border-radius: 240px 240px 0 0;
-  
+  box-shadow: 0px 0px 72px -12px ${({ theme }) => theme.greyCardShadow};
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    border-radius: 120px 120px 0 0;
+  `}
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    border-radius: 48px 48px 0 0;
+  `}
 `;
 
 const CardWrapper = styled.div`
@@ -79,16 +88,13 @@ const CardWrapper = styled.div`
   flex-direction: row;
   align-items: flex-start;
   justify-content: center;
-  box-shadow: 0px 0px 72px -12px ${({ theme }) => theme.greyCardShadow};
   padding: 0 10%;
   ${({ theme }) => theme.mediaWidth.upToMedium`
     padding: 0%;
-    border-radius: 120px 120px 0 0;
   `}
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     flex-direction: column;
-    border-radius: 48px 48px 0 0;
     padding: 0%;
   `}
 `;
@@ -118,15 +124,24 @@ const GreyCard = styled.div`
       text-align: center;
       margin-block-start: 0;
     }
-    
+
     ${({ theme }) => theme.mediaWidth.upToSmall`
       padding:  0 10%;
     `}
 `;
 
 const BlackCardContainer = styled.div`
-  background-color:  ${({ theme }) => theme.globalBlack};
+  display: flex;
+  flex-direction: column;
+  background:  linear-gradient(180deg, ${({ theme }) => theme.blackCardShadow} 0%, ${({ theme }) => theme.globalBlack} 100%);
   border-radius: 240px 240px 0 0;
+  box-shadow: 0px 0px 72px #41444D;
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    border-radius: 120px 120px 0 0;
+  `}
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    border-radius: 48px 48px 0 0;
+  `}
 `;
 
 const Title = styled.div`
@@ -153,12 +168,13 @@ const Label = styled.div`
 const BlockInformation = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr) 0.2fr 0.5fr 0.2fr 2fr 0.2fr 0.5fr 0.2fr repeat(2, 1fr);
-  grid-template-rows: 1fr 0.5fr 1fr 0.3fr 2fr;
+  grid-template-rows: 0.6fr 0.1fr 0.3fr 1fr 0fr 0.1fr 1.4fr;
   grid-column-gap: 0px;
   grid-row-gap: 0px;
   color: ${({ theme }) => theme.globalWhite};
-  margin: 0 200px;
+  max-width: 1000px;
   padding-bottom: 100px;
+  align-self: center;
 `;
 
 const Block = styled.div`
@@ -180,19 +196,23 @@ const UpperBlock = styled(Block)`
 `;
 
 const MiddleLeftBlock = styled(Block)`
-  grid-area: 3 / 1 / 4 / 5;
+  grid-area: 4 / 1 / 5 / 5;
   border: 2px dashed ${({ theme }) => theme.globalWhite};
+  max-height: 96px;
+  min-width: 300px;
 `;
 
 const MiddleRightBlock = styled(Block)`
-  grid-area: 3 / 8 / 4 / 12;
+  grid-area: 4 / 8 / 5 / 12;
   border: 2px dashed ${({ theme }) => theme.globalWhite};
   line-height: 34px;
+  max-height: 96px;
+  min-width: 300px;
 `;
 
 const LowerBlock = styled(Block)`
   width: 100%;
-  grid-area: 5 / 4 / 6 / 9;
+  grid-area: 7 / 4 / 8 / 9;
   font-style: normal;
   line-height: 32px;
   color: ${({ theme }) => theme.greenText};
@@ -201,13 +221,34 @@ const LowerBlock = styled(Block)`
 `;
 
 const CentralArrowContainer = styled(CentralArrow)`
-  grid-area: 2 / 6 / 5 / 7;
+  grid-area: 3 / 6 / 5 / 7;
 `;
 const LowerLeftArrowContainer = styled(LowerLeftArrow)`
-  grid-area: 4 / 2 / 6 / 3;
+  justify-self: flex-end;
+  grid-area: 6 / 2 / 8 / 3;
 `;
 const LowerRightArrowContainer = styled(LowerRightArrow)`
-  grid-area: 4 / 10 / 6 / 11;
+  justify-self: flex-start;
+  grid-area: 6 / 10 / 8 / 11;
+`;
+
+const TabletImgContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 100px;
+  & > img {
+    min-width: 700px;
+  }
+`;
+
+const MobileImgContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 72px;
 `;
 
 const benefitsCards = [
@@ -257,6 +298,10 @@ export default function Landing() {
         <BlackCardContainer>
           <Title>Ecosystem</Title>
           <Label>Jumbo provides Ecosystem-Wide Liquidity for users and projects</Label>
+          {isTablet && (<TabletImgContainer><img src={tabletImg} alt="table img" /> </TabletImgContainer>)}
+          {isMobile && (<MobileImgContainer><img src={mobileImg} alt="mobile img" /></MobileImgContainer>)}
+          {(!isTablet && !isMobile)
+          && (
           <BlockInformation>
             <UpperBlock>Smart Pools</UpperBlock>
             <MiddleLeftBlock>Jets</MiddleLeftBlock>
@@ -273,6 +318,7 @@ export default function Landing() {
             <LowerLeftArrowContainer />
             <LowerRightArrowContainer />
           </BlockInformation>
+          )}
           <Footer />
         </BlackCardContainer>
       </GreyCardContainer>

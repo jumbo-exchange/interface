@@ -72,6 +72,7 @@ const ChildSocialNetwork = styled.a`
   justify-content: center;
   align-items: center;
   margin: 15px 18px;
+  text-decoration: none;
   & > div {
     margin-top: 8px;
     font-style: normal;
@@ -79,6 +80,7 @@ const ChildSocialNetwork = styled.a`
     font-size: .75rem;
     line-height: 17px;
     text-align: center;
+    color: ${({ theme }) => theme.globalWhite};
   }
 `;
 
@@ -93,19 +95,23 @@ const TextContainer = styled.div`
 interface ISocialNetwork {
   Image: FunctionComponent<SVGProps<SVGSVGElement>>,
   title: string;
+  href: string;
 }
 const socialNetwork:ISocialNetwork[] = [
   {
     Image: TelegramImg,
     title: 'Telegram',
+    href: 'https://t.me/jumbo_ann',
   },
   {
     Image: TwitterImg,
     title: 'Twitter',
+    href: 'https://twitter.com/jumbo_exchange',
   },
   {
     Image: MediumImg,
     title: 'Medium',
+    href: 'https://medium.com/jumbo-dex',
   },
 ];
 
@@ -113,8 +119,13 @@ export default function Footer() {
   return (isMobile ? (
     <ContainerMobile>
       <SocialNetworkContainer>
-        {socialNetwork.map(({ Image, title }) => (
-          <ChildSocialNetwork key={title}>
+        {socialNetwork.map(({ Image, title, href }) => (
+          <ChildSocialNetwork
+            key={title}
+            href={href}
+            target="_blank"
+            rel="noreferrer"
+          >
             <Image />
             <div>{title}</div>
           </ChildSocialNetwork>
@@ -138,8 +149,13 @@ export default function Footer() {
           <LogoTitle>Jumbo</LogoTitle>
         </LogoContainer>
         <SocialNetworkContainer>
-          {socialNetwork.map(({ Image, title }) => (
-            <ChildSocialNetwork key={title}>
+          {socialNetwork.map(({ Image, title, href }) => (
+            <ChildSocialNetwork
+              key={title}
+              href={href}
+              target="_blank"
+              rel="noreferrer"
+            >
               <Image />
               <div>{title}</div>
             </ChildSocialNetwork>
