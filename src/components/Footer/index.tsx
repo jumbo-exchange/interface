@@ -77,7 +77,7 @@ const ChildSocialNetwork = styled.a`
     margin-top: 8px;
     font-style: normal;
     font-weight: 300;
-    font-size: .75rem;
+    font-size: 0.75rem;
     line-height: 17px;
     text-align: center;
     color: ${({ theme }) => theme.globalWhite};
@@ -87,17 +87,17 @@ const ChildSocialNetwork = styled.a`
 const TextContainer = styled.div`
   font-style: normal;
   font-weight: 300;
-  font-size: .75rem;
+  font-size: 0.75rem;
   line-height: 17px;
   color: ${({ theme }) => theme.globalWhite};
 `;
 
 interface ISocialNetwork {
-  Image: FunctionComponent<SVGProps<SVGSVGElement>>,
+  Image: FunctionComponent<SVGProps<SVGSVGElement>>;
   title: string;
   href: string;
 }
-const socialNetwork:ISocialNetwork[] = [
+const socialNetwork: ISocialNetwork[] = [
   {
     Image: TelegramImg,
     title: 'Telegram',
@@ -116,7 +116,7 @@ const socialNetwork:ISocialNetwork[] = [
 ];
 
 export default function Footer() {
-  return (isMobile ? (
+  return isMobile ? (
     <ContainerMobile>
       <SocialNetworkContainer>
         {socialNetwork.map(({ Image, title, href }) => (
@@ -136,35 +136,29 @@ export default function Footer() {
           <JumboLogo />
           <LogoTitle>Jumbo</LogoTitle>
         </LogoContainer>
-        <TextContainer>
-          Copyright 2021
-        </TextContainer>
+        <TextContainer>Copyright 2021</TextContainer>
       </ChildContainer>
     </ContainerMobile>
-  )
-    : (
-      <Container>
-        <LogoContainer>
-          <JumboLogo />
-          <LogoTitle>Jumbo</LogoTitle>
-        </LogoContainer>
-        <SocialNetworkContainer>
-          {socialNetwork.map(({ Image, title, href }) => (
-            <ChildSocialNetwork
-              key={title}
-              href={href}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <Image />
-              <div>{title}</div>
-            </ChildSocialNetwork>
-          ))}
-        </SocialNetworkContainer>
-        <TextContainer>
-          Copyright 2021
-        </TextContainer>
-      </Container>
-    )
+  ) : (
+    <Container>
+      <LogoContainer>
+        <JumboLogo />
+        <LogoTitle>Jumbo</LogoTitle>
+      </LogoContainer>
+      <SocialNetworkContainer>
+        {socialNetwork.map(({ Image, title, href }) => (
+          <ChildSocialNetwork
+            key={title}
+            href={href}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Image />
+            <div>{title}</div>
+          </ChildSocialNetwork>
+        ))}
+      </SocialNetworkContainer>
+      <TextContainer>Copyright 2021</TextContainer>
+    </Container>
   );
 }
