@@ -74,6 +74,7 @@ const InformationContainer = styled.div`
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     flex: 1;
+    justify-content: flex-end;
   `}
 `;
 
@@ -83,9 +84,6 @@ const LogoTitle = styled.h1`
   font-size: 2rem;
   line-height: 39px;
   color: ${({ theme }) => theme.white};
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    display: none;
-  `}
 `;
 
 const HeaderStyles = {
