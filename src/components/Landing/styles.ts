@@ -3,20 +3,40 @@ import { ReactComponent as LowerLeftArrow } from 'assets/images/arrow-lower-left
 import { ReactComponent as LowerRightArrow } from 'assets/images/arrow-lower-right.svg';
 import styled from 'styled-components';
 
-export const MainInformation = styled.div`
+export const UpperContainer = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  width: 60%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 70%;
   margin: 70px auto;
+  
+  ${({ theme }) => theme.mediaWidth.upToLarge`
+    flex-direction: column;
+    align-items: flex-start;
+  `}
   ${({ theme }) => theme.mediaWidth.upToMedium`
     width: unset;
     margin: 70px 72px;
   `}
   ${({ theme }) => theme.mediaWidth.upToSmall`
-      width: unset;
-      margin: 70px 32px;
+    width: unset;
+    margin: 70px 32px;
+    align-items: center;
+  `}
+`;
+
+export const MainInformation = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+`;
+
+export const Gif = styled.img`
+  cursor: pointer;
+  ${({ theme }) => theme.mediaWidth.upToLarge`
+    margin-top: 32px;
   `}
 `;
 
@@ -179,6 +199,7 @@ export const BlockInformation = styled.div`
   max-width: 1000px;
   padding-bottom: 100px;
   align-self: center;
+  user-select: none;
 `;
 
 export const Block = styled.div`

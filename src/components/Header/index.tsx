@@ -4,6 +4,7 @@ import { ReactComponent as HapiLogo } from 'assets/images/hapi-logo.svg';
 import HeaderStyles from './styles';
 
 export default function Header() {
+  const docsLink = 'https://jumbo-exchange.gitbook.io/product-docs/';
   return (
     <HeaderStyles.HeaderContainer>
       <HeaderStyles.LogoContainer>
@@ -11,7 +12,11 @@ export default function Header() {
         <HeaderStyles.LogoTitle>Jumbo</HeaderStyles.LogoTitle>
       </HeaderStyles.LogoContainer>
       <HeaderStyles.InformationContainer>
-        <HeaderStyles.DocsButton>
+        <HeaderStyles.DocsButton
+          href={docsLink}
+          target="_blank"
+          rel="noreferrer"
+        >
           <DocsLogo />
           <span>Read</span> Docs
         </HeaderStyles.DocsButton>
