@@ -132,12 +132,17 @@ const HapiButton = styled.a`
   align-items: center;
   border: 1px solid ${({ theme }) => theme.yellowHapi};
   border-radius: 8px;
+  color: ${({ theme }) => theme.yellowHapi};
+  text-decoration:none;
 
-  :visited, :hover {
-    color: ${({ theme }) => theme.yellowHapi};
+  :hover {
     & span {
       text-decoration: underline;
     }
+  }
+  
+  :visited, :hover {
+    color: ${({ theme }) => theme.yellowHapi};
   }
 `;
 
