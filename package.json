@@ -2,6 +2,9 @@
   "name": "jumbo",
   "version": "0.1.0",
   "private": true,
+  "config": {
+    "registry": "registry.gitlab.com/hapi_p/jumbo"
+  },
   "dependencies": {
     "big.js": "^6.1.1",
     "bn.js": "^5.2.0",
@@ -27,7 +30,11 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "docker:build:prod": "docker build -f Dockerfile.prod -t $npm_package_config_registry:prod .",
+    "docker:push:prod": "docker push $npm_package_config_registry:prod",
+    "docker:build:stage": "docker build -f Dockerfile.stage -t $npm_package_config_registry:stage .",
+    "docker:push:stage": "docker push $npm_package_config_registry:stage"
   },
   "browserslist": {
     "production": [
