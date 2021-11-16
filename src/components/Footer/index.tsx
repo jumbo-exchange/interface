@@ -1,11 +1,16 @@
-import React, { FunctionComponent, SVGProps } from 'react';
+import { FunctionComponent, SVGProps } from 'react';
+
 import styled from 'styled-components';
+
 import { isMobile } from 'utils/userAgent';
 import { ReactComponent as TelegramImg } from 'assets/images/Telegram.svg';
 import { ReactComponent as TwitterImg } from 'assets/images/Twitter.svg';
 import { ReactComponent as MediumImg } from 'assets/images/Medium.svg';
 import { ReactComponent as JumboLogo } from 'assets/images/jumbo-logo.svg';
 import { ReactComponent as HapiLogo } from 'assets/images/hapi-logo.svg';
+import {
+  hapiLink, mediumLink, twitterLink, telegramLink,
+} from 'utils/constants';
 
 const Container = styled.footer`
   display: flex;
@@ -14,16 +19,15 @@ const Container = styled.footer`
   align-items: center;
   white-space: nowrap;
   color: ${({ theme }) => theme.globalWhite};
-  padding: 0 200px 41px 200px;
+  padding: 0 12.5rem 2.563rem 12.5rem;
   ${({ theme }) => theme.mediaWidth.upToLarge`
-    padding: 0 70px 41px 70px;
+    padding: 0 4.375rem 2.563rem 4.375rem;
   `}
   ${({ theme }) => theme.mediaWidth.upToMedium`
-    padding: 0 48px 41px 48px;
+    padding: 0 3rem 2.563rem 3rem;
   `}
-  
   ${({ theme }) => theme.mediaWidth.upToSmall`
-    padding: 0 20px 41px 20px;
+    padding: 0 1.25rem 2.563rem 1.25rem;
   `}
 `;
 
@@ -42,7 +46,7 @@ const ChildContainer = styled.div`
   align-items: center;
   align-self: normal;
   white-space: nowrap;
-  margin: ${isMobile ? '24px 0' : '0'};
+  margin: ${isMobile ? '1.5rem 0' : '0'};
 `;
 
 const LogoContainer = styled.div`
@@ -50,11 +54,11 @@ const LogoContainer = styled.div`
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  margin-right: ${isMobile ? '0' : '30px'};
+  margin-right: ${isMobile ? '0' : '1.875rem'};
   & > svg {
-    margin-right: 4px;
-    width: 19px;
-    height: 15px;
+    margin-right: .25rem;
+    width: 1.188rem;
+    height: 0.938rem;
     path {
       fill: ${({ theme }) => theme.greyFooterLogo};
     }
@@ -65,7 +69,7 @@ const LogoTitle = styled.div`
   font-style: normal;
   font-weight: bold;
   font-size: 1rem;
-  line-height: 20px;
+  line-height: 1.25rem;
   color: ${({ theme }) => theme.greyFooterLogo};
 `;
 
@@ -74,9 +78,9 @@ const SocialNetworkContainer = styled.div`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  flex: 0 1 0%;
+  flex: 0 1 0;
   border-radius: 32px;
-  padding: 0 31px;
+  padding: 0 1.938rem;
   background: ${({ theme }) => theme.greySocialNetworkBg};
 `;
 
@@ -85,14 +89,14 @@ const ChildSocialNetwork = styled.a`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 15px 18px;
+  margin: 0.938rem 1.188rem;
   text-decoration: none;
   & > div {
-    margin-top: 8px;
+    margin-top: 0.5rem;
     font-style: normal;
     font-weight: 300;
     font-size: 0.75rem;
-    line-height: 17px;
+    line-height: 1.063rem;
     text-align: center;
     color: ${({ theme }) => theme.globalWhite};
   }
@@ -105,7 +109,7 @@ const TextContainer = styled.div`
   font-style: normal;
   font-weight: 300;
   font-size: 0.75rem;
-  line-height: 17px;
+  line-height: 1.031rem;
   color: ${({ theme }) => theme.globalWhite};
 `;
 
@@ -123,12 +127,14 @@ const HapiButton = styled.a`
   font-style: normal;
   font-weight: bold;
   font-size: .625rem;
-  line-height: 11px;
+  line-height: 0.688rem;
   display: flex;
   align-items: center;
   border: 1px solid ${({ theme }) => theme.yellowHapi};
   border-radius: 8px;
-  :hover {
+
+  :visited, :hover {
+    color: ${({ theme }) => theme.yellowHapi};
     & span {
       text-decoration: underline;
     }
@@ -148,7 +154,7 @@ const HapiTitle = styled.p`
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  padding: 6px 5px;
+  padding: 0.375rem 0.313rem;
   white-space: nowrap;
 `;
 
@@ -161,17 +167,17 @@ const socialNetwork: ISocialNetwork[] = [
   {
     Image: TelegramImg,
     title: 'Telegram',
-    href: 'https://t.me/jumbo_ann',
+    href: telegramLink,
   },
   {
     Image: TwitterImg,
     title: 'Twitter',
-    href: 'https://twitter.com/jumbo_exchange',
+    href: twitterLink,
   },
   {
     Image: MediumImg,
     title: 'Medium',
-    href: 'https://medium.com/jumbo-dex',
+    href: mediumLink,
   },
 ];
 
@@ -196,7 +202,11 @@ export default function Footer() {
           <JumboLogo />
           <LogoTitle>Jumbo</LogoTitle>
         </LogoContainer>
-        <HapiButton>
+        <HapiButton
+          href={hapiLink}
+          target="_blank"
+          rel="noreferrer"
+        >
           <HapiLogoContainer>
             <HapiLogo />
           </HapiLogoContainer>
@@ -215,7 +225,11 @@ export default function Footer() {
           <JumboLogo />
           <LogoTitle>Jumbo</LogoTitle>
         </LogoContainer>
-        <HapiButton>
+        <HapiButton
+          href={hapiLink}
+          target="_blank"
+          rel="noreferrer"
+        >
           <HapiLogoContainer>
             <HapiLogo />
           </HapiLogoContainer>

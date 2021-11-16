@@ -1,9 +1,10 @@
 import { ReactComponent as JumboLogo } from 'assets/images/jumbo-logo.svg';
 import { ReactComponent as DocsLogo } from 'assets/images/docs-icon.svg';
+import { docsLink } from 'utils/constants';
+
 import HeaderStyles from './styles';
 
 export default function Header() {
-  const docsLink = 'https://jumbo-exchange.gitbook.io/product-docs/';
   return (
     <HeaderStyles.HeaderContainer>
       <HeaderStyles.LogoContainer>
