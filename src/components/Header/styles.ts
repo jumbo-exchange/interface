@@ -65,7 +65,7 @@ const DocsButton = styled.a`
 const InformationContainer = styled.div`
   flex: 1;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   min-width: 12.5rem;
   ${({ theme }) => theme.mediaWidth.upToMedium`

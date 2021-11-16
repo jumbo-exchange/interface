@@ -107,11 +107,19 @@ export default function Landing() {
             Powered by
             <NearLogo />
           </NearContainer>
-          <MainTitle>
-            The Most Intuitive <br />
-            DeFi Experience <br />
-            You Will Ever Have
-          </MainTitle>
+          {isTablet ? (
+            <MainTitle>
+              The Most Intuitive  DeFi <br />
+              Experience You Will Ever Have
+            </MainTitle>
+          ) : (
+            <MainTitle>
+              The Most Intuitive <br />
+              DeFi Experience <br />
+              You Will Ever Have
+            </MainTitle>
+          )}
+
           {benefitsList.map((el) => (
             <ListElement key={el}>{el}</ListElement>
           ))}
