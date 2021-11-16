@@ -104,7 +104,7 @@ const ChildSocialNetwork = styled.a`
 
 const TextContainer = styled.div`
   display: flex;
-  flex: ${isMobile ? '0' : '1 1 0%'};
+  flex: ${isMobile ? '0' : '1 1 0'};
   justify-content: flex-end;
   font-style: normal;
   font-weight: 300;
@@ -116,7 +116,7 @@ const TextContainer = styled.div`
 const LeftContainer = styled.div`
   display: flex;
   flex-direction: row;
-  flex: 1 1 0%;
+  flex: 1 1 0;
   justify-content: flex-start;
 `;
 
