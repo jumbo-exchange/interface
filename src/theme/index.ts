@@ -35,6 +35,7 @@ export interface ThemeColors {
   redBorder: string;
   darkGreenBg: string;
   greenText: string;
+  greyBorder: string;
 }
 
 export const colors: ThemeColors = {
@@ -48,6 +49,7 @@ export const colors: ThemeColors = {
   greyCardShadow: 'rgba(19, 19, 19, 0.6)',
   greyFooterLogo: '#6A6D76',
   greySocialNetworkBg: '#2B2B2B',
+  greyBorder: '#727272',
   blackCardBg: 'rgba(19, 19, 19, 0.9)',
   blackCardText: '#A1A4AC',
   blackCardShadow: '#41444d',

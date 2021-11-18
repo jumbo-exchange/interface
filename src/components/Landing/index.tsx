@@ -4,8 +4,6 @@ import { ReactComponent as JetLogo } from 'assets/images/jets-icon.svg';
 import { ReactComponent as SlippageLogo } from 'assets/images/slippage-icon.svg';
 import { ReactComponent as FarmingLogo } from 'assets/images/farming-icon.svg';
 import gif from 'assets/images/El_4.gif';
-import tabletImg from 'assets/images/tablet-image.png';
-import mobileImg from 'assets/images/mobile-image.png';
 import Footer from 'components/Footer';
 import { isMobile, isTablet } from 'utils/userAgent';
 import {
@@ -29,8 +27,17 @@ import {
   CentralArrowContainer,
   LowerLeftArrowContainer,
   LowerRightArrowContainer,
-  TabletImgContainer,
-  MobileImgContainer,
+  TabletCentralArrowContainer,
+  MobileBlockInformation,
+  MobileUpperBlock,
+  MobileMiddleLeftBlock,
+  MobileMiddleRightBlock,
+  MobileLowerBlock,
+  MobileCentralArrowContainer,
+  MobileUpperLeftArrowContainer,
+  MobileUpperRightArrowContainer,
+  MobileLowerLeftArrowContainer,
+  MobileLowerRightArrowContainer,
 } from './styles';
 
 const benefitsList = [
@@ -60,18 +67,31 @@ const benefitsCards = [
 ];
 
 function MiddleBlock() {
-  if (isTablet) {
-    return (
-      <TabletImgContainer>
-        <img src={tabletImg} alt="table img" />
-      </TabletImgContainer>
-    );
-  }
   if (isMobile) {
     return (
-      <MobileImgContainer>
-        <img src={mobileImg} alt="mobile img" />
-      </MobileImgContainer>
+      <MobileBlockInformation>
+        <MobileUpperBlock>Smart Pools</MobileUpperBlock>
+        <MobileMiddleLeftBlock>Jets</MobileMiddleLeftBlock>
+        <MobileMiddleRightBlock>
+          On-the-fly
+          <br />
+          Pool Transition
+        </MobileMiddleRightBlock>
+        <MobileLowerBlock>
+          Lower Slippage
+          <br />
+          Volume & Liquidity
+          <br />
+          Homogenization
+          <br />
+          Liquid Market
+        </MobileLowerBlock>
+        <MobileCentralArrowContainer />
+        <MobileUpperLeftArrowContainer />
+        <MobileUpperRightArrowContainer />
+        <MobileLowerLeftArrowContainer />
+        <MobileLowerRightArrowContainer />
+      </MobileBlockInformation>
     );
   }
   return (
@@ -90,7 +110,9 @@ function MiddleBlock() {
         <br />
         Liquid Market
       </LowerBlock>
-      <CentralArrowContainer />
+      {isTablet
+        ? <TabletCentralArrowContainer />
+        : <CentralArrowContainer />}
       <LowerLeftArrowContainer />
       <LowerRightArrowContainer />
     </BlockInformation>

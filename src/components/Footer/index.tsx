@@ -2,7 +2,7 @@ import { FunctionComponent, SVGProps } from 'react';
 
 import styled from 'styled-components';
 
-import { isMobile } from 'utils/userAgent';
+import { isMobile, isTablet } from 'utils/userAgent';
 import { ReactComponent as TelegramImg } from 'assets/images/Telegram.svg';
 import { ReactComponent as TwitterImg } from 'assets/images/Twitter.svg';
 import { ReactComponent as MediumImg } from 'assets/images/Medium.svg';
@@ -54,7 +54,7 @@ const LogoContainer = styled.div`
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  margin-right: ${isMobile ? '0' : '1.875rem'};
+  margin-right: ${(isMobile || isTablet) ? '0' : '1.875rem'};
   & > svg {
     margin-right: .25rem;
     width: 1.188rem;
@@ -115,13 +115,14 @@ const TextContainer = styled.div`
 
 const LeftContainer = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: ${isTablet ? 'column' : 'row'};
   flex: 1 1 0;
   justify-content: flex-start;
 `;
 
 const HapiButton = styled.a`
   min-height: 2.25rem;
+  max-width: 115px;
   cursor: pointer;
   font-family: Arial;
   font-style: normal;
@@ -134,6 +135,7 @@ const HapiButton = styled.a`
   border-radius: 8px;
   color: ${({ theme }) => theme.yellowHapi};
   text-decoration:none;
+  margin-top: ${isTablet ? '10px' : '0'};
 
   :hover {
     & span {
@@ -205,7 +207,7 @@ export default function Footer() {
       <ChildContainer>
         <LogoContainer>
           <JumboLogo />
-          <LogoTitle>Jumbo</LogoTitle>
+          <LogoTitle>jumbo</LogoTitle>
         </LogoContainer>
         <HapiButton
           href={hapiLink}
@@ -228,7 +230,7 @@ export default function Footer() {
       <LeftContainer>
         <LogoContainer>
           <JumboLogo />
-          <LogoTitle>Jumbo</LogoTitle>
+          <LogoTitle>jumbo</LogoTitle>
         </LogoContainer>
         <HapiButton
           href={hapiLink}
