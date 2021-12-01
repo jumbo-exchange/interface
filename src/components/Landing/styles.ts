@@ -281,3 +281,28 @@ export const MobileImgContainer = styled.div`
     width: 95%;
   }
 `;
+
+export default {
+  UpperContainer,
+  MainInformation,
+  Gif,
+  NearContainer,
+  MainTitle,
+  ListElement,
+  GreyCardContainer,
+  CardWrapper,
+  GreyCard,
+  BlackCardContainer,
+  Title,
+  Label,
+  BlockInformation,
+  UpperBlock,
+  MiddleLeftBlock,
+  MiddleRightBlock,
+  LowerBlock,
+  CentralArrowContainer,
+  LowerLeftArrowContainer,
+  LowerRightArrowContainer,
+  TabletImgContainer,
+  MobileImgContainer,
+};
