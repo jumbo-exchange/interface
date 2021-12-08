@@ -7,7 +7,7 @@ const HeaderContainer = styled.header`
   flex-direction: row;
   justify-content: space-between;
   padding: 0 13rem;
-  ${({ theme }) => theme.mediaWidth.upToMedium`
+  ${({ theme }) => theme.mediaWidth.upToLarge`
       padding: 0 4.5rem;
   `}
   

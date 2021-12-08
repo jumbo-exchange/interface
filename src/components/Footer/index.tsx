@@ -60,7 +60,7 @@ export default function Footer() {
       <ChildContainer>
         <LogoContainer>
           <JumboLogo />
-          <LogoTitle>Jumbo</LogoTitle>
+          <LogoTitle>jumbo</LogoTitle>
         </LogoContainer>
         <HapiButton
           href={hapiLink}
@@ -83,7 +83,7 @@ export default function Footer() {
       <LeftContainer>
         <LogoContainer>
           <JumboLogo />
-          <LogoTitle>Jumbo</LogoTitle>
+          <LogoTitle>jumbo</LogoTitle>
         </LogoContainer>
         <HapiButton
           href={hapiLink}

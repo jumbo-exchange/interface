@@ -1,26 +1,37 @@
 import Header from 'components/Header';
 import { ReactComponent as NearLogo } from 'assets/images/near-logo.svg';
 import gif from 'assets/images/El_4.gif';
-import tabletImg from 'assets/images/tablet-image.png';
-import mobileImg from 'assets/images/mobile-image.png';
 import Footer from 'components/Footer';
 import { isMobile, isTablet } from 'utils/userAgent';
 import { benefitsList, benefitsCards } from './constants';
 import LandingStyles from './styles';
 
 function MiddleBlock() {
-  if (isTablet) {
-    return (
-      <LandingStyles.TabletImgContainer>
-        <img src={tabletImg} alt="table img" />
-      </LandingStyles.TabletImgContainer>
-    );
-  }
   if (isMobile) {
     return (
-      <LandingStyles.MobileImgContainer>
-        <img src={mobileImg} alt="mobile img" />
-      </LandingStyles.MobileImgContainer>
+      <LandingStyles.MobileBlockInformation>
+        <LandingStyles.MobileUpperBlock>Smart Pools</LandingStyles.MobileUpperBlock>
+        <LandingStyles.MobileMiddleLeftBlock>Jets</LandingStyles.MobileMiddleLeftBlock>
+        <LandingStyles.MobileMiddleRightBlock>
+          On-the-fly
+          <br />
+          Pool Transition
+        </LandingStyles.MobileMiddleRightBlock>
+        <LandingStyles.MobileLowerBlock>
+          Lower Slippage
+          <br />
+          Volume & Liquidity
+          <br />
+          Homogenization
+          <br />
+          Liquid Market
+        </LandingStyles.MobileLowerBlock>
+        <LandingStyles.MobileCentralArrowContainer />
+        <LandingStyles.MobileUpperLeftArrowContainer />
+        <LandingStyles.MobileUpperRightArrowContainer />
+        <LandingStyles.MobileLowerLeftArrowContainer />
+        <LandingStyles.MobileLowerRightArrowContainer />
+      </LandingStyles.MobileBlockInformation>
     );
   }
   return (
@@ -38,8 +49,11 @@ function MiddleBlock() {
         Volume & Liquidity Homogenization
         <br />
         Liquid Market
+
       </LandingStyles.LowerBlock>
-      <LandingStyles.CentralArrowContainer />
+      {isTablet
+        ? <LandingStyles.TabletCentralArrowContainer />
+        : <LandingStyles.CentralArrowContainer />}
       <LandingStyles.LowerLeftArrowContainer />
       <LandingStyles.LowerRightArrowContainer />
     </LandingStyles.BlockInformation>
