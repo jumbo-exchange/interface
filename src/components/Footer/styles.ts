@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { isMobile } from 'utils/userAgent';
+import { isMobile, isTablet } from 'utils/userAgent';
 
 export const Container = styled.footer`
   display: flex;
@@ -43,7 +43,7 @@ export const LogoContainer = styled.div`
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  margin-right: ${isMobile ? '0' : '1.875rem'};
+  margin-right: ${(isMobile || isTablet) ? '0' : '1.875rem'};
   & > svg {
     margin-right: .25rem;
     width: 1.188rem;
@@ -104,13 +104,14 @@ export const TextContainer = styled.div`
 
 export const LeftContainer = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: ${isTablet ? 'column' : 'row'};
   flex: 1 1 0;
   justify-content: flex-start;
 `;
 
 export const HapiButton = styled.a`
   min-height: 2.25rem;
+  max-width: 115px;
   cursor: pointer;
   font-family: Arial;
   font-style: normal;
@@ -123,6 +124,7 @@ export const HapiButton = styled.a`
   border-radius: 8px;
   color: ${({ theme }) => theme.yellowHapi};
   text-decoration:none;
+  margin-top: ${isTablet ? '10px' : '0'};
 
   :hover {
     & span {

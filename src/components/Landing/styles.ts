@@ -278,10 +278,6 @@ export const LowerBlock = styled(Block)`
   border-radius: 32px;
 `;
 
-export const CentralArrowContainer = styled(CentralArrow)`
-  justify-self: center;
-  grid-area: 3 / 6 / 5 / 7;
-`;
 export const LowerLeftArrowContainer = styled(LowerLeftArrow)`
   justify-self: flex-end;
   grid-area: 6 / 2 / 8 / 3;
@@ -375,6 +371,11 @@ export const MobileLowerRightArrowContainer = styled(MobileLowerRightArrow)`
   justify-self: flex-start;
 `;
 
+export const CentralArrowContainer = styled(CentralArrow)`
+  justify-self: center;
+  grid-area: 3 / 6 / 5 / 7;
+`;
+
 export default {
   UpperContainer,
   MainInformation,
@@ -396,6 +397,16 @@ export default {
   CentralArrowContainer,
   LowerLeftArrowContainer,
   LowerRightArrowContainer,
-  TabletImgContainer,
-  MobileImgContainer,
+  TabletCentralArrowContainer,
+  MobileBlockInformation,
+  MobileBlock,
+  MobileUpperBlock,
+  MobileMiddleLeftBlock,
+  MobileMiddleRightBlock,
+  MobileLowerBlock,
+  MobileCentralArrowContainer,
+  MobileUpperLeftArrowContainer,
+  MobileUpperRightArrowContainer,
+  MobileLowerLeftArrowContainer,
+  MobileLowerRightArrowContainer,
 };
