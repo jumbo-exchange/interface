@@ -36,6 +36,13 @@ export interface ThemeColors {
   darkGreenBg: string;
   greenText: string;
   greyBorder: string;
+  pink: string;
+  greyButton: string;
+  darkGreyButton: string;
+  darkGreyButtonHv: string;
+  greyNavText: string;
+  backgroundCard: string;
+  boxShadowCard: string;
 }
 
 export const colors: ThemeColors = {
@@ -56,6 +63,13 @@ export const colors: ThemeColors = {
   redBorder: '#FE2C55',
   darkGreenBg: '#212C1E;',
   greenText: '#8EF46A',
+  pink: '#FE2C55',
+  greyButton: '#454D5C',
+  darkGreyButton: '#353B49',
+  darkGreyButtonHv: '#4A515F',
+  greyNavText: '#8991A3',
+  backgroundCard: '#202632',
+  boxShadowCard: '#0A0C12',
 };
 
 function theme(): DefaultTheme {

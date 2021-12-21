@@ -12,6 +12,7 @@ export default function getConfig(
         explorerUrl: 'https://explorer.testnet.near.org',
         indexerUrl: 'https://testnet-indexer.ref-finance.com',
         nearAddress: 'wrap.testnet',
+        contractId: '',
       };
     default:
       return {
@@ -22,6 +23,7 @@ export default function getConfig(
         explorerUrl: 'https://explorer.mainnet.near.org',
         indexerUrl: 'https://indexer.ref-finance.net',
         nearAddress: 'wrap.near',
+        contractId: '',
       };
   }
 }

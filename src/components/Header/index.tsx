@@ -1,6 +1,7 @@
 import { ReactComponent as JumboLogo } from 'assets/images/jumbo-logo.svg';
 import { ReactComponent as DocsLogo } from 'assets/images/docs-icon.svg';
 import { docsLink } from 'utils/constants';
+import { isMobile } from 'utils/userAgent';
 
 import HeaderStyles from './styles';
 
@@ -9,7 +10,7 @@ export default function Header() {
     <HeaderStyles.HeaderContainer>
       <HeaderStyles.LogoContainer>
         <JumboLogo />
-        <HeaderStyles.LogoTitle>jumbo</HeaderStyles.LogoTitle>
+        {isMobile ? null : (<HeaderStyles.LogoTitle>jumbo</HeaderStyles.LogoTitle>)}
       </HeaderStyles.LogoContainer>
       <HeaderStyles.InformationContainer>
         <HeaderStyles.DocsButton
@@ -20,6 +21,9 @@ export default function Header() {
           <DocsLogo />
           <span>Read</span> Docs
         </HeaderStyles.DocsButton>
+        <HeaderStyles.ButtonOpenApp>
+          Open App
+        </HeaderStyles.ButtonOpenApp>
       </HeaderStyles.InformationContainer>
     </HeaderStyles.HeaderContainer>
   );

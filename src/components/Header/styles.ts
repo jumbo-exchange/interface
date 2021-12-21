@@ -87,11 +87,29 @@ const LogoTitle = styled.h1`
   color: ${({ theme }) => theme.white};
 `;
 
+const ButtonOpenApp = styled.button`
+  background: ${({ theme }) => theme.pink};
+  border-radius: 12px;
+  border: none;
+  width: 103px;
+  height: 44px;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.188rem;
+  color: ${({ theme }) => theme.white};
+  margin-left: 1.5rem;
+  :hover {
+    cursor: pointer;
+  }
+`;
+
 const HeaderStyles = {
   LogoTitle,
   InformationContainer,
   DocsButton,
   LogoContainer,
   HeaderContainer,
+  ButtonOpenApp,
 };
 export default HeaderStyles;

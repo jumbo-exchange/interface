@@ -8,15 +8,15 @@ export const Container = styled.footer`
   align-items: center;
   white-space: nowrap;
   color: ${({ theme }) => theme.globalWhite};
-  padding: 0 12.5rem 2.563rem 12.5rem;
+  padding: 0 12.5rem 1rem 12.5rem;
   ${({ theme }) => theme.mediaWidth.upToLarge`
-    padding: 0 4.375rem 2.563rem 4.375rem;
+    padding: 0 4.375rem 1rem 4.375rem;
   `}
   ${({ theme }) => theme.mediaWidth.upToMedium`
-    padding: 0 3rem 2.563rem 3rem;
+    padding: 0 3rem 1rem 3rem;
   `}
   ${({ theme }) => theme.mediaWidth.upToSmall`
-    padding: 0 1.25rem 2.563rem 1.25rem;
+    padding: 0 1.25rem 1rem 1.25rem;
   `}
 `;
 
@@ -27,39 +27,17 @@ export const ContainerMobile = styled.footer`
   align-items: center;
   white-space: nowrap;
   color: ${({ theme }) => theme.globalWhite};
+  padding: 1.5rem 2.063rem 2rem 2.063rem;
 `;
+
 export const ChildContainer = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
   align-self: normal;
   white-space: nowrap;
   margin: ${isMobile ? '1.5rem 0' : '0'};
-`;
-
-export const LogoContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  margin-right: ${(isMobile || isTablet) ? '0' : '1.875rem'};
-  & > svg {
-    margin-right: .25rem;
-    width: 1.188rem;
-    height: 0.938rem;
-    path {
-      fill: ${({ theme }) => theme.greyFooterLogo};
-    }
-  }
-`;
-
-export const LogoTitle = styled.div`
-  font-style: normal;
-  font-weight: bold;
-  font-size: 1rem;
-  line-height: 1.25rem;
-  color: ${({ theme }) => theme.greyFooterLogo};
 `;
 
 export const SocialNetworkContainer = styled.div`
@@ -69,8 +47,6 @@ export const SocialNetworkContainer = styled.div`
   align-items: center;
   flex: 0 1 0;
   border-radius: 32px;
-  padding: 0 1.938rem;
-  background: ${({ theme }) => theme.greySocialNetworkBg};
 `;
 
 export const ChildSocialNetwork = styled.a`
@@ -103,21 +79,13 @@ export const TextContainer = styled.div`
 `;
 
 export const LeftContainer = styled.div`
-  display: flex;
-  flex-direction: ${isTablet ? 'column' : 'row'};
   flex: 1 1 0;
-  justify-content: flex-start;
 `;
 
 export const HapiButton = styled.a`
   min-height: 2.25rem;
   max-width: 115px;
   cursor: pointer;
-  font-family: Arial;
-  font-style: normal;
-  font-weight: bold;
-  font-size: .625rem;
-  line-height: 0.688rem;
   display: flex;
   align-items: center;
   border: 1px solid ${({ theme }) => theme.yellowHapi};
@@ -125,7 +93,13 @@ export const HapiButton = styled.a`
   color: ${({ theme }) => theme.yellowHapi};
   text-decoration:none;
   margin-top: ${isTablet ? '10px' : '0'};
-
+  p, span {
+    font-family: Arial;
+    font-style: normal;
+    font-weight: bold;
+    font-size: .625rem;
+    line-height: 0.688rem;
+  }
   :hover {
     & span {
       text-decoration: underline;
