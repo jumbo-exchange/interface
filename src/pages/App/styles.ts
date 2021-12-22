@@ -1,6 +1,5 @@
 import { PropsWithChildren } from 'react';
 import styled from 'styled-components';
-import { ReactComponent as Wallet } from 'assets/images/wallet.svg';
 
 interface ICurrentTab {
   isActive?: boolean
@@ -13,42 +12,24 @@ export const Container = styled.div`
 `;
 
 export const Header = styled.div`
+  transition: all 1s ease;
+
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   white-space: nowrap;
   color: ${({ theme }) => theme.globalWhite};
-  padding: 1.5rem 12.5rem 2.563rem 12.5rem;
-  ${({ theme }) => theme.mediaWidth.upToLarge`
-    padding: 1.5rem 4.375rem 2.563rem 4.375rem;
-  `}
+  padding: 1.5rem 4.5rem 2.563rem 4.5rem;
   ${({ theme }) => theme.mediaWidth.upToMedium`
-    padding: 1.5rem 3rem 2.563rem 3rem;
+    padding: 1.5rem 2rem 2.563rem 2rem;
   `}
   ${({ theme }) => theme.mediaWidth.upToSmall`
     padding: 1.5rem 1.25rem 2.563rem 1.25rem;
   `}
-`;
-
-export const MobileHeader = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-content: center;
-  white-space: nowrap;
-  color: ${({ theme }) => theme.globalWhite};
-  padding: 1.5rem 2.063rem 2.563rem 2.063rem;
-`;
-
-export const UpperRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
-export const LowerRow = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 1.5rem;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    padding: 1.5rem 1rem 0.875rem 1rem;
+  `}
 `;
 
 export const LogoContainer = styled.div`
@@ -84,9 +65,10 @@ export const NavButton = styled.div<PropsWithChildren<ICurrentTab>>`
   font-weight: bold;
   font-size: 1.25rem;
   line-height: 1.438rem;
-  color: ${({ theme, isActive }) => (isActive ? theme.pink : theme.greyNavText)};
+  color: ${({ theme, isActive }) => (isActive ? theme.pink : theme.globalGrey)};
   margin: 0 12px;
   position: relative;
+  transition: all .3s ease;
   :after {
     content: '';
     transition: all .3s ease;
@@ -95,7 +77,7 @@ export const NavButton = styled.div<PropsWithChildren<ICurrentTab>>`
     top: 30px;
     border-radius: 1.47856px;
     width: ${({ isActive }) => (isActive ? '36px' : '0')};
-    background: ${({ theme, isActive }) => (isActive ? theme.pink : theme.greyNavText)};
+    background: ${({ theme, isActive }) => (isActive ? theme.pink : theme.globalGrey)};
     ${({ theme, isActive }) => theme.mediaWidth.upToExtraSmall`
       top: 25px;
       height: 2px;
@@ -110,10 +92,6 @@ export const NavButton = styled.div<PropsWithChildren<ICurrentTab>>`
     line-height: 1.188rem;
     margin: 0 8px;
   `}
-`;
-
-export const WalletIcon = styled(Wallet)`
-  margin-right: 0.625rem;
 `;
 
 export const Body = styled.div`

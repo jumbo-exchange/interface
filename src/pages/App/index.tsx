@@ -1,24 +1,20 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
+import Swap from 'pages/Swap';
 import Footer from 'components/Footer';
-import { ButtonPrimary } from 'components/Button';
 import { ReactComponent as JumboLogo } from 'assets/images/jumbo-logo.svg';
 
-import { isMobile, isTablet } from 'utils/userAgent';
+import { isMobile } from 'utils/userAgent';
 import { StatusLink } from 'store';
-import Swap from 'pages/Swap';
 import {
   Container,
   Header,
-  MobileHeader,
-  UpperRow,
-  LowerRow,
   LogoContainer,
   LogoTitle,
   NavBar,
   NavButton,
-  WalletIcon,
   Body,
 } from './styles';
+import ConnectionButton from './ConnectionButton';
 
 interface INavigation {
   currentTab: StatusLink,
@@ -62,43 +58,17 @@ export default function App() {
   return (
     <Container>
 
-      {isMobile || isTablet
-        ? (
-          <MobileHeader>
-            <UpperRow>
-              <LogoContainer>
-                <JumboLogo />
-                {isMobile ? null : (<LogoTitle>jumbo</LogoTitle>)}
-              </LogoContainer>
-              <ButtonPrimary>
-                <WalletIcon />
-                {isMobile ? 'Connect' : 'Connect wallet'}
-              </ButtonPrimary>
-            </UpperRow>
-            <LowerRow>
-              <Navigation
-                currentTab={currentTab}
-                setCurrentTab={setCurrentTab}
-              />
-            </LowerRow>
-          </MobileHeader>
-        )
-        : (
-          <Header>
-            <LogoContainer>
-              <JumboLogo />
-              {isMobile ? null : (<LogoTitle>jumbo</LogoTitle>)}
-            </LogoContainer>
-            <Navigation
-              currentTab={currentTab}
-              setCurrentTab={setCurrentTab}
-            />
-            <ButtonPrimary>
-              <WalletIcon />
-              {isMobile ? 'Connect' : 'Connect wallet'}
-            </ButtonPrimary>
-          </Header>
-        )}
+      <Header>
+        <LogoContainer>
+          <JumboLogo />
+          {isMobile ? null : (<LogoTitle>jumbo</LogoTitle>)}
+        </LogoContainer>
+        <Navigation
+          currentTab={currentTab}
+          setCurrentTab={setCurrentTab}
+        />
+        <ConnectionButton />
+      </Header>
 
       <Body>
         <CurrentTab currentTab={currentTab} />

@@ -51,14 +51,15 @@ export const ButtonThird = styled(ButtonPrimary)`
     cursor: pointer;
   }
 `;
+
 export const ButtonFourth = styled(ButtonPrimary)`
-  border: 2px solid ${({ theme }) => theme.darkGreyButton};
-  background: ${({ theme }) => theme.darkGreyButton};
+  border: none;
+  background: ${({ theme }) => theme.globalGreyOp02};
   border-radius: 12px;
   :hover {
     cursor: pointer;
-    background: ${({ theme }) => theme.darkGreyButtonHv};
-    border: 2px solid ${({ theme }) => theme.darkGreyButtonHv};
+    background: ${({ theme }) => theme.globalGreyOp04};
+    border: none;
   }
 `;
 

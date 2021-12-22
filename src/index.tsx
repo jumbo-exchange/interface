@@ -6,10 +6,13 @@ import {
   Redirect, Route, BrowserRouter as Router, Switch,
 } from 'react-router-dom';
 import { LANDING } from 'utils/routes';
-import Landing from 'pages/Landing';
 import { ThemeProvider } from 'styled-components';
+import { StoreContextProvider } from 'store';
+
+import Landing from 'pages/Landing';
 import theme from 'theme';
 import useFullHeightHook from 'hooks/useFullHeightHook';
+import Modals from 'components/Modals';
 
 import App from 'pages/App';
 
@@ -18,10 +21,14 @@ const AppWrapper = ({ children }: {children: JSX.Element[]}) => {
 
   return (
     <ThemeProvider theme={theme}>
-      <App />
-      {/* <Router>
+      <StoreContextProvider>
+        <Modals>
+          <App />
+          {/* <Router>
         <Switch>{ children } </Switch>
       </Router> */}
+        </Modals>
+      </StoreContextProvider>
     </ThemeProvider>
   );
 };

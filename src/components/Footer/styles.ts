@@ -2,21 +2,23 @@ import styled from 'styled-components';
 import { isMobile, isTablet } from 'utils/userAgent';
 
 export const Container = styled.footer`
+  transition: all 1s ease;
+
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   white-space: nowrap;
   color: ${({ theme }) => theme.globalWhite};
-  padding: 0 12.5rem 1rem 12.5rem;
-  ${({ theme }) => theme.mediaWidth.upToLarge`
-    padding: 0 4.375rem 1rem 4.375rem;
-  `}
+  padding: 1.5rem 4.5rem 2.563rem 4.5rem;
   ${({ theme }) => theme.mediaWidth.upToMedium`
-    padding: 0 3rem 1rem 3rem;
+    padding: 0 2rem 1rem 2rem;
   `}
   ${({ theme }) => theme.mediaWidth.upToSmall`
     padding: 0 1.25rem 1rem 1.25rem;
+  `}
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    padding: 0 1rem 0.875rem 1rem;
   `}
 `;
 
@@ -56,6 +58,11 @@ export const ChildSocialNetwork = styled.a`
   align-items: center;
   margin: 0.938rem 1.188rem;
   text-decoration: none;
+  & > svg {
+    path{
+      fill: ${({ theme }) => theme.globalGrey}
+    }
+  }
   & > div {
     margin-top: 0.5rem;
     font-style: normal;
@@ -63,7 +70,17 @@ export const ChildSocialNetwork = styled.a`
     font-size: 0.75rem;
     line-height: 1.063rem;
     text-align: center;
-    color: ${({ theme }) => theme.globalWhite};
+    color: ${({ theme }) => theme.globalGrey};
+  }
+  :hover {
+    & > svg {
+      path{
+        fill: ${({ theme }) => theme.globalWhite}
+      }
+    }
+    & > div {
+      color: ${({ theme }) => theme.globalWhite};
+    }
   }
 `;
 
@@ -75,7 +92,7 @@ export const TextContainer = styled.div`
   font-weight: 300;
   font-size: 0.75rem;
   line-height: 1.031rem;
-  color: ${({ theme }) => theme.globalWhite};
+  color: ${({ theme }) => theme.globalGrey};
 `;
 
 export const LeftContainer = styled.div`

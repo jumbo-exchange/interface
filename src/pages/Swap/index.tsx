@@ -1,70 +1,141 @@
-import React from 'react';
-
+import React, { useState } from 'react';
+import CurrencyInputPanel from 'components/CurrencyInputPanel';
+import tokenLogo from 'assets/images-app/ETH.svg';
+import SpecialContainer from 'components/SpecialContainer';
 import { ButtonPrimary, ButtonSecondary } from 'components/Button';
 import { wallet } from 'services/near';
-
 import { getUpperCase } from 'utils';
 import { useStore } from 'store';
 import {
-  Container,
   ActionContainer,
   Block,
   InputContainer,
   LogoContainer,
   TokenContainer,
-  TokenTitle,
   ArrowDown,
-  MinterName,
-  MinterLogo,
+  InputLabel,
   WalletInformation,
+  ButtonHalfWallet,
+  ButtonMaxWallet,
   LogoWallet,
-  ExchangeContainer,
-  ExchangeLogo,
+  ChangeTokenContainer,
+  ChangeTokenLogo,
+  ExchangeBlock,
+  RefreshBlock,
   ExchangeLabel,
-  TokenWrapper,
+  SettingsBlock,
+  SettingsLabel,
   Wallet,
 } from './styles';
 
+const Input = (
+  {
+    value,
+    setValue,
+  }:
+  {
+    value: string,
+    setValue: any,
+  },
+) => {
+  const setHalfAmount = () => {
+    console.log('setHalfAmount');
+  };
+
+  const setMaxAmount = () => {
+    console.log('setMaxAmount');
+  };
+
+  return (
+    <Block>
+      <InputLabel>
+        <WalletInformation>
+          <LogoWallet />
+          1234
+        </WalletInformation>
+        <ButtonHalfWallet onClick={setHalfAmount}>
+          <span>HALF</span>
+        </ButtonHalfWallet>
+        <ButtonMaxWallet onClick={setMaxAmount}>
+          <span>MAX</span>
+        </ButtonMaxWallet>
+      </InputLabel>
+      <InputContainer>
+        <LogoContainer>
+          <img src={tokenLogo} alt="token" />
+        </LogoContainer>
+        <CurrencyInputPanel
+          value={value}
+          setValue={setValue}
+        />
+        <TokenContainer>
+          {getUpperCase('ETH')}
+          <ArrowDown />
+        </TokenContainer>
+      </InputContainer>
+    </Block>
+  );
+};
+
 export default function Swap() {
-  const {
-    loading,
-  } = useStore();
+  const { loading, setAccountModalOpen } = useStore();
+
+  const [value, setValue] = useState<string>('');
+  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
 
   const isConnected = wallet.isSignedIn();
   const title = isConnected
     ? 'Swap'
     : 'Connect wallet';
-  const leftSide = `1 ${getUpperCase('ETH')}`;
-  const rightSide = `1 ${getUpperCase('ETH')}`;
+  const exchangeLabel = `1 ${getUpperCase('ETH')} ≈ 4923.333 ${getUpperCase('NEAR')}`;
+
+  const changeToken = () => {
+    console.log('changeToken');
+  };
+  const swapToken = () => {
+    console.log('swap');
+  };
 
   return (
-    <Container>
+    <SpecialContainer>
       <ActionContainer>
-        <input />
-        <ExchangeContainer>
-          <ExchangeLogo />
-        </ExchangeContainer>
-        <input />
+        <Input
+          value={value}
+          setValue={setValue}
+        />
+        <ChangeTokenContainer onClick={changeToken}>
+          <ChangeTokenLogo />
+          <span>Change Direction</span>
+        </ChangeTokenContainer>
+        <Input
+          value={value}
+          setValue={setValue}
+        />
       </ActionContainer>
-      <ExchangeLabel>
-        {loading
-          ? 'Loading...'
-          : (
-            <>
-              <div>{leftSide}</div>
-              <div>≈</div>
-              <div>{rightSide}</div>
-            </>
-          ) }
-      </ExchangeLabel>
+      <ExchangeBlock>
+        <RefreshBlock>
+          gif load Refresh
+        </RefreshBlock>
+        <ExchangeLabel>
+          {loading ? 'Loading...' : <div>{exchangeLabel}</div>}
+        </ExchangeLabel>
+      </ExchangeBlock>
+      <SettingsBlock>
+        <SettingsLabel
+          isActive={isSettingsOpen}
+          onClick={() => (setIsSettingsOpen(!isSettingsOpen))}
+        >
+          <span>Settings</span> <ArrowDown />
+        </SettingsLabel>
+      </SettingsBlock>
       {isConnected
-        ? <ButtonPrimary>{title}</ButtonPrimary>
+        ? <ButtonPrimary onClick={swapToken}>{title}</ButtonPrimary>
         : (
-          <ButtonSecondary>
+          <ButtonSecondary onClick={() => setAccountModalOpen(true)}>
             <Wallet />
             {title}
           </ButtonSecondary>
         )}
-    </Container>
+    </SpecialContainer>
   );
 }

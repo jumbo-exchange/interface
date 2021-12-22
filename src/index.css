@@ -29,15 +29,3 @@ html, body {
   position: relative;
   height: inherit;
 }
-
-.border::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  bottom: 0;
-  left: -2px;
-  right: -2px;
-  background: linear-gradient(180deg, rgba(137, 145, 163, 0.2) 0%, rgba(137, 145, 163, 0) 100%);
-  border-radius: 36px;
-  z-index: -1;
-}

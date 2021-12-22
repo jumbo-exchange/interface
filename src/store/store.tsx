@@ -15,8 +15,6 @@ const initialState: StoreContextType = {
   setLoading: () => {},
   isAccountModalOpen: false,
   setAccountModalOpen: () => {},
-  isLiquidityModalOpen: false,
-  setLiquidityModalOpen: () => {},
   isSearchModalOpen: { isOpen: false, tokenType: TokenType.Output },
   setSearchModalOpen: () => {},
 };
@@ -31,9 +29,6 @@ export const StoreContextProvider = (
 
   const [isAccountModalOpen, setAccountModalOpen] = useState<boolean>(
     initialState.isAccountModalOpen,
-  );
-  const [isLiquidityModalOpen, setLiquidityModalOpen] = useState<boolean>(
-    initialState.isLiquidityModalOpen,
   );
   const [isSearchModalOpen, setSearchModalOpen] = useState<{isOpen: boolean, tokenType: TokenType}>(
     initialState.isSearchModalOpen,
@@ -66,8 +61,6 @@ export const StoreContextProvider = (
       setLoading,
       isAccountModalOpen,
       setAccountModalOpen,
-      isLiquidityModalOpen,
-      setLiquidityModalOpen,
       isSearchModalOpen,
       setSearchModalOpen,
     }}

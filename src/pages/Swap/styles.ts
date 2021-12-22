@@ -1,27 +1,14 @@
+import { PropsWithChildren } from 'react';
 import styled from 'styled-components';
 
 import { isMobile } from 'utils/userAgent';
-import { ReactComponent as WalletImage } from 'assets/images/wallet.svg';
-import { ReactComponent as IconArrowDown } from 'assets/images/icon-arrow-down.svg';
-import { ReactComponent as Exchange } from 'assets/images/exchange.svg';
+import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
+import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
+import { ReactComponent as Exchange } from 'assets/images-app/exchange.svg';
 
-export const Container = styled.div`
-  position: relative;
-  background-color: ${({ theme }) => theme.backgroundCard};
-  max-width: 500px;
-  min-width: 328px;
-  height: 400px;
-  display: flex;
-
-  display: flex;
-  flex-direction: column;
-
-  color: ${({ theme }) => theme.white};
-  box-shadow: 0px 32px 72px -12px ${({ theme }) => theme.boxShadowCard};
-  border-radius: 36px;
-  /* border  need fix */
-  padding: 24px;
-`;
+interface ICurrent {
+  isActive?: boolean
+}
 
 export const ActionContainer = styled.div`
   background: ${({ theme }) => theme.BgCardGrey};
@@ -38,42 +25,77 @@ export const Block = styled.div`
   padding: 10px 0px 0px 0px;
 `;
 
+export const InputLabel = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin: 0 .8rem;
+`;
+
 export const WalletInformation = styled.div`
+  flex: 1;
   display: flex;
   justify-content: flex-start;
-  margin-bottom: 27px;
-  align-items: flex-end;
+  margin-bottom: 0.6rem;
+  align-items: center;
   font-style: normal;
   font-weight: normal;
-  font-size: 1.125rem;
-  line-height: 1.063rem;
-  align-items: center;
+  font-size: 0.75rem;
+  line-height: .875rem;
 `;
 
 export const LogoWallet = styled(WalletImage)`
   margin-right: 0.438rem;
+  width: 16px;
+  height: 12px;
+`;
+
+export const ButtonHalfWallet = styled.button`
+  background: none;
+  border: none;
+  padding: 0;
+  & > span {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: right;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 0.75rem;
+    line-height: .875rem;
+    color: ${({ theme }) => theme.globalGrey};
+  }
+  :hover {
+    cursor: pointer;
+    & > span {
+      color: ${({ theme }) => theme.globalWhite};
+    }
+  }
+`;
+
+export const ButtonMaxWallet = styled(ButtonHalfWallet)`
+  margin-left: 1rem;
 `;
 
 export const InputContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  padding: 12px 22px 12px 12px;
+  border: 1px solid ${({ theme }) => theme.globalGreyOp04};
+  border-radius: 12px;
 `;
 
 export const LogoContainer = styled.div`
   margin-right: 1rem;
+  display: flex;
   >img{
-    height: 3rem;
-    width: 3rem;
+    height: 2.25rem;
+    width: 2.25rem;
   }
 `;
 
 export const TokenContainer = styled.div`
   flex: 1;
-
-`;
-
-export const TokenTitle = styled.div`
   font-style: normal;
   font-weight: normal;
   font-size: 2rem;
@@ -81,76 +103,114 @@ export const TokenTitle = styled.div`
   text-align: right;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
+  :hover {
+    cursor: pointer;
+  }
 `;
 
 export const ArrowDown = styled(IconArrowDown)`
   margin-left: 0.875rem;
 `;
 
-export const MinterLogo = styled.div`
-  margin-right: 4px;
-  &>img{
-    max-height: 1.5rem;
-    max-width: 1.5rem;
+export const ChangeTokenContainer = styled.div`
+  display: flex;
+  align-self: center;
+  color: ${({ theme }) => theme.globalGrey};
+  margin: 1.125rem 0;
+  & > span {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 0.75rem;
+    line-height: .875rem;
+  }
+  :hover {
+    & > svg {
+      path {
+        fill: ${({ theme }) => theme.globalWhite};
+      }
+    }
+    cursor: pointer;
+    color: ${({ theme }) => theme.globalWhite};
   }
 `;
 
-export const MinterName = styled.div`
-  margin-top: .75rem;
+export const ChangeTokenLogo = styled(Exchange)`
+  margin-right: 0.5rem;
+`;
+
+export const ExchangeBlock = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin: 1.125rem .75rem 1.375rem .75rem;
   font-style: normal;
   font-weight: normal;
   font-size: .75rem;
-  line-height: .75rem;
+  line-height: .875rem;
+  color: ${({ theme }) => theme.globalGrey};
+`;
+
+export const RefreshBlock = styled.div`
   display: flex;
-  align-items: center;
-`;
-
-export const ExchangeContainer = styled.div`
-  align-self: center;
-`;
-
-export const ExchangeLogo = styled(Exchange)`
-  cursor: pointer;
+  justify-content: space-between;
+  white-space: nowrap;
+  margin-right: 20px;
 `;
 
 export const ExchangeLabel = styled.div`
   display: flex;
-  justify-content: center;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 1.125rem;
-  line-height: 1.063rem;
-  text-align: center;
-  color: ${({ theme }) => theme.globalBLack};
-  margin: 24px 0;
   white-space: nowrap;
-  & > div:first-child {
-    flex: 1 1 0;
-    display: flex;
-    justify-content: flex-end;
-    overflow: hidden;
-  }
-  & > div:nth-child(2) { 
-    flex: 0 1 0;
-    padding: 0 10px;
-  }
+  overflow: hidden;
+`;
 
-  & > div:last-child { 
-    flex: 1 1 0;
-    display: flex;
-    justify-content: flex-start;
-    overflow: hidden;
+export const SettingsBlock = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 2.5rem;
+  margin-right: .453rem;
+
+  ::before {
+    content: '';
+    background: ${({ theme }) => theme.globalGreyOp02};
+    height: 1px;
+    width: 100%;
   }
 `;
 
-export const TokenWrapper = styled.div`
-  display:flex;
-  flex-direction: row;
-  cursor: pointer;
+export const SettingsLabel = styled.div<PropsWithChildren<ICurrent>>`
+  display: flex;
+  align-items: center;
+  & > span {
+    font-size: .75rem;
+    line-height: .875rem;
+    color: ${({ theme, isActive }) => (isActive ? theme.globalWhite : theme.globalGrey)};
+    margin-left: 1rem;
+  }
+  & > svg {
+    width: .594rem;
+    height: .344rem;
+    margin-left: .453rem;
+    transform: ${({ isActive }) => (isActive && 'rotate(0.5turn)')};
+    transition: all 0.3s ease-out;
+    path {
+      fill: ${({ theme, isActive }) => (isActive ? theme.globalWhite : theme.globalGrey)};
+    }
+  }
+  :hover {
+    cursor: pointer;
+    & > span {
+    color: ${({ theme }) => theme.globalWhite};
+  }
+    & > svg {
+      path {
+        fill: ${({ theme }) => theme.globalWhite};
+      }
+    }
+  }
 `;
 
 export const Wallet = styled(LogoWallet)`
-  margin-right: 0.625rem;
+  margin-right: .625rem;
   path {
     fill: ${({ theme }) => theme.globalWhite};
   }

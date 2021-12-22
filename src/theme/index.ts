@@ -19,8 +19,11 @@ const mediaWidthTemplates: {
 }, {}) as any;
 
 export interface ThemeColors {
+  layoutBlack: string;
+
   globalBlack: string;
   globalWhite: string;
+  globalGrey: string;
   black: string;
   white: string;
   yellowHapi: string;
@@ -38,16 +41,19 @@ export interface ThemeColors {
   greyBorder: string;
   pink: string;
   greyButton: string;
-  darkGreyButton: string;
-  darkGreyButtonHv: string;
-  greyNavText: string;
   backgroundCard: string;
   boxShadowCard: string;
+  specialBorderCard: string;
+  globalGreyOp04: string;
+  globalGreyOp02: string;
 }
 
 export const colors: ThemeColors = {
+  layoutBlack: 'rgba(0, 0, 0, 0.6)',
+
   globalBlack: '#131313',
   globalWhite: '#FFFFFF',
+  globalGrey: '#8991A3',
   black: '#000000',
   white: '#ffffff',
   yellowHapi: '#FDEE2D',
@@ -65,11 +71,11 @@ export const colors: ThemeColors = {
   greenText: '#8EF46A',
   pink: '#FE2C55',
   greyButton: '#454D5C',
-  darkGreyButton: '#353B49',
-  darkGreyButtonHv: '#4A515F',
-  greyNavText: '#8991A3',
   backgroundCard: '#202632',
   boxShadowCard: '#0A0C12',
+  specialBorderCard: 'linear-gradient(180deg, rgb(53, 60, 73), rgba(137, 145, 163, 0) 100%)',
+  globalGreyOp04: '#4A515F',
+  globalGreyOp02: '#353B49',
 };
 
 function theme(): DefaultTheme {
