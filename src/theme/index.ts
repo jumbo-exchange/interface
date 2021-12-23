@@ -24,8 +24,14 @@ export interface ThemeColors {
   globalBlack: string;
   globalWhite: string;
   globalGrey: string;
+  globalGreen: string;
+
+  globalGreyOp04: string;
+  globalGreyOp02: string;
+
   black: string;
   white: string;
+
   yellowHapi: string;
   greyText: string;
   greyCard: string;
@@ -39,13 +45,12 @@ export interface ThemeColors {
   darkGreenBg: string;
   greenText: string;
   greyBorder: string;
+
   pink: string;
   greyButton: string;
   backgroundCard: string;
   boxShadowCard: string;
   specialBorderCard: string;
-  globalGreyOp04: string;
-  globalGreyOp02: string;
 }
 
 export const colors: ThemeColors = {
@@ -54,8 +59,14 @@ export const colors: ThemeColors = {
   globalBlack: '#131313',
   globalWhite: '#FFFFFF',
   globalGrey: '#8991A3',
+  globalGreen: ' #84DA18',
+
+  globalGreyOp04: '#4A515F',
+  globalGreyOp02: '#353B49',
+
   black: '#000000',
   white: '#ffffff',
+
   yellowHapi: '#FDEE2D',
   greyText: '#91949D',
   greyCard: '#5A5E6D',
@@ -69,13 +80,12 @@ export const colors: ThemeColors = {
   redBorder: '#FE2C55',
   darkGreenBg: '#212C1E;',
   greenText: '#8EF46A',
+
   pink: '#FE2C55',
   greyButton: '#454D5C',
   backgroundCard: '#202632',
-  boxShadowCard: '#0A0C12',
+  boxShadowCard: 'rgba(10, 12, 18, 0.2)',
   specialBorderCard: 'linear-gradient(180deg, rgb(53, 60, 73), rgba(137, 145, 163, 0) 100%)',
-  globalGreyOp04: '#4A515F',
-  globalGreyOp02: '#353B49',
 };
 
 function theme(): DefaultTheme {

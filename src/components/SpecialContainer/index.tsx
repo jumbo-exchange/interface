@@ -6,7 +6,7 @@ const Container = styled.div`
   background-color: ${({ theme }) => theme.backgroundCard};
 
   max-width: 500px;
-  min-width: 328px;
+  min-width: 310px;
   height: fit-content;
 
   display: flex;
@@ -27,9 +27,16 @@ const Container = styled.div`
     border-radius: 36px;
     z-index: -1;
   }
+  width: 100%;
   ${({ theme }) => theme.mediaWidth.upToSmall`
-    margin: 0 1rem 10rem 1rem;
+    margin: 0 1rem 0 1rem;
   `}
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+
+    margin: 0 1rem 10rem 1rem;
+    padding: 25px 16px 16px 16px;
+  `}
+  transition: all 1s ease-out;
 `;
 
 export default function SpecialContainer({ children }: {children: JSX.Element[]}) {

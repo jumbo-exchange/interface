@@ -1,112 +1,18 @@
 import { PropsWithChildren } from 'react';
 import styled from 'styled-components';
 
-import { isMobile } from 'utils/userAgent';
 import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
 import { ReactComponent as Exchange } from 'assets/images-app/exchange.svg';
+import { ReactComponent as PlaceHolderLoader } from 'assets/images-app/placeholder-loader.svg';
 
 interface ICurrent {
   isActive?: boolean
 }
 
 export const ActionContainer = styled.div`
-  background: ${({ theme }) => theme.BgCardGrey};
-  border-radius: ${isMobile ? '2px' : '8px'};
   display: flex;
   flex-direction: column;
-`;
-
-export const Block = styled.div`
-  background: ${({ theme }) => theme.BgCardGrey};
-  border-radius: ${isMobile ? '2px' : '8px'};
-  display: flex;
-  flex-direction: column;
-  padding: 10px 0px 0px 0px;
-`;
-
-export const InputLabel = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin: 0 .8rem;
-`;
-
-export const WalletInformation = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 0.6rem;
-  align-items: center;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 0.75rem;
-  line-height: .875rem;
-`;
-
-export const LogoWallet = styled(WalletImage)`
-  margin-right: 0.438rem;
-  width: 16px;
-  height: 12px;
-`;
-
-export const ButtonHalfWallet = styled.button`
-  background: none;
-  border: none;
-  padding: 0;
-  & > span {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    text-align: right;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 0.75rem;
-    line-height: .875rem;
-    color: ${({ theme }) => theme.globalGrey};
-  }
-  :hover {
-    cursor: pointer;
-    & > span {
-      color: ${({ theme }) => theme.globalWhite};
-    }
-  }
-`;
-
-export const ButtonMaxWallet = styled(ButtonHalfWallet)`
-  margin-left: 1rem;
-`;
-
-export const InputContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 12px 22px 12px 12px;
-  border: 1px solid ${({ theme }) => theme.globalGreyOp04};
-  border-radius: 12px;
-`;
-
-export const LogoContainer = styled.div`
-  margin-right: 1rem;
-  display: flex;
-  >img{
-    height: 2.25rem;
-    width: 2.25rem;
-  }
-`;
-
-export const TokenContainer = styled.div`
-  flex: 1;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 2rem;
-  line-height: 2rem;
-  text-align: right;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  :hover {
-    cursor: pointer;
-  }
 `;
 
 export const ArrowDown = styled(IconArrowDown)`
@@ -121,7 +27,7 @@ export const ChangeTokenContainer = styled.div`
   & > span {
     font-style: normal;
     font-weight: 500;
-    font-size: 0.75rem;
+    font-size: .75rem;
     line-height: .875rem;
   }
   :hover {
@@ -136,7 +42,7 @@ export const ChangeTokenContainer = styled.div`
 `;
 
 export const ChangeTokenLogo = styled(Exchange)`
-  margin-right: 0.5rem;
+  margin-right: .5rem;
 `;
 
 export const ExchangeBlock = styled.div`
@@ -154,7 +60,11 @@ export const RefreshBlock = styled.div`
   display: flex;
   justify-content: space-between;
   white-space: nowrap;
-  margin-right: 20px;
+  margin-right: 1.25rem;
+`;
+
+export const PlaceHolderGif = styled(PlaceHolderLoader)`
+  margin-right: .438rem;
 `;
 
 export const ExchangeLabel = styled.div`
@@ -165,11 +75,15 @@ export const ExchangeLabel = styled.div`
 
 export const SettingsBlock = styled.div`
   display: flex;
-  align-items: center;
+  flex-direction: column;
   margin-bottom: 2.5rem;
-  margin-right: .453rem;
+`;
 
-  ::before {
+export const SettingsHeader = styled.div`
+  display: flex;
+  align-items: center;
+  margin-right: .453rem;
+::before {
     content: '';
     background: ${({ theme }) => theme.globalGreyOp02};
     height: 1px;
@@ -209,8 +123,10 @@ export const SettingsLabel = styled.div<PropsWithChildren<ICurrent>>`
   }
 `;
 
-export const Wallet = styled(LogoWallet)`
+export const Wallet = styled(WalletImage)`
   margin-right: .625rem;
+  width: 16px;
+  height: 12px;
   path {
     fill: ${({ theme }) => theme.globalWhite};
   }

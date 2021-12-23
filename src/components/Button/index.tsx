@@ -61,6 +61,7 @@ export const ButtonFourth = styled(ButtonPrimary)`
     background: ${({ theme }) => theme.globalGreyOp04};
     border: none;
   }
+
 `;
 
 export function Button({ variant }: { variant: ButtonVariant }) {

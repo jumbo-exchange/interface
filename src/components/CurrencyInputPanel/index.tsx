@@ -18,6 +18,11 @@ export const Input = styled.input`
   font-size: 1.5rem;
   line-height: 1.75rem;
   color: ${({ theme }) => theme.globalWhite};
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: 1rem;
+    line-height: 1.125rem;
+  `}
+  transition: all 1s ease-out;
 `;
 
 export default function CurrencyInputPanel({ value, setValue, disabled = false }:IInputPanel) {

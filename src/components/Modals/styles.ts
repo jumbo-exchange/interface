@@ -12,6 +12,7 @@ export const Layout = styled.div`
 `;
 
 export const Modal = styled.div`
+
   min-width: 400px;
   min-height: 170px;
   
