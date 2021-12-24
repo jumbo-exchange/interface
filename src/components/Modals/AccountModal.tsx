@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useStore } from 'store';
+import { useModalsStore, useStore } from 'store';
 import { ReactComponent as CloseIcon } from 'assets/images-app/close.svg';
 import nearLogo from 'assets/images-app/near.svg';
 import { ReactComponent as RightArrow } from 'assets/images-app/right-arrow.svg';
@@ -52,9 +52,8 @@ const ModalFooter = styled.div`
 `;
 
 export default function AccountModal() {
-  const {
-    isAccountModalOpen, setAccountModalOpen, wallet, setWallet,
-  } = useStore();
+  const { wallet, setWallet } = useStore();
+  const { isAccountModalOpen, setAccountModalOpen } = useModalsStore();
 
   const headerTitle = wallet ? 'Your account' : 'Connect wallet';
   const config = getConfig();

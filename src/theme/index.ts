@@ -59,7 +59,7 @@ export const colors: ThemeColors = {
   globalBlack: '#131313',
   globalWhite: '#FFFFFF',
   globalGrey: '#8991A3',
-  globalGreen: ' #84DA18',
+  globalGreen: '#84DA18',
 
   globalGreyOp04: '#4A515F',
   globalGreyOp02: '#353B49',

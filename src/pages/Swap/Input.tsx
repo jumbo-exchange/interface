@@ -9,7 +9,6 @@ import { getUpperCase } from 'utils';
 const Block = styled.div`
   display: flex;
   flex-direction: column;
-
 `;
 
 const InputLabel = styled.div`
@@ -74,6 +73,10 @@ const InputContainer = styled.div`
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     padding: 10px 16px 10px 10px;
   `}
+  :focus-within {
+    border: 2px solid ${({ theme }) => theme.pink};
+    padding: 11px 21px 11px 11px;
+  }
 `;
 
 const LogoContainer = styled.div`

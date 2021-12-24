@@ -2,17 +2,13 @@ import React, { PropsWithChildren } from 'react';
 import styled from 'styled-components';
 import { ReactComponent as Info } from 'assets/images-app/info.svg';
 
-interface ICurrent {
-  isActive?: boolean
-}
-
 interface IColor {
   isColor?: boolean
 }
 
 // TODO: add transition to container
-const Container = styled.div<PropsWithChildren<ICurrent>>`
-  display: ${({ isActive }) => (isActive ? 'flex' : 'none')};
+const Container = styled.div`
+  display: flex;
   flex-direction: column;
   margin-top: 1.375rem;
 `;
@@ -58,7 +54,7 @@ const Label = styled.p<PropsWithChildren<IColor>>`
   margin: 0;
 `;
 
-export default function Settings({ isActive }:{isActive:boolean}) {
+export default function Settings() {
   const settingsArray = [
     {
       title: 'Minimum Recieved',
@@ -83,7 +79,7 @@ export default function Settings({ isActive }:{isActive:boolean}) {
   ];
 
   return (
-    <Container isActive={isActive}>
+    <Container>
       <RouteBlock>
         <Title>Route <LogoInfo /> </Title>
         <div> ETH {'>'} USTD {'>'} NEAR </div>

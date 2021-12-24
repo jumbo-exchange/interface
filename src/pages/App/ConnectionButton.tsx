@@ -3,7 +3,7 @@ import { wallet } from 'services/near';
 import styled from 'styled-components';
 import { isMobile } from 'utils/userAgent';
 
-import { useStore } from 'store';
+import { useModalsStore } from 'store';
 import { ButtonPrimary, ButtonThird } from 'components/Button';
 import { ReactComponent as LogoWallet } from 'assets/images-app/wallet.svg';
 import { ReactComponent as LogoNear } from 'assets/images-app/near.svg';
@@ -37,7 +37,7 @@ const PinkButtonThird = styled(ButtonThird)`
 
 export default function ConnectionButton() {
   const isConnected = wallet.isSignedIn();
-  const { setAccountModalOpen } = useStore();
+  const { setAccountModalOpen } = useModalsStore();
 
   const title = 'Connect wallet';
 

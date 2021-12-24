@@ -3,7 +3,7 @@ import SpecialContainer from 'components/SpecialContainer';
 import { ButtonPrimary, ButtonSecondary } from 'components/Button';
 import { wallet } from 'services/near';
 import { getUpperCase } from 'utils';
-import { useStore } from 'store';
+import { useStore, useModalsStore } from 'store';
 import Input from './Input';
 import Settings from './Settings';
 import {
@@ -19,10 +19,19 @@ import {
   SettingsBlock,
   SettingsLabel,
   Wallet,
+  GifLoading,
 } from './styles';
 
+const RenderSettings = ({ isSettingsOpen }: {isSettingsOpen:boolean}) => {
+  if (isSettingsOpen) {
+    return <Settings />;
+  }
+  return null;
+};
+
 export default function Swap() {
-  const { loading, setAccountModalOpen } = useStore();
+  const { loading } = useStore();
+  const { setAccountModalOpen } = useModalsStore();
 
   const [value, setValue] = useState<string>('');
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
@@ -59,6 +68,9 @@ export default function Swap() {
       <ExchangeBlock>
         <RefreshBlock>
           <PlaceHolderGif />
+
+          {/* <GifLoading /> */}
+
           Refresh
         </RefreshBlock>
         <ExchangeLabel>
@@ -75,7 +87,7 @@ export default function Swap() {
             <ArrowDown />
           </SettingsLabel>
         </SettingsHeader>
-        <Settings isActive={isSettingsOpen} />
+        <RenderSettings isSettingsOpen={isSettingsOpen} />
       </SettingsBlock>
       {isConnected
         ? <ButtonPrimary onClick={swapToken}>{title}</ButtonPrimary>

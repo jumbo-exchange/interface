@@ -9,9 +9,4 @@ export type StoreContextType = {
   setWallet: Dispatch<SetStateAction<SpecialWallet | null>>;
   loading: boolean;
   setLoading: Dispatch<SetStateAction<boolean>>
-
-  isAccountModalOpen: boolean;
-  setAccountModalOpen: Dispatch<SetStateAction<boolean>>;
-  isSearchModalOpen: {isOpen: boolean, tokenType: TokenType};
-  setSearchModalOpen: Dispatch<SetStateAction<{isOpen: boolean, tokenType: TokenType}>>;
 }

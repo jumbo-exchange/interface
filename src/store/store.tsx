@@ -13,10 +13,6 @@ const initialState: StoreContextType = {
   setWallet: () => {},
   loading: false,
   setLoading: () => {},
-  isAccountModalOpen: false,
-  setAccountModalOpen: () => {},
-  isSearchModalOpen: { isOpen: false, tokenType: TokenType.Output },
-  setSearchModalOpen: () => {},
 };
 
 const StoreContextHOC = createContext<StoreContextType>(initialState);
@@ -26,13 +22,6 @@ export const StoreContextProvider = (
 ) => {
   const [wallet, setWallet] = useState<SpecialWallet| null>(initialState.wallet);
   const [loading, setLoading] = useState<boolean>(initialState.loading);
-
-  const [isAccountModalOpen, setAccountModalOpen] = useState<boolean>(
-    initialState.isAccountModalOpen,
-  );
-  const [isSearchModalOpen, setSearchModalOpen] = useState<{isOpen: boolean, tokenType: TokenType}>(
-    initialState.isSearchModalOpen,
-  );
 
   const initialLoading = async () => {
     try {
@@ -59,10 +48,6 @@ export const StoreContextProvider = (
       setWallet,
       loading,
       setLoading,
-      isAccountModalOpen,
-      setAccountModalOpen,
-      isSearchModalOpen,
-      setSearchModalOpen,
     }}
     >
       {children}
