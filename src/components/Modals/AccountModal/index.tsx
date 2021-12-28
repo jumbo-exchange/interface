@@ -9,7 +9,7 @@ import { wallet as nearWallet } from 'services/near';
 import getConfig from 'services/config';
 import {
   Modal, Layout, ModalBlock, ModalTitle, ModalClose,
-} from './styles';
+} from '../styles';
 
 const NewModalBlock = styled(ModalBlock)`
   margin: 0 1.5rem .5rem 1.5rem;
@@ -23,7 +23,6 @@ const WalletRow = styled(ButtonFourth)`
   width: 100%;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
 `;
 
 const WalletTitle = styled.div`
@@ -83,22 +82,13 @@ export default function AccountModal() {
                 </WalletRow>
               )
               : (
-                <>
-                  <WalletRow onClick={() => nearWallet.requestSignIn(config.contractId)}>
-                    <WalletTitle>
-                      <img src={nearLogo} alt="logo" />
-                      Near
-                    </WalletTitle>
-                    <RightArrow />
-                  </WalletRow>
-                  <WalletRow onClick={() => nearWallet.requestSignIn(config.contractId)}>
-                    <WalletTitle>
-                      <img src={nearLogo} alt="logo" />
-                      Near
-                    </WalletTitle>
-                    <RightArrow />
-                  </WalletRow>
-                </>
+                <WalletRow onClick={() => nearWallet.requestSignIn(config.contractId)}>
+                  <WalletTitle>
+                    <img src={nearLogo} alt="logo" />
+                    Near
+                  </WalletTitle>
+                  <RightArrow />
+                </WalletRow>
               )}
           </NewModalBlock>
           {wallet && (

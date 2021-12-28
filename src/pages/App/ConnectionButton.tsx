@@ -25,11 +25,13 @@ const MobileNear = styled(LogoNear)`
 const Arrow = styled(ArrowDown)`
   margin-left: .453rem;
 `;
+
 const MobileArrow = styled(ArrowDown)`
   width: .594rem;
   height: .344rem;
   margin-left: .453rem;
 `;
+
 const PinkButtonThird = styled(ButtonThird)`
   background-color: ${({ theme }) => theme.pink};
   border-color: ${({ theme }) => theme.pink};

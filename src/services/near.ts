@@ -11,6 +11,7 @@ const CONTRACT_ID = config.contractId;
 export const near = new Near({
   keyStore: new keyStores.BrowserLocalStorageKeyStore(),
   ...config,
+  headers: {},
 });
 
 export const wallet = new SpecialWallet(near, CONTRACT_ID);

@@ -2,7 +2,6 @@ import React, { Dispatch, SetStateAction, useState } from 'react';
 import Swap from 'pages/Swap';
 import Footer from 'components/Footer';
 import { ReactComponent as JumboLogo } from 'assets/images/jumbo-logo.svg';
-
 import { isMobile } from 'utils/userAgent';
 import { StatusLink } from 'store';
 import {

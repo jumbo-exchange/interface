@@ -12,23 +12,23 @@ type ModalsStoreContextType = {
   setSearchModalOpen: Dispatch<SetStateAction<{isOpen: boolean, tokenType: TokenType}>>;
 }
 
-const initialState: ModalsStoreContextType = {
+export const initialModalsState: ModalsStoreContextType = {
   isAccountModalOpen: false,
   setAccountModalOpen: () => {},
   isSearchModalOpen: { isOpen: false, tokenType: TokenType.Output },
   setSearchModalOpen: () => {},
 };
 
-const ModalsStoreContextHOC = createContext<ModalsStoreContextType>(initialState);
+const ModalsStoreContextHOC = createContext<ModalsStoreContextType>(initialModalsState);
 
 export const ModalsContextProvider = (
   { children }:{ children: JSX.Element },
 ) => {
   const [isAccountModalOpen, setAccountModalOpen] = useState<boolean>(
-    initialState.isAccountModalOpen,
+    initialModalsState.isAccountModalOpen,
   );
   const [isSearchModalOpen, setSearchModalOpen] = useState<{isOpen: boolean, tokenType: TokenType}>(
-    initialState.isSearchModalOpen,
+    initialModalsState.isSearchModalOpen,
   );
 
   return (

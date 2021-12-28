@@ -2,9 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 import CurrencyInputPanel from 'components/CurrencyInputPanel';
 import tokenLogo from 'assets/images-app/ETH.svg';
+import Big from 'big.js';
+
 import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
-import { getUpperCase } from 'utils';
+import { formatAmount, getUpperCase } from 'utils';
+import { IToken, TokenType } from 'store';
 
 const Block = styled.div`
   display: flex;
@@ -109,11 +112,11 @@ const TokenContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  margin-left: .6rem;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: 1rem;
     line-height: 1.125rem;
   `}
-  transition: all 1s ease-out;
 
   :hover {
     cursor: pointer;
@@ -130,20 +133,44 @@ const ArrowDown = styled(IconArrowDown)`
   transition: all 1s ease-out;
 `;
 
+const getCurrentBalance = (
+  currentBalance: Big,
+  token: IToken | null,
+) => {
+  const newBalance = formatAmount(currentBalance.toFixed() ?? 0, token?.metadata.decimals);
+  if (newBalance !== '0') {
+    return new Big(newBalance).toFixed(3);
+  }
+  return 0;
+};
+
 export default function Input({
+  openModal,
+  token,
+  tokenType,
   value,
   setValue,
+  balance,
 }:
-  {
-    value: string,
-    setValue: any,
-  }) {
+{
+  openModal: (tokenType: TokenType) => void,
+  token: IToken | null,
+  tokenType: TokenType,
+  value: string,
+  setValue: any,
+  balance:string,
+}) {
+  const currentBalance = new Big(balance ?? 0);
   const setHalfAmount = () => {
-    console.log('setHalfAmount');
+    if (!balance) return;
+    const newBalance = currentBalance.div(2);
+    setValue(formatAmount(newBalance.toFixed(), token?.metadata.decimals));
   };
 
   const setMaxAmount = () => {
-    console.log('setMaxAmount');
+    if (!balance) return;
+    const newBalance = formatAmount(currentBalance.toFixed() ?? 0, token?.metadata.decimals);
+    setValue(newBalance);
   };
 
   return (
@@ -151,25 +178,31 @@ export default function Input({
       <InputLabel>
         <WalletInformation>
           <LogoWallet />
-          1234
+          {getCurrentBalance(currentBalance, token)}
         </WalletInformation>
-        <ButtonHalfWallet onClick={setHalfAmount}>
-          <span>HALF</span>
-        </ButtonHalfWallet>
-        <ButtonMaxWallet onClick={setMaxAmount}>
-          <span>MAX</span>
-        </ButtonMaxWallet>
+        {(tokenType === TokenType.Input) && (
+          <>
+            <ButtonHalfWallet onClick={setHalfAmount}>
+              <span>HALF</span>
+            </ButtonHalfWallet>
+            <ButtonMaxWallet onClick={setMaxAmount}>
+              <span>MAX</span>
+            </ButtonMaxWallet>
+          </>
+        )}
+
       </InputLabel>
       <InputContainer>
         <LogoContainer>
-          <img src={tokenLogo} alt="token" />
+          <img src={token?.metadata?.icon ?? tokenLogo} alt={token?.metadata.symbol} />
         </LogoContainer>
         <CurrencyInputPanel
           value={value}
           setValue={setValue}
+          disabled={tokenType === TokenType.Output}
         />
-        <TokenContainer>
-          {getUpperCase('ETH')}
+        <TokenContainer onClick={() => openModal(tokenType)}>
+          {getUpperCase(token?.metadata.symbol ?? '')}
           <ArrowDown />
         </TokenContainer>
       </InputContainer>
