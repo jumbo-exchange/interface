@@ -32,7 +32,7 @@ const TokenBlock = styled.div`
   & > img {
     width: 1.5rem;
     height: 1.5rem;
-    margin-right: .75rem;
+    margin-right: .5rem;
   }
   :hover {
     cursor: pointer;

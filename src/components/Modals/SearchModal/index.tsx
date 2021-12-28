@@ -12,6 +12,24 @@ import {
 import SearchRow from './SearchRow';
 import PopularToken from './PopularToken';
 
+const SearchModalContainer = styled(Modal)`
+  max-width: 420px;
+  max-height: 80vh;
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+    max-height: 90vh;
+    height: 90vh;
+    align-self: flex-end;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  `}
+`;
+
 const SearchInputBlock = styled(ModalBlock)`
   margin-top: 0;
 `;
@@ -46,14 +64,6 @@ const SearchInput = styled.input`
   ::placeholder {
     color: ${({ theme }) => theme.globalGreyOp04};
   }
-`;
-
-const SearchModalContainer = styled(Modal)`
-  max-width: 420px;
-  max-height: 80vh;
-  min-height: 80vh;
-  display: flex;
-  flex-direction: column;
 `;
 
 const SearchResults = styled(ModalBlock)`
