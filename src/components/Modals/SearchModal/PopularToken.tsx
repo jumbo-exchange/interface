@@ -7,7 +7,7 @@ import {
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  margin-bottom: .5rem;
+  padding: 0 .5rem .5rem .5rem;
 `;
 
 const Title = styled.div`

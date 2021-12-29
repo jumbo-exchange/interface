@@ -103,8 +103,7 @@ const SearchResults = styled(ModalBlock)`
   justify-content: flex-start;
   overflow: scroll;
   flex: 5;
-  margin-bottom: 0;
-  margin-top: 0;
+  margin: 0 1rem 0 1rem;
   & > div{
     width: 100%;
   }

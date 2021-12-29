@@ -1,19 +1,25 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import Big from 'big.js';
 import styled from 'styled-components';
 import { wallet } from 'services/near';
 import {
-  initialModalsState, IToken, useModalsStore, useStore,
+  initialModalsState, IToken, TokenType, useModalsStore, useStore,
 } from 'store';
 import { formatAmount } from 'utils';
 
-const SearchRowContainer = styled.div`
+interface ICurrentToken {
+  isActive?: boolean
+}
+
+const SearchRowContainer = styled.div<PropsWithChildren<ICurrentToken>>`
   min-height: 50px;
   width: 100%;
   display: flex;
   align-items: center;
-  cursor: pointer;
   margin-bottom: 1rem;
+  background-color: ${({ theme, isActive }) => (isActive ? theme.globalGreyOp01 : 'none')};
+  padding: 8px;
+  border-radius: 18px;
   & > img {
     width: 3rem;
     height: 3rem;
@@ -34,6 +40,9 @@ const SearchRowContainer = styled.div`
     }
   `}
   transition: all 1s ease;
+  :hover {
+    cursor: pointer;
+  }
 `;
 
 const SearchDescriptionBlock = styled.div`
@@ -114,11 +123,27 @@ const getCurrentPrice = (
   return '-';
 };
 
+const getCurrentToken = (
+  inputToken: IToken | null,
+  outputToken: IToken | null,
+  token: IToken | null,
+  tokenType: TokenType,
+) => {
+  if (inputToken === token && tokenType === TokenType.Input) {
+    return true;
+  } if (outputToken === token && tokenType === TokenType.Output) {
+    return true;
+  }
+  return false;
+};
+
 export default function SearchRow({ tokensArray }:{tokensArray: IToken[]}) {
   const isConnected = wallet.isSignedIn();
   const {
     loading,
     balances,
+    inputToken,
+    outputToken,
     setCurrentToken,
   } = useStore();
   const { isSearchModalOpen, setSearchModalOpen } = useModalsStore();
@@ -127,27 +152,31 @@ export default function SearchRow({ tokensArray }:{tokensArray: IToken[]}) {
 
   return (
     <>
-      {tokensArray.map((token) => (
-        <SearchRowContainer
-          key={token.contractId}
-          onClick={() => {
-            setCurrentToken(token.contractId, isSearchModalOpen.tokenType);
-            setSearchModalOpen(initialModalsState.isSearchModalOpen);
-          }}
-        >
-          <img src={token.metadata.icon} alt={token.metadata.symbol} />
-          <SearchDescriptionBlock>
-            <SearchTitle>
-              <div>{token.metadata.symbol}</div>
-              {isConnected && <div>{getCurrentBalance(balances, token)}</div>}
-            </SearchTitle>
-            <SearchSubtitle>
-              <div>{token.metadata.name}</div>
-              {isConnected && <div>{getCurrentPrice(balances, token)}</div>}
-            </SearchSubtitle>
-          </SearchDescriptionBlock>
-        </SearchRowContainer>
-      ))}
+      {tokensArray.map((token) => {
+        getCurrentToken(inputToken, outputToken, token, isSearchModalOpen.tokenType);
+        return (
+          <SearchRowContainer
+            key={token.contractId}
+            isActive={getCurrentToken(inputToken, outputToken, token, isSearchModalOpen.tokenType)}
+            onClick={() => {
+              setCurrentToken(token.contractId, isSearchModalOpen.tokenType);
+              setSearchModalOpen(initialModalsState.isSearchModalOpen);
+            }}
+          >
+            <img src={token.metadata.icon} alt={token.metadata.symbol} />
+            <SearchDescriptionBlock>
+              <SearchTitle>
+                <div>{token.metadata.symbol}</div>
+                {isConnected && <div>{getCurrentBalance(balances, token)}</div>}
+              </SearchTitle>
+              <SearchSubtitle>
+                <div>{token.metadata.name}</div>
+                {isConnected && <div>{getCurrentPrice(balances, token)}</div>}
+              </SearchSubtitle>
+            </SearchDescriptionBlock>
+          </SearchRowContainer>
+        );
+      })}
     </>
   );
 }
