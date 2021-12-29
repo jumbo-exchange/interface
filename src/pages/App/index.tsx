@@ -2,8 +2,9 @@ import React, { Dispatch, SetStateAction, useState } from 'react';
 import Swap from 'pages/Swap';
 import Footer from 'components/Footer';
 import { ReactComponent as JumboLogo } from 'assets/images/jumbo-logo.svg';
+import { ReactComponent as Loading } from 'assets/images-app/pure-svg-loading.svg';
 import { isMobile } from 'utils/userAgent';
-import { StatusLink } from 'store';
+import { StatusLink, useStore } from 'store';
 import {
   Container,
   Header,
@@ -11,6 +12,7 @@ import {
   LogoTitle,
   NavBar,
   NavButton,
+  GifContainer,
   Body,
 } from './styles';
 import ConnectionButton from './ConnectionButton';
@@ -53,7 +55,7 @@ function CurrentTab({ currentTab }: { currentTab: StatusLink }) {
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<StatusLink>(StatusLink.Swap);
-
+  const { loading } = useStore();
   return (
     <Container>
 
@@ -68,10 +70,17 @@ export default function App() {
         />
         <ConnectionButton />
       </Header>
-
-      <Body>
-        <CurrentTab currentTab={currentTab} />
-      </Body>
+      {loading
+        ? (
+          <GifContainer>
+            <Loading />
+          </GifContainer>
+        )
+        : (
+          <Body>
+            <CurrentTab currentTab={currentTab} />
+          </Body>
+        )}
       <Footer />
     </Container>
   );
