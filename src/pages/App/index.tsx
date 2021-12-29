@@ -1,10 +1,10 @@
-import React, { Dispatch, SetStateAction, useState } from 'react';
-import Swap from 'pages/Swap';
+import React, {
+  Dispatch, SetStateAction, useState, Suspense, lazy,
+} from 'react';
 import Footer from 'components/Footer';
 import { ReactComponent as JumboLogo } from 'assets/images/jumbo-logo.svg';
-import { ReactComponent as Loading } from 'assets/images-app/pure-svg-loading.svg';
 import { isMobile } from 'utils/userAgent';
-import { StatusLink, useStore } from 'store';
+import { StatusLink } from 'store';
 import {
   Container,
   Header,
@@ -12,10 +12,11 @@ import {
   LogoTitle,
   NavBar,
   NavButton,
-  GifContainer,
   Body,
 } from './styles';
 import ConnectionButton from './ConnectionButton';
+
+const Swap = lazy(() => import('pages/Swap'));
 
 interface INavigation {
   currentTab: StatusLink,
@@ -55,10 +56,9 @@ function CurrentTab({ currentTab }: { currentTab: StatusLink }) {
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<StatusLink>(StatusLink.Swap);
-  const { loading } = useStore();
+
   return (
     <Container>
-
       <Header>
         <LogoContainer>
           <JumboLogo />
@@ -70,17 +70,11 @@ export default function App() {
         />
         <ConnectionButton />
       </Header>
-      {loading
-        ? (
-          <GifContainer>
-            <Loading />
-          </GifContainer>
-        )
-        : (
-          <Body>
-            <CurrentTab currentTab={currentTab} />
-          </Body>
-        )}
+      <Body>
+        <Suspense fallback={<div>Loading...</div>}>
+          <CurrentTab currentTab={currentTab} />
+        </Suspense>
+      </Body>
       <Footer />
     </Container>
   );

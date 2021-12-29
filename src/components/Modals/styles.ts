@@ -35,12 +35,6 @@ export const Modal = styled.div`
     border-radius: 24px;
     z-index: -1;
   }
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-      min-width: 80%;
-      margin: 0 16px;
-      max-height: 100%;
-      width: 100%;
-  `}
 `;
 
 export const ModalBlock = styled.div`
@@ -61,6 +55,15 @@ export const ModalTitle = styled.h2`
   line-height: 1.188rem;
   margin-block-start: 0;
   margin-block-end: 0;
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    font-size: 1.5rem;
+    line-height: 1.75rem;
+  `}
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: 1rem;
+    line-height: 1.188rem;
+  `}
+  transition: all 1s ease;
 `;
 
 export const ModalClose = styled.div`
@@ -69,4 +72,19 @@ export const ModalClose = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    & > svg {
+      width: 25px;
+      height: 25px;
+    }
+  `}
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    & > svg {
+      width: 25px;
+      height: 25px;
+    }
+  `}
+  & > svg {
+    transition: all 1s ease;
+  }
 `;

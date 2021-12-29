@@ -13,11 +13,14 @@ import SearchRow from './SearchRow';
 import PopularToken from './PopularToken';
 
 const SearchModalContainer = styled(Modal)`
-  max-width: 420px;
+  width: 420px;
   max-height: 80vh;
   min-height: 80vh;
   display: flex;
   flex-direction: column;
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    width: 540px;
+  `}
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     max-width: 100%;
     width: 100%;
@@ -28,6 +31,7 @@ const SearchModalContainer = styled(Modal)`
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
   `}
+  transition: all 1s ease;
 `;
 
 const SearchInputBlock = styled(ModalBlock)`
@@ -42,6 +46,16 @@ const SearchInputContainer = styled.div`
   box-sizing: border-box;
   border-radius: 12px;
   padding: 12px;
+  
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    border-radius: 18px;
+    padding: 16px;
+  `}
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    border-radius: 12px;
+    padding: 12px;
+  `}
+  transition: all 1s ease;
   :focus-within {
     border: 1px solid ${({ theme }) => theme.pink};
   }
@@ -49,6 +63,15 @@ const SearchInputContainer = styled.div`
 
 const LogoSearchIcon = styled(SearchIcon)`
   margin-right: 12px;
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    width: 26px;
+    height: 26px;
+  `}
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    width: 18px;
+    height: 18px;
+  `}
+  transition: all 1s ease;
 `;
 
 const SearchInput = styled.input`
@@ -61,6 +84,15 @@ const SearchInput = styled.input`
   font-size: 1rem;
   line-height: 1.188rem;
   color: ${({ theme }) => theme.globalWhite};
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    font-size: 1.5rem;
+    line-height: 1.75rem;
+  `}
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: 1rem;
+    line-height: 1.188rem;
+  `}
+  transition: all 1s ease;
   ::placeholder {
     color: ${({ theme }) => theme.globalGreyOp04};
   }
@@ -73,7 +105,7 @@ const SearchResults = styled(ModalBlock)`
   flex: 5;
   margin-bottom: 0;
   margin-top: 0;
-  &>div{
+  & > div{
     width: 100%;
   }
 `;

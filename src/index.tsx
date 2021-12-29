@@ -12,6 +12,7 @@ import { StoreContextProvider, ModalsContextProvider } from 'store';
 import Landing from 'pages/Landing';
 import theme from 'theme';
 import useFullHeightHook from 'hooks/useFullHeightHook';
+import Modals from 'components/Modals';
 
 import App from 'pages/App';
 
@@ -22,10 +23,12 @@ const AppWrapper = ({ children }: {children: JSX.Element[]}) => {
     <ThemeProvider theme={theme}>
       <StoreContextProvider>
         <ModalsContextProvider>
-          <App />
-          {/* <Router>
+          <Modals>
+            <App />
+            {/* <Router>
         <Switch>{ children } </Switch>
       </Router> */}
+          </Modals>
         </ModalsContextProvider>
       </StoreContextProvider>
     </ThemeProvider>

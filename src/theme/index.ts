@@ -28,6 +28,7 @@ export interface ThemeColors {
 
   globalGreyOp04: string;
   globalGreyOp02: string;
+  globalGreyOp01: string;
 
   black: string;
   white: string;
@@ -63,6 +64,7 @@ export const colors: ThemeColors = {
 
   globalGreyOp04: '#4A515F',
   globalGreyOp02: '#353B49',
+  globalGreyOp01: '#2A313D',
 
   black: '#000000',
   white: '#ffffff',

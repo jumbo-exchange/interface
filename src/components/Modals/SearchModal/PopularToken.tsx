@@ -16,6 +16,17 @@ const Title = styled.div`
   font-size: .75rem;
   line-height: .875rem;
   margin-bottom: 1rem;
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    font-size: 1.125rem;
+    line-height: 1.313rem;
+    margin-bottom: 1.5rem;
+  `}
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: .75rem;
+    line-height: .875rem;
+    margin-bottom: 1rem;
+  `}
+  transition: all 1s ease;
 `;
 
 const TokensContainer = styled.div`
@@ -33,7 +44,28 @@ const TokenBlock = styled.div`
     width: 1.5rem;
     height: 1.5rem;
     margin-right: .5rem;
+    transition: all 1s ease;
   }
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    margin-right: 2.25rem;
+    margin-bottom: 2.25rem;
+    & > img {
+      width: 2.25rem;
+      height: 2.25rem;
+      margin-right: .75rem;
+    }
+  `}
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    margin-right: 1.5rem;
+    margin-bottom: 1.5rem;
+    & > img {
+      width: 1.5rem;
+      height: 1.5rem;
+      margin-right: .5rem;
+    }
+  `}
+  transition: all 1s ease;
   :hover {
     cursor: pointer;
   }
@@ -60,7 +92,7 @@ export default function PopularToken({ tokensArray } : {tokensArray: IToken[]}) 
       <TokensContainer>
         {tokensArray.map((token) => (
           <TokenBlock
-            key={token.metadata.symbol}
+            key={token.contractId}
             onClick={() => {
               setCurrentToken(token.contractId, isSearchModalOpen.tokenType);
               setSearchModalOpen(initialModalsState.isSearchModalOpen);

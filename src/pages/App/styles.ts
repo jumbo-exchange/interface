@@ -1,5 +1,4 @@
 import { PropsWithChildren } from 'react';
-
 import styled from 'styled-components';
 
 interface ICurrentTab {
@@ -93,13 +92,6 @@ export const NavButton = styled.div<PropsWithChildren<ICurrentTab>>`
     line-height: 1.188rem;
     margin: 0 8px;
   `}
-`;
-
-export const GifContainer = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 `;
 
 export const Body = styled.div`

@@ -19,7 +19,6 @@ import {
   SettingsBlock,
   SettingsLabel,
   Wallet,
-  GifLoading,
 } from './styles';
 
 const RenderSettings = ({ isSettingsOpen }: {isSettingsOpen:boolean}) => {
@@ -96,9 +95,6 @@ export default function Swap() {
       <ExchangeBlock>
         <RefreshBlock>
           <PlaceHolderGif />
-
-          {/* <GifLoading /> */}
-
           Refresh
         </RefreshBlock>
         <ExchangeLabel>

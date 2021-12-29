@@ -5,7 +5,6 @@ import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
 import { ReactComponent as Exchange } from 'assets/images-app/exchange.svg';
 import { ReactComponent as PlaceHolderLoader } from 'assets/images-app/placeholder-loader.svg';
-import { ReactComponent as Loading } from 'assets/images-app/loading.svg';
 
 interface ICurrent {
   isActive?: boolean
@@ -65,9 +64,6 @@ export const RefreshBlock = styled.div`
 `;
 
 export const PlaceHolderGif = styled(PlaceHolderLoader)`
-  margin-right: .438rem;
-`;
-export const GifLoading = styled(Loading)`
   margin-right: .438rem;
 `;
 
