@@ -2,6 +2,7 @@ import React, {
   createContext, useContext, useState,
   Dispatch, SetStateAction,
 } from 'react';
+import useDisableBodyScroll from 'hooks/useDisableBodyScroll';
 import { TokenType } from 'store';
 import Modals from 'components/Modals';
 
@@ -30,6 +31,7 @@ export const ModalsContextProvider = (
   const [isSearchModalOpen, setSearchModalOpen] = useState<{isOpen: boolean, tokenType: TokenType}>(
     initialModalsState.isSearchModalOpen,
   );
+  useDisableBodyScroll(isAccountModalOpen || isSearchModalOpen.isOpen);
 
   return (
     <ModalsStoreContextHOC.Provider value={{
