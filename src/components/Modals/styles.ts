@@ -9,6 +9,7 @@ export const Layout = styled.div`
   justify-content: center;
   align-items: center;
   background-color: ${({ theme }) => theme.layoutBlack};
+  overflow: hidden;
 `;
 
 export const Modal = styled.div`

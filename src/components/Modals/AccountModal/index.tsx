@@ -11,6 +11,10 @@ import {
   Modal, Layout, ModalBlock, ModalTitle, ModalClose,
 } from '../styles';
 
+const NewModal = styled(Modal)`
+  margin: 0 1rem;
+`;
+
 const NewModalBlock = styled(ModalBlock)`
   margin: 0 1.5rem .5rem 1.5rem;
   flex-direction: column;
@@ -61,7 +65,7 @@ export default function AccountModal() {
     <>
       {isAccountModalOpen && (
       <Layout onClick={() => setAccountModalOpen(false)}>
-        <Modal onClick={(e) => e.stopPropagation()}>
+        <NewModal onClick={(e) => e.stopPropagation()}>
           <ModalBlock>
             <ModalTitle>
               {headerTitle}
@@ -102,7 +106,7 @@ export default function AccountModal() {
             </ButtonSecondary>
           </ModalFooter>
           )}
-        </Modal>
+        </NewModal>
       </Layout>
       )}
     </>

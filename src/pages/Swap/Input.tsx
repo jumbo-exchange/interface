@@ -75,10 +75,16 @@ const InputContainer = styled.div`
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     padding: 10px 16px 10px 10px;
+  }
   `}
   :focus-within {
     border: 2px solid ${({ theme }) => theme.pink};
     padding: 11px 21px 11px 11px;
+
+    ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+      padding: 9px 15px 9px 9px;
+    }
+  `}
   }
 `;
 

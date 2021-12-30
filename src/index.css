@@ -4,6 +4,12 @@
   user-select: none;
 }
 
+html, body {
+  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
+  overflow: hidden;
+}
+
 body {
   margin: 0;
   /* background-color: #1B1B1C; */
@@ -13,16 +19,7 @@ body {
   /* background-image: url(./assets/images/intersect.svg); */
   background-position: top left;
   background-repeat: repeat;
-  padding:
-    env(safe-area-inset-top)
-    env(safe-area-inset-right)
-    env(safe-area-inset-bottom)
-    env(safe-area-inset-left);
-}
-
-html, body {
-  height: 100vh;
-  height: calc(var(--vh, 1vh) * 100);
+  overflow: scroll;
 }
 
 #root{

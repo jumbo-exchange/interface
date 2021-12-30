@@ -11,14 +11,13 @@ interface ICurrentToken {
   isActive?: boolean
 }
 
-const SearchRowContainer = styled.div<PropsWithChildren<ICurrentToken>>`
-  min-height: 50px;
+const Container = styled.div<PropsWithChildren<ICurrentToken>>`
+  min-height: 60px;
   width: 100%;
   display: flex;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: .5rem;
   background-color: ${({ theme, isActive }) => (isActive ? theme.globalGreyOp01 : 'none')};
-  padding: 8px;
   border-radius: 18px;
   & > img {
     width: 3rem;
@@ -26,14 +25,18 @@ const SearchRowContainer = styled.div<PropsWithChildren<ICurrentToken>>`
     transition: all 1s ease;
   }
   ${({ theme }) => theme.mediaWidth.upToMedium`
-    margin-bottom: 2.25rem;
+    margin-bottom: .75rem;
+    min-height: 90px;
+    border-radius: 27px;
     & > img {
       width: 4.5rem;
       height: 4.5rem;
     }
   `}
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    margin-bottom: 1rem;
+    min-height: 60px;
+    margin-bottom: .5rem;
+    border-radius: 18px;
     & > img {
       width: 3rem;
       height: 3rem;
@@ -43,6 +46,32 @@ const SearchRowContainer = styled.div<PropsWithChildren<ICurrentToken>>`
   :hover {
     cursor: pointer;
   }
+`;
+
+const SearchRowContainer = styled.div`
+  margin: .5rem;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  & > img {
+    width: 3rem;
+    height: 3rem;
+    transition: all 1s ease;
+  }
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    & > img {
+      width: 4.5rem;
+      height: 4.5rem;
+    }
+  `}
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    & > img {
+      width: 3rem;
+      height: 3rem;
+    }
+  `}
+  transition: all 1s ease;
 `;
 
 const SearchDescriptionBlock = styled.div`
@@ -155,26 +184,29 @@ export default function SearchRow({ tokensArray }:{tokensArray: IToken[]}) {
       {tokensArray.map((token) => {
         getCurrentToken(inputToken, outputToken, token, isSearchModalOpen.tokenType);
         return (
-          <SearchRowContainer
+          <Container
             key={token.contractId}
             isActive={getCurrentToken(inputToken, outputToken, token, isSearchModalOpen.tokenType)}
-            onClick={() => {
-              setCurrentToken(token.contractId, isSearchModalOpen.tokenType);
-              setSearchModalOpen(initialModalsState.isSearchModalOpen);
-            }}
           >
-            <img src={token.metadata.icon} alt={token.metadata.symbol} />
-            <SearchDescriptionBlock>
-              <SearchTitle>
-                <div>{token.metadata.symbol}</div>
-                {isConnected && <div>{getCurrentBalance(balances, token)}</div>}
-              </SearchTitle>
-              <SearchSubtitle>
-                <div>{token.metadata.name}</div>
-                {isConnected && <div>{getCurrentPrice(balances, token)}</div>}
-              </SearchSubtitle>
-            </SearchDescriptionBlock>
-          </SearchRowContainer>
+            <SearchRowContainer
+              onClick={() => {
+                setCurrentToken(token.contractId, isSearchModalOpen.tokenType);
+                setSearchModalOpen(initialModalsState.isSearchModalOpen);
+              }}
+            >
+              <img src={token.metadata.icon} alt={token.metadata.symbol} />
+              <SearchDescriptionBlock>
+                <SearchTitle>
+                  <div>{token.metadata.symbol}</div>
+                  {isConnected && <div>{getCurrentBalance(balances, token)}</div>}
+                </SearchTitle>
+                <SearchSubtitle>
+                  <div>{token.metadata.name}</div>
+                  {isConnected && <div>{getCurrentPrice(balances, token)}</div>}
+                </SearchSubtitle>
+              </SearchDescriptionBlock>
+            </SearchRowContainer>
+          </Container>
         );
       })}
     </>

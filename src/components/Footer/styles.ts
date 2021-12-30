@@ -2,8 +2,6 @@ import styled from 'styled-components';
 import { isMobile, isTablet } from 'utils/userAgent';
 
 export const Container = styled.footer`
-  transition: all 1s ease;
-
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -20,6 +18,7 @@ export const Container = styled.footer`
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     padding: 0 1rem 0.875rem 1rem;
   `}
+  transition: all 1s ease;
 `;
 
 export const ContainerMobile = styled.footer`

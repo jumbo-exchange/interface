@@ -12,6 +12,13 @@ import {
 import SearchRow from './SearchRow';
 import PopularToken from './PopularToken';
 
+const Container = styled.div`
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+  `}
+`;
 const SearchModalContainer = styled(Modal)`
   width: 420px;
   max-height: 80vh;
@@ -22,12 +29,9 @@ const SearchModalContainer = styled(Modal)`
     width: 540px;
   `}
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    max-width: 100%;
+    min-width: 100%;
     width: 100%;
     margin: 0;
-    max-height: 90vh;
-    height: 90vh;
-    align-self: flex-end;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
   `}
@@ -55,9 +59,15 @@ const SearchInputContainer = styled.div`
     border-radius: 12px;
     padding: 12px;
   `}
-  transition: all 1s ease;
   :focus-within {
-    border: 1px solid ${({ theme }) => theme.pink};
+    border: 2px solid ${({ theme }) => theme.pink};
+    padding: 11px;
+    ${({ theme }) => theme.mediaWidth.upToMedium`
+      padding: 15px;
+  `}
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+      padding: 11px;
+  `}
   }
 `;
 
@@ -98,11 +108,15 @@ const SearchInput = styled.input`
   }
 `;
 
+const PopularTokenResult = styled(ModalBlock)`
+  margin: 0 1rem 0 1rem;
+`;
+
 const SearchResults = styled(ModalBlock)`
   flex-direction: column;
   justify-content: flex-start;
   overflow: scroll;
-  flex: 5;
+  flex: 1;
   margin: 0 1rem 0 1rem;
   & > div{
     width: 100%;
@@ -141,30 +155,34 @@ export default function SearchModal() {
     <>
       {isSearchModalOpen.isOpen && (
       <Layout onClick={() => setSearchModalOpen(initialModalsState.isSearchModalOpen)}>
-        <SearchModalContainer onClick={(e) => e.stopPropagation()}>
-          <ModalBlock>
-            <ModalTitle>
-              Select a token
-            </ModalTitle>
-            <ModalClose onClick={() => setSearchModalOpen(initialModalsState.isSearchModalOpen)}>
-              <CloseIcon />
-            </ModalClose>
-          </ModalBlock>
-          <SearchInputBlock>
-            <SearchInputContainer>
-              <LogoSearchIcon />
-              <SearchInput
-                value={searchValue}
-                onChange={onChange}
-                placeholder="Search name or paste address"
-              />
-            </SearchInputContainer>
-          </SearchInputBlock>
-          <SearchResults>
-            <PopularToken tokensArray={tokensArray} />
-            <SearchRow tokensArray={tokensArray} />
-          </SearchResults>
-        </SearchModalContainer>
+        <Container>
+          <SearchModalContainer onClick={(e) => e.stopPropagation()}>
+            <ModalBlock>
+              <ModalTitle>
+                Select a token
+              </ModalTitle>
+              <ModalClose onClick={() => setSearchModalOpen(initialModalsState.isSearchModalOpen)}>
+                <CloseIcon />
+              </ModalClose>
+            </ModalBlock>
+            <SearchInputBlock>
+              <SearchInputContainer>
+                <LogoSearchIcon />
+                <SearchInput
+                  value={searchValue}
+                  onChange={onChange}
+                  placeholder="Search name or paste address"
+                />
+              </SearchInputContainer>
+            </SearchInputBlock>
+            <PopularTokenResult>
+              <PopularToken tokensArray={tokensArray} />
+            </PopularTokenResult>
+            <SearchResults>
+              <SearchRow tokensArray={tokensArray} />
+            </SearchResults>
+          </SearchModalContainer>
+        </Container>
       </Layout>
       )}
     </>

@@ -8,6 +8,16 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0 .5rem .5rem .5rem;
+  position: relative;
+  ::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background-color: ${({ theme }) => theme.globalGreyOp04};
+  }
 `;
 
 const Title = styled.div`
@@ -15,16 +25,13 @@ const Title = styled.div`
   font-weight: 500;
   font-size: .75rem;
   line-height: .875rem;
-  margin-bottom: 1rem;
   ${({ theme }) => theme.mediaWidth.upToMedium`
     font-size: 1.125rem;
     line-height: 1.313rem;
-    margin-bottom: 1.5rem;
   `}
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: .75rem;
     line-height: .875rem;
-    margin-bottom: 1rem;
   `}
   transition: all 1s ease;
 `;
@@ -39,7 +46,7 @@ const TokenBlock = styled.div`
   display: flex;
   align-items: center;
   margin-right: 1.5rem;
-  margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
   & > img {
     width: 1.5rem;
     height: 1.5rem;
@@ -49,7 +56,7 @@ const TokenBlock = styled.div`
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     margin-right: 2.25rem;
-    margin-bottom: 2.25rem;
+    margin-top: 2.25rem;
     & > img {
       width: 2.25rem;
       height: 2.25rem;
@@ -58,7 +65,7 @@ const TokenBlock = styled.div`
   `}
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     margin-right: 1.5rem;
-    margin-bottom: 1.5rem;
+    margin-top: 1.5rem;
     & > img {
       width: 1.5rem;
       height: 1.5rem;

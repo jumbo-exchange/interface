@@ -54,6 +54,7 @@ export default function Swap() {
   const openModal = useCallback(
     (tokenType: TokenType) => {
       setSearchModalOpen({ isOpen: true, tokenType });
+      setIsSettingsOpen(false);
     },
     [],
   );
@@ -116,7 +117,11 @@ export default function Swap() {
       {isConnected
         ? <ButtonPrimary onClick={swapToken}>{title}</ButtonPrimary>
         : (
-          <ButtonSecondary onClick={() => setAccountModalOpen(true)}>
+          <ButtonSecondary onClick={() => {
+            setAccountModalOpen(true);
+            setIsSettingsOpen(false);
+          }}
+          >
             <Wallet />
             {title}
           </ButtonSecondary>

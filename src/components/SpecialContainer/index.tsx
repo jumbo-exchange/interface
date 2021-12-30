@@ -32,8 +32,7 @@ const Container = styled.div`
     margin: 0 1rem 0 1rem;
   `}
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-
-    margin: 0 1rem 10rem 1rem;
+    margin: 0 1rem;
     padding: 25px 16px 16px 16px;
   `}
   transition: all 1s ease-out;
