@@ -17,6 +17,7 @@ import {
 import ConnectionButton from './ConnectionButton';
 
 const Swap = lazy(() => import('pages/Swap'));
+const Pool = lazy(() => import('pages/Pool'));
 
 interface INavigation {
   currentTab: StatusLink,
@@ -46,7 +47,7 @@ const Navigation = ({ currentTab, setCurrentTab }:INavigation) => (
 function CurrentTab({ currentTab }: { currentTab: StatusLink }) {
   switch (currentTab) {
     case StatusLink.Pool:
-      return <p>Pool</p>;
+      return <Pool />;
     case StatusLink.Farm:
       return <p>Farm</p>;
     default:
@@ -55,7 +56,7 @@ function CurrentTab({ currentTab }: { currentTab: StatusLink }) {
 }
 
 export default function App() {
-  const [currentTab, setCurrentTab] = useState<StatusLink>(StatusLink.Swap);
+  const [currentTab, setCurrentTab] = useState<StatusLink>(StatusLink.Pool);
 
   return (
     <Container>

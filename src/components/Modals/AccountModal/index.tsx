@@ -13,6 +13,7 @@ import {
 
 const NewModal = styled(Modal)`
   margin: 0 1rem;
+  min-width: 360px;
 `;
 
 const NewModalBlock = styled(ModalBlock)`

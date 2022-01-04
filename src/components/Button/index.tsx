@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import styled from 'styled-components';
 
 export enum ButtonVariant {
@@ -6,6 +6,10 @@ export enum ButtonVariant {
   Secondary,
   Third,
   Fourth,
+}
+
+interface IFilterButton {
+  isActive?: boolean
 }
 
 export const ButtonPrimary = styled.button`
@@ -61,7 +65,21 @@ export const ButtonFourth = styled(ButtonPrimary)`
     background: ${({ theme }) => theme.globalGreyOp04};
     border: none;
   }
+`;
 
+export const FilterButton = styled.button<PropsWithChildren<IFilterButton>>`
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 17px;
+  color: ${({ theme, isActive }) => (isActive ? theme.globalWhite : theme.globalGrey)};
+  border: none;
+  background: ${({ theme, isActive }) => (isActive ? theme.globalGreyOp02 : 'none')};
+  border-radius: 4px;
+  padding: 2px 4px;
+  :hover {
+    cursor: ${({ isActive }) => (isActive ? 'default' : 'pointer')};
+  }
 `;
 
 export function Button({ variant }: { variant: ButtonVariant }) {

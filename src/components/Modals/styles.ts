@@ -81,8 +81,8 @@ export const ModalClose = styled.div`
   `}
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     & > svg {
-      width: 25px;
-      height: 25px;
+      width: 16px;
+      height: 17px;
     }
   `}
   & > svg {
