@@ -1,3 +1,7 @@
+import { ReactComponent as JumboLogo } from 'assets/images/jumbo-logo.svg';
+import { ReactComponent as DocsLogo } from 'assets/images/docs-icon.svg';
+import { docsLink } from 'utils/constants';
+import { isMobile } from 'utils/userAgent';
 import styled from 'styled-components';
 
 const HeaderContainer = styled.header`
@@ -104,12 +108,26 @@ const ButtonOpenApp = styled.button`
   }
 `;
 
-const HeaderStyles = {
-  LogoTitle,
-  InformationContainer,
-  DocsButton,
-  LogoContainer,
-  HeaderContainer,
-  ButtonOpenApp,
-};
-export default HeaderStyles;
+export default function Header() {
+  return (
+    <HeaderContainer>
+      <LogoContainer>
+        <JumboLogo />
+        {isMobile ? null : (<LogoTitle>jumbo</LogoTitle>)}
+      </LogoContainer>
+      <InformationContainer>
+        <DocsButton
+          href={docsLink}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <DocsLogo />
+          <span>Read</span> Docs
+        </DocsButton>
+        <ButtonOpenApp>
+          Open App
+        </ButtonOpenApp>
+      </InformationContainer>
+    </HeaderContainer>
+  );
+}

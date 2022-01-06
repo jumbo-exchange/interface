@@ -19,6 +19,7 @@ const Container = styled.div`
     width: 100%;
   `}
 `;
+
 const SearchModalContainer = styled(Modal)`
   width: 420px;
   max-height: 80vh;
@@ -115,7 +116,7 @@ const PopularTokenResult = styled(ModalBlock)`
 const SearchResults = styled(ModalBlock)`
   flex-direction: column;
   justify-content: flex-start;
-  overflow: scroll;
+  overflow-x: hidden;
   flex: 1;
   margin: 0 1rem 0 1rem;
   & > div{

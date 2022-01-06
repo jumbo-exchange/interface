@@ -32,12 +32,17 @@ const volume = [
 ];
 
 export default function PoolCard({ pool } : {pool:IPool}) {
-  const { tokens } = useStore();
+  const {
+    tokens,
+    setInputToken,
+    setOutputToken,
+  } = useStore();
   const { setLiquidityModalOpen } = useModalsStore();
 
   const [inputToken, outputToken] = pool.tokenAccountIds;
   const tokenInput = tokens[inputToken] ?? null;
   const tokenOutput = tokens[outputToken] ?? null;
+
   if (!tokenInput || !tokenOutput) return null;
 
   return (
@@ -69,7 +74,11 @@ export default function PoolCard({ pool } : {pool:IPool}) {
         </BlockVolume>
         <BlockButton>
           <ButtonPrimary
-            onClick={() => setLiquidityModalOpen(true)}
+            onClick={() => {
+              setInputToken(tokenInput);
+              setOutputToken(tokenOutput);
+              setLiquidityModalOpen(true);
+            }}
           >
             Add Liquidity
           </ButtonPrimary>

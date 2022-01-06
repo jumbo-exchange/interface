@@ -61,21 +61,21 @@ export const StoreContextProvider = (
     if (tokenType === TokenType.Output) {
       const outputTokenData = tokens[tokenAddress] ?? null;
       setOutputToken(outputTokenData);
-      const availablePool = pools.filter((pool) => pool.tokenAccountIds.includes(tokenAddress)
-      && pool.tokenAccountIds.includes(inputToken.contractId)
-      && inputToken.contractId !== tokenAddress);
-      if (availablePool.length) {
-        setCurrentPool(availablePool[0]);
-      }
+      // const availablePool = pools.filter((pool) => pool.tokenAccountIds.includes(tokenAddress)
+      // && pool.tokenAccountIds.includes(inputToken.contractId)
+      // && inputToken.contractId !== tokenAddress);
+      // if (availablePool.length) {
+      //   setCurrentPool(availablePool[0]);
+      // }
     } else {
       const inputTokenData = tokens[tokenAddress] ?? null;
       setInputToken(inputTokenData);
-      const availablePool = pools.filter((pool) => pool.tokenAccountIds.includes(tokenAddress)
-      && pool.tokenAccountIds.includes(outputToken.contractId)
-      && outputToken.contractId !== tokenAddress);
-      if (availablePool.length) {
-        setCurrentPool(availablePool[0]);
-      }
+    //   const availablePool = pools.filter((pool) => pool.tokenAccountIds.includes(tokenAddress)
+    //   && pool.tokenAccountIds.includes(outputToken.contractId)
+    //   && outputToken.contractId !== tokenAddress);
+    //   if (availablePool.length) {
+    //     setCurrentPool(availablePool[0]);
+    //   }
     }
   };
 
@@ -130,8 +130,6 @@ export const StoreContextProvider = (
       setOutputToken(outputTokenData);
       const inputTokenData = tokens[initialPool.tokenAccountIds[1]] ?? null;
       setInputToken(inputTokenData);
-
-      setCurrentPool(initialPool);
     }
   }, [pools.length]);
 

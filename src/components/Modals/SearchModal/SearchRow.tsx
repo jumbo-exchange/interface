@@ -16,7 +16,7 @@ const Container = styled.div<PropsWithChildren<ICurrentToken>>`
   width: 100%;
   display: flex;
   align-items: center;
-  margin-bottom: .5rem;
+  margin: .25rem 0;
   background-color: ${({ theme, isActive }) => (isActive ? theme.globalGreyOp01 : 'none')};
   border-radius: 18px;
   & > img {
@@ -25,7 +25,7 @@ const Container = styled.div<PropsWithChildren<ICurrentToken>>`
     transition: all 1s ease;
   }
   ${({ theme }) => theme.mediaWidth.upToMedium`
-    margin-bottom: .75rem;
+    margin-bottom: .375rem 0;
     min-height: 90px;
     border-radius: 27px;
     & > img {
@@ -35,7 +35,7 @@ const Container = styled.div<PropsWithChildren<ICurrentToken>>`
   `}
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     min-height: 60px;
-    margin-bottom: .5rem;
+    margin: .25rem 0;
     border-radius: 18px;
     & > img {
       width: 3rem;
