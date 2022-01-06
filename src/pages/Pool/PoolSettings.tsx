@@ -96,47 +96,45 @@ const Loading = styled(PlaceHolderLoader)`
 `;
 
 const Toggle = styled.div`
-  cursor: pointer;
-  display: inline-block;
+  display: flex;
+
 `;
 
 const LabelCheckbox = styled.label`
   cursor: pointer;
-  display: inline-block;
-`;
-
-const ToggleCheckbox = styled.input`
-  position: absolute;
-  visibility: hidden;
-  :checked{
-    background: $green;
-    ::before {
-      left: 30px;
-    }
+  display: flex;
+  & > input {
+    position: absolute;
+    visibility: hidden;
   }
 `;
 
 const ToggleSwitch = styled.div`
   display: inline-block;
-  background: #ccc;
-  border-radius: 16px;
-  width: 58px;
-  height: 32px;
+  background: ${({ theme }) => theme.globalGrey};
+  width: 32px;
+  height: 16px;
   position: relative;
-  vertical-align: middle;
+  border-radius: 8px;
   transition: background 0.25s;
-  ::before {
-    content: '';
+  &:before {
+    content: "";
     display: block;
-    background: linear-gradient(to bottom, #fff 0%,#eee 100%);
+    background: ${({ theme }) => theme.globalWhite};
     border-radius: 50%;
-    box-shadow: 0 0 0 1px rgba(0,0,0,0.25);
-    width: 24px;
-    height: 24px;
+    width: 12px;
+    height: 12px;
     position: absolute;
-    top: 4px;
-    left: 4px;
+    top: 2px;
+    left: 3px;
     transition: left 0.25s;
+  }
+  #toggle:checked + & {
+    background: ${({ theme }) => theme.globalGreen0p02};
+    &:before {
+      background: ${({ theme }) => theme.globalGreen};
+      left: 18px;
+    }
   }
 `;
 
@@ -155,7 +153,7 @@ const filters = [
   },
 ];
 
-export default function Settings() {
+export default function PoolSettings() {
   return (
     <Container>
       <SearchInputBlock>
@@ -188,7 +186,7 @@ export default function Settings() {
         <Title>Smart Pools <LogoInfo /></Title>
         <Toggle>
           <LabelCheckbox htmlFor="toggle">
-            <ToggleCheckbox id="toggle" type="checkbox" />
+            <input id="toggle" type="checkbox" defaultChecked />
             <ToggleSwitch />
           </LabelCheckbox>
         </Toggle>

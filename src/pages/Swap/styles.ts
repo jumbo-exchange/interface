@@ -1,5 +1,6 @@
 import { PropsWithChildren } from 'react';
 import styled from 'styled-components';
+import { SpecialContainer } from 'components/SpecialContainer';
 
 import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
@@ -9,6 +10,10 @@ import { ReactComponent as PlaceHolderLoader } from 'assets/images-app/placehold
 interface ICurrent {
   isActive?: boolean
 }
+
+export const Container = styled(SpecialContainer)`
+  max-width: 500px;
+`;
 
 export const ActionContainer = styled.div`
   display: flex;

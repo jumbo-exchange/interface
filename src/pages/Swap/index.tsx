@@ -1,12 +1,12 @@
 import React, { useCallback, useState } from 'react';
-import SpecialContainer from 'components/SpecialContainer';
 import { ButtonPrimary, ButtonSecondary } from 'components/Button';
 import { wallet } from 'services/near';
 import { getUpperCase } from 'utils';
 import { useStore, useModalsStore, TokenType } from 'store';
 import Input from './Input';
-import Settings from './Settings';
+import SwapSettings from './SwapSettings';
 import {
+  Container,
   ActionContainer,
   ArrowDown,
   ChangeTokenContainer,
@@ -23,7 +23,7 @@ import {
 
 const RenderSettings = ({ isSettingsOpen }: {isSettingsOpen:boolean}) => {
   if (isSettingsOpen) {
-    return <Settings />;
+    return <SwapSettings />;
   }
   return null;
 };
@@ -70,7 +70,7 @@ export default function Swap() {
   };
 
   return (
-    <SpecialContainer>
+    <Container>
       <ActionContainer>
         <Input
           openModal={openModal}
@@ -126,6 +126,6 @@ export default function Swap() {
             {title}
           </ButtonSecondary>
         )}
-    </SpecialContainer>
+    </Container>
   );
 }

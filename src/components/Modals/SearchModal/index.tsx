@@ -7,7 +7,7 @@ import {
   initialModalsState, IToken, useModalsStore, useStore,
 } from 'store';
 import {
-  Layout, Modal, ModalBlock, ModalTitle, ModalClose,
+  Layout, Modal, ModalBlock, ModalTitle, ModalIcon,
 } from '../styles';
 import SearchRow from './SearchRow';
 import PopularToken from './PopularToken';
@@ -161,9 +161,9 @@ export default function SearchModal() {
               <ModalTitle>
                 Select a token
               </ModalTitle>
-              <ModalClose onClick={() => setSearchModalOpen(initialModalsState.isSearchModalOpen)}>
+              <ModalIcon onClick={() => setSearchModalOpen(initialModalsState.isSearchModalOpen)}>
                 <CloseIcon />
-              </ModalClose>
+              </ModalIcon>
             </ModalBlock>
             <SearchInputBlock>
               <SearchInputContainer>

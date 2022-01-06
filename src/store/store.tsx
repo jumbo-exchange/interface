@@ -11,7 +11,7 @@ import getConfig from 'services/config';
 import SpecialWallet, { createContract } from 'services/wallet';
 
 const config = getConfig();
-const INITIAL_POOL_ID = 1;
+const INITIAL_POOL_ID = 0;
 
 const initialState: StoreContextType = {
   loading: false,

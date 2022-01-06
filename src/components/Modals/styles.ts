@@ -67,7 +67,7 @@ export const ModalTitle = styled.h2`
   transition: all 1s ease;
 `;
 
-export const ModalClose = styled.div`
+export const ModalIcon = styled.div`
   cursor: pointer;
   display: flex;
   flex-direction: row;

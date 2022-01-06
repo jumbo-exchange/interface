@@ -56,7 +56,7 @@ function CurrentTab({ currentTab }: { currentTab: StatusLink }) {
 }
 
 export default function App() {
-  const [currentTab, setCurrentTab] = useState<StatusLink>(StatusLink.Pool);
+  const [currentTab, setCurrentTab] = useState<StatusLink>(StatusLink.Swap);
 
   return (
     <Container>

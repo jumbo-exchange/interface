@@ -54,7 +54,7 @@ const Label = styled.p<PropsWithChildren<IColor>>`
   margin: 0;
 `;
 
-export default function Settings() {
+export default function SwapSettings() {
   const settingsArray = [
     {
       title: 'Minimum Recieved',
@@ -82,7 +82,7 @@ export default function Settings() {
     <Container>
       <RouteBlock>
         <Title>Route <LogoInfo /> </Title>
-        <div> ETH {'>'} USTD {'>'} NEAR </div>
+        <div> ETH {'>'} USDT {'>'} NEAR </div>
       </RouteBlock>
       {settingsArray.map(({ title, label, color }) => (
         <Row key={title}>

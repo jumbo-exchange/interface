@@ -1,5 +1,4 @@
 import React from 'react';
-import SpecialContainer from 'components/SpecialContainer';
 import { FilterButton } from 'components/Button';
 import {
   Container,
@@ -8,9 +7,9 @@ import {
   InfoBLock,
   TitleInfo,
   LabelInfo,
-  ResultBlock,
 } from './styles';
-import Settings from './Settings';
+import PoolSettings from './PoolSettings';
+import PoolResult from './PoolResult';
 
 const filters = [
   {
@@ -64,23 +63,21 @@ export default function Pool() {
         ))}
       </FilterBlock>
       <InformationBlock>
-        <SpecialContainer>
-          {mainInfo.map((el) => (
-            <InfoBLock
-              key={el.title}
-            >
-              <TitleInfo>
-                {el.title}
-              </TitleInfo>
-              <LabelInfo>
-                {el.label}
-              </LabelInfo>
-            </InfoBLock>
-          ))}
-        </SpecialContainer>
+        {mainInfo.map((el) => (
+          <InfoBLock
+            key={el.title}
+          >
+            <TitleInfo>
+              {el.title}
+            </TitleInfo>
+            <LabelInfo>
+              {el.label}
+            </LabelInfo>
+          </InfoBLock>
+        ))}
       </InformationBlock>
-      <Settings />
-      <ResultBlock />
+      <PoolSettings />
+      <PoolResult />
     </Container>
   );
 }

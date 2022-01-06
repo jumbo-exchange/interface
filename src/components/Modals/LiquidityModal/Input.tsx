@@ -5,7 +5,6 @@ import tokenLogo from 'assets/images-app/placeholder-token.svg';
 import Big from 'big.js';
 
 import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
-import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
 import { formatAmount, getUpperCase } from 'utils';
 import { IToken, TokenType } from 'store';
 
@@ -17,7 +16,7 @@ const Block = styled.div`
 const InputLabel = styled.div`
   display: flex;
   justify-content: space-between;
-  margin: 0 .8rem .6rem;
+  margin: 0 .875rem 1rem;
 `;
 
 const WalletInformation = styled.div`
@@ -27,14 +26,12 @@ const WalletInformation = styled.div`
   align-items: center;
   font-style: normal;
   font-weight: normal;
-  font-size: 0.75rem;
-  line-height: .875rem;
+  font-size: 1rem;
+  line-height: 1.188rem;
 `;
 
 const LogoWallet = styled(WalletImage)`
   margin-right: 0.438rem;
-  width: 16px;
-  height: 12px;
 `;
 
 const ButtonHalfWallet = styled.button`
@@ -47,9 +44,9 @@ const ButtonHalfWallet = styled.button`
     align-items: center;
     text-align: right;
     font-style: normal;
-    font-weight: normal;
-    font-size: 0.75rem;
-    line-height: .875rem;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 21px;
     color: ${({ theme }) => theme.globalGrey};
   }
   :hover {
@@ -110,10 +107,9 @@ const LogoContainer = styled.div`
 const TokenContainer = styled.div`
   flex: 1;
   font-style: normal;
-  font-weight: normal;
-  font-size: 2rem;
-  line-height: 2rem;
-  text-align: right;
+  font-weight: 500;
+  font-size: 1.5rem;
+  line-height: 1.75rem;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -122,20 +118,6 @@ const TokenContainer = styled.div`
     font-size: 1rem;
     line-height: 1.125rem;
   `}
-
-  :hover {
-    cursor: pointer;
-  }
-`;
-
-const ArrowDown = styled(IconArrowDown)`
-  margin-left: 0.875rem;
-
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    width: .594rem;
-    height: .344rem;
-  `}
-  transition: all 1s ease-out;
 `;
 
 const getCurrentBalance = (
@@ -150,7 +132,6 @@ const getCurrentBalance = (
 };
 
 export default function Input({
-  openModal,
   token,
   tokenType,
   value,
@@ -158,7 +139,6 @@ export default function Input({
   balance,
 }:
 {
-  openModal: (tokenType: TokenType) => void,
   token: IToken | null,
   tokenType: TokenType,
   value: string,
@@ -206,9 +186,8 @@ export default function Input({
           setValue={setValue}
           disabled={tokenType === TokenType.Output}
         />
-        <TokenContainer onClick={() => openModal(tokenType)}>
+        <TokenContainer>
           {getUpperCase(token?.metadata.symbol ?? '')}
-          <ArrowDown />
         </TokenContainer>
       </InputContainer>
     </Block>

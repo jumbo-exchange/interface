@@ -8,7 +8,7 @@ import { ButtonSecondary, ButtonFourth } from 'components/Button';
 import { wallet as nearWallet } from 'services/near';
 import getConfig from 'services/config';
 import {
-  Modal, Layout, ModalBlock, ModalTitle, ModalClose,
+  Modal, Layout, ModalBlock, ModalTitle, ModalIcon,
 } from '../styles';
 
 const NewModal = styled(Modal)`
@@ -71,9 +71,9 @@ export default function AccountModal() {
             <ModalTitle>
               {headerTitle}
             </ModalTitle>
-            <ModalClose onClick={() => setAccountModalOpen(false)}>
+            <ModalIcon onClick={() => setAccountModalOpen(false)}>
               <CloseIcon />
-            </ModalClose>
+            </ModalIcon>
           </ModalBlock>
           <NewModalBlock>
             {wallet

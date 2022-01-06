@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { SpecialContainer } from 'components/SpecialContainer';
 
 export const Container = styled.div`
   display: flex;
@@ -18,17 +19,15 @@ export const FilterBlock = styled.div`
   }
 `;
 
-export const InformationBlock = styled.div`
+export const InformationBlock = styled(SpecialContainer)`
+  max-width: 736px;
   width: 100%;
-  & > div {
-    max-width: 736px;
-    width: 100%;
-    flex-direction: row;
+  flex-direction: row;
+  border-radius: 12px;
+  justify-content: space-between;
+  margin: 0;
+  ::before{
     border-radius: 12px;
-    justify-content: space-between;
-    ::before{
-      border-radius: 12px;
-    }
   }
 `;
 
@@ -53,5 +52,3 @@ export const LabelInfo = styled.div`
   font-size: 1rem;
   line-height: 1.188rem;
 `;
-
-export const ResultBlock = styled.div``;

@@ -1,11 +1,11 @@
-import React from 'react';
 import styled from 'styled-components';
 
-const Container = styled.div`
+// eslint-disable-next-line import/prefer-default-export
+export const SpecialContainer = styled.div`
   position: relative;
   background-color: ${({ theme }) => theme.backgroundCard};
 
-  max-width: 500px;
+  max-width: 100%;
   min-width: 310px;
   height: fit-content;
 
@@ -37,11 +37,3 @@ const Container = styled.div`
   `}
   transition: all 1s ease-out;
 `;
-
-export default function SpecialContainer({ children }: {children: JSX.Element[]}) {
-  return (
-    <Container>
-      {children}
-    </Container>
-  );
-}
