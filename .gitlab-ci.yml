@@ -1,4 +1,10 @@
+stages:
+  - build
+  - deploy
+
 docker-build-prod:
+  environment:
+    name: production
   image: docker:latest
   stage: build
   services:
@@ -11,7 +17,20 @@ docker-build-prod:
   only:
       - main
 
+deploy-prod:
+  environment:
+    name: production
+  image: alpine:3
+  stage: deploy
+  script:
+    - wget --post-data '' "$DEPLOY_TRIGGER_URL_STAGE"
+  when: manual
+  only:
+    - main
+
 docker-build-stage:
+  environment:
+    name: staging
   image: docker:latest
   stage: build
   services:
@@ -24,3 +43,13 @@ docker-build-stage:
     - curl -X POST "$DEPLOY_TRIGGER_URL_STAGE"
   only:
       - stage
+
+deploy-stage:
+  environment:
+    name: staging
+  image: alpine:3
+  stage: deploy
+  script:
+    - wget --post-data '' "$DEPLOY_TRIGGER_URL_STAGE"
+  only:
+    - stage

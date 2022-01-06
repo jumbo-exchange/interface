@@ -9,7 +9,7 @@ export default function Header() {
     <HeaderStyles.HeaderContainer>
       <HeaderStyles.LogoContainer>
         <JumboLogo />
-        <HeaderStyles.LogoTitle>Jumbo</HeaderStyles.LogoTitle>
+        <HeaderStyles.LogoTitle>jumbo</HeaderStyles.LogoTitle>
       </HeaderStyles.LogoContainer>
       <HeaderStyles.InformationContainer>
         <HeaderStyles.DocsButton
