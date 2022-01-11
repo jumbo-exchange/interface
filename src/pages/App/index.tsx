@@ -6,6 +6,10 @@ import { ReactComponent as JumboLogo } from 'assets/images/jumbo-logo.svg';
 import { isMobile } from 'utils/userAgent';
 import { StatusLink } from 'store';
 import {
+  Route, Routes, useMatch, useResolvedPath, Link,
+} from 'react-router-dom';
+import type { LinkProps } from 'react-router-dom';
+import {
   Container,
   Header,
   LogoContainer,
@@ -19,45 +23,24 @@ import ConnectionButton from './ConnectionButton';
 const Swap = lazy(() => import('pages/Swap'));
 const Pool = lazy(() => import('pages/Pool'));
 
-interface INavigation {
-  currentTab: StatusLink,
-  setCurrentTab: Dispatch<SetStateAction<StatusLink>>,
-}
+function CustomLink({
+  children, to,
+}: LinkProps) {
+  const resolved = useResolvedPath(to);
+  const match = useMatch({ path: resolved.pathname, end: true });
 
-const Navigation = ({ currentTab, setCurrentTab }:INavigation) => (
-  <NavBar>
-    <NavButton
-      isActive={currentTab === StatusLink.Swap}
-      onClick={() => setCurrentTab(StatusLink.Swap)}
-    >Swap
-    </NavButton>
-    <NavButton
-      isActive={currentTab === StatusLink.Pool}
-      onClick={() => setCurrentTab(StatusLink.Pool)}
-    >Pool
-    </NavButton>
-    <NavButton
-      isActive={currentTab === StatusLink.Farm}
-      onClick={() => setCurrentTab(StatusLink.Farm)}
-    >Farm
-    </NavButton>
-  </NavBar>
-);
-
-function CurrentTab({ currentTab }: { currentTab: StatusLink }) {
-  switch (currentTab) {
-    case StatusLink.Pool:
-      return <Pool />;
-    case StatusLink.Farm:
-      return <p>Farm</p>;
-    default:
-      return <Swap />;
-  }
+  return (
+    <Link to={to}>
+      <NavButton
+        isActive={Boolean(match)}
+      >
+        {children}
+      </NavButton>
+    </Link>
+  );
 }
 
 export default function App() {
-  const [currentTab, setCurrentTab] = useState<StatusLink>(StatusLink.Pool);
-
   return (
     <Container>
       <Header>
@@ -65,15 +48,25 @@ export default function App() {
           <JumboLogo />
           {isMobile ? null : (<LogoTitle>jumbo</LogoTitle>)}
         </LogoContainer>
-        <Navigation
-          currentTab={currentTab}
-          setCurrentTab={setCurrentTab}
-        />
+        <NavBar>
+          <CustomLink to="swap">
+            Swap
+          </CustomLink>
+          <CustomLink to="pool">
+            Pool
+          </CustomLink>
+          <CustomLink to="farm">
+            Farm
+          </CustomLink>
+        </NavBar>
         <ConnectionButton />
       </Header>
       <Body>
         <Suspense fallback={<div>Loading...</div>}>
-          <CurrentTab currentTab={currentTab} />
+          <Routes>
+            <Route path="pool" element={<Pool />} />
+            <Route path="swap" element={<Swap />} />
+          </Routes>
         </Suspense>
       </Body>
       <Footer />

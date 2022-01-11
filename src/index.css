@@ -12,11 +12,9 @@ html, body {
 
 body {
   margin: 0;
-  /* background-color: #1B1B1C; */
   background-color: #151922;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* background-image: url(./assets/images/intersect.svg); */
   background-position: top left;
   background-repeat: repeat;
   overflow: scroll;

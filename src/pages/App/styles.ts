@@ -53,6 +53,9 @@ export const LogoTitle = styled.h1`
 export const NavBar = styled.div`
   display: flex;
   color: white;
+  &>a {
+    text-decoration: none;
+  }
 `;
 
 export const NavButton = styled.div<PropsWithChildren<ICurrentTab>>`

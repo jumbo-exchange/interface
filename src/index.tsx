@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 import {
-  Redirect, Route, BrowserRouter as Router, Switch,
+  Route, BrowserRouter as Router, Routes,
 } from 'react-router-dom';
 import { LANDING } from 'utils/routes';
 import { ThemeProvider } from 'styled-components';
@@ -15,17 +15,19 @@ import useFullHeightHook from 'hooks/useFullHeightHook';
 
 import App from 'pages/App';
 
-const AppWrapper = ({ children }: {children: JSX.Element[]}) => {
+const AppWrapper = () => {
   useFullHeightHook();
 
   return (
     <ThemeProvider theme={theme}>
       <StoreContextProvider>
         <ModalsContextProvider>
-          <App />
-          {/* <Router>
-        <Switch>{ children } </Switch>
-      </Router> */}
+          <Router>
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/app/*" element={<App />} />
+            </Routes>
+          </Router>
         </ModalsContextProvider>
       </StoreContextProvider>
     </ThemeProvider>
@@ -34,10 +36,7 @@ const AppWrapper = ({ children }: {children: JSX.Element[]}) => {
 
 ReactDOM.render(
   <React.StrictMode>
-    <AppWrapper>
-      {/* <Route path={LANDING} component={Landing} />
-      <Redirect to={LANDING} /> */}
-    </AppWrapper>
+    <AppWrapper />
   </React.StrictMode>,
   document.getElementById('root'),
 );

@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
 import SpecialWallet from 'services/wallet';
 
-export enum StatusLink { 'Swap', 'Pool', 'Farm' }
+export enum StatusLink { Swap = 'swap', Pool ='pool', Farm = 'farm' }
 export enum TokenType { 'Input', 'Output'}
 
 export interface IPool {
