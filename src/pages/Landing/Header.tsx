@@ -4,7 +4,7 @@ import { docsLink } from 'utils/constants';
 import { isMobile } from 'utils/userAgent';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { APP } from 'utils/routes';
+import { APP, SWAP } from 'utils/routes';
 
 const HeaderContainer = styled.header`
   min-height: 5rem;
@@ -130,7 +130,7 @@ export default function Header() {
           <DocsLogo />
           <span>Read</span> Docs
         </DocsButton>
-        <ButtonOpenApp to={APP}>
+        <ButtonOpenApp to={SWAP}>
           Open App
         </ButtonOpenApp>
       </InformationContainer>
