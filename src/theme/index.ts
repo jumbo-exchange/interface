@@ -20,6 +20,7 @@ const mediaWidthTemplates: {
 
 export interface ThemeColors {
   layoutBlack: string;
+  landingBackground: string;
 
   globalBlack: string;
   globalWhite: string;
@@ -58,6 +59,7 @@ export interface ThemeColors {
 
 export const colors: ThemeColors = {
   layoutBlack: 'rgba(0, 0, 0, 0.6)',
+  landingBackground: '#1B1B1C',
 
   globalBlack: '#131313',
   globalWhite: '#FFFFFF',

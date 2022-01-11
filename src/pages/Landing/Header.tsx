@@ -3,6 +3,8 @@ import { ReactComponent as DocsLogo } from 'assets/images/docs-icon.svg';
 import { docsLink } from 'utils/constants';
 import { isMobile } from 'utils/userAgent';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+import { APP } from 'utils/routes';
 
 const HeaderContainer = styled.header`
   min-height: 5rem;
@@ -91,7 +93,7 @@ const LogoTitle = styled.h1`
   color: ${({ theme }) => theme.white};
 `;
 
-const ButtonOpenApp = styled.button`
+const ButtonOpenApp = styled(Link)`
   background: ${({ theme }) => theme.pink};
   border-radius: 12px;
   border: none;
@@ -106,6 +108,10 @@ const ButtonOpenApp = styled.button`
   :hover {
     cursor: pointer;
   }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration:none;
 `;
 
 export default function Header() {
@@ -124,7 +130,7 @@ export default function Header() {
           <DocsLogo />
           <span>Read</span> Docs
         </DocsButton>
-        <ButtonOpenApp>
+        <ButtonOpenApp to={APP}>
           Open App
         </ButtonOpenApp>
       </InformationContainer>

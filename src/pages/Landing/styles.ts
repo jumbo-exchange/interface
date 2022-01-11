@@ -375,7 +375,12 @@ export const CentralArrowContainer = styled(CentralArrow)`
   grid-area: 3 / 6 / 5 / 7;
 `;
 
+export const Container = styled.div`
+  background-color: ${({ theme }) => theme.landingBackground};
+`;
+
 export default {
+  Container,
   UpperContainer,
   MainInformation,
   Gif,
