@@ -63,7 +63,7 @@ function MiddleBlock() {
 
 export default function Landing() {
   return (
-    <>
+    <LandingStyles.Container>
       <Header />
       <LandingStyles.UpperContainer>
         <LandingStyles.MainInformation>
@@ -109,6 +109,6 @@ export default function Landing() {
           <Footer />
         </LandingStyles.BlackCardContainer>
       </LandingStyles.GreyCardContainer>
-    </>
+    </LandingStyles.Container>
   );
 }

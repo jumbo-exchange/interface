@@ -1,10 +1,8 @@
-import React, {
-  Dispatch, SetStateAction, useState, Suspense, lazy,
-} from 'react';
+import React, { Suspense, lazy } from 'react';
 import Footer from 'components/Footer';
 import { ReactComponent as JumboLogo } from 'assets/images/jumbo-logo.svg';
 import { isMobile } from 'utils/userAgent';
-import { StatusLink } from 'store';
+
 import {
   Route, Routes, useMatch, useResolvedPath, Link,
 } from 'react-router-dom';
