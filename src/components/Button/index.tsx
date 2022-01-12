@@ -32,8 +32,12 @@ export const ButtonPrimary = styled.button`
   border-radius: 12px;
   :hover {
     cursor: pointer;
+    border: 2px solid ${({ theme }) => theme.pinkHover};
+    background: ${({ theme }) => theme.pinkHover};
   }
   :active {
+    border: 2px solid ${({ theme }) => theme.pinkActive};
+    background: ${({ theme }) => theme.pinkActive};
   }
   :disabled{
     background: ${({ theme }) => theme.grayHover};
@@ -43,7 +47,13 @@ export const ButtonPrimary = styled.button`
 
 export const ButtonSecondary = styled(ButtonPrimary)`
   background: transparent;
-  
+  :hover {
+    cursor: pointer;
+    background: transparent;
+  }
+  :active {
+    background: transparent;
+  }
 `;
 
 export const ButtonThird = styled(ButtonPrimary)`
@@ -53,6 +63,12 @@ export const ButtonThird = styled(ButtonPrimary)`
   padding: 9px 5px;
   :hover {
     cursor: pointer;
+    background: ${({ theme }) => theme.greyButton};
+    border: 2px solid ${({ theme }) => theme.greyButton};
+  }
+  :active {
+    background: ${({ theme }) => theme.greyButton};
+    border: 2px solid ${({ theme }) => theme.greyButton};
   }
 `;
 
@@ -62,6 +78,10 @@ export const ButtonFourth = styled(ButtonPrimary)`
   border-radius: 12px;
   :hover {
     cursor: pointer;
+    background: ${({ theme }) => theme.globalGreyOp04};
+    border: none;
+  }
+  :active {
     background: ${({ theme }) => theme.globalGreyOp04};
     border: none;
   }

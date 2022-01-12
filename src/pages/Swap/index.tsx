@@ -19,6 +19,12 @@ import {
   SettingsBlock,
   SettingsLabel,
   Wallet,
+  SwapInformation,
+  RouteBlock,
+  TitleInfo,
+  RowInfo,
+  LabelInfo,
+  LogoInfo,
 } from './styles';
 
 const RenderSettings = ({ isSettingsOpen }: {isSettingsOpen:boolean}) => {
@@ -26,6 +32,28 @@ const RenderSettings = ({ isSettingsOpen }: {isSettingsOpen:boolean}) => {
     return <SwapSettings />;
   }
   return null;
+};
+
+const RenderButton = ({
+  isConnected,
+  swapToken,
+  title,
+  setAccountModalOpen,
+}:{
+  isConnected:boolean,
+  swapToken:() => void,
+  title: string,
+  setAccountModalOpen: (isOpen: boolean) => void,
+}) => {
+  if (isConnected) {
+    return <ButtonPrimary onClick={swapToken}>{title}</ButtonPrimary>;
+  }
+  return (
+    <ButtonSecondary onClick={() => setAccountModalOpen(true)}>
+      <Wallet />
+      {title}
+    </ButtonSecondary>
+  );
 };
 
 export default function Swap() {
@@ -69,6 +97,29 @@ export default function Swap() {
     console.log('swap');
   };
 
+  const swapInformation = [
+    {
+      title: 'Minimum Recieved',
+      label: '0.005053 USDT',
+      color: false,
+    },
+    {
+      title: 'Price Impact',
+      label: '0.02%',
+      color: true,
+    },
+    {
+      title: 'Liquidity Provider Fee',
+      label: '0.000000007477 ETH',
+      color: false,
+    },
+    {
+      title: 'Slippage Tolerance',
+      label: '0.50%',
+      color: false,
+    },
+  ];
+
   return (
     <Container>
       <ActionContainer>
@@ -103,6 +154,7 @@ export default function Swap() {
         </ExchangeLabel>
       </ExchangeBlock>
       <SettingsBlock>
+        <RenderSettings isSettingsOpen={isSettingsOpen} />
         <SettingsHeader>
           <SettingsLabel
             isActive={isSettingsOpen}
@@ -112,20 +164,29 @@ export default function Swap() {
             <ArrowDown />
           </SettingsLabel>
         </SettingsHeader>
-        <RenderSettings isSettingsOpen={isSettingsOpen} />
       </SettingsBlock>
-      {isConnected
-        ? <ButtonPrimary onClick={swapToken}>{title}</ButtonPrimary>
-        : (
-          <ButtonSecondary onClick={() => {
-            setAccountModalOpen(true);
-            setIsSettingsOpen(false);
-          }}
-          >
-            <Wallet />
-            {title}
-          </ButtonSecondary>
-        )}
+      {
+        inputTokenValue && (
+        <SwapInformation>
+          <RouteBlock>
+            <TitleInfo>Route <LogoInfo /> </TitleInfo>
+            <div> ETH {'>'} USDT {'>'} NEAR </div>
+          </RouteBlock>
+          {swapInformation.map((el) => (
+            <RowInfo key={el.title}>
+              <TitleInfo>{el.title} <LogoInfo /></TitleInfo>
+              <LabelInfo isColor={el.color}>{el.label}</LabelInfo>
+            </RowInfo>
+          ))}
+        </SwapInformation>
+        )
+      }
+      <RenderButton
+        isConnected={isConnected}
+        swapToken={swapToken}
+        title={title}
+        setAccountModalOpen={setAccountModalOpen}
+      />
     </Container>
   );
 }

@@ -76,6 +76,15 @@ const InputContainer = styled.div`
     padding: 10px 16px 10px 10px;
   }
   `}
+  :hover {
+    border: 2px solid ${({ theme }) => theme.pink};
+    padding: 11px 21px 11px 11px;
+
+    ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+      padding: 9px 15px 9px 9px;
+    }
+  `}
+  }
   :focus-within {
     border: 2px solid ${({ theme }) => theme.pink};
     padding: 11px 21px 11px 11px;
@@ -110,14 +119,14 @@ const LogoContainer = styled.div`
 const TokenContainer = styled.div`
   flex: 1;
   font-style: normal;
-  font-weight: normal;
-  font-size: 2rem;
-  line-height: 2rem;
-  text-align: right;
+  font-weight: 500;
+  font-size: 1.25rem;
+  line-height: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   margin-left: .6rem;
+  transition: all 1s ease-out;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: 1rem;
     line-height: 1.125rem;
@@ -125,17 +134,20 @@ const TokenContainer = styled.div`
 
   :hover {
     cursor: pointer;
+    & > svg {
+      transform: translateY(60%);
+      transition: all .2s ease-out;
+    }
   }
 `;
 
 const ArrowDown = styled(IconArrowDown)`
   margin-left: 0.875rem;
-
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     width: .594rem;
     height: .344rem;
   `}
-  transition: all 1s ease-out;
+  transition: all .2s ease-out;
 `;
 
 const getCurrentBalance = (
@@ -204,7 +216,6 @@ export default function Input({
         <CurrencyInputPanel
           value={value}
           setValue={setValue}
-          disabled={tokenType === TokenType.Output}
         />
         <TokenContainer onClick={() => openModal(tokenType)}>
           {getUpperCase(token?.metadata.symbol ?? '')}

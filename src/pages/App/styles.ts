@@ -53,7 +53,7 @@ export const LogoTitle = styled.h1`
 export const NavBar = styled.div`
   display: flex;
   color: white;
-  &>a {
+  & > a {
     text-decoration: none;
   }
 `;
@@ -89,6 +89,7 @@ export const NavButton = styled.div<PropsWithChildren<ICurrentTab>>`
   }
   :hover {
     cursor: pointer;
+    color: ${({ theme }) => theme.pink}
   }
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: 1rem;

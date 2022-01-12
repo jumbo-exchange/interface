@@ -184,7 +184,6 @@ export default function Input({
         <CurrencyInputPanel
           value={value}
           setValue={setValue}
-          disabled={tokenType === TokenType.Output}
         />
         <TokenContainer>
           {getUpperCase(token?.metadata.symbol ?? '')}

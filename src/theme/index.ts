@@ -50,10 +50,14 @@ export interface ThemeColors {
   greyBorder: string;
 
   pink: string;
+  pinkHover: string;
+  pinkActive: string;
+
   greyButton: string;
   backgroundCard: string;
   boxShadowCard: string;
   specialBorderCard: string;
+  error: string;
 }
 
 export const colors: ThemeColors = {
@@ -88,10 +92,14 @@ export const colors: ThemeColors = {
   greenText: '#8EF46A',
 
   pink: '#FE2C55',
+  pinkHover: '#E12243',
+  pinkActive: '#C71A35',
+
   greyButton: '#454D5C',
   backgroundCard: '#202632',
   boxShadowCard: 'rgba(10, 12, 18, 0.2)',
   specialBorderCard: 'linear-gradient(180deg, rgb(53, 60, 73), rgba(137, 145, 163, 0) 100%)',
+  error: '#FF6F6F',
 };
 
 function theme(): DefaultTheme {

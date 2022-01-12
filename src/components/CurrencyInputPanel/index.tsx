@@ -5,7 +5,6 @@ import { escapeRegExp, inputRegex } from 'utils/index';
 interface IInputPanel {
   value: string;
   setValue: any;
-  disabled?: boolean;
 }
 
 export const Input = styled.input`
@@ -25,7 +24,7 @@ export const Input = styled.input`
   transition: all 1s ease-out;
 `;
 
-export default function CurrencyInputPanel({ value, setValue, disabled = false }:IInputPanel) {
+export default function CurrencyInputPanel({ value, setValue }:IInputPanel) {
   const enforcer = (nextUserInput: string) => {
     if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {
       setValue(nextUserInput);
@@ -43,7 +42,6 @@ export default function CurrencyInputPanel({ value, setValue, disabled = false }
       placeholder="0.0"
       minLength={1}
       maxLength={79}
-      disabled={disabled}
       spellCheck="false"
     />
   );
