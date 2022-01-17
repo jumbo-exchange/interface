@@ -71,6 +71,9 @@ export const RefreshBlock = styled.div`
   justify-content: space-between;
   white-space: nowrap;
   margin-right: 1.25rem;
+  :hover {
+    cursor: pointer;
+  }
 `;
 
 export const PlaceHolderGif = styled(PlaceHolderLoader)`
