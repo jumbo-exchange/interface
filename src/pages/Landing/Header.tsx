@@ -4,7 +4,7 @@ import { docsLink } from 'utils/constants';
 import { isMobile } from 'utils/userAgent';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { APP, SWAP } from 'utils/routes';
+import { SWAP } from 'utils/routes';
 
 const HeaderContainer = styled.header`
   min-height: 5rem;

@@ -3,6 +3,7 @@ import { ButtonPrimary, ButtonSecondary } from 'components/Button';
 import { wallet } from 'services/near';
 import { getUpperCase } from 'utils';
 import { useStore, useModalsStore, TokenType } from 'store';
+import SwapContract from 'services/SwapContract';
 import Input from './Input';
 import SwapSettings from './SwapSettings';
 import {
@@ -36,6 +37,7 @@ export default function Swap() {
     setOutputToken,
     balances,
     loading,
+    pools,
   } = useStore();
 
   const { setAccountModalOpen, setSearchModalOpen } = useModalsStore();
@@ -65,8 +67,16 @@ export default function Swap() {
     setInputToken(oldOutputToken);
   };
 
-  const swapToken = () => {
-    console.log('swap');
+  const swapToken = async () => {
+    if (!inputToken || !outputToken) return;
+    const swapContract = new SwapContract();
+    await swapContract.swap({
+      accountId: 'solniechniy.testnet',
+      inputToken: inputToken.contract,
+      outputToken: outputToken.contract,
+      amount: '10000000000',
+      pools: [pools[3]],
+    });
   };
 
   return (

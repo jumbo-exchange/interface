@@ -9,6 +9,7 @@ import { formatPool } from 'utils';
 
 import getConfig from 'services/config';
 import SpecialWallet, { createContract } from 'services/wallet';
+import FungibleTokenContract from 'services/FungibleToken';
 
 const config = getConfig();
 const INITIAL_POOL_ID = 0;
@@ -86,12 +87,14 @@ export const StoreContextProvider = (
 
       const poolsResult = await contract.get_pools({ from_index: 0, limit: 100 });
       const tokenAddresses = poolsResult.flatMap((pool: any) => pool.token_account_ids);
-      const poolArray = poolsResult.map((pool:any) => formatPool(pool));
+      const poolArray = poolsResult.map((pool:any, index:number) => formatPool(pool, index));
 
       const tokensMetadata: any[] = await Promise.all(
         tokenAddresses.map(async (address: string) => {
-          const ftTokenContract:any = createContract(nearWallet, address, ['ft_metadata', 'ft_balance_of']);
-          const metadata = await ftTokenContract.ft_metadata();
+          const ftTokenContract: any = new FungibleTokenContract(
+            { wallet: nearWallet, contractId: address },
+          );
+          const metadata = await ftTokenContract.getMetadata();
           return { metadata, contractId: address, contract: ftTokenContract };
         }),
       );
@@ -101,7 +104,7 @@ export const StoreContextProvider = (
         const accountId = nearWallet.getAccountId();
         const balancesArray = await Promise.all(
           tokensMetadata.map(async (token) => {
-            const balance = await token.contract.ft_balance_of({ account_id: accountId });
+            const balance = await token.contract.getBalanceOf({ accountId });
             return { contractId: token.contractId, balance };
           }),
         );
