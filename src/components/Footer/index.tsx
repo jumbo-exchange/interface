@@ -101,7 +101,7 @@ export default function Footer() {
           </ChildSocialNetwork>
         ))}
       </SocialNetworkContainer>
-      <TextContainer>Copyright 2021</TextContainer>
+      <TextContainer>Copyright 2022</TextContainer>
     </Container>
   );
 }

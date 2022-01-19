@@ -40,7 +40,7 @@ const mainInfo = [
     label: '$88,890,241',
   },
   {
-    title: 'ORCA Price',
+    title: 'JUMBO Price',
     label: '$9.26',
   },
   {

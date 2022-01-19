@@ -6,9 +6,14 @@ import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
 import { ReactComponent as Exchange } from 'assets/images-app/exchange.svg';
 import { ReactComponent as PlaceHolderLoader } from 'assets/images-app/placeholder-loader.svg';
+import { ReactComponent as Info } from 'assets/images-app/info.svg';
 
 interface ICurrent {
   isActive?: boolean
+}
+
+interface IColor {
+  isColor?: boolean
 }
 
 export const Container = styled(SpecialContainer)`
@@ -66,6 +71,9 @@ export const RefreshBlock = styled.div`
   justify-content: space-between;
   white-space: nowrap;
   margin-right: 1.25rem;
+  :hover {
+    cursor: pointer;
+  }
 `;
 
 export const PlaceHolderGif = styled(PlaceHolderLoader)`
@@ -81,7 +89,7 @@ export const ExchangeLabel = styled.div`
 export const SettingsBlock = styled.div`
   display: flex;
   flex-direction: column;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.625rem;
 `;
 
 export const SettingsHeader = styled.div`
@@ -135,4 +143,51 @@ export const Wallet = styled(WalletImage)`
   path {
     fill: ${({ theme }) => theme.globalWhite};
   }
+`;
+
+export const SwapInformation = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+`;
+
+export const LogoInfo = styled(Info)`
+  margin-left: .397rem;
+`;
+
+export const RouteBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  & > div {
+    margin-top: 1rem;
+  }
+`;
+
+export const RowInfo = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+`;
+
+export const TitleInfo = styled.p`
+  display: flex;
+  align-items: center;
+  font-style: normal;
+  font-weight: 300;
+  font-size: .75rem;
+  line-height: .875rem;
+  color: ${({ theme }) => theme.globalGrey};
+  margin: 0;
+`;
+
+export const LabelInfo = styled.p<PropsWithChildren<IColor>>`
+  font-style: normal;
+  font-weight: 300;
+  font-size: 12px;
+  line-height: 14px;
+  color: ${({ theme, isColor }) => (isColor ? theme.globalGreen : theme.globalWhite)};
+  margin: 0;
 `;
