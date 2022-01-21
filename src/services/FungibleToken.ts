@@ -58,6 +58,11 @@ export default class FungibleTokenContract {
 
   contractId = CONTRACT_ID;
 
+  metadata = {
+    decimals: 0,
+    icon: '',
+  };
+
   static getParsedTokenAmount(amount:string, symbol:string, decimals:number) {
     const parsedTokenAmount = symbol === 'NEAR'
       ? parseNearAmount(amount)
@@ -81,7 +86,12 @@ export default class FungibleTokenContract {
 
   async getMetadata() {
     // @ts-expect-error: Property 'ft_metadata' does not exist on type 'Contract'.
-    return this.contract.ft_metadata();
+    const metadata = await this.contract.ft_metadata();
+    this.metadata = {
+      decimals: metadata.decimals ?? 0,
+      icon: metadata.icon ?? '',
+    };
+    return metadata;
   }
 
   async getBalanceOf({ accountId }: { accountId: string }) {

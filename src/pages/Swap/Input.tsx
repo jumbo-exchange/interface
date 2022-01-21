@@ -168,6 +168,7 @@ export default function Input({
   value,
   setValue,
   balance,
+  disabled = false,
 }:
 {
   openModal: (tokenType: TokenType) => void,
@@ -176,6 +177,7 @@ export default function Input({
   value: string,
   setValue: any,
   balance:string,
+  disabled?: boolean
 }) {
   const currentBalance = new Big(balance ?? 0);
   const setHalfAmount = () => {
@@ -216,6 +218,7 @@ export default function Input({
         <CurrencyInputPanel
           value={value}
           setValue={setValue}
+          disabled={disabled}
         />
         <TokenContainer onClick={() => openModal(tokenType)}>
           {getUpperCase(token?.metadata.symbol ?? '')}

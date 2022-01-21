@@ -1,13 +1,14 @@
 import { functionCall } from 'near-api-js/lib/transaction';
 import { IPool } from 'store/interfaces';
-import FungibleTokenContract, { FT_MINIMUM_STORAGE_BALANCE } from './FungibleToken';
+import { SWAP_FAILED, SWAP_TOKENS_NOT_IN_SWAP_POOL } from 'utils/errors';
+import FungibleTokenContract from './FungibleToken';
 import { getAmount, getGas, wallet } from './near';
 import { createContract, Transaction } from './wallet';
 import getConfig from './config';
 
 export const ONE_YOCTO_NEAR = '0.000000000000000000000001';
 
-const basicViewMethods = ['ft_metadata', 'ft_balance_of', 'storage_balance_of'];
+const basicViewMethods = ['ft_metadata', 'ft_balance_of', 'get_return'];
 const basicChangeMethods = ['swap'];
 const config = getConfig();
 
@@ -25,8 +26,83 @@ export default class SwapContract {
 
   contractId = CONTRACT_ID;
 
-  static generateTransferMessage(pools: IPool[]):string {
-    return '{"force":0,"actions":[{"pool_id":3,"token_in":"ref.fakes.testnet","token_out":"token.solniechniy.testnet","min_amount_out":"50653"}, {"pool_id":3,"token_in":"token.solniechniy.testnet","token_out":"ref.fakes.testnet","min_amount_out":"10"}]}';
+  // TODO: REFACTOR
+  async generateTransferMessage(
+    pools: IPool[],
+    amount: string,
+    inputToken: FungibleTokenContract,
+    outputToken:FungibleTokenContract,
+  ) {
+    const DIRECT_SWAP = 1;
+    const INDIRECT_SWAP = 2;
+    if (pools.length === DIRECT_SWAP) {
+      const [currentPool] = pools;
+      const tokens = currentPool.tokenAccountIds;
+      if (!tokens.includes(inputToken.contractId) || !tokens.includes(outputToken.contractId)) {
+        throw Error(SWAP_TOKENS_NOT_IN_SWAP_POOL);
+      }
+      // @ts-expect-error: Property 'get_return' does not exist on type 'Contract'.
+      const minAmountOut = await this.contract.get_return(
+        {
+          pool_id: currentPool.id,
+          token_in: inputToken.contractId,
+          amount_in: amount,
+          token_out: outputToken.contractId,
+        },
+      );
+
+      return [{
+        pool_id: currentPool.id,
+        token_in: inputToken.contractId,
+        token_out: outputToken.contractId,
+        min_amount_out: minAmountOut,
+      }];
+    }
+    if (pools.length === INDIRECT_SWAP) {
+      const [firstPool, secondPool] = pools;
+      const firstPoolTokens = firstPool.tokenAccountIds;
+      const secondPoolTokens = secondPool.tokenAccountIds;
+      if (
+        !firstPoolTokens.includes(inputToken.contractId)
+        && !secondPoolTokens.includes(outputToken.contractId)
+      ) {
+        throw Error(SWAP_TOKENS_NOT_IN_SWAP_POOL);
+      }
+      const swapToken = firstPoolTokens.find((tokenName) => tokenName !== inputToken.contractId);
+      // @ts-expect-error: Property 'get_return' does not exist on type 'Contract'.
+      const minAmountOutFirst = await this.contract.get_return(
+        {
+          pool_id: firstPool.id,
+          token_in: inputToken.contractId,
+          amount_in: amount,
+          token_out: swapToken,
+        },
+      );
+      // @ts-expect-error: Property 'get_return' does not exist on type 'Contract'.
+      const minAmountOutSecond = await this.contract.get_return(
+        {
+          pool_id: secondPool.id,
+          token_in: swapToken,
+          amount_in: minAmountOutFirst,
+          token_out: outputToken.contractId,
+        },
+      );
+
+      return [
+        {
+          pool_id: firstPool.id,
+          token_in: inputToken.contractId,
+          token_out: swapToken,
+          min_amount_out: minAmountOutFirst,
+        }, {
+          pool_id: secondPool.id,
+          token_in: swapToken,
+          token_out: outputToken.contractId,
+          min_amount_out: minAmountOutSecond,
+        },
+      ];
+    }
+    throw Error(SWAP_FAILED);
   }
 
   async swap({
@@ -42,16 +118,10 @@ export default class SwapContract {
     amount: string,
     pools: IPool[],
   }) {
-    const swapAction = {
-      pool_id: pools[0].id,
-      token_in: pools[0].tokenAccountIds[0],
-      token_out: pools[0].tokenAccountIds[1],
-      min_amount_out: '50653',
-    };
     const transactionsReceipts: Transaction[] = [];
     const outputTokenStorage = await outputToken.checkStorageBalance({ accountId });
     transactionsReceipts.push(...outputTokenStorage);
-
+    const swapAction = await this.generateTransferMessage(pools, amount, inputToken, outputToken);
     transactionsReceipts.push({
       receiverId: inputToken.contractId,
       functionCalls: [{
@@ -60,7 +130,7 @@ export default class SwapContract {
           receiver_id: CONTRACT_ID,
           msg: JSON.stringify({
             force: 0,
-            actions: [swapAction],
+            actions: [...swapAction],
           }),
           amount,
         },

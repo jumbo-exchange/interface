@@ -102,8 +102,8 @@ export default function Swap() {
       accountId: 'solniechniy.testnet',
       inputToken: inputToken.contract,
       outputToken: outputToken.contract,
-      amount: '10000000000',
-      pools: [pools[3]],
+      amount: '100000000000000000000',
+      pools: [pools[4], pools[3]],
     });
   };
 
@@ -152,6 +152,7 @@ export default function Swap() {
           value={outputTokenValue}
           setValue={setOutputTokenValue}
           balance={balances[outputToken?.contractId ?? '']}
+          disabled
         />
       </ActionContainer>
       <ExchangeBlock>
