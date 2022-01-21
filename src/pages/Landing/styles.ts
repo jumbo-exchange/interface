@@ -31,9 +31,7 @@ export const UpperContainer = styled.div`
   ${({ theme }) => theme.mediaWidth.upToSmall`
     width: unset;
     margin: 2rem 2rem 4.375rem 2rem;
-    align-items: center;
   `}
-  
 `;
 
 export const MainInformation = styled.div`
@@ -44,7 +42,6 @@ export const MainInformation = styled.div`
 `;
 
 export const Gif = styled.img`
-  margin-left: 2rem;
   ${({ theme }) => theme.mediaWidth.upToLarge`
     margin-top: 2rem;
   `}
@@ -87,8 +84,10 @@ export const ListElement = styled.li`
   font-size: 1.25rem;
   line-height: 140%;
   color: ${({ theme }) => theme.white};
+  padding-left: 1.28em;
+  text-indent: -1.28em;
   ${({ theme }) => theme.mediaWidth.upToSmall`
-    font-size: 0.75rem;
+    font-size: 1rem;
   `}
 `;
 export const GreyCardContainer = styled.section`
@@ -376,7 +375,12 @@ export const CentralArrowContainer = styled(CentralArrow)`
   grid-area: 3 / 6 / 5 / 7;
 `;
 
+export const Container = styled.div`
+  background-color: ${({ theme }) => theme.landingBackground};
+`;
+
 export default {
+  Container,
   UpperContainer,
   MainInformation,
   Gif,

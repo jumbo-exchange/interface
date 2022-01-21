@@ -1,4 +1,10 @@
+import { ReactComponent as JumboLogo } from 'assets/images/jumbo-logo.svg';
+import { ReactComponent as DocsLogo } from 'assets/images/docs-icon.svg';
+import { docsLink } from 'utils/constants';
+import { isMobile } from 'utils/userAgent';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+import { SWAP } from 'utils/routes';
 
 const HeaderContainer = styled.header`
   min-height: 5rem;
@@ -87,11 +93,47 @@ const LogoTitle = styled.h1`
   color: ${({ theme }) => theme.white};
 `;
 
-const HeaderStyles = {
-  LogoTitle,
-  InformationContainer,
-  DocsButton,
-  LogoContainer,
-  HeaderContainer,
-};
-export default HeaderStyles;
+const ButtonOpenApp = styled(Link)`
+  background: ${({ theme }) => theme.pink};
+  border-radius: 12px;
+  border: none;
+  width: 103px;
+  height: 44px;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.188rem;
+  color: ${({ theme }) => theme.white};
+  margin-left: 1.5rem;
+  :hover {
+    cursor: pointer;
+  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration:none;
+`;
+
+export default function Header() {
+  return (
+    <HeaderContainer>
+      <LogoContainer>
+        <JumboLogo />
+        {isMobile ? null : (<LogoTitle>jumbo</LogoTitle>)}
+      </LogoContainer>
+      <InformationContainer>
+        <DocsButton
+          href={docsLink}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <DocsLogo />
+          <span>Read</span> Docs
+        </DocsButton>
+        <ButtonOpenApp to={SWAP}>
+          Open App
+        </ButtonOpenApp>
+      </InformationContainer>
+    </HeaderContainer>
+  );
+}

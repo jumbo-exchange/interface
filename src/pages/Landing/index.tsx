@@ -1,9 +1,10 @@
-import Header from 'components/Header';
-import { ReactComponent as NearLogo } from 'assets/images/near-logo.svg';
+import React from 'react';
 import gif from 'assets/images/El_4.gif';
 import Footer from 'components/Footer';
+import { ReactComponent as NearLogo } from 'assets/images/near-logo.svg';
 import { isMobile, isTablet } from 'utils/userAgent';
 import { benefitsList, benefitsCards } from './constants';
+import Header from './Header';
 import LandingStyles from './styles';
 
 function MiddleBlock() {
@@ -62,7 +63,7 @@ function MiddleBlock() {
 
 export default function Landing() {
   return (
-    <>
+    <LandingStyles.Container>
       <Header />
       <LandingStyles.UpperContainer>
         <LandingStyles.MainInformation>
@@ -108,6 +109,6 @@ export default function Landing() {
           <Footer />
         </LandingStyles.BlackCardContainer>
       </LandingStyles.GreyCardContainer>
-    </>
+    </LandingStyles.Container>
   );
 }
