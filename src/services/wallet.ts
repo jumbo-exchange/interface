@@ -6,6 +6,15 @@ import { Action, createTransaction } from 'near-api-js/lib/transaction';
 import { PublicKey } from 'near-api-js/lib/utils';
 import * as nearAPI from 'near-api-js';
 
+export interface Transaction {
+  receiverId: string;
+  functionCalls: { gas?:
+    string; amount?: string;
+    methodName: string;
+    args?: object;
+  }[];
+}
+
 class SpecialWalletAccount extends ConnectedWalletAccount {
   async sendTransactionWithActions(receiverId: string, actions: Action[]) {
     return this.signAndSendTransaction(receiverId, actions);
@@ -93,10 +102,12 @@ export default class SpecialWallet extends WalletConnection {
   }
 }
 
-export function createContract(wallet: SpecialWallet,
+export function createContract(
+  wallet: SpecialWallet,
   contractId: string,
   viewMethods : string[] = [],
-  changeMethods: string[] = []) {
+  changeMethods: string[] = [],
+) {
   return new nearAPI.Contract(
     wallet.account(),
     contractId,

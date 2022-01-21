@@ -1,2 +1,4 @@
 export const LANDING = '/';
-export const HOME = '/home';
+export const APP = 'app';
+export const SWAP = 'app/swap';
+export const POOL = 'app/pool';

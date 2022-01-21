@@ -3,32 +3,40 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 import {
-  Redirect, Route, BrowserRouter as Router, Switch,
+  Route, BrowserRouter as Router, Routes,
 } from 'react-router-dom';
 import { LANDING } from 'utils/routes';
-import Landing from 'components/Landing';
 import { ThemeProvider } from 'styled-components';
+import { StoreContextProvider, ModalsContextProvider } from 'store';
+
+import Landing from 'pages/Landing';
 import theme from 'theme';
 import useFullHeightHook from 'hooks/useFullHeightHook';
 
-const AppWrapper = ({ children }: {children: JSX.Element[]}) => {
+import App from 'pages/App';
+
+const AppWrapper = () => {
   useFullHeightHook();
 
   return (
     <ThemeProvider theme={theme}>
-      <Router>
-        <Switch>{ children } </Switch>
-      </Router>
+      <StoreContextProvider>
+        <ModalsContextProvider>
+          <Router>
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/app/*" element={<App />} />
+            </Routes>
+          </Router>
+        </ModalsContextProvider>
+      </StoreContextProvider>
     </ThemeProvider>
   );
 };
 
 ReactDOM.render(
   <React.StrictMode>
-    <AppWrapper>
-      <Route path={LANDING} component={Landing} />
-      <Redirect to={LANDING} />
-    </AppWrapper>
+    <AppWrapper />
   </React.StrictMode>,
   document.getElementById('root'),
 );

@@ -1,5 +1,5 @@
 export default function getConfig(
-  env: string | undefined = process.env.REACT_APP_NEAR_ENV,
+  env: string = process.env.REACT_APP_NEAR_ENV || 'testnet',
 ) {
   switch (env) {
     case 'development':
@@ -11,6 +11,7 @@ export default function getConfig(
         helperUrl: 'https://helper.testnet.near.org',
         explorerUrl: 'https://explorer.testnet.near.org',
         indexerUrl: 'https://testnet-indexer.ref-finance.com',
+        contractId: 'ref-contract.solniechniy.testnet',
         nearAddress: 'wrap.testnet',
       };
     default:
@@ -21,6 +22,7 @@ export default function getConfig(
         helperUrl: 'https://helper.mainnet.near.org',
         explorerUrl: 'https://explorer.mainnet.near.org',
         indexerUrl: 'https://indexer.ref-finance.net',
+        contractId: 'ref-contract.solniechniy.testnet',
         nearAddress: 'wrap.near',
       };
   }

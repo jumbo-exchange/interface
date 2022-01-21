@@ -2,7 +2,6 @@ import { isMobile } from 'utils/userAgent';
 import { ReactComponent as TelegramImg } from 'assets/images/Telegram.svg';
 import { ReactComponent as TwitterImg } from 'assets/images/Twitter.svg';
 import { ReactComponent as MediumImg } from 'assets/images/Medium.svg';
-import { ReactComponent as JumboLogo } from 'assets/images/jumbo-logo.svg';
 import { ReactComponent as HapiLogo } from 'assets/images/hapi-logo.svg';
 import {
   hapiLink, mediumLink, twitterLink, telegramLink,
@@ -12,8 +11,6 @@ import {
   Container,
   ContainerMobile,
   ChildContainer,
-  LogoContainer,
-  LogoTitle,
   SocialNetworkContainer,
   ChildSocialNetwork,
   TextContainer,
@@ -58,10 +55,6 @@ export default function Footer() {
         ))}
       </SocialNetworkContainer>
       <ChildContainer>
-        <LogoContainer>
-          <JumboLogo />
-          <LogoTitle>jumbo</LogoTitle>
-        </LogoContainer>
         <HapiButton
           href={hapiLink}
           target="_blank"
@@ -81,10 +74,6 @@ export default function Footer() {
   ) : (
     <Container>
       <LeftContainer>
-        <LogoContainer>
-          <JumboLogo />
-          <LogoTitle>jumbo</LogoTitle>
-        </LogoContainer>
         <HapiButton
           href={hapiLink}
           target="_blank"
@@ -112,7 +101,7 @@ export default function Footer() {
           </ChildSocialNetwork>
         ))}
       </SocialNetworkContainer>
-      <TextContainer>Copyright 2021</TextContainer>
+      <TextContainer>Copyright 2022</TextContainer>
     </Container>
   );
 }
