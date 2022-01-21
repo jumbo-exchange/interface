@@ -1,5 +1,5 @@
 import React from 'react';
-import { TokenType, useModalsStore, useStore } from 'store';
+import { useModalsStore, TokenType, useStore } from 'store';
 import { ReactComponent as BackArrow } from 'assets/images-app/icon-back.svg';
 
 import { ButtonPrimary } from 'components/Button';
@@ -13,13 +13,10 @@ import {
   AddIconContainer,
 } from './styles';
 import TokenBlock from './TokenBlock';
+import AddPoolSettings from './AddPoolSetting';
 
 export default function AddPoolModal() {
-  const {
-    inputToken,
-    outputToken,
-  } = useStore();
-
+  const { inputToken, outputToken } = useStore();
   const { isAddPollModalOpen, setAddPoolModalOpen } = useModalsStore();
 
   return (
@@ -44,6 +41,7 @@ export default function AddPoolModal() {
               token={outputToken}
               tokenType={TokenType.Output}
             />
+            <AddPoolSettings />
             <ButtonPrimary
               onClick={() => console.log('Create Pool')}
             >

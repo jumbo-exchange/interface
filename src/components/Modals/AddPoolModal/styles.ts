@@ -4,6 +4,9 @@ import { Modal } from '../styles';
 
 export const LiquidityModalContainer = styled(Modal)`
   max-width: 500px;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    min-width: 330px;
+  `}
 `;
 
 export const ModalTitle = styled.h2`
@@ -16,6 +19,10 @@ export const ModalTitle = styled.h2`
   margin-block-end: 0;
   text-align: center;
   color: ${({ theme }) => theme.globalWhite};
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: 1rem;
+    line-height: 1.188rem;
+  `}
 `;
 
 export const ModalBody = styled.div`

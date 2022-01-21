@@ -21,7 +21,7 @@ export const initialModalsState: ModalsStoreContextType = {
   setAccountModalOpen: () => {},
   isLiquidityModalOpen: false,
   setLiquidityModalOpen: () => {},
-  isAddPollModalOpen: true,
+  isAddPollModalOpen: false,
   setAddPoolModalOpen: () => {},
   isSearchModalOpen: { isOpen: false, tokenType: TokenType.Output },
   setSearchModalOpen: () => {},
