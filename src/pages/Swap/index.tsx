@@ -4,7 +4,7 @@ import { wallet } from 'services/near';
 import { getUpperCase } from 'utils';
 import { useStore, useModalsStore, TokenType } from 'store';
 import SwapContract from 'services/SwapContract';
-import Input from './Input';
+import Input from './SwapInput';
 import SwapSettings from './SwapSettings';
 import {
   Container,

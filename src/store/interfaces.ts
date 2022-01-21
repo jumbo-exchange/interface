@@ -16,6 +16,10 @@ export interface IPool {
   poolSharePrice?: string;
   poolShares?: string;
   poolTotalShares?: string;
+  amp: string;
+
+  volumes?: string;
+  myShares?: string;
 }
 
 export interface IToken {

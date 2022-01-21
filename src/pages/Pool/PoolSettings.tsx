@@ -5,6 +5,7 @@ import { ReactComponent as SearchIcon } from 'assets/images-app/search-icon.svg'
 import { ReactComponent as InfoIcon } from 'assets/images-app/info.svg';
 import { ReactComponent as ArrowDownIcon } from 'assets/images-app/icon-arrow-down.svg';
 import { ReactComponent as PlaceHolderLoader } from 'assets/images-app/placeholder-loader.svg';
+import { isMobile } from 'utils/userAgent';
 
 const Container = styled.div`
   display: flex;
@@ -97,7 +98,9 @@ const Loading = styled(PlaceHolderLoader)`
 
 const Toggle = styled.div`
   display: flex;
-
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    margin-left: .625rem;
+  `}
 `;
 
 const LabelCheckbox = styled.label`
@@ -138,6 +141,31 @@ const ToggleSwitch = styled.div`
   }
 `;
 
+const MobileContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 1rem 0;
+  padding: 0 .5rem;
+`;
+
+const MobileRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin: .813rem 0;
+`;
+
+const MobileColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  & > div:first-child {
+    margin-bottom: .625rem;
+  }
+`;
+const RightPosition = styled(Title)`
+  justify-content: flex-end;
+`;
+
 const filters = [
   {
     title: '24H',
@@ -154,6 +182,53 @@ const filters = [
 ];
 
 export default function PoolSettings() {
+  if (isMobile) {
+    return (
+      <MobileContainer>
+        <SearchInputBlock>
+          <SearchIcon />
+          <SearchInput
+            placeholder="Search"
+          />
+        </SearchInputBlock>
+        <MobileRow>
+          <Title><Loading />Refresh</Title>
+          <Title>
+            Smart Pools
+            <Toggle>
+              <LabelCheckbox htmlFor="toggle">
+                <input id="toggle" type="checkbox" defaultChecked />
+                <ToggleSwitch />
+              </LabelCheckbox>
+            </Toggle>
+          </Title>
+        </MobileRow>
+        <MobileRow>
+          <MobileColumn>
+            <Title>Sort by</Title>
+            <SortBlock>
+              Liquidity (dsc)
+              <ArrowDown />
+            </SortBlock>
+          </MobileColumn>
+          <MobileColumn>
+            <RightPosition>APR Basis <LogoInfo /></RightPosition>
+            <FilterBlock>
+              {filters.map((el) => (
+                <FilterButton
+                  key={el.title}
+                  isActive={el.isActive}
+                >
+                  {el.title}
+                </FilterButton>
+              ))}
+            </FilterBlock>
+          </MobileColumn>
+        </MobileRow>
+      </MobileContainer>
+    );
+  }
+
   return (
     <Container>
       <SearchInputBlock>
