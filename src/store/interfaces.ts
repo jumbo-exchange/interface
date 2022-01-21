@@ -11,11 +11,10 @@ export interface IPool {
   amounts: string[];
   totalFee: number;
   sharesTotalSupply: string;
-  poolFee?: string;
-  poolVolumes?: string;
-  poolSharePrice?: string;
-  poolShares?: string;
-  poolTotalShares?: string;
+  amp: string;
+
+  volumes?: string;
+  myShares?: string;
 }
 
 export interface IToken {
@@ -63,11 +62,9 @@ export const contractMethods = [
   'get_number_of_pools',
 
   'get_pool', // pool_id: u64
-  'get_pool_fee', // pool_id: u64
   'get_pool_volumes', // pool_id: u64
   'get_pool_share_price', // pool_id: u64
   'get_pool_shares', // pool_id: u64, account_id: ValidAccountId
-  'get_pool_total_shares', // pool_id: u64
 
   // Returns balances of the deposits for given user outside of any pools.
   /// Returns empty list if no tokens deposited.

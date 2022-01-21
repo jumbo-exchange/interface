@@ -9,6 +9,9 @@ export const Container = styled.div`
   width: 100%;
   max-width: 736px;
   white-space: nowrap;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    margin: 0 1rem;
+  `}
 `;
 
 export const FilterBlock = styled.div`
@@ -17,6 +20,11 @@ export const FilterBlock = styled.div`
   & > button {
     margin: 0 .625rem;
   }
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    & > button {
+      margin: 0 .25rem;
+    }
+  `}
 `;
 
 export const InformationBlock = styled(SpecialContainer)`
