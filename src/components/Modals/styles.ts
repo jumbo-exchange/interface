@@ -68,11 +68,25 @@ export const ModalTitle = styled.h2`
 `;
 
 export const ModalIcon = styled.div`
-  cursor: pointer;
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
   align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  svg {
+    justify-self: center;
+    transition: all 1s ease;
+  }
+  :hover {
+  cursor: pointer;
+  background-color: ${({ theme }) => theme.globalGreyOp02};
+    svg {
+      path {
+        fill: ${({ theme }) => theme.globalWhite};
+      }
+    }
+  }
   ${({ theme }) => theme.mediaWidth.upToMedium`
     & > svg {
       width: 25px;
@@ -85,7 +99,4 @@ export const ModalIcon = styled.div`
       height: 17px;
     }
   `}
-  & > svg {
-    transition: all 1s ease;
-  }
 `;

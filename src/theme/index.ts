@@ -59,6 +59,7 @@ export interface ThemeColors {
   boxShadowCard: string;
   specialBorderCard: string;
   error: string;
+  tooltip: string;
 }
 
 export const colors: ThemeColors = {
@@ -102,6 +103,7 @@ export const colors: ThemeColors = {
   boxShadowCard: 'rgba(10, 12, 18, 0.2)',
   specialBorderCard: 'linear-gradient(180deg, rgb(53, 60, 73), rgba(137, 145, 163, 0) 100%)',
   error: '#FF6F6F',
+  tooltip: '#454D5C',
 };
 
 function theme(): DefaultTheme {

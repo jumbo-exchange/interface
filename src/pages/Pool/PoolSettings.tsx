@@ -6,6 +6,7 @@ import { ReactComponent as InfoIcon } from 'assets/images-app/info.svg';
 import { ReactComponent as ArrowDownIcon } from 'assets/images-app/icon-arrow-down.svg';
 import { ReactComponent as PlaceHolderLoader } from 'assets/images-app/placeholder-loader.svg';
 import { isMobile } from 'utils/userAgent';
+import Tooltip from 'components/Tooltip';
 
 const Container = styled.div`
   display: flex;
@@ -245,7 +246,7 @@ export default function PoolSettings() {
         </SortBlock>
       </Wrapper>
       <Wrapper>
-        <Title>APR Basis <LogoInfo /></Title>
+        <Title>APR Basis <Tooltip title="APR Basis" /></Title>
         <FilterBlock>
           {filters.map((el) => (
             <FilterButton
@@ -258,7 +259,7 @@ export default function PoolSettings() {
         </FilterBlock>
       </Wrapper>
       <Wrapper>
-        <Title>Smart Pools <LogoInfo /></Title>
+        <Title>Smart Pools <Tooltip title="Smart Pools" /></Title>
         <Toggle>
           <LabelCheckbox htmlFor="toggle">
             <input id="toggle" type="checkbox" defaultChecked />
