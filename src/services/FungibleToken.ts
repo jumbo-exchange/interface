@@ -30,7 +30,8 @@ export const ONE_YOCTO_NEAR = '0.000000000000000000000001';
 const basicViewMethods: string[] = ['ft_metadata', 'ft_balance_of', 'storage_balance_of'];
 const basicChangeMethods: string[] = [];
 const config = getConfig();
-
+const DECIMALS_DEFAULT_VALUE = 0;
+const ICON_DEFAULT_VALUE = '';
 const CONTRACT_ID = config.contractId;
 
 interface FungibleTokenContractInterface {
@@ -59,8 +60,8 @@ export default class FungibleTokenContract {
   contractId = CONTRACT_ID;
 
   metadata = {
-    decimals: 0,
-    icon: '',
+    decimals: DECIMALS_DEFAULT_VALUE,
+    icon: ICON_DEFAULT_VALUE,
   };
 
   static getParsedTokenAmount(amount:string, symbol:string, decimals:number) {
@@ -85,11 +86,15 @@ export default class FungibleTokenContract {
   }
 
   async getMetadata() {
+    if (
+      this.metadata.decimals !== DECIMALS_DEFAULT_VALUE
+      && this.metadata.icon !== ICON_DEFAULT_VALUE
+    ) return this.metadata;
     // @ts-expect-error: Property 'ft_metadata' does not exist on type 'Contract'.
     const metadata = await this.contract.ft_metadata();
     this.metadata = {
-      decimals: metadata.decimals ?? 0,
-      icon: metadata.icon ?? '',
+      decimals: metadata.decimals ?? DECIMALS_DEFAULT_VALUE,
+      icon: metadata.icon ?? ICON_DEFAULT_VALUE,
     };
     return metadata;
   }
@@ -152,14 +157,12 @@ export default class FungibleTokenContract {
   async transfer({
     accountId,
     inputToken,
-    outputToken,
     amount,
     message,
   }:
   {
     accountId: string,
     inputToken: string,
-    outputToken: string,
     amount: string,
     message: string,
   }): Promise<Transaction[]> {

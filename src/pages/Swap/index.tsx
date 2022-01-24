@@ -66,6 +66,7 @@ export default function Swap() {
     balances,
     loading,
     pools,
+    currentPools,
   } = useStore();
 
   const { setAccountModalOpen, setSearchModalOpen } = useModalsStore();
@@ -129,6 +130,8 @@ export default function Swap() {
       color: false,
     },
   ];
+  const intersectionToken = currentPools.length === 2
+    ? currentPools[0].tokenAccountIds.find((el) => el !== inputToken?.contractId) : null;
 
   return (
     <Container>
@@ -177,20 +180,26 @@ export default function Swap() {
         </SettingsHeader>
       </SettingsBlock>
       {
-        inputTokenValue && (
-        <SwapInformation>
-          <RouteBlock>
-            <TitleInfo>Route <LogoInfo /> </TitleInfo>
-            <div> ETH {'>'} USDT {'>'} NEAR </div>
-          </RouteBlock>
-          {swapInformation.map((el) => (
-            <RowInfo key={el.title}>
-              <TitleInfo>{el.title} <LogoInfo /></TitleInfo>
-              <LabelInfo isColor={el.color}>{el.label}</LabelInfo>
-            </RowInfo>
-          ))}
-        </SwapInformation>
-        )
+        currentPools.length ? (
+          <SwapInformation>
+            <RouteBlock>
+              <TitleInfo>Route <LogoInfo /></TitleInfo>
+              <div>
+                {inputToken?.metadata.symbol}
+                {' '}
+                {intersectionToken ? `> ${intersectionToken}` : null }
+                {'> '}
+                {outputToken?.metadata.symbol}
+              </div>
+            </RouteBlock>
+            {swapInformation.map((el) => (
+              <RowInfo key={el.title}>
+                <TitleInfo>{el.title} <LogoInfo /></TitleInfo>
+                <LabelInfo isColor={el.color}>{el.label}</LabelInfo>
+              </RowInfo>
+            ))}
+          </SwapInformation>
+        ) : null
       }
       <RenderButton
         isConnected={isConnected}

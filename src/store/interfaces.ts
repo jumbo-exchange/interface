@@ -48,8 +48,8 @@ export type StoreContextType = {
 
   pools: IPool[];
   setPools: Dispatch<SetStateAction<IPool[]>>;
-  currentPool: IPool | null;
-  setCurrentPool: (pool: IPool) => void;
+  currentPools: IPool[];
+  setCurrentPools: (pools: IPool[]) => void;
   tokens: {[key: string]: IToken};
   setTokens: Dispatch<SetStateAction<{[key: string]: IToken}>>;
   setCurrentToken: (tokenAddress: string, tokenType: TokenType) => void;
