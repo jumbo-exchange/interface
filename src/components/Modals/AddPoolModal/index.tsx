@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useModalsStore, TokenType, useStore } from 'store';
 import { ReactComponent as BackArrow } from 'assets/images-app/icon-back.svg';
 
 import { ButtonPrimary } from 'components/Button';
+import Big from 'big.js';
 import {
   Layout, ModalBlock, ModalIcon,
 } from '../styles';
@@ -18,12 +19,19 @@ import AddPoolSettings from './AddPoolSetting';
 export default function AddPoolModal() {
   const { inputToken, outputToken } = useStore();
   const { isAddPollModalOpen, setAddPoolModalOpen } = useModalsStore();
+  const [fee, setFee] = useState('0.30');
+
+  const canAddPool = !!fee
+  && new Big(fee).gt('0.01')
+  && new Big(fee).lt('20')
+  && !!inputToken
+  && !!outputToken;
 
   return (
     <>
       {isAddPollModalOpen && (
       <Layout onClick={() => setAddPoolModalOpen(false)}>
-        <LiquidityModalContainer onClick={(e:any) => e.stopPropagation()}>
+        <LiquidityModalContainer onClick={(e) => e.stopPropagation()}>
           <ModalBlock>
             <ModalIcon onClick={() => setAddPoolModalOpen(false)}>
               <BackArrow />
@@ -41,9 +49,14 @@ export default function AddPoolModal() {
               token={outputToken}
               tokenType={TokenType.Output}
             />
-            <AddPoolSettings />
+            <AddPoolSettings
+              fee={fee}
+              setFee={setFee}
+            />
             <ButtonPrimary
-              onClick={() => console.log('Create Pool')}
+              onClick={() => {
+                if (canAddPool) { console.log('add pool'); }
+              }}
             >
               <AddIconContainer />
               Create Pool
