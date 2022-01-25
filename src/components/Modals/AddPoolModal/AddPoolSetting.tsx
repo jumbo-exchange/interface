@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import Big from 'big.js';
+import Toggle from 'components/Toggle';
 import { ReactComponent as Info } from 'assets/images-app/info.svg';
-import { ReactComponent as Minus } from 'assets/images-app/minus.svg';
-import { ReactComponent as Plus } from 'assets/images-app/plus.svg';
+import { poolFeeOptions } from 'utils/constants';
 
 const Container = styled.div`
   display: flex;
@@ -27,73 +28,9 @@ const Title = styled.p`
 
 const TotalFeeBlock = styled.div`
   display: flex;
+  flex-direction: column;
   width: 100%;
-  margin-bottom: 2.25rem;
-`;
-
-const InputBlock = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const Input = styled.input`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  outline: none;
-  background-color: ${({ theme }) => theme.backgroundCard};
-  color: ${({ theme }) => theme.globalWhite};
-  border: 1px solid ${({ theme }) => theme.globalGreyOp04};
-  border-radius: 8px;
-  width: 93px;
-  height: 40px;
-  margin: 0 .5rem;
-  text-align: center;
-
-  ::-webkit-outer-spin-button,
-  ::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-  }
-`;
-
-const LogoContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  svg {
-    justify-self: center;
-  }
-  :hover {
-  cursor: pointer;
-  background-color: ${({ theme }) => theme.globalGreyOp02};
-    svg {
-      path {
-        fill: ${({ theme }) => theme.globalWhite};
-      }
-    }
-  }
-`;
-
-const ButtonBlock = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: center;
-`;
-
-const PercentBtn = styled.button`
-  outline: none;
-  border: none;
-  background-color: transparent;
-  color: ${({ theme }) => theme.globalGrey};
-  margin: 0 .5rem;
-  padding: 0;
-  :hover {
-    cursor: pointer;
-    color: ${({ theme }) => theme.globalWhite};
-  }
+  margin-bottom: 1.25rem;
 `;
 
 const Column = styled.div`
@@ -127,52 +64,100 @@ const LabelTitle = styled.p`
   margin: 0;
 `;
 
-export default function AddPoolSettings() {
-  const [inputSlippage, setInputSlippage] = useState<number>(0.2);
+const Error = styled.div`
+  font-style: normal;
+  margin-top: 1rem;
+  font-weight: 300;
+  font-size: .75rem;
+  line-height: .875rem;
+  color: ${({ theme }) => theme.error};
+`;
 
-  const information = [
+export default function AddPoolSettings(
+  {
+    fee,
+    setFee,
+  }:{
+    fee: string;
+    setFee:(fee:string) => void
+  },
+) {
+  const [errorKey, setErrorKey] = useState<string>();
+
+  const feeList = [
     {
       title: 'LP Fee',
-      label: '0.16%',
+      percent: 80,
     },
     {
       title: 'Protocol Fee',
-      label: '0.032%',
+      percent: 16,
     },
     {
       title: 'Referral Fee',
-      label: '0.032%',
+      percent: 4,
     },
   ];
+
+  const getCurFee = (percent: number) => {
+    let result;
+    if (
+      !!fee
+      && new Big(fee).gt('0.01')
+      && new Big(fee).lt('20')
+    ) {
+      result = new Big(fee)
+        .mul(percent)
+        .div('100')
+        .toFixed();
+    } else {
+      result = '-';
+    }
+    return `${result} %`;
+  };
+
+  const onChange = (value:string) => {
+    setFee(value);
+    if (!value || Number(value) <= 0) {
+      setErrorKey('noValid');
+      return;
+    }
+    const bigValue = new Big(value);
+    if (!bigValue.gt('0.01')) {
+      setErrorKey('moreThan');
+      return;
+    }
+    if (!bigValue.lt('20')) {
+      setErrorKey('lessThan');
+      return;
+    }
+
+    setFee(bigValue.toString());
+
+    setErrorKey('');
+  };
 
   return (
     <Container>
       <Title>Total Fee <LogoInfo /> </Title>
       <TotalFeeBlock>
-        <InputBlock>
-          <LogoContainer onClick={() => setInputSlippage(inputSlippage - 1)}>
-            <Minus />
-          </LogoContainer>
-          <Input
-            type="number"
-            value={inputSlippage}
-            onChange={(event) => setInputSlippage(event.target.valueAsNumber)}
-          />
-          <LogoContainer onClick={() => setInputSlippage(inputSlippage + 1)}>
-            <Plus />
-          </LogoContainer>
-        </InputBlock>
-        <ButtonBlock>
-          <PercentBtn>0.2%</PercentBtn>
-          <PercentBtn>0.3%</PercentBtn>
-          <PercentBtn>0.6%</PercentBtn>
-        </ButtonBlock>
+        <Toggle
+          value={fee}
+          coefficient={0.5}
+          options={poolFeeOptions}
+          onChange={onChange}
+        />
+        {errorKey && (
+          <Error>
+            Your transaction may be frontrun
+          </Error>
+        )}
       </TotalFeeBlock>
       <Column>
-        {information.map(({ title, label }) => (
+        {feeList.map(({ title, percent }) => (
           <Row key={title}>
             <RowTitle>{title} <LogoInfo /> </RowTitle>
-            <LabelTitle>{label}</LabelTitle>
+            <LabelTitle>{getCurFee(percent)}</LabelTitle>
           </Row>
         ))}
       </Column>

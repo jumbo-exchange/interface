@@ -7,3 +7,8 @@ export const hapiLink = 'https://hapi.one/';
 export const tooltipTitle = {
   back: 'Back',
 };
+export const poolFeeOptions = [
+  { label: '0.20%', value: '0.20' },
+  { label: '0.30%', value: '0.30' },
+  { label: '0.60%', value: '0.60' },
+];

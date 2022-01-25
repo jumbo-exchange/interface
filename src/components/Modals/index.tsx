@@ -1,7 +1,6 @@
 import React from 'react';
 import AccountModal from './AccountModal';
 import LiquidityModal from './LiquidityModal';
-import AddPoolModal from './AddPoolModal';
 import SearchModal from './SearchModal';
 
 export default function Modals({ children }: {children: JSX.Element}) {
@@ -9,7 +8,6 @@ export default function Modals({ children }: {children: JSX.Element}) {
     <>
       <AccountModal />
       <LiquidityModal />
-      <AddPoolModal />
       <SearchModal />
       {children}
     </>

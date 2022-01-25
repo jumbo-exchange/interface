@@ -17,7 +17,7 @@ const Container = styled.div`
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     padding: 10px 16px 10px 10px;
   }
-  `}
+  `};
   :hover {
     border: 2px solid ${({ theme }) => theme.pink};
     padding: 11px 21px 11px 11px;
@@ -30,7 +30,7 @@ const Container = styled.div`
     ${({ theme }) => theme.mediaWidth.upToExtraSmall`
       padding: 9px 15px 9px 9px;
     }
-  `}
+  `};
   }
 `;
 
