@@ -1,4 +1,4 @@
-import React, { useState, useEffect, PropsWithChildren } from 'react';
+import React, { useState, PropsWithChildren } from 'react';
 
 import styled from 'styled-components';
 
@@ -72,24 +72,6 @@ export default function Tooltip(
 ) {
   const [show, setShow] = useState(false);
   const [mouseDisabled, setMouseDisabled] = useState(false);
-  // const [mobile, setMobile] = useState<boolean | null>(null);
-
-  // const handleCheckDevice = () => {
-  //   if (window.innerWidth < 500 || isMobile) {
-  //     setMobile(true);
-  //   } else {
-  //     setMobile(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   handleCheckDevice();
-  //   window.addEventListener('resize', handleCheckDevice);
-
-  //   return () => {
-  //     window.removeEventListener('resize', handleCheckDevice);
-  //   };
-  // }, []);
 
   const mouseEventDisabled = () => (mouseDisabled || window.innerWidth < 500 || isMobile);
 
