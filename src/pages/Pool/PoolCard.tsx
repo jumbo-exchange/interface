@@ -4,6 +4,7 @@ import { IPool, useModalsStore, useStore } from 'store';
 import styled from 'styled-components';
 import { SpecialContainer } from 'components/SpecialContainer';
 import { ReactComponent as InfoIcon } from 'assets/images-app/info.svg';
+import Tooltip from 'components/Tooltip';
 
 const Wrapper = styled(SpecialContainer)`
   max-width: 736px;
@@ -155,7 +156,10 @@ export default function PoolCard({ pool } : {pool:IPool}) {
         <BlockVolume>
           {volume.map((el) => (
             <Column key={el.title}>
-              <TitleVolume>{el.title} <LogoInfo /></TitleVolume>
+              <TitleVolume>
+                {el.title}
+                <Tooltip title="YES" />
+              </TitleVolume>
               <LabelVolume>{el.label}</LabelVolume>
             </Column>
           ))}
