@@ -95,13 +95,18 @@ export default function Toggle({
   onChange: (value: string) => void;
 }) {
   const getMinus = () => {
-    if (Number(value) <= coefficient || Number(value) === 0) return;
-    const minus = (Number(value) - coefficient).toFixed(2);
-    onChange(minus);
+    if (Number(value) <= coefficient || Number(value) === 0) {
+      onChange('0');
+      return;
+    }
+    onChange((Number(value) - coefficient).toFixed(2));
   };
   const getPlus = () => {
-    const minus = (Number(value) + coefficient).toFixed(2);
-    onChange(minus);
+    if (Number(value) + coefficient >= 100 || Number(value) === 100) {
+      onChange('100');
+      return;
+    }
+    onChange((Number(value) + coefficient).toFixed(2));
   };
 
   return (
