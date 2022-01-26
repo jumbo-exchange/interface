@@ -30,18 +30,26 @@ import {
 } from './styles';
 
 const RenderButton = ({
+  disabled,
   isConnected,
   swapToken,
-  title,
   setAccountModalOpen,
 }:{
+  disabled:boolean,
   isConnected:boolean,
   swapToken:() => void,
-  title: string,
   setAccountModalOpen: (isOpen: boolean) => void,
 }) => {
+  const title = isConnected ? 'Swap' : 'Connect wallet';
+
   if (isConnected) {
-    return <ButtonPrimary onClick={swapToken}>{title}</ButtonPrimary>;
+    return (
+      <ButtonPrimary
+        onClick={swapToken}
+        disabled={disabled}
+      >{title}
+      </ButtonPrimary>
+    );
   }
   return (
     <ButtonSecondary onClick={() => setAccountModalOpen(true)}>
@@ -70,10 +78,9 @@ export default function Swap() {
   const [slippageTolerance, setSlippageTolerance] = useState<string>(SLIPPAGE_TOLERANCE_DEFAULT);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
 
+  const canSwap = !!slippageTolerance && (!!inputTokenValue && !!outputTokenValue);
+
   const isConnected = wallet.isSignedIn();
-  const title = isConnected
-    ? 'Swap'
-    : 'Connect wallet';
   const exchangeLabel = `1 ${getUpperCase(inputToken?.metadata.symbol ?? '')} ≈ 4923.333 ${getUpperCase(outputToken?.metadata.symbol ?? '')}`;
 
   const openModal = useCallback(
@@ -179,7 +186,7 @@ export default function Swap() {
         </SettingsHeader>
       </SettingsBlock>
       {
-        inputTokenValue && (
+        (inputTokenValue || outputTokenValue) && (
         <SwapInformation>
           <RouteBlock>
             <TitleInfo>Route <LogoInfo /> </TitleInfo>
@@ -195,9 +202,9 @@ export default function Swap() {
         )
       }
       <RenderButton
+        disabled={!canSwap}
         isConnected={isConnected}
         swapToken={swapToken}
-        title={title}
         setAccountModalOpen={setAccountModalOpen}
       />
     </Container>
