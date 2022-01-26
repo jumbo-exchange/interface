@@ -1,9 +1,11 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { ButtonPrimary, ButtonSecondary } from 'components/Button';
 import { wallet } from 'services/near';
 import { getUpperCase } from 'utils';
 import { useStore, useModalsStore, TokenType } from 'store';
 import SwapContract from 'services/SwapContract';
+import useDebounce from 'utils/hooks';
+import { formatTokenAmount, parseTokenAmount } from 'services/FungibleToken';
 import Input from './SwapInput';
 import SwapSettings from './SwapSettings';
 import {
@@ -28,6 +30,8 @@ import {
   LogoInfo,
 } from './styles';
 
+const swapContract = new SwapContract();
+const DEBOUNCE_VALUE = 1000;
 const RenderSettings = ({ isSettingsOpen }: {isSettingsOpen:boolean}) => {
   if (isSettingsOpen) {
     return <SwapSettings />;
@@ -40,14 +44,16 @@ const RenderButton = ({
   swapToken,
   title,
   setAccountModalOpen,
+  disabled = false,
 }:{
   isConnected:boolean,
   swapToken:() => void,
   title: string,
   setAccountModalOpen: (isOpen: boolean) => void,
+  disabled?: boolean
 }) => {
   if (isConnected) {
-    return <ButtonPrimary onClick={swapToken}>{title}</ButtonPrimary>;
+    return <ButtonPrimary disabled={disabled} onClick={swapToken}>{title}</ButtonPrimary>;
   }
   return (
     <ButtonSecondary onClick={() => setAccountModalOpen(true)}>
@@ -67,12 +73,15 @@ export default function Swap() {
     loading,
     pools,
     currentPools,
+    tokens,
   } = useStore();
 
   const { setAccountModalOpen, setSearchModalOpen } = useModalsStore();
-
+  const [independentField, setIndependentField] = useState(TokenType.Input);
   const [inputTokenValue, setInputTokenValue] = useState<string>('');
+  const debouncedInputValue = useDebounce(inputTokenValue, DEBOUNCE_VALUE);
   const [outputTokenValue, setOutputTokenValue] = useState<string>('');
+  const debouncedOutputValue = useDebounce(outputTokenValue, DEBOUNCE_VALUE);
 
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
 
@@ -96,15 +105,80 @@ export default function Swap() {
     setInputToken(oldOutputToken);
   };
 
+  useEffect(() => {
+    if (!inputToken || !outputToken || !debouncedInputValue) return;
+    if (independentField === TokenType.Input) {
+      const formattedValue = parseTokenAmount(debouncedInputValue, inputToken.metadata.decimals);
+      swapContract.getReturnForPools(
+        currentPools,
+        formattedValue,
+        inputToken.contract,
+        outputToken.contract,
+      ).then((minOutput) => {
+        const lastIndex = minOutput.length - 1;
+        setOutputTokenValue(
+          formatTokenAmount(
+            minOutput[lastIndex],
+            outputToken.metadata.decimals,
+            5,
+          ),
+        );
+      });
+    }
+  }, [debouncedInputValue]);
+
+  useEffect(() => {
+    if (!inputToken || !outputToken || !debouncedOutputValue) return;
+    if (independentField === TokenType.Output) {
+      const formattedValue = parseTokenAmount(debouncedOutputValue, outputToken.metadata.decimals);
+      swapContract.getReturnForPools(
+        currentPools,
+        formattedValue,
+        outputToken.contract,
+        inputToken.contract,
+      ).then((minOutput) => {
+        const lastIndex = minOutput.length - 1;
+        setInputTokenValue(
+          formatTokenAmount(
+            minOutput[lastIndex],
+            inputToken.metadata.decimals, 5,
+          ),
+        );
+      });
+    }
+  }, [debouncedOutputValue]);
+
+  const handleAmountChange = async (tokenType: TokenType, value: string) => {
+    if (tokenType === TokenType.Input) {
+      setInputTokenValue(value);
+    } else {
+      setOutputTokenValue(value);
+    }
+  };
+
+  const handleInputChange = useCallback(
+    (value: string) => {
+      setIndependentField(TokenType.Input);
+      handleAmountChange(TokenType.Input, value);
+    }, [],
+  );
+
+  const handleOutputChange = useCallback(
+    (value: string) => {
+      setIndependentField(TokenType.Output);
+      handleAmountChange(TokenType.Output, value);
+    }, [],
+  );
+
   const swapToken = async () => {
     if (!inputToken || !outputToken) return;
-    const swapContract = new SwapContract();
+    const formattedValue = parseTokenAmount(inputTokenValue, inputToken.metadata.decimals);
+
     await swapContract.swap({
-      accountId: 'solniechniy.testnet',
       inputToken: inputToken.contract,
       outputToken: outputToken.contract,
-      amount: '100000000000000000000',
-      pools: [pools[4], pools[3]],
+      amount: formattedValue,
+      pools: currentPools,
     });
   };
 
@@ -132,7 +206,7 @@ export default function Swap() {
   ];
   const intersectionToken = currentPools.length === 2
     ? currentPools[0].tokenAccountIds.find((el) => el !== inputToken?.contractId) : null;
-
+  const isSwapAvailable = currentPools.length > 0;
   return (
     <Container>
       <ActionContainer>
@@ -141,7 +215,7 @@ export default function Swap() {
           token={inputToken}
           tokenType={TokenType.Input}
           value={inputTokenValue}
-          setValue={setInputTokenValue}
+          setValue={handleInputChange}
           balance={balances[inputToken?.contractId ?? '']}
         />
         <ChangeTokenContainer onClick={changeToken}>
@@ -153,9 +227,8 @@ export default function Swap() {
           token={outputToken}
           tokenType={TokenType.Output}
           value={outputTokenValue}
-          setValue={setOutputTokenValue}
+          setValue={handleOutputChange}
           balance={balances[outputToken?.contractId ?? '']}
-          disabled
         />
       </ActionContainer>
       <ExchangeBlock>
@@ -206,6 +279,7 @@ export default function Swap() {
         swapToken={swapToken}
         title={title}
         setAccountModalOpen={setAccountModalOpen}
+        disabled={!isSwapAvailable}
       />
     </Container>
   );

@@ -4,7 +4,7 @@ import { escapeRegExp, inputRegex } from 'utils/index';
 
 interface IInputPanel {
   value: string;
-  setValue: any;
+  setValue: (value: string)=> void;
   disabled?: boolean;
 }
 
@@ -25,7 +25,7 @@ export const Input = styled.input`
   transition: all 1s ease-out;
 `;
 
-export default function CurrencyInputPanel({ value, setValue, disabled = false }:IInputPanel) {
+export default function CurrencyInputPanel({ value, setValue, disabled = false }: IInputPanel) {
   const enforcer = (nextUserInput: string) => {
     if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {
       setValue(nextUserInput);

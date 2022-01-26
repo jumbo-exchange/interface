@@ -84,7 +84,7 @@ export const StoreContextProvider = (
 
       const tokensMetadata: any[] = await Promise.all(
         tokenAddresses.map(async (address: string) => {
-          const ftTokenContract: any = new FungibleTokenContract(
+          const ftTokenContract: FungibleTokenContract = new FungibleTokenContract(
             { wallet: nearWallet, contractId: address },
           );
           const metadata = await ftTokenContract.getMetadata();

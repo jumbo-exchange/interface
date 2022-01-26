@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction } from 'react';
+import FungibleTokenContract from 'services/FungibleToken';
 import SpecialWallet from 'services/wallet';
 
 export enum StatusLink { Swap = 'swap', Pool ='pool', Farm = 'farm' }
@@ -23,7 +24,7 @@ export interface IPool {
 }
 
 export interface IToken {
-  contract: any;
+  contract: FungibleTokenContract;
   contractId: string;
   metadata: ITokenMetadata;
 }
