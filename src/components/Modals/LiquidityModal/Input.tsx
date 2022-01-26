@@ -6,7 +6,8 @@ import Big from 'big.js';
 
 import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { formatAmount, getUpperCase } from 'utils';
-import { IToken, TokenType } from 'store';
+import { TokenType } from 'store';
+import FungibleTokenContract from 'services/FungibleToken';
 
 const Block = styled.div`
   display: flex;
@@ -122,7 +123,7 @@ const TokenContainer = styled.div`
 
 const getCurrentBalance = (
   currentBalance: Big,
-  token: IToken | null,
+  token: FungibleTokenContract | null,
 ) => {
   const newBalance = formatAmount(currentBalance.toFixed() ?? 0, token?.metadata.decimals);
   if (newBalance !== '0') {
@@ -139,7 +140,7 @@ export default function Input({
   balance,
 }:
 {
-  token: IToken | null,
+  token: FungibleTokenContract | null,
   tokenType: TokenType,
   value: string,
   setValue: any,

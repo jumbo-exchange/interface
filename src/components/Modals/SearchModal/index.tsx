@@ -4,8 +4,9 @@ import { ReactComponent as CloseIcon } from 'assets/images-app/close.svg';
 import { ReactComponent as SearchIcon } from 'assets/images-app/search-icon.svg';
 
 import {
-  initialModalsState, IToken, useModalsStore, useStore,
+  initialModalsState, useModalsStore, useStore,
 } from 'store';
+import FungibleTokenContract from 'services/FungibleToken';
 import {
   Layout, Modal, ModalBlock, ModalTitle, ModalIcon,
 } from '../styles';
@@ -129,7 +130,7 @@ export default function SearchModal() {
   const { isSearchModalOpen, setSearchModalOpen } = useModalsStore();
 
   const initialTokens = Object.values(tokens);
-  const [tokensArray, setTokensArray] = useState<IToken[]>([]);
+  const [tokensArray, setTokensArray] = useState<FungibleTokenContract[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
 
   const onChange = ({ target }: {target: HTMLInputElement}) => {

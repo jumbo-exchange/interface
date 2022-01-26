@@ -3,9 +3,10 @@ import Big from 'big.js';
 import styled from 'styled-components';
 import { wallet } from 'services/near';
 import {
-  initialModalsState, IToken, TokenType, useModalsStore, useStore,
+  initialModalsState, TokenType, useModalsStore, useStore,
 } from 'store';
 import { formatAmount } from 'utils';
+import FungibleTokenContract from 'services/FungibleToken';
 
 interface ICurrentToken {
   isActive?: boolean
@@ -132,7 +133,7 @@ const SearchSubtitle = styled.div`
 
 const getCurrentBalance = (
   balances: {[key: string]: string;},
-  token: IToken,
+  token: FungibleTokenContract,
 ) => {
   const currentBalance = formatAmount(balances[token.contractId], token.metadata.decimals);
   if (currentBalance !== '0') {
@@ -143,7 +144,7 @@ const getCurrentBalance = (
 
 const getCurrentPrice = (
   balances: {[key: string]: string;},
-  token: IToken,
+  token: FungibleTokenContract,
 ) => {
   const currentBalance = formatAmount(balances[token.contractId], token.metadata.decimals);
   if (currentBalance !== '0') {
@@ -153,9 +154,9 @@ const getCurrentPrice = (
 };
 
 const getCurrentToken = (
-  inputToken: IToken | null,
-  outputToken: IToken | null,
-  token: IToken | null,
+  inputToken: FungibleTokenContract | null,
+  outputToken: FungibleTokenContract | null,
+  token: FungibleTokenContract | null,
   tokenType: TokenType,
 ) => {
   if (inputToken === token && tokenType === TokenType.Input) {
@@ -166,7 +167,7 @@ const getCurrentToken = (
   return false;
 };
 
-export default function SearchRow({ tokensArray }:{tokensArray: IToken[]}) {
+export default function SearchRow({ tokensArray }:{tokensArray: FungibleTokenContract[]}) {
   const isConnected = wallet.isSignedIn();
   const {
     loading,

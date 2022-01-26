@@ -1,8 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import {
-  initialModalsState, IToken, useModalsStore, useStore,
+  initialModalsState, useModalsStore, useStore,
 } from 'store';
+import FungibleTokenContract from 'services/FungibleToken';
 
 const Container = styled.div`
   display: flex;
@@ -85,7 +86,7 @@ const TokenTitle = styled.div`
   line-height: 1.188rem;
 `;
 
-export default function PopularToken({ tokensArray } : {tokensArray: IToken[]}) {
+export default function PopularToken({ tokensArray } : {tokensArray: FungibleTokenContract[]}) {
   const {
     loading,
     setCurrentToken,
