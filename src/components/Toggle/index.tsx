@@ -1,5 +1,6 @@
-import React, { useState, PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
 import styled from 'styled-components';
+import { MAX_TOGGLE_AMOUNT, MIN_TOGGLE_AMOUNT } from 'utils/constants';
 import { ReactComponent as Minus } from 'assets/images-app/minus.svg';
 import { ReactComponent as Plus } from 'assets/images-app/plus.svg';
 
@@ -16,6 +17,7 @@ const InputBlock = styled.div`
   display: flex;
   align-items: center;
 `;
+// TODO: when the warm stroke worked red
 const WrapperInput = styled.div`
   display: flex;
   align-items: center;
@@ -95,15 +97,15 @@ export default function Toggle({
   onChange: (value: string) => void;
 }) {
   const getMinus = () => {
-    if (Number(value) <= coefficient || Number(value) === 0) {
-      onChange('0');
+    if (Number(value) <= coefficient || Number(value) === MIN_TOGGLE_AMOUNT) {
+      onChange(MIN_TOGGLE_AMOUNT.toString());
       return;
     }
     onChange((Number(value) - coefficient).toFixed(2));
   };
   const getPlus = () => {
-    if (Number(value) + coefficient >= 100 || Number(value) === 100) {
-      onChange('100');
+    if (Number(value) + coefficient >= MAX_TOGGLE_AMOUNT || Number(value) === MAX_TOGGLE_AMOUNT) {
+      onChange(MAX_TOGGLE_AMOUNT.toString());
       return;
     }
     onChange((Number(value) + coefficient).toFixed(2));

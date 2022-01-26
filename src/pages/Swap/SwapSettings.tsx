@@ -2,8 +2,14 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Toggle from 'components/Toggle';
 import Tooltip from 'components/Tooltip';
-import { slippageToleranceOptions, tooltipTitle } from 'utils/constants';
 import Big from 'big.js';
+import {
+  slippageToleranceOptions,
+  tooltipTitle,
+  MIN_SLIPPAGE_TOLERANCE,
+  MAX_SLIPPAGE_TOLERANCE,
+  COEFFICIENT_SLIPPAGE,
+} from 'utils/constants';
 
 // TODO: add transition to container
 const Container = styled.div`
@@ -52,17 +58,19 @@ export default function SwapSettings(
   const [error, setError] = useState(false);
 
   const onChange = (value:string) => {
-    setSlippageTolerance(value);
     if (!value || Number(value) <= 0) {
+      setSlippageTolerance(MIN_SLIPPAGE_TOLERANCE.toString());
       setError(true);
       return;
     }
     const bigValue = new Big(value);
-    if (!bigValue.gt('0.01')) {
+    if (!bigValue.gt(MIN_SLIPPAGE_TOLERANCE)) {
+      setSlippageTolerance(MIN_SLIPPAGE_TOLERANCE.toString());
       setError(true);
       return;
     }
-    if (!bigValue.lt('101')) {
+    if (!bigValue.lt(MAX_SLIPPAGE_TOLERANCE + 1)) {
+      setSlippageTolerance(MAX_SLIPPAGE_TOLERANCE.toString());
       setError(true);
       return;
     }
@@ -81,7 +89,7 @@ export default function SwapSettings(
       <SlippageBlock>
         <Toggle
           value={slippageTolerance}
-          coefficient={0.5}
+          coefficient={COEFFICIENT_SLIPPAGE}
           options={slippageToleranceOptions}
           onChange={onChange}
         />

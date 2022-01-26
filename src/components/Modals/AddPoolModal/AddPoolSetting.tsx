@@ -3,7 +3,12 @@ import styled from 'styled-components';
 import Big from 'big.js';
 import Toggle from 'components/Toggle';
 import Tooltip from 'components/Tooltip';
-import { poolFeeOptions } from 'utils/constants';
+import {
+  poolFeeOptions,
+  MAX_TOTAL_FEE,
+  MIN_TOTAL_FEE,
+  COEFFICIENT_TOTAL_FEE,
+} from 'utils/constants';
 
 const Container = styled.div`
   display: flex;
@@ -100,8 +105,8 @@ export default function AddPoolSettings(
     let result;
     if (
       !!fee
-      && new Big(fee).gt('0.01')
-      && new Big(fee).lt('20')
+      && new Big(fee).gt(MIN_TOTAL_FEE)
+      && new Big(fee).lt(MAX_TOTAL_FEE)
     ) {
       result = new Big(fee)
         .mul(percent)
@@ -114,17 +119,19 @@ export default function AddPoolSettings(
   };
 
   const onChange = (value:string) => {
-    setFee(value);
     if (!value || Number(value) <= 0) {
+      setFee(MIN_TOTAL_FEE.toString());
       setError(true);
       return;
     }
     const bigValue = new Big(value);
-    if (!bigValue.gt('0.01')) {
+    if (!bigValue.gt(MIN_TOTAL_FEE)) {
+      setFee(MIN_TOTAL_FEE.toString());
       setError(true);
       return;
     }
-    if (!bigValue.lt('20')) {
+    if (!bigValue.lt(MAX_TOTAL_FEE)) {
+      setFee(MAX_TOTAL_FEE.toString());
       setError(true);
       return;
     }
@@ -140,7 +147,7 @@ export default function AddPoolSettings(
       <TotalFeeBlock>
         <Toggle
           value={fee}
-          coefficient={0.5}
+          coefficient={COEFFICIENT_TOTAL_FEE}
           options={poolFeeOptions}
           onChange={onChange}
         />
