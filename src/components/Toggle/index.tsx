@@ -3,13 +3,6 @@ import styled from 'styled-components';
 import { ReactComponent as Minus } from 'assets/images-app/minus.svg';
 import { ReactComponent as Plus } from 'assets/images-app/plus.svg';
 
-export interface IToggle {
-  value: string;
-  coefficient: number;
-  options: Array<{ label: string; value: string }>;
-  onChange?: (value: string) => void;
-}
-
 interface IActive {
   isActive?: boolean
 }
@@ -91,15 +84,24 @@ const PercentBtn = styled.button<PropsWithChildren<IActive>>`
 `;
 
 export default function Toggle({
-  value, coefficient, options, onChange,
-}: IToggle) {
-  const [inputValue, setInputValue] = useState<string>(value);
+  value,
+  coefficient,
+  options,
+  onChange,
+}:{
+  value: string;
+  coefficient: number;
+  options: Array<{ label: string; value: string }>;
+  onChange: (value: string) => void;
+}) {
   const getMinus = () => {
-    if (Number(inputValue) <= coefficient || Number(inputValue) === 0) return;
-    setInputValue((prevState) => (Number(prevState) - coefficient).toFixed(2));
+    if (Number(value) <= coefficient || Number(value) === 0) return;
+    const minus = (Number(value) - coefficient).toFixed(2);
+    onChange(minus);
   };
   const getPlus = () => {
-    setInputValue((prevState) => (Number(prevState) + coefficient).toFixed(2));
+    const minus = (Number(value) + coefficient).toFixed(2);
+    onChange(minus);
   };
 
   return (
@@ -111,10 +113,9 @@ export default function Toggle({
         <WrapperInput>
           <Input
             type="number"
-            value={inputValue}
+            value={value}
             onChange={(event) => {
-              setInputValue(event.target.value);
-              if (onChange) onChange(event.target.value);
+              onChange(event.target.value);
             }}
           />
           %
@@ -125,14 +126,13 @@ export default function Toggle({
       </InputBlock>
       <ButtonBlock>
         {options.map((element) => {
-          const active = Number(element.value) === Number(inputValue);
+          const active = Number(element.value) === Number(value);
           return (
             <PercentBtn
               key={element.value}
               isActive={active}
               onClick={() => {
-                setInputValue(element.value);
-                if (onChange) onChange(element.value);
+                onChange(element.value);
               }}
             >
               {element.label}

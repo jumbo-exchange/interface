@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
+import Big from 'big.js';
 import { useModalsStore, TokenType, useStore } from 'store';
 import { ReactComponent as BackArrow } from 'assets/images-app/icon-back.svg';
-
+import { TOTAL_FEE_DEFAULT } from 'utils/constants';
 import { ButtonPrimary } from 'components/Button';
-import Big from 'big.js';
-import {
-  Layout, ModalBlock, ModalIcon,
-} from '../styles';
+import { Layout, ModalBlock, ModalIcon } from '../styles';
 import {
   LiquidityModalContainer,
   ModalTitle,
@@ -19,7 +17,7 @@ import AddPoolSettings from './AddPoolSetting';
 export default function AddPoolModal() {
   const { inputToken, outputToken } = useStore();
   const { isAddPollModalOpen, setAddPoolModalOpen } = useModalsStore();
-  const [fee, setFee] = useState('0.30');
+  const [fee, setFee] = useState(TOTAL_FEE_DEFAULT);
 
   const canAddPool = !!fee
   && new Big(fee).gt('0.01')

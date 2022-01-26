@@ -3,6 +3,7 @@ import { ButtonPrimary, ButtonSecondary } from 'components/Button';
 import { wallet } from 'services/near';
 import { getUpperCase } from 'utils';
 import { useStore, useModalsStore, TokenType } from 'store';
+import { SLIPPAGE_TOLERANCE_DEFAULT } from 'utils/constants';
 import SwapContract from 'services/SwapContract';
 import Input from './SwapInput';
 import SwapSettings from './SwapSettings';
@@ -27,13 +28,6 @@ import {
   LabelInfo,
   LogoInfo,
 } from './styles';
-
-const RenderSettings = ({ isSettingsOpen }: {isSettingsOpen:boolean}) => {
-  if (isSettingsOpen) {
-    return <SwapSettings />;
-  }
-  return null;
-};
 
 const RenderButton = ({
   isConnected,
@@ -73,6 +67,7 @@ export default function Swap() {
   const [inputTokenValue, setInputTokenValue] = useState<string>('');
   const [outputTokenValue, setOutputTokenValue] = useState<string>('');
 
+  const [slippageTolerance, setSlippageTolerance] = useState<string>(SLIPPAGE_TOLERANCE_DEFAULT);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
 
   const isConnected = wallet.isSignedIn();
@@ -125,7 +120,7 @@ export default function Swap() {
     },
     {
       title: 'Slippage Tolerance',
-      label: '0.50%',
+      label: `${slippageTolerance}%`,
       color: false,
     },
   ];
@@ -164,7 +159,15 @@ export default function Swap() {
         </ExchangeLabel>
       </ExchangeBlock>
       <SettingsBlock>
-        <RenderSettings isSettingsOpen={isSettingsOpen} />
+        {
+          isSettingsOpen
+            ? (
+              <SwapSettings
+                slippageTolerance={slippageTolerance}
+                setSlippageTolerance={setSlippageTolerance}
+              />
+            ) : null
+        }
         <SettingsHeader>
           <SettingsLabel
             isActive={isSettingsOpen}

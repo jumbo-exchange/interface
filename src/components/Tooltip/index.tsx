@@ -1,8 +1,5 @@
 import React, { useState, PropsWithChildren } from 'react';
-
 import styled from 'styled-components';
-
-import { isMobile } from 'utils/userAgent';
 import { ReactComponent as Info } from 'assets/images-app/info.svg';
 
 interface IBottom {
@@ -71,24 +68,11 @@ export default function Tooltip(
   },
 ) {
   const [show, setShow] = useState(false);
-  const [mouseDisabled, setMouseDisabled] = useState(false);
-
-  const mouseEventDisabled = () => (mouseDisabled || window.innerWidth < 500 || isMobile);
-
-  const handleClick = () => {
-    setShow(true);
-    setMouseDisabled(true);
-    setTimeout(() => {
-      setMouseDisabled(false);
-      setShow(false);
-    }, 3000);
-  };
 
   return (
     <Container
-      onMouseOver={() => (!mouseEventDisabled() ? setShow(true) : null)}
-      onMouseOut={() => (!mouseEventDisabled() ? setShow(false) : null)}
-      onClick={handleClick}
+      onMouseOver={() => setShow(true)}
+      onMouseOut={() => setShow(false)}
     >
       {children || <Info />}
       {show
