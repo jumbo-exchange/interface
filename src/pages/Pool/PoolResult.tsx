@@ -1,7 +1,7 @@
 import React from 'react';
-import PoolCard from 'components/PoolCard';
 import styled from 'styled-components';
 import { useStore } from 'store';
+import PoolCard from './PoolCard';
 
 const Wrapper = styled.div`
   width: 100%;
