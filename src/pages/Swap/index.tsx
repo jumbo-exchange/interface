@@ -5,7 +5,7 @@ import { getUpperCase } from 'utils';
 import { useStore, useModalsStore, TokenType } from 'store';
 import SwapContract from 'services/SwapContract';
 import useDebounce from 'hooks/useDebounce';
-import { formatTokenAmount, parseTokenAmount } from 'services/FungibleToken';
+import { formatTokenAmount, parseTokenAmount } from 'utils/calculations';
 import Input from './SwapInput';
 import SwapSettings from './SwapSettings';
 import {
@@ -71,9 +71,7 @@ export default function Swap() {
     setOutputToken,
     balances,
     loading,
-    pools,
     currentPools,
-    tokens,
   } = useStore();
 
   const { setAccountModalOpen, setSearchModalOpen } = useModalsStore();

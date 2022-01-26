@@ -1,14 +1,13 @@
 import { functionCall } from 'near-api-js/lib/transaction';
 import { IPool } from 'store/interfaces';
 import { SWAP_FAILED, SWAP_TOKENS_NOT_IN_SWAP_POOL } from 'utils/errors';
+import { ONE_YOCTO_NEAR } from 'utils/constants';
 import FungibleTokenContract from './FungibleToken';
 import { getAmount, getGas, wallet } from './near';
 import { createContract, Transaction } from './wallet';
 import getConfig from './config';
 
-export const ONE_YOCTO_NEAR = '0.000000000000000000000001';
-const DIRECT_SWAP = 1;
-const INDIRECT_SWAP = 2;
+enum SWAP_ENUM { DIRECT_SWAP = 1, INDIRECT_SWAP = 2 }
 const basicViewMethods = ['ft_metadata', 'ft_balance_of', 'get_return'];
 const basicChangeMethods = ['swap'];
 const config = getConfig();
@@ -45,7 +44,7 @@ export default class SwapContract {
     tokenIn: FungibleTokenContract,
     tokenOut: FungibleTokenContract,
   ) {
-    if (pools.length === DIRECT_SWAP) {
+    if (pools.length === SWAP_ENUM.DIRECT_SWAP) {
       const [currentPool] = pools;
       const tokens = currentPool.tokenAccountIds;
       if (!tokens.includes(tokenIn.contractId) || !tokens.includes(tokenOut.contractId)) {
@@ -102,7 +101,7 @@ export default class SwapContract {
       pools, amount, inputToken, outputToken,
     );
 
-    if (pools.length === DIRECT_SWAP) {
+    if (pools.length === SWAP_ENUM.DIRECT_SWAP) {
       const [currentPool] = pools;
 
       return [{
@@ -112,7 +111,7 @@ export default class SwapContract {
         min_amount_out: firstMinOutput,
       }];
     }
-    if (pools.length === INDIRECT_SWAP) {
+    if (pools.length === SWAP_ENUM.INDIRECT_SWAP) {
       const [firstPool, secondPool] = pools;
       const firstPoolTokens = firstPool.tokenAccountIds;
       const secondPoolTokens = secondPool.tokenAccountIds;
