@@ -22,18 +22,12 @@ export interface IPool {
   volumes?: string;
   myShares?: string;
 }
-
-export interface IToken {
-  contract: FungibleTokenContract;
-  contractId: string;
-  metadata: ITokenMetadata;
-}
 export interface ITokenMetadata {
-  version:string;
-  name:string;
-  symbol:string;
-  reference:string;
-  decimals:number;
+  version: string;
+  name: string;
+  symbol: string;
+  reference: string;
+  decimals: number;
   icon: string;
 }
 
@@ -51,14 +45,14 @@ export type StoreContextType = {
   setPools: Dispatch<SetStateAction<IPool[]>>;
   currentPools: IPool[];
   setCurrentPools: (pools: IPool[]) => void;
-  tokens: {[key: string]: IToken};
-  setTokens: Dispatch<SetStateAction<{[key: string]: IToken}>>;
+  tokens: {[key: string]: FungibleTokenContract};
+  setTokens: Dispatch<SetStateAction<{[key: string]: FungibleTokenContract}>>;
   setCurrentToken: (tokenAddress: string, tokenType: TokenType) => void;
 
-  inputToken: IToken | null;
-  setInputToken: Dispatch<SetStateAction<IToken | null>>;
-  outputToken: IToken | null;
-  setOutputToken: Dispatch<SetStateAction<IToken | null>>;
+  inputToken: FungibleTokenContract | null;
+  setInputToken: Dispatch<SetStateAction<FungibleTokenContract | null>>;
+  outputToken: FungibleTokenContract | null;
+  setOutputToken: Dispatch<SetStateAction<FungibleTokenContract | null>>;
 }
 
 export const contractMethods = [

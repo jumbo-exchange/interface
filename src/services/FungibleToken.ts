@@ -2,6 +2,7 @@ import BN from 'bn.js';
 import Big from 'big.js';
 import * as nearApiJs from 'near-api-js';
 
+import { ITokenMetadata } from 'store';
 import { wallet } from './near';
 import SpecialWallet, { createContract, Transaction } from './wallet';
 import getConfig from './config';
@@ -38,6 +39,14 @@ interface FungibleTokenContractInterface {
   wallet: SpecialWallet;
   contractId: string;
 }
+const defaultMetadata = {
+  decimals: DECIMALS_DEFAULT_VALUE,
+  icon: ICON_DEFAULT_VALUE,
+  name: 'Token',
+  version: '0',
+  symbol: 'TKN',
+  reference: '',
+};
 
 export default class FungibleTokenContract {
   constructor(props: FungibleTokenContractInterface) {
@@ -59,10 +68,7 @@ export default class FungibleTokenContract {
 
   contractId = CONTRACT_ID;
 
-  metadata = {
-    decimals: DECIMALS_DEFAULT_VALUE,
-    icon: ICON_DEFAULT_VALUE,
-  };
+  metadata: ITokenMetadata = defaultMetadata;
 
   static getParsedTokenAmount(amount:string, symbol:string, decimals:number) {
     const parsedTokenAmount = symbol === 'NEAR'
@@ -92,10 +98,7 @@ export default class FungibleTokenContract {
     ) return this.metadata;
     // @ts-expect-error: Property 'ft_metadata' does not exist on type 'Contract'.
     const metadata = await this.contract.ft_metadata();
-    this.metadata = {
-      decimals: metadata.decimals ?? DECIMALS_DEFAULT_VALUE,
-      icon: metadata.icon ?? ICON_DEFAULT_VALUE,
-    };
+    this.metadata = { ...defaultMetadata, ...metadata };
     return metadata;
   }
 

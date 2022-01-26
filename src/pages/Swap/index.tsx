@@ -112,8 +112,8 @@ export default function Swap() {
       swapContract.getReturnForPools(
         currentPools,
         formattedValue,
-        inputToken.contract,
-        outputToken.contract,
+        inputToken,
+        outputToken,
       ).then((minOutput) => {
         const lastIndex = minOutput.length - 1;
         setOutputTokenValue(
@@ -134,8 +134,8 @@ export default function Swap() {
       swapContract.getReturnForPools(
         currentPools,
         formattedValue,
-        outputToken.contract,
-        inputToken.contract,
+        outputToken,
+        inputToken,
       ).then((minOutput) => {
         const lastIndex = minOutput.length - 1;
         setInputTokenValue(
@@ -175,8 +175,8 @@ export default function Swap() {
     const formattedValue = parseTokenAmount(inputTokenValue, inputToken.metadata.decimals);
 
     await swapContract.swap({
-      inputToken: inputToken.contract,
-      outputToken: outputToken.contract,
+      inputToken,
+      outputToken,
       amount: formattedValue,
       pools: currentPools,
     });

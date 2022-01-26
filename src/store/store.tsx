@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import { wallet as nearWallet } from 'services/near';
 import {
-  contractMethods, IPool, IToken, StoreContextType, TokenType,
+  contractMethods, IPool, StoreContextType, TokenType,
 } from 'store';
 import { formatPool, getPoolsPath } from 'utils';
 
@@ -52,10 +52,14 @@ export const StoreContextProvider = (
 
   const [pools, setPools] = useState<IPool[]>(initialState.pools);
   const [currentPools, setCurrentPools] = useState<IPool[]>(initialState.currentPools);
-  const [tokens, setTokens] = useState<{[key: string]: IToken}>(initialState.tokens);
+  const [tokens, setTokens] = useState<{[key: string]: FungibleTokenContract}>(initialState.tokens);
 
-  const [inputToken, setInputToken] = useState<IToken | null>(initialState.inputToken);
-  const [outputToken, setOutputToken] = useState<IToken | null>(initialState.outputToken);
+  const [inputToken, setInputToken] = useState<FungibleTokenContract | null>(
+    initialState.inputToken,
+  );
+  const [outputToken, setOutputToken] = useState<FungibleTokenContract | null>(
+    initialState.outputToken,
+  );
 
   const setCurrentToken = (tokenAddress: string, tokenType: TokenType) => {
     if (tokenType === TokenType.Output) {

@@ -10,8 +10,7 @@ const Wrapper = styled(SpecialContainer)`
   width: 100%;
   border-radius: 24px;
   justify-content: space-between;
-  margin: 0;
-  margin-bottom: 1rem;
+  margin: 0 0 1rem 0;
   & > div:first-child {
     margin-bottom: 1.5rem;
   }
@@ -97,7 +96,7 @@ const LabelVolume = styled.div`
 `;
 
 const LogoInfo = styled(InfoIcon)`
-  margin-left: 6.35px;
+  margin-left: 0.397rem;
 `;
 
 const BlockButton = styled.div`

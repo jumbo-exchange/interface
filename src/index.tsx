@@ -5,7 +5,6 @@ import './index.css';
 import {
   Route, BrowserRouter as Router, Routes,
 } from 'react-router-dom';
-import { LANDING } from 'utils/routes';
 import { ThemeProvider } from 'styled-components';
 import { StoreContextProvider, ModalsContextProvider } from 'store';
 
