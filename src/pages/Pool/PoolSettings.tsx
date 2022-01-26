@@ -1,12 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
-import { FilterButton } from 'components/Button';
+import { ButtonSecondary, FilterButton } from 'components/Button';
 import { ReactComponent as SearchIcon } from 'assets/images-app/search-icon.svg';
-import { ReactComponent as InfoIcon } from 'assets/images-app/info.svg';
 import { ReactComponent as ArrowDownIcon } from 'assets/images-app/icon-arrow-down.svg';
+import { ReactComponent as Plus } from 'assets/images-app/plus.svg';
 import { ReactComponent as PlaceHolderLoader } from 'assets/images-app/placeholder-loader.svg';
 import { isMobile } from 'utils/userAgent';
 import Tooltip from 'components/Tooltip';
+import { useModalsStore } from 'store';
 
 const Container = styled.div`
   display: flex;
@@ -62,10 +63,6 @@ const Title = styled.div`
   color: ${({ theme }) => theme.globalGrey};
 `;
 
-const LogoInfo = styled(InfoIcon)`
-  margin-left: .397rem;
-`;
-
 const FilterBlock = styled.div`
   & > button:nth-child(2) {
     margin: 0 1rem;
@@ -97,48 +94,12 @@ const Loading = styled(PlaceHolderLoader)`
   margin-right: .5rem;
 `;
 
-const Toggle = styled.div`
-  display: flex;
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    margin-left: .625rem;
-  `}
-`;
-
-const LabelCheckbox = styled.label`
-  cursor: pointer;
-  display: flex;
-  & > input {
-    position: absolute;
-    visibility: hidden;
-  }
-`;
-
-const ToggleSwitch = styled.div`
-  display: inline-block;
-  background: ${({ theme }) => theme.globalGrey};
-  width: 32px;
-  height: 16px;
-  position: relative;
-  border-radius: 8px;
-  transition: background 0.25s;
-  &:before {
-    content: "";
-    display: block;
-    background: ${({ theme }) => theme.globalWhite};
-    border-radius: 50%;
-    width: 12px;
-    height: 12px;
-    position: absolute;
-    top: 2px;
-    left: 3px;
-    transition: left 0.25s;
-  }
-  #toggle:checked + & {
-    background: ${({ theme }) => theme.globalGreen0p02};
-    &:before {
-      background: ${({ theme }) => theme.globalGreen};
-      left: 18px;
-    }
+const LogoPlus = styled(Plus)`
+  margin-right: .625rem;
+  width: 12px;
+  height: 12px;
+  path {
+    fill: ${({ theme }) => theme.globalWhite};;
   }
 `;
 
@@ -153,18 +114,8 @@ const MobileContainer = styled.div`
 const MobileRow = styled.div`
   display: flex;
   justify-content: space-between;
-  margin: .813rem 0;
-`;
-
-const MobileColumn = styled.div`
-  display: flex;
-  flex-direction: column;
-  & > div:first-child {
-    margin-bottom: .625rem;
-  }
-`;
-const RightPosition = styled(Title)`
-  justify-content: flex-end;
+  align-items: center;
+  margin: 1rem 0;
 `;
 
 const filters = [
@@ -183,6 +134,7 @@ const filters = [
 ];
 
 export default function PoolSettings() {
+  const { setAddPoolModalOpen } = useModalsStore();
   if (isMobile) {
     return (
       <MobileContainer>
@@ -194,26 +146,8 @@ export default function PoolSettings() {
         </SearchInputBlock>
         <MobileRow>
           <Title><Loading />Refresh</Title>
-          <Title>
-            Smart Pools
-            <Toggle>
-              <LabelCheckbox htmlFor="toggle">
-                <input id="toggle" type="checkbox" defaultChecked />
-                <ToggleSwitch />
-              </LabelCheckbox>
-            </Toggle>
-          </Title>
-        </MobileRow>
-        <MobileRow>
-          <MobileColumn>
-            <Title>Sort by</Title>
-            <SortBlock>
-              Liquidity (dsc)
-              <ArrowDown />
-            </SortBlock>
-          </MobileColumn>
-          <MobileColumn>
-            <RightPosition>APR Basis <LogoInfo /></RightPosition>
+          <Wrapper>
+            <Title>APR Basis <Tooltip title="APR Basis" /></Title>
             <FilterBlock>
               {filters.map((el) => (
                 <FilterButton
@@ -224,8 +158,13 @@ export default function PoolSettings() {
                 </FilterButton>
               ))}
             </FilterBlock>
-          </MobileColumn>
+          </Wrapper>
         </MobileRow>
+        <ButtonSecondary
+          onClick={() => setAddPoolModalOpen(true)}
+        >
+          <LogoPlus /> Create Pool
+        </ButtonSecondary>
       </MobileContainer>
     );
   }
@@ -258,16 +197,12 @@ export default function PoolSettings() {
           ))}
         </FilterBlock>
       </Wrapper>
-      <Wrapper>
-        <Title>Smart Pools <Tooltip title="Smart Pools" /></Title>
-        <Toggle>
-          <LabelCheckbox htmlFor="toggle">
-            <input id="toggle" type="checkbox" defaultChecked />
-            <ToggleSwitch />
-          </LabelCheckbox>
-        </Toggle>
-      </Wrapper>
       <Title><Loading />Refresh</Title>
+      <ButtonSecondary
+        onClick={() => setAddPoolModalOpen(true)}
+      >
+        <LogoPlus /> Create Pool
+      </ButtonSecondary>
     </Container>
   );
 }
