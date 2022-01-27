@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  site:
+    image: 'registry.gitlab.com/hapi_p/jumbo:stage'
+    restart: always
+    ports:
+      - '3087:80'
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.hostname == staging]
