@@ -1,10 +1,12 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { ButtonPrimary, ButtonSecondary } from 'components/Button';
 import { wallet } from 'services/near';
 import { getUpperCase } from 'utils';
 import { useStore, useModalsStore, TokenType } from 'store';
 import { SLIPPAGE_TOLERANCE_DEFAULT } from 'utils/constants';
 import SwapContract from 'services/SwapContract';
+import useDebounce from 'hooks/useDebounce';
+import { formatTokenAmount, parseTokenAmount } from 'utils/calculations';
 import Input from './SwapInput';
 import SwapSettings from './SwapSettings';
 import {
@@ -29,27 +31,32 @@ import {
   LogoInfo,
 } from './styles';
 
+const swapContract = new SwapContract();
+const DEBOUNCE_VALUE = 1000;
+const RenderSettings = ({ isSettingsOpen }: {isSettingsOpen:boolean}) => {
+  if (isSettingsOpen) {
+    return <SwapSettings />;
+  }
+  return null;
+};
+
 const RenderButton = ({
   disabled,
   isConnected,
   swapToken,
   setAccountModalOpen,
+  disabled = false,
 }:{
   disabled:boolean,
   isConnected:boolean,
   swapToken:() => void,
   setAccountModalOpen: (isOpen: boolean) => void,
+  disabled?: boolean
 }) => {
   const title = isConnected ? 'Swap' : 'Connect wallet';
 
   if (isConnected) {
-    return (
-      <ButtonPrimary
-        onClick={swapToken}
-        disabled={disabled}
-      >{title}
-      </ButtonPrimary>
-    );
+    return <ButtonPrimary disabled={disabled} onClick={swapToken}>{title}</ButtonPrimary>;
   }
   return (
     <ButtonSecondary onClick={() => setAccountModalOpen(true)}>
@@ -67,13 +74,15 @@ export default function Swap() {
     setOutputToken,
     balances,
     loading,
-    pools,
+    currentPools,
   } = useStore();
 
   const { setAccountModalOpen, setSearchModalOpen } = useModalsStore();
-
+  const [independentField, setIndependentField] = useState(TokenType.Input);
   const [inputTokenValue, setInputTokenValue] = useState<string>('');
+  const debouncedInputValue = useDebounce(inputTokenValue, DEBOUNCE_VALUE);
   const [outputTokenValue, setOutputTokenValue] = useState<string>('');
+  const debouncedOutputValue = useDebounce(outputTokenValue, DEBOUNCE_VALUE);
 
   const [slippageTolerance, setSlippageTolerance] = useState<string>(SLIPPAGE_TOLERANCE_DEFAULT);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
@@ -97,15 +106,80 @@ export default function Swap() {
     setInputToken(oldOutputToken);
   };
 
+  useEffect(() => {
+    if (!inputToken || !outputToken || !debouncedInputValue) return;
+    if (independentField === TokenType.Input) {
+      const formattedValue = parseTokenAmount(debouncedInputValue, inputToken.metadata.decimals);
+      swapContract.getReturnForPools(
+        currentPools,
+        formattedValue,
+        inputToken,
+        outputToken,
+      ).then((minOutput) => {
+        const lastIndex = minOutput.length - 1;
+        setOutputTokenValue(
+          formatTokenAmount(
+            minOutput[lastIndex],
+            outputToken.metadata.decimals,
+            5,
+          ),
+        );
+      });
+    }
+  }, [debouncedInputValue]);
+
+  useEffect(() => {
+    if (!inputToken || !outputToken || !debouncedOutputValue) return;
+    if (independentField === TokenType.Output) {
+      const formattedValue = parseTokenAmount(debouncedOutputValue, outputToken.metadata.decimals);
+      swapContract.getReturnForPools(
+        currentPools,
+        formattedValue,
+        outputToken,
+        inputToken,
+      ).then((minOutput) => {
+        const lastIndex = minOutput.length - 1;
+        setInputTokenValue(
+          formatTokenAmount(
+            minOutput[lastIndex],
+            inputToken.metadata.decimals, 5,
+          ),
+        );
+      });
+    }
+  }, [debouncedOutputValue]);
+
+  const handleAmountChange = async (tokenType: TokenType, value: string) => {
+    if (tokenType === TokenType.Input) {
+      setInputTokenValue(value);
+    } else {
+      setOutputTokenValue(value);
+    }
+  };
+
+  const handleInputChange = useCallback(
+    (value: string) => {
+      setIndependentField(TokenType.Input);
+      handleAmountChange(TokenType.Input, value);
+    }, [],
+  );
+
+  const handleOutputChange = useCallback(
+    (value: string) => {
+      setIndependentField(TokenType.Output);
+      handleAmountChange(TokenType.Output, value);
+    }, [],
+  );
+
   const swapToken = async () => {
     if (!inputToken || !outputToken) return;
-    const swapContract = new SwapContract();
+    const formattedValue = parseTokenAmount(inputTokenValue, inputToken.metadata.decimals);
+
     await swapContract.swap({
-      accountId: 'solniechniy.testnet',
-      inputToken: inputToken.contract,
-      outputToken: outputToken.contract,
-      amount: '10000000000',
-      pools: [pools[3]],
+      inputToken,
+      outputToken,
+      amount: formattedValue,
+      pools: currentPools,
     });
   };
 
@@ -131,7 +205,9 @@ export default function Swap() {
       color: false,
     },
   ];
-
+  const intersectionToken = currentPools.length === 2
+    ? currentPools[0].tokenAccountIds.find((el) => el !== inputToken?.contractId) : null;
+  const isSwapAvailable = currentPools.length > 0;
   return (
     <Container>
       <ActionContainer>
@@ -140,7 +216,7 @@ export default function Swap() {
           token={inputToken}
           tokenType={TokenType.Input}
           value={inputTokenValue}
-          setValue={setInputTokenValue}
+          setValue={handleInputChange}
           balance={balances[inputToken?.contractId ?? '']}
         />
         <ChangeTokenContainer onClick={changeToken}>
@@ -152,7 +228,7 @@ export default function Swap() {
           token={outputToken}
           tokenType={TokenType.Output}
           value={outputTokenValue}
-          setValue={setOutputTokenValue}
+          setValue={handleOutputChange}
           balance={balances[outputToken?.contractId ?? '']}
         />
       </ActionContainer>
@@ -186,26 +262,33 @@ export default function Swap() {
         </SettingsHeader>
       </SettingsBlock>
       {
-        (inputTokenValue || outputTokenValue) && (
-        <SwapInformation>
-          <RouteBlock>
-            <TitleInfo>Route <LogoInfo /> </TitleInfo>
-            <div> ETH {'>'} USDT {'>'} NEAR </div>
-          </RouteBlock>
-          {swapInformation.map((el) => (
-            <RowInfo key={el.title}>
-              <TitleInfo>{el.title} <LogoInfo /></TitleInfo>
-              <LabelInfo isColor={el.color}>{el.label}</LabelInfo>
-            </RowInfo>
-          ))}
-        </SwapInformation>
-        )
+        currentPools.length ? (
+          <SwapInformation>
+            <RouteBlock>
+              <TitleInfo>Route <LogoInfo /></TitleInfo>
+              <div>
+                {inputToken?.metadata.symbol}
+                {' '}
+                {intersectionToken ? `> ${intersectionToken}` : null }
+                {'> '}
+                {outputToken?.metadata.symbol}
+              </div>
+            </RouteBlock>
+            {swapInformation.map((el) => (
+              <RowInfo key={el.title}>
+                <TitleInfo>{el.title} <LogoInfo /></TitleInfo>
+                <LabelInfo isColor={el.color}>{el.label}</LabelInfo>
+              </RowInfo>
+            ))}
+          </SwapInformation>
+        ) : null
       }
       <RenderButton
         disabled={!canSwap}
         isConnected={isConnected}
         swapToken={swapToken}
         setAccountModalOpen={setAccountModalOpen}
+        disabled={!isSwapAvailable}
       />
     </Container>
   );

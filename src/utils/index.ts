@@ -39,3 +39,47 @@ export function formatPool(pool: any, id: number): IPool {
     amp: pool.amp,
   };
 }
+
+export interface IVertex {
+  name: string;
+  distance: number;
+  predecessor: IVertex | null;
+}
+
+export function getPoolsPath(
+  tokenAddressInput: string,
+  tokenAddressOutput: string,
+  pools: IPool[],
+) :IPool[] {
+  const tokens = pools.map((pool) => pool.tokenAccountIds).flat();
+  if (!tokens.includes(tokenAddressInput) || !tokens.includes(tokenAddressOutput)) return [];
+  if (tokenAddressInput === tokenAddressOutput) return [];
+
+  const directSwap = pools.find(
+    (pool) => pool.tokenAccountIds.includes(tokenAddressInput)
+    && pool.tokenAccountIds.includes(tokenAddressOutput),
+  );
+  if (directSwap) return [directSwap];
+  const inputTokenPools = pools.filter((pool) => pool.tokenAccountIds.includes(tokenAddressInput));
+  const outputTokenPools = pools.filter(
+    (pool) => pool.tokenAccountIds.includes(tokenAddressOutput),
+  );
+  const outputTokens = outputTokenPools.map((el) => el.tokenAccountIds).flat();
+  const intersectionPairs = inputTokenPools
+    .map((el) => el.tokenAccountIds)
+    .flat()
+    .find((el) => outputTokens.includes(el));
+  if (intersectionPairs?.length) {
+    const FIRST_TOKEN = 1;
+    const intersectionToken = intersectionPairs[FIRST_TOKEN];
+    const firstSwap = inputTokenPools.find(
+      (el) => el.tokenAccountIds.includes(intersectionToken),
+    );
+    const secondSwap = outputTokenPools.find(
+      (el) => el.tokenAccountIds.includes(intersectionToken),
+    );
+    if (!firstSwap || !secondSwap) return [];
+    return [firstSwap, secondSwap];
+  }
+  return [];
+}

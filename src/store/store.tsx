@@ -3,9 +3,9 @@ import React, {
 } from 'react';
 import { wallet as nearWallet } from 'services/near';
 import {
-  contractMethods, IPool, IToken, StoreContextType, TokenType,
+  contractMethods, IPool, StoreContextType, TokenType,
 } from 'store';
-import { formatPool } from 'utils';
+import { formatPool, getPoolsPath } from 'utils';
 
 import getConfig from 'services/config';
 import SpecialWallet, { createContract } from 'services/wallet';
@@ -26,8 +26,8 @@ const initialState: StoreContextType = {
 
   pools: [],
   setPools: () => {},
-  currentPool: null,
-  setCurrentPool: () => {},
+  currentPools: [],
+  setCurrentPools: () => {},
   tokens: {},
   setTokens: () => {},
 
@@ -51,32 +51,29 @@ export const StoreContextProvider = (
   const [balances, setBalances] = useState<{[key:string]: string}>(initialState.balances);
 
   const [pools, setPools] = useState<IPool[]>(initialState.pools);
-  const [currentPool, setCurrentPool] = useState<IPool| null>(initialState.currentPool);
-  const [tokens, setTokens] = useState<{[key: string]: IToken}>(initialState.tokens);
+  const [currentPools, setCurrentPools] = useState<IPool[]>(initialState.currentPools);
+  const [tokens, setTokens] = useState<{[key: string]: FungibleTokenContract}>(initialState.tokens);
 
-  const [inputToken, setInputToken] = useState<IToken | null>(initialState.inputToken);
-  const [outputToken, setOutputToken] = useState<IToken | null>(initialState.outputToken);
+  const [inputToken, setInputToken] = useState<FungibleTokenContract | null>(
+    initialState.inputToken,
+  );
+  const [outputToken, setOutputToken] = useState<FungibleTokenContract | null>(
+    initialState.outputToken,
+  );
 
   const setCurrentToken = (tokenAddress: string, tokenType: TokenType) => {
-    if (!inputToken || !outputToken) return;
     if (tokenType === TokenType.Output) {
+      if (!inputToken) return;
       const outputTokenData = tokens[tokenAddress] ?? null;
       setOutputToken(outputTokenData);
-      // const availablePool = pools.filter((pool) => pool.tokenAccountIds.includes(tokenAddress)
-      // && pool.tokenAccountIds.includes(inputToken.contractId)
-      // && inputToken.contractId !== tokenAddress);
-      // if (availablePool.length) {
-      //   setCurrentPool(availablePool[0]);
-      // }
+      const availablePools = getPoolsPath(inputToken.contractId, tokenAddress, pools);
+      setCurrentPools(availablePools);
     } else {
+      if (!outputToken) return;
       const inputTokenData = tokens[tokenAddress] ?? null;
       setInputToken(inputTokenData);
-    //   const availablePool = pools.filter((pool) => pool.tokenAccountIds.includes(tokenAddress)
-    //   && pool.tokenAccountIds.includes(outputToken.contractId)
-    //   && outputToken.contractId !== tokenAddress);
-    //   if (availablePool.length) {
-    //     setCurrentPool(availablePool[0]);
-    //   }
+      const availablePools = getPoolsPath(tokenAddress, outputToken.contractId, pools);
+      setCurrentPools(availablePools);
     }
   };
 
@@ -91,7 +88,7 @@ export const StoreContextProvider = (
 
       const tokensMetadata: any[] = await Promise.all(
         tokenAddresses.map(async (address: string) => {
-          const ftTokenContract: any = new FungibleTokenContract(
+          const ftTokenContract: FungibleTokenContract = new FungibleTokenContract(
             { wallet: nearWallet, contractId: address },
           );
           const metadata = await ftTokenContract.getMetadata();
@@ -133,6 +130,13 @@ export const StoreContextProvider = (
       setOutputToken(outputTokenData);
       const inputTokenData = tokens[initialPool.tokenAccountIds[1]] ?? null;
       setInputToken(inputTokenData);
+
+      const availablePools = getPoolsPath(
+        inputTokenData.contractId,
+        outputTokenData.contractId,
+        pools,
+      );
+      setCurrentPools(availablePools);
     }
   }, [pools.length]);
 
@@ -149,8 +153,8 @@ export const StoreContextProvider = (
 
       pools,
       setPools,
-      currentPool,
-      setCurrentPool,
+      currentPools,
+      setCurrentPools,
       tokens,
       setTokens,
 
@@ -159,7 +163,6 @@ export const StoreContextProvider = (
       outputToken,
       setOutputToken,
       setCurrentToken,
-
     }}
     >
       {children}

@@ -1,16 +1,14 @@
 import BN from 'bn.js';
-import Big from 'big.js';
 import * as nearApiJs from 'near-api-js';
 
+import { ITokenMetadata } from 'store';
+import {
+  FT_MINIMUM_STORAGE_BALANCE, FT_STORAGE_DEPOSIT_GAS, FT_TRANSFER_GAS, ONE_YOCTO_NEAR,
+} from 'utils/constants';
+import { formatTokenAmount, parseTokenAmount, removeTrailingZeros } from 'utils/calculations';
 import { wallet } from './near';
 import SpecialWallet, { createContract, Transaction } from './wallet';
 import getConfig from './config';
-
-export const formatTokenAmount = (value:string, decimals = 18, precision = 2) => value
-  && Big(value).div(Big(10).pow(decimals)).toFixed(precision);
-export const parseTokenAmount = (value:string, decimals = 18) => value
-  && Big(value).times(Big(10).pow(decimals)).toFixed();
-export const removeTrailingZeros = (amount:string) => amount.replace(/\.?0*$/, '');
 
 const {
   utils: {
@@ -21,22 +19,25 @@ const {
   },
 } = nearApiJs;
 
-export const FT_MINIMUM_STORAGE_BALANCE = parseNearAmount('0.00125') ?? '0';
-const FT_STORAGE_DEPOSIT_GAS = parseNearAmount('0.00000000003');
-const FT_TRANSFER_GAS = parseNearAmount('0.00000000003');
-
-export const ONE_YOCTO_NEAR = '0.000000000000000000000001';
-
 const basicViewMethods: string[] = ['ft_metadata', 'ft_balance_of', 'storage_balance_of'];
 const basicChangeMethods: string[] = [];
 const config = getConfig();
-
+const DECIMALS_DEFAULT_VALUE = 0;
+const ICON_DEFAULT_VALUE = '';
 const CONTRACT_ID = config.contractId;
 
 interface FungibleTokenContractInterface {
   wallet: SpecialWallet;
   contractId: string;
 }
+const defaultMetadata = {
+  decimals: DECIMALS_DEFAULT_VALUE,
+  icon: ICON_DEFAULT_VALUE,
+  name: 'Token',
+  version: '0',
+  symbol: 'TKN',
+  reference: '',
+};
 
 export default class FungibleTokenContract {
   constructor(props: FungibleTokenContractInterface) {
@@ -57,6 +58,8 @@ export default class FungibleTokenContract {
   )
 
   contractId = CONTRACT_ID;
+
+  metadata: ITokenMetadata = defaultMetadata;
 
   static getParsedTokenAmount(amount:string, symbol:string, decimals:number) {
     const parsedTokenAmount = symbol === 'NEAR'
@@ -80,8 +83,14 @@ export default class FungibleTokenContract {
   }
 
   async getMetadata() {
+    if (
+      this.metadata.decimals !== DECIMALS_DEFAULT_VALUE
+      && this.metadata.icon !== ICON_DEFAULT_VALUE
+    ) return this.metadata;
     // @ts-expect-error: Property 'ft_metadata' does not exist on type 'Contract'.
-    return this.contract.ft_metadata();
+    const metadata = await this.contract.ft_metadata();
+    this.metadata = { ...defaultMetadata, ...metadata };
+    return metadata;
   }
 
   async getBalanceOf({ accountId }: { accountId: string }) {
@@ -142,14 +151,12 @@ export default class FungibleTokenContract {
   async transfer({
     accountId,
     inputToken,
-    outputToken,
     amount,
     message,
   }:
   {
     accountId: string,
     inputToken: string,
-    outputToken: string,
     amount: string,
     message: string,
   }): Promise<Transaction[]> {
