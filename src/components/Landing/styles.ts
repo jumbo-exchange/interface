@@ -34,7 +34,6 @@ export const MainInformation = styled.div`
 `;
 
 export const Gif = styled.img`
-  cursor: pointer;
   ${({ theme }) => theme.mediaWidth.upToLarge`
     margin-top: 32px;
   `}
