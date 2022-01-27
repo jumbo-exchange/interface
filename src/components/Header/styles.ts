@@ -1,18 +1,18 @@
 import styled from 'styled-components';
 
 const HeaderContainer = styled.header`
-  min-height: 80px;
+  min-height: 5rem;
   width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: 0 208px;
+  padding: 0 13rem;
   ${({ theme }) => theme.mediaWidth.upToMedium`
-      padding: 0 72px;
+      padding: 0 4.5rem;
   `}
   
   ${({ theme }) => theme.mediaWidth.upToSmall`
-      padding: 0 24px;
+      padding: 0 1.5rem;
   `}
 `;
 
@@ -23,7 +23,7 @@ const LogoContainer = styled.div`
   justify-content: flex-start;
   align-items: center;
   & > svg {
-    margin-right: 7px;
+    margin-right: 0.438rem;
   }
   ${({ theme }) => theme.mediaWidth.upToMedium`
     flex: 3;
@@ -35,12 +35,12 @@ const LogoContainer = styled.div`
 `;
 
 const DocsButton = styled.a`
-  padding: 10px;
+  padding: 0.625rem;
   cursor: pointer;
   font-style: normal;
   font-weight: 500;
   font-size: 1rem;
-  line-height: 19px;
+  line-height: 1.188rem;
   color: ${({ theme }) => theme.white};
   outline: none;
   border: none;
@@ -53,7 +53,7 @@ const DocsButton = styled.a`
   }
   white-space: nowrap;
   & > span {
-    margin-right: 8px;
+    margin-right: .5rem;
   }
   ${({ theme }) => theme.mediaWidth.upToSmall`
     & > span {
@@ -67,9 +67,10 @@ const InformationContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  min-width: 200px;
+  min-width: 12.5rem;
   ${({ theme }) => theme.mediaWidth.upToMedium`
     flex: 2;
+    min-width: unset;
   `}
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
@@ -82,7 +83,7 @@ const LogoTitle = styled.h1`
   font-style: normal;
   font-weight: bold;
   font-size: 2rem;
-  line-height: 39px;
+  line-height: 2.438rem;
   color: ${({ theme }) => theme.white};
 `;
 

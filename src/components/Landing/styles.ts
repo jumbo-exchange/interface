@@ -9,7 +9,7 @@ export const UpperContainer = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 70%;
-  margin: 70px auto;
+  margin: 4.375rem auto;
   
   ${({ theme }) => theme.mediaWidth.upToLarge`
     flex-direction: column;
@@ -17,11 +17,11 @@ export const UpperContainer = styled.div`
   `}
   ${({ theme }) => theme.mediaWidth.upToMedium`
     width: unset;
-    margin: 70px 72px;
+    margin: 4.375rem 4.5rem;
   `}
   ${({ theme }) => theme.mediaWidth.upToSmall`
     width: unset;
-    margin: 70px 32px;
+    margin: 4.375rem 2rem;
     align-items: center;
   `}
 `;
@@ -35,7 +35,11 @@ export const MainInformation = styled.div`
 
 export const Gif = styled.img`
   ${({ theme }) => theme.mediaWidth.upToLarge`
-    margin-top: 32px;
+    margin-top: 2rem;
+  `}
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    width: 100%;
   `}
 `;
 
@@ -46,7 +50,7 @@ export const NearContainer = styled.div`
   font-style: normal;
   font-weight: 300;
   font-size: 1rem;
-  line-height: 19px;
+  line-height: 1.188rem;
   color: ${({ theme }) => theme.greyText};
   & > svg {
     margin-left: 1rem;
@@ -57,11 +61,11 @@ export const MainTitle = styled.h1`
   font-style: normal;
   font-weight: 500;
   font-size: 3rem;
-  line-height: 57px;
+  line-height: 3.563rem;
   color: ${({ theme }) => theme.white};
   ${({ theme }) => theme.mediaWidth.upToSmall`
     font-size: 2rem;
-    line-height: 38px;
+    line-height: 2.375rem;
   `}
 `;
 
@@ -80,10 +84,10 @@ export const GreyCardContainer = styled.section`
   border-radius: 240px 240px 0 0;
   box-shadow: 0px 0px 72px -12px ${({ theme }) => theme.greyCardShadow};
   ${({ theme }) => theme.mediaWidth.upToMedium`
-    border-radius: 120px 120px 0 0;
+    border-radius: 7.5rem 7.5rem 0 0;
   `}
   ${({ theme }) => theme.mediaWidth.upToSmall`
-    border-radius: 48px 48px 0 0;
+    border-radius: 3rem 3rem 0 0;
   `}
 `;
 
@@ -109,7 +113,7 @@ export const GreyCard = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 60px;
+  margin-top: 3.75rem;
   padding: 0 5%;
 
   & > h2 {
@@ -142,12 +146,12 @@ export const BlackCardContainer = styled.div`
     ${({ theme }) => theme.blackCardBg} 0%,
     ${({ theme }) => theme.globalBlack} 100%
   );
-  border-radius: 240px 240px 0 0;
-  box-shadow: 0px 0px 72px ${({ theme }) => theme.blackCardShadow};
+  border-radius: 15rem 15rem 0 0;
+  box-shadow: 0 0 4.5rem ${({ theme }) => theme.blackCardShadow};
   margin-top: 34px;
   ${({ theme }) => theme.mediaWidth.upToMedium`
-    border-radius: 120px 120px 0 0;
-    margin-top: 56px;
+    border-radius: 7.5rem 7.5rem 0 0;
+    margin-top: 3.5rem;
   `}
   ${({ theme }) => theme.mediaWidth.upToSmall`
     border-radius: 48px 48px 0 0;
@@ -158,30 +162,30 @@ export const Title = styled.div`
   font-style: normal;
   font-weight: 500;
   font-size: 2rem;
-  line-height: 38px;
+  line-height: 2.375rem;
   text-align: center;
   color: ${({ theme }) => theme.white};
-  padding-top: 72px;
-  margin-bottom: 24px;
+  padding-top: 4.5rem;
+  margin-bottom: 1.5rem;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    padding-top: 48px;
+    padding-top: 3rem;
   `}
 `;
 
 export const Label = styled.div`
   font-weight: 300;
   font-size: 1.5rem;
-  line-height: 34px;
+  line-height: 2.125rem;
   text-align: center;
   color: ${({ theme }) => theme.blackCardText};
-  margin-top: 24px;
-  margin-bottom: 72px;
+  margin-top: 1.5rem;
+  margin-bottom: 4.5rem;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     font-style: normal;
     font-size: 1rem;
-    line-height: 22px;
-    margin-top: 16px;
-    margin-bottom: 48px;
+    line-height: 1.375rem;
+    margin-top: 1rem;
+    margin-bottom: 3rem;
   `}
 `;
 
@@ -196,7 +200,7 @@ export const BlockInformation = styled.div`
   grid-row-gap: 0px;
   color: ${({ theme }) => theme.globalWhite};
   max-width: 1000px;
-  padding-bottom: 100px;
+  padding-bottom: 6.25rem;
   align-self: center;
   user-select: none;
 `;
@@ -208,10 +212,10 @@ export const Block = styled.div`
   text-align: center;
   font-weight: 500;
   font-size: 1.5rem;
-  line-height: 34px;
+  line-height: 2.125rem;
   box-sizing: border-box;
   border-radius: 32px;
-  padding: 10px;
+  padding: 0.625rem;
 `;
 
 export const UpperBlock = styled(Block)`
@@ -238,7 +242,7 @@ export const LowerBlock = styled(Block)`
   width: 100%;
   grid-area: 7 / 4 / 8 / 9;
   font-style: normal;
-  line-height: 32px;
+  line-height: 2rem;
   color: ${({ theme }) => theme.greenText};
   background: ${({ theme }) => theme.darkGreenBg};
   border-radius: 32px;
@@ -261,7 +265,7 @@ export const TabletImgContainer = styled.div`
   align-items: center;
   justify-content: center;
   text-align: center;
-  margin-bottom: 100px;
+  margin-bottom: 6.25rem;
   & > img {
     min-width: 700px;
   }
@@ -272,5 +276,8 @@ export const MobileImgContainer = styled.div`
   align-items: center;
   justify-content: center;
   text-align: center;
-  margin-bottom: 72px;
+  margin-bottom: 4.5rem;
+  & > img {
+    width: 95%;
+  }
 `;

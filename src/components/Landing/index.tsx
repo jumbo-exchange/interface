@@ -3,11 +3,11 @@ import { ReactComponent as NearLogo } from 'assets/images/near-logo.svg';
 import { ReactComponent as JetLogo } from 'assets/images/jets-icon.svg';
 import { ReactComponent as SlippageLogo } from 'assets/images/slippage-icon.svg';
 import { ReactComponent as FarmingLogo } from 'assets/images/farming-icon.svg';
+import gif from 'assets/images/El_4.gif';
 import tabletImg from 'assets/images/tablet-image.png';
 import mobileImg from 'assets/images/mobile-image.png';
 import Footer from 'components/Footer';
 import { isMobile, isTablet } from 'utils/userAgent';
-import gif from 'assets/images/El_4.gif';
 import {
   UpperContainer,
   MainInformation,
@@ -34,7 +34,7 @@ import {
 } from './styles';
 
 const benefitsList = [
-  'Instanteneous Swaps',
+  'Instantaneous Swaps',
   'Highest Yields and Seamless Pool Transition',
   'Permissionless Liquidity Pools',
 ];
