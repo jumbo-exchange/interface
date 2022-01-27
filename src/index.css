@@ -11,4 +11,14 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-image: url(./assets/images/intersect.svg);
+  background-position: top left;
+  background-repeat: repeat-x;
+  background-size:100% 100%;
+}
+
+#root{
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
 }
