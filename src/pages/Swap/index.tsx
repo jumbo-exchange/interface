@@ -208,6 +208,10 @@ export default function Swap() {
   const intersectionToken = currentPools.length === 2
     ? currentPools[0].tokenAccountIds.find((el) => el !== inputToken?.contractId) : null;
   const isSwapAvailable = currentPools.length > 0;
+  const canSwap = !!slippageTolerance
+  && (!!inputTokenValue && !!outputTokenValue)
+  && currentPools.length > 0;
+
   return (
     <Container>
       <ActionContainer>
