@@ -40,8 +40,8 @@ export const ButtonPrimary = styled.button`
     background: ${({ theme }) => theme.pinkActive};
   }
   :disabled{
-    background: ${({ theme }) => theme.grayHover};
-    border: 1px solid ${({ theme }) => theme.grayHover};
+    background: ${({ theme }) => theme.globalGreyOp01};
+    border: 1px solid ${({ theme }) => theme.globalGreyOp01};
   }
 `;
 

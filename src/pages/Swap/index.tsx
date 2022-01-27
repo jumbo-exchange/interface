@@ -3,6 +3,7 @@ import { ButtonPrimary, ButtonSecondary } from 'components/Button';
 import { wallet } from 'services/near';
 import { getUpperCase } from 'utils';
 import { useStore, useModalsStore, TokenType } from 'store';
+import { SLIPPAGE_TOLERANCE_DEFAULT } from 'utils/constants';
 import SwapContract from 'services/SwapContract';
 import useDebounce from 'hooks/useDebounce';
 import { formatTokenAmount, parseTokenAmount } from 'utils/calculations';
@@ -40,18 +41,20 @@ const RenderSettings = ({ isSettingsOpen }: {isSettingsOpen:boolean}) => {
 };
 
 const RenderButton = ({
+  disabled,
   isConnected,
   swapToken,
-  title,
   setAccountModalOpen,
   disabled = false,
 }:{
+  disabled:boolean,
   isConnected:boolean,
   swapToken:() => void,
-  title: string,
   setAccountModalOpen: (isOpen: boolean) => void,
   disabled?: boolean
 }) => {
+  const title = isConnected ? 'Swap' : 'Connect wallet';
+
   if (isConnected) {
     return <ButtonPrimary disabled={disabled} onClick={swapToken}>{title}</ButtonPrimary>;
   }
@@ -81,12 +84,12 @@ export default function Swap() {
   const [outputTokenValue, setOutputTokenValue] = useState<string>('');
   const debouncedOutputValue = useDebounce(outputTokenValue, DEBOUNCE_VALUE);
 
+  const [slippageTolerance, setSlippageTolerance] = useState<string>(SLIPPAGE_TOLERANCE_DEFAULT);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
 
+  const canSwap = !!slippageTolerance && (!!inputTokenValue && !!outputTokenValue);
+
   const isConnected = wallet.isSignedIn();
-  const title = isConnected
-    ? 'Swap'
-    : 'Connect wallet';
   const exchangeLabel = `1 ${getUpperCase(inputToken?.metadata.symbol ?? '')} ≈ 4923.333 ${getUpperCase(outputToken?.metadata.symbol ?? '')}`;
 
   const openModal = useCallback(
@@ -198,13 +201,17 @@ export default function Swap() {
     },
     {
       title: 'Slippage Tolerance',
-      label: '0.50%',
+      label: `${slippageTolerance}%`,
       color: false,
     },
   ];
   const intersectionToken = currentPools.length === 2
     ? currentPools[0].tokenAccountIds.find((el) => el !== inputToken?.contractId) : null;
   const isSwapAvailable = currentPools.length > 0;
+  const canSwap = !!slippageTolerance
+  && (!!inputTokenValue && !!outputTokenValue)
+  && currentPools.length > 0;
+
   return (
     <Container>
       <ActionContainer>
@@ -239,7 +246,15 @@ export default function Swap() {
         </ExchangeLabel>
       </ExchangeBlock>
       <SettingsBlock>
-        <RenderSettings isSettingsOpen={isSettingsOpen} />
+        {
+          isSettingsOpen
+            ? (
+              <SwapSettings
+                slippageTolerance={slippageTolerance}
+                setSlippageTolerance={setSlippageTolerance}
+              />
+            ) : null
+        }
         <SettingsHeader>
           <SettingsLabel
             isActive={isSettingsOpen}
@@ -273,9 +288,9 @@ export default function Swap() {
         ) : null
       }
       <RenderButton
+        disabled={!canSwap}
         isConnected={isConnected}
         swapToken={swapToken}
-        title={title}
         setAccountModalOpen={setAccountModalOpen}
         disabled={!isSwapAvailable}
       />

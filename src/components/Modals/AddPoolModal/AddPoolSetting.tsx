@@ -2,8 +2,13 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Big from 'big.js';
 import Toggle from 'components/Toggle';
-import { ReactComponent as Info } from 'assets/images-app/info.svg';
-import { poolFeeOptions } from 'utils/constants';
+import Tooltip from 'components/Tooltip';
+import {
+  poolFeeOptions,
+  MAX_TOTAL_FEE,
+  MIN_TOTAL_FEE,
+  COEFFICIENT_TOTAL_FEE,
+} from 'utils/constants';
 
 const Container = styled.div`
   display: flex;
@@ -12,11 +17,7 @@ const Container = styled.div`
   margin-bottom: 1.25rem;
 `;
 
-const LogoInfo = styled(Info)`
-  margin-left: .397rem;
-`;
-
-const Title = styled.p`
+const Title = styled.div`
   display: flex;
   align-items: center;
   font-style: normal;
@@ -24,6 +25,7 @@ const Title = styled.p`
   font-size: .75rem;
   line-height: .875rem;
   color: ${({ theme }) => theme.globalGrey};
+  margin: 1rem 0;
 `;
 
 const TotalFeeBlock = styled.div`
@@ -45,7 +47,7 @@ const Row = styled.div`
   margin-bottom: 1rem;
 `;
 
-const RowTitle = styled.p`
+const RowTitle = styled.div`
   display: flex;
   align-items: center;
   font-style: normal;
@@ -82,7 +84,7 @@ export default function AddPoolSettings(
     setFee:(fee:string) => void
   },
 ) {
-  const [errorKey, setErrorKey] = useState<string>();
+  const [error, setError] = useState(false);
 
   const feeList = [
     {
@@ -103,8 +105,8 @@ export default function AddPoolSettings(
     let result;
     if (
       !!fee
-      && new Big(fee).gt('0.01')
-      && new Big(fee).lt('20')
+      && new Big(fee).gt(MIN_TOTAL_FEE)
+      && new Big(fee).lt(MAX_TOTAL_FEE)
     ) {
       result = new Big(fee)
         .mul(percent)
@@ -117,37 +119,39 @@ export default function AddPoolSettings(
   };
 
   const onChange = (value:string) => {
-    setFee(value);
     if (!value || Number(value) <= 0) {
-      setErrorKey('noValid');
+      setFee(MIN_TOTAL_FEE.toString());
+      setError(true);
       return;
     }
     const bigValue = new Big(value);
-    if (!bigValue.gt('0.01')) {
-      setErrorKey('moreThan');
+    if (!bigValue.gt(MIN_TOTAL_FEE)) {
+      setFee(MIN_TOTAL_FEE.toString());
+      setError(true);
       return;
     }
-    if (!bigValue.lt('20')) {
-      setErrorKey('lessThan');
+    if (!bigValue.lt(MAX_TOTAL_FEE)) {
+      setFee(MAX_TOTAL_FEE.toString());
+      setError(true);
       return;
     }
 
     setFee(bigValue.toString());
 
-    setErrorKey('');
+    setError(false);
   };
 
   return (
     <Container>
-      <Title>Total Fee <LogoInfo /> </Title>
+      <Title>Total Fee <Tooltip title="Total Fee" /> </Title>
       <TotalFeeBlock>
         <Toggle
           value={fee}
-          coefficient={0.5}
+          coefficient={COEFFICIENT_TOTAL_FEE}
           options={poolFeeOptions}
           onChange={onChange}
         />
-        {errorKey && (
+        {error && (
           <Error>
             Your transaction may be frontrun
           </Error>
@@ -156,7 +160,7 @@ export default function AddPoolSettings(
       <Column>
         {feeList.map(({ title, percent }) => (
           <Row key={title}>
-            <RowTitle>{title} <LogoInfo /> </RowTitle>
+            <RowTitle>{title} <Tooltip title={title} /> </RowTitle>
             <LabelTitle>{getCurFee(percent)}</LabelTitle>
           </Row>
         ))}

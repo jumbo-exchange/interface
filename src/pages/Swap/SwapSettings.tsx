@@ -1,26 +1,28 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { ReactComponent as Info } from 'assets/images-app/info.svg';
-import { ReactComponent as Minus } from 'assets/images-app/minus.svg';
-import { ReactComponent as Plus } from 'assets/images-app/plus.svg';
+import Toggle from 'components/Toggle';
+import Tooltip from 'components/Tooltip';
+import Big from 'big.js';
+import {
+  slippageToleranceOptions,
+  tooltipTitle,
+  MIN_SLIPPAGE_TOLERANCE,
+  MAX_SLIPPAGE_TOLERANCE,
+  COEFFICIENT_SLIPPAGE,
+} from 'utils/constants';
 
 // TODO: add transition to container
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-
-  margin-bottom: 1.25rem;
 `;
 
-const LogoInfo = styled(Info)`
-  margin-left: .397rem;
-`;
-
-const Title = styled.p`
+const Title = styled.div`
   display: flex;
   align-items: center;
   font-style: normal;
+  margin: 1rem 0;
   font-weight: 300;
   font-size: .75rem;
   line-height: .875rem;
@@ -29,75 +31,13 @@ const Title = styled.p`
 
 const SlippageBlock = styled.div`
   display: flex;
+  flex-direction: column;
   width: 100%;
-`;
-
-const InputBlock = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const Input = styled.input`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  outline: none;
-  background-color: ${({ theme }) => theme.backgroundCard};
-  color: ${({ theme }) => theme.globalWhite};
-  border: 1px solid ${({ theme }) => theme.globalGreyOp04};
-  border-radius: 8px;
-  width: 93px;
-  height: 40px;
-  margin: 0 .5rem;
-  text-align: center;
-
-  ::-webkit-outer-spin-button,
-  ::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-  }
-`;
-
-const LogoContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  svg {
-    justify-self: center;
-  }
-  :hover {
-  cursor: pointer;
-  background-color: ${({ theme }) => theme.globalGreyOp02};
-    svg {
-      path {
-        fill: ${({ theme }) => theme.globalWhite};
-      }
-    }
-  }
-`;
-
-const ButtonBlock = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: center;
-`;
-
-const PercentBtn = styled.button`
-  outline: none;
-  border: none;
-  background-color: transparent;
-  color: ${({ theme }) => theme.globalGrey};
-  margin: 0 .5rem;
-  padding: 0;
-  :hover {
-    cursor: pointer;
-    color: ${({ theme }) => theme.globalWhite};
-  }
+  margin-bottom: 1.25rem;
 `;
 
 const Error = styled.div`
+  text-align: left;
   margin-top: 1rem;
   font-style: normal;
   font-weight: 300;
@@ -106,35 +46,59 @@ const Error = styled.div`
   color: ${({ theme }) => theme.error};
 `;
 
-export default function SwapSettings() {
-  const [inputSlippage, setInputSlippage] = useState<number>(40);
+export default function SwapSettings(
+  {
+    slippageTolerance,
+    setSlippageTolerance,
+  }:{
+    slippageTolerance: string,
+    setSlippageTolerance: (slippageTolerance:string) => void,
+  },
+) {
+  const [error, setError] = useState(false);
+
+  const onChange = (value:string) => {
+    if (!value || Number(value) <= 0) {
+      setSlippageTolerance(MIN_SLIPPAGE_TOLERANCE.toString());
+      setError(true);
+      return;
+    }
+    const bigValue = new Big(value);
+    if (!bigValue.gt(MIN_SLIPPAGE_TOLERANCE)) {
+      setSlippageTolerance(MIN_SLIPPAGE_TOLERANCE.toString());
+      setError(true);
+      return;
+    }
+    if (!bigValue.lt(MAX_SLIPPAGE_TOLERANCE + 1)) {
+      setSlippageTolerance(MAX_SLIPPAGE_TOLERANCE.toString());
+      setError(true);
+      return;
+    }
+
+    setSlippageTolerance(bigValue.toString());
+
+    setError(false);
+  };
 
   return (
     <Container>
-      <Title>Slippage Tolerance <LogoInfo /> </Title>
+      <Title>
+        Slippage Tolerance
+        <Tooltip title={tooltipTitle.slippageTolerance} />
+      </Title>
       <SlippageBlock>
-        <InputBlock>
-          <LogoContainer onClick={() => setInputSlippage(inputSlippage - 1)}>
-            <Minus />
-          </LogoContainer>
-          <Input
-            type="number"
-            value={inputSlippage}
-            onChange={(event) => setInputSlippage(event.target.valueAsNumber)}
-          />
-          <LogoContainer onClick={() => setInputSlippage(inputSlippage + 1)}>
-            <Plus />
-          </LogoContainer>
-        </InputBlock>
-        <ButtonBlock>
-          <PercentBtn>0.1%</PercentBtn>
-          <PercentBtn>0.5%</PercentBtn>
-          <PercentBtn>1%</PercentBtn>
-        </ButtonBlock>
+        <Toggle
+          value={slippageTolerance}
+          coefficient={COEFFICIENT_SLIPPAGE}
+          options={slippageToleranceOptions}
+          onChange={onChange}
+        />
+        {error && (
+          <Error>
+            Your transaction may be frontrun
+          </Error>
+        )}
       </SlippageBlock>
-      <Error>
-        Your transaction may be frontrun
-      </Error>
     </Container>
   );
 }
