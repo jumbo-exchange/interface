@@ -13,7 +13,7 @@ export default function Header() {
       <HeaderStyles.InformationContainer>
         <HeaderStyles.DocsButton>
           <DocsLogo />
-          Read Docs
+          <span>Read</span> Docs
         </HeaderStyles.DocsButton>
         <HeaderStyles.HapiButton>
           <HeaderStyles.HapiLogoContainer>
