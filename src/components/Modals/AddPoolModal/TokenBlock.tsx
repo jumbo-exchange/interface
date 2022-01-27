@@ -1,9 +1,10 @@
 import React from 'react';
 import tokenLogo from 'assets/images-app/placeholder-token.svg';
 import styled from 'styled-components';
-import { IToken, TokenType, useModalsStore } from 'store';
+import { TokenType, useModalsStore } from 'store';
 import { getUpperCase } from 'utils';
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
+import FungibleTokenContract from 'services/FungibleToken';
 
 const Container = styled.div`
   display: flex;
@@ -61,7 +62,7 @@ const ArrowDown = styled(IconArrowDown)`
 `;
 
 export default function TokenBlock(
-  { token, tokenType }:{ token: IToken | null, tokenType: TokenType},
+  { token, tokenType }:{ token: FungibleTokenContract | null, tokenType: TokenType},
 ) {
   const { setSearchModalOpen } = useModalsStore();
   return (

@@ -38,7 +38,7 @@ export default function LiquidityModal() {
     <>
       {isLiquidityModalOpen && (
       <Layout onClick={() => setLiquidityModalOpen(false)}>
-        <LiquidityModalContainer onClick={(e:any) => e.stopPropagation()}>
+        <LiquidityModalContainer onClick={(e) => e.stopPropagation()}>
           <ModalBlock>
             <Tooltip title={tooltipTitle.back} bottom="45px">
               <ModalIcon onClick={() => setLiquidityModalOpen(false)}>

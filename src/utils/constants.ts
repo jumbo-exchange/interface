@@ -25,10 +25,17 @@ export const tooltipTitle = {
   back: 'Back',
   slippageTolerance: 'Slippage means the difference between what  you expect to get and what you actually get due to other executing first',
 };
+
 export const poolFeeOptions = [
   { label: '0.20%', value: '0.20' },
   { label: '0.30%', value: '0.30' },
   { label: '0.60%', value: '0.60' },
+];
+
+export const slippageToleranceOptions = [
+  { label: '0.1%', value: '0.1' },
+  { label: '0.5%', value: '0.5' },
+  { label: '1%', value: '1' },
 ];
 
 export const ONE_YOCTO_NEAR = '0.000000000000000000000001';

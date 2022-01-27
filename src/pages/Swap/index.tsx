@@ -33,21 +33,13 @@ import {
 
 const swapContract = new SwapContract();
 const DEBOUNCE_VALUE = 1000;
-const RenderSettings = ({ isSettingsOpen }: {isSettingsOpen:boolean}) => {
-  if (isSettingsOpen) {
-    return <SwapSettings />;
-  }
-  return null;
-};
 
 const RenderButton = ({
-  disabled,
   isConnected,
   swapToken,
   setAccountModalOpen,
   disabled = false,
 }:{
-  disabled:boolean,
   isConnected:boolean,
   swapToken:() => void,
   setAccountModalOpen: (isOpen: boolean) => void,
@@ -56,7 +48,13 @@ const RenderButton = ({
   const title = isConnected ? 'Swap' : 'Connect wallet';
 
   if (isConnected) {
-    return <ButtonPrimary disabled={disabled} onClick={swapToken}>{title}</ButtonPrimary>;
+    return (
+      <ButtonPrimary
+        onClick={swapToken}
+        disabled={disabled}
+      >{title}
+      </ButtonPrimary>
+    );
   }
   return (
     <ButtonSecondary onClick={() => setAccountModalOpen(true)}>
@@ -86,8 +84,6 @@ export default function Swap() {
 
   const [slippageTolerance, setSlippageTolerance] = useState<string>(SLIPPAGE_TOLERANCE_DEFAULT);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
-
-  const canSwap = !!slippageTolerance && (!!inputTokenValue && !!outputTokenValue);
 
   const isConnected = wallet.isSignedIn();
   const exchangeLabel = `1 ${getUpperCase(inputToken?.metadata.symbol ?? '')} ≈ 4923.333 ${getUpperCase(outputToken?.metadata.symbol ?? '')}`;
@@ -207,7 +203,6 @@ export default function Swap() {
   ];
   const intersectionToken = currentPools.length === 2
     ? currentPools[0].tokenAccountIds.find((el) => el !== inputToken?.contractId) : null;
-  const isSwapAvailable = currentPools.length > 0;
   const canSwap = !!slippageTolerance
   && (!!inputTokenValue && !!outputTokenValue)
   && currentPools.length > 0;
@@ -288,11 +283,10 @@ export default function Swap() {
         ) : null
       }
       <RenderButton
-        disabled={!canSwap}
         isConnected={isConnected}
         swapToken={swapToken}
         setAccountModalOpen={setAccountModalOpen}
-        disabled={!isSwapAvailable}
+        disabled={!canSwap}
       />
     </Container>
   );
