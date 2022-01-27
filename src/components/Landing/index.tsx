@@ -72,7 +72,7 @@ const ListElement = styled.li`
   `}
 `;
 const GreyCardContainer = styled.section`
-  background-color:  ${({ theme }) => theme.greyCard};
+  background-color: ${({ theme }) => theme.greyCard};
   border-radius: 240px 240px 0 0;
   box-shadow: 0px 0px 72px -12px ${({ theme }) => theme.greyCardShadow};
   ${({ theme }) => theme.mediaWidth.upToMedium`
@@ -100,32 +100,32 @@ const CardWrapper = styled.div`
 `;
 
 const GreyCard = styled.div`
-    color: ${({ theme }) => theme.white};
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-top: 60px;
-    padding:  0 5%;
+  color: ${({ theme }) => theme.white};
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 60px;
+  padding: 0 5%;
 
-    & > h2 {
-      font-style: normal;
-      font-weight: 500;
-      font-size: 1.5rem;
-      line-height: 1.75rem;
-      text-align: center;
-    }
-    
-    & > h5 {
-      font-style: normal;
-      font-weight: 300;
-      font-size: 1rem;
-      line-height: 1.185rem;
-      text-align: center;
-      margin-block-start: 0;
-    }
+  & > h2 {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1.5rem;
+    line-height: 1.75rem;
+    text-align: center;
+  }
 
-    ${({ theme }) => theme.mediaWidth.upToSmall`
+  & > h5 {
+    font-style: normal;
+    font-weight: 300;
+    font-size: 1rem;
+    line-height: 1.185rem;
+    text-align: center;
+    margin-block-start: 0;
+  }
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
       padding:  0 10%;
     `}
 `;
@@ -133,9 +133,13 @@ const GreyCard = styled.div`
 const BlackCardContainer = styled.div`
   display: flex;
   flex-direction: column;
-  background:  linear-gradient(180deg, ${({ theme }) => theme.blackCardShadow} 0%, ${({ theme }) => theme.globalBlack} 100%);
+  background: linear-gradient(
+    180deg,
+    ${({ theme }) => theme.blackCardShadow} 0%,
+    ${({ theme }) => theme.globalBlack} 100%
+  );
   border-radius: 240px 240px 0 0;
-  box-shadow: 0px 0px 72px #41444D;
+  box-shadow: 0px 0px 72px #41444d;
   ${({ theme }) => theme.mediaWidth.upToMedium`
     border-radius: 120px 120px 0 0;
   `}
@@ -167,7 +171,10 @@ const Label = styled.div`
 
 const BlockInformation = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr) 0.2fr 0.5fr 0.2fr 2fr 0.2fr 0.5fr 0.2fr repeat(2, 1fr);
+  grid-template-columns: repeat(2, 1fr) 0.2fr 0.5fr 0.2fr 2fr 0.2fr 0.5fr 0.2fr repeat(
+      2,
+      1fr
+    );
   grid-template-rows: 0.6fr 0.1fr 0.3fr 1fr 0fr 0.1fr 1.4fr;
   grid-column-gap: 0px;
   grid-row-gap: 0px;
@@ -255,12 +262,14 @@ const benefitsCards = [
   {
     Image: JetLogo,
     title: 'Jets',
-    subtitle: 'Interface-embedded system that helps to find the most promising pools',
+    subtitle:
+      'Interface-embedded system that helps to find the most promising pools',
   },
   {
     Image: SlippageLogo,
     title: 'Low Slippage',
-    subtitle: 'The lowest slippage possible thanks to NEAR and proprietary algorithms',
+    subtitle:
+      'The lowest slippage possible thanks to NEAR and proprietary algorithms',
   },
   {
     Image: FarmingLogo,
@@ -268,6 +277,44 @@ const benefitsCards = [
     subtitle: 'Find the best Yields and Transition between pools in ONE Click',
   },
 ];
+
+function getMiddleBlock() {
+  if (isTablet) {
+    return (
+      <TabletImgContainer>
+        <img src={tabletImg} alt="table img" />{' '}
+      </TabletImgContainer>
+    );
+  }
+  if (isMobile) {
+    return (
+      <MobileImgContainer>
+        <img src={mobileImg} alt="mobile img" />
+      </MobileImgContainer>
+    );
+  }
+  return (
+    <BlockInformation>
+      <UpperBlock>Smart Pools</UpperBlock>
+      <MiddleLeftBlock>Jets</MiddleLeftBlock>
+      <MiddleRightBlock>
+        On-the-fly
+        <br />
+        Pool Transition
+      </MiddleRightBlock>
+      <LowerBlock>
+        Lower Slippage
+        <br />
+        Volume & Liquidity Homogenization
+        <br />
+        Liquid Market
+      </LowerBlock>
+      <CentralArrowContainer />
+      <LowerLeftArrowContainer />
+      <LowerRightArrowContainer />
+    </BlockInformation>
+  );
+}
 
 export default function Landing() {
   return (
@@ -283,7 +330,9 @@ export default function Landing() {
           DeFi Experience <br />
           You Will Ever Have
         </MainTitle>
-        {benefitsList.map((el) => <ListElement key={el}>{el}</ListElement>)}
+        {benefitsList.map((el) => (
+          <ListElement key={el}>{el}</ListElement>
+        ))}
       </MainInformation>
       <GreyCardContainer>
         <CardWrapper>
@@ -297,28 +346,10 @@ export default function Landing() {
         </CardWrapper>
         <BlackCardContainer>
           <Title>Ecosystem</Title>
-          <Label>Jumbo provides Ecosystem-Wide Liquidity for users and projects</Label>
-          {isTablet && (<TabletImgContainer><img src={tabletImg} alt="table img" /> </TabletImgContainer>)}
-          {isMobile && (<MobileImgContainer><img src={mobileImg} alt="mobile img" /></MobileImgContainer>)}
-          {(!isTablet && !isMobile)
-          && (
-          <BlockInformation>
-            <UpperBlock>Smart Pools</UpperBlock>
-            <MiddleLeftBlock>Jets</MiddleLeftBlock>
-            <MiddleRightBlock>
-              On-the-fly<br />
-              Pool Transition
-            </MiddleRightBlock>
-            <LowerBlock>
-              Lower Slippage<br />
-              Volume & Liquidity Homogenization<br />
-              Liquid Market
-            </LowerBlock>
-            <CentralArrowContainer />
-            <LowerLeftArrowContainer />
-            <LowerRightArrowContainer />
-          </BlockInformation>
-          )}
+          <Label>
+            Jumbo provides Ecosystem-Wide Liquidity for users and projects
+          </Label>
+          {getMiddleBlock()}
           <Footer />
         </BlackCardContainer>
       </GreyCardContainer>
