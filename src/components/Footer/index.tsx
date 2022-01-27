@@ -5,6 +5,7 @@ import { ReactComponent as TelegramImg } from 'assets/images/Telegram.svg';
 import { ReactComponent as TwitterImg } from 'assets/images/Twitter.svg';
 import { ReactComponent as MediumImg } from 'assets/images/Medium.svg';
 import { ReactComponent as JumboLogo } from 'assets/images/jumbo-logo.svg';
+import { ReactComponent as HapiLogo } from 'assets/images/hapi-logo.svg';
 
 const Container = styled.footer`
   display: flex;
@@ -27,7 +28,7 @@ const ContainerMobile = styled.footer`
 const ChildContainer = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-evenly;
   align-items: center;
   align-self: normal;
   white-space: nowrap;
@@ -49,7 +50,7 @@ const LogoContainer = styled.div`
   }
 `;
 
-const LogoTitle = styled.h1`
+const LogoTitle = styled.div`
   font-style: normal;
   font-weight: bold;
   font-size: 1rem;
@@ -91,6 +92,47 @@ const TextContainer = styled.div`
   font-size: 0.75rem;
   line-height: 17px;
   color: ${({ theme }) => theme.globalWhite};
+`;
+
+const HapiButton = styled.a`
+  min-height: 2.25rem;
+  cursor: pointer;
+  font-family: Arial;
+  font-style: normal;
+  font-weight: bold;
+  font-size: .625rem;
+  line-height: 11px;
+  display: flex;
+  align-items: center;
+  border: 1px solid ${({ theme }) => theme.yellowHapi};
+  border-radius: 8px;
+  :hover {
+    & span {
+      text-decoration: underline;
+    }
+  }
+`;
+
+const HapiLogoContainer = styled.div`
+  background-color: ${({ theme }) => theme.yellowHapi};
+  border-radius: 6px 0 0 6px;
+`;
+
+const HapiTitle = styled.p`
+  color: ${({ theme }) => theme.yellowHapi};
+  margin-block-start: 0;
+  margin-block-end: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 6px 5px;
+  white-space: nowrap;
+`;
+
+const LeftContainer = styled.div`
+  display: flex;
+  flex-direction: row;
 `;
 
 interface ISocialNetwork {
@@ -137,15 +179,35 @@ export default function Footer() {
           <JumboLogo />
           <LogoTitle>Jumbo</LogoTitle>
         </LogoContainer>
+        <HapiButton>
+          <HapiLogoContainer>
+            <HapiLogo />
+          </HapiLogoContainer>
+          <HapiTitle>
+            Protected by
+            <span>HAPI Protocol</span>
+          </HapiTitle>
+        </HapiButton>
         <TextContainer>Copyright 2021</TextContainer>
       </ChildContainer>
     </ContainerMobile>
   ) : (
     <Container>
-      <LogoContainer>
-        <JumboLogo />
-        <LogoTitle>Jumbo</LogoTitle>
-      </LogoContainer>
+      <LeftContainer>
+        <LogoContainer>
+          <JumboLogo />
+          <LogoTitle>Jumbo</LogoTitle>
+        </LogoContainer>
+        <HapiButton>
+          <HapiLogoContainer>
+            <HapiLogo />
+          </HapiLogoContainer>
+          <HapiTitle>
+            Protected by
+            <span>HAPI Protocol</span>
+          </HapiTitle>
+        </HapiButton>
+      </LeftContainer>
       <SocialNetworkContainer>
         {socialNetwork.map(({ Image, title, href }) => (
           <ChildSocialNetwork
