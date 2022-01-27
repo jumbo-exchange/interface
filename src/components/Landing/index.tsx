@@ -7,8 +7,11 @@ import tabletImg from 'assets/images/tablet-image.png';
 import mobileImg from 'assets/images/mobile-image.png';
 import Footer from 'components/Footer';
 import { isMobile, isTablet } from 'utils/userAgent';
+import gif from 'assets/images/El_4.gif';
 import {
+  UpperContainer,
   MainInformation,
+  Gif,
   NearContainer,
   MainTitle,
   ListElement,
@@ -98,20 +101,23 @@ export default function Landing() {
   return (
     <>
       <Header />
-      <MainInformation>
-        <NearContainer>
-          Powered by
-          <NearLogo />
-        </NearContainer>
-        <MainTitle>
-          The Most Intuitive <br />
-          DeFi Experience <br />
-          You Will Ever Have
-        </MainTitle>
-        {benefitsList.map((el) => (
-          <ListElement key={el}>{el}</ListElement>
-        ))}
-      </MainInformation>
+      <UpperContainer>
+        <MainInformation>
+          <NearContainer>
+            Powered by
+            <NearLogo />
+          </NearContainer>
+          <MainTitle>
+            The Most Intuitive <br />
+            DeFi Experience <br />
+            You Will Ever Have
+          </MainTitle>
+          {benefitsList.map((el) => (
+            <ListElement key={el}>{el}</ListElement>
+          ))}
+        </MainInformation>
+        <Gif src={gif} alt="gif" />
+      </UpperContainer>
       <GreyCardContainer>
         <CardWrapper>
           {benefitsCards.map(({ Image, title, subtitle }) => (
