@@ -3,7 +3,6 @@ import { ButtonPrimary } from 'components/Button';
 import { IPool, useModalsStore, useStore } from 'store';
 import styled from 'styled-components';
 import { SpecialContainer } from 'components/SpecialContainer';
-import { ReactComponent as InfoIcon } from 'assets/images-app/info.svg';
 import Tooltip from 'components/Tooltip';
 
 const Wrapper = styled(SpecialContainer)`
@@ -94,10 +93,6 @@ const LabelVolume = styled.div`
   font-size: .75rem;
   line-height: .875rem;
   color: ${({ theme }) => theme.globalWhite};
-`;
-
-const LogoInfo = styled(InfoIcon)`
-  margin-left: 0.397rem;
 `;
 
 const BlockButton = styled.div`
