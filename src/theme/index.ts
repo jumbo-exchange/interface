@@ -27,6 +27,12 @@ export interface ThemeColors {
   greyText: string;
   greyCard: string;
   greyCardShadow: string;
+  greyFooterLogo: string;
+  greySocialNetworkBg: string;
+  blackCardText: string;
+  redBorder: string;
+  darkGreenBg: string;
+  greenText: string;
 }
 
 export const colors: ThemeColors = {
@@ -38,6 +44,12 @@ export const colors: ThemeColors = {
   greyText: '#91949D',
   greyCard: '#5A5E6D',
   greyCardShadow: 'rgba(19, 19, 19, 0.6)',
+  greyFooterLogo: '#6A6D76',
+  greySocialNetworkBg: '#2B2B2B',
+  blackCardText: '#A1A4AC',
+  redBorder: '#FE2C55',
+  darkGreenBg: '#212C1E;',
+  greenText: '#8EF46A',
 };
 
 function theme(): DefaultTheme {
