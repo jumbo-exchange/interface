@@ -10,11 +10,21 @@ import { ReactComponent as HapiLogo } from 'assets/images/hapi-logo.svg';
 const Container = styled.footer`
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
   white-space: nowrap;
   color: ${({ theme }) => theme.globalWhite};
-  padding-bottom: 41px;
+  padding: 0 200px 41px 200px;
+  ${({ theme }) => theme.mediaWidth.upToLarge`
+    padding: 0 70px 41px 70px;
+  `}
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    padding: 0 48px 41px 48px;
+  `}
+  
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    padding: 0 20px 41px 20px;
+  `}
 `;
 
 const ContainerMobile = styled.footer`
@@ -40,6 +50,7 @@ const LogoContainer = styled.div`
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
+  margin-right: ${isMobile ? '0' : '30px'};
   & > svg {
     margin-right: 4px;
     width: 19px;
@@ -63,6 +74,7 @@ const SocialNetworkContainer = styled.div`
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  flex: 0 1 0%;
   border-radius: 32px;
   padding: 0 31px;
   background: ${({ theme }) => theme.greySocialNetworkBg};
@@ -87,11 +99,21 @@ const ChildSocialNetwork = styled.a`
 `;
 
 const TextContainer = styled.div`
+  display: flex;
+  flex: ${isMobile ? '0' : '1 1 0%'};
+  justify-content: flex-end;
   font-style: normal;
   font-weight: 300;
   font-size: 0.75rem;
   line-height: 17px;
   color: ${({ theme }) => theme.globalWhite};
+`;
+
+const LeftContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex: 1 1 0%;
+  justify-content: flex-start;
 `;
 
 const HapiButton = styled.a`
@@ -128,11 +150,6 @@ const HapiTitle = styled.p`
   align-items: flex-start;
   padding: 6px 5px;
   white-space: nowrap;
-`;
-
-const LeftContainer = styled.div`
-  display: flex;
-  flex-direction: row;
 `;
 
 interface ISocialNetwork {
