@@ -3,6 +3,8 @@ stages:
   - deploy
 
 docker-build-prod:
+  environment:
+    name: production
   image: docker:latest
   stage: build
   services:
@@ -16,6 +18,8 @@ docker-build-prod:
       - main
 
 deploy-prod:
+  environment:
+    name: production
   image: alpine:3
   stage: deploy
   script:
@@ -25,6 +29,8 @@ deploy-prod:
     - main
 
 docker-build-stage:
+  environment:
+    name: staging
   image: docker:latest
   stage: build
   services:
@@ -39,6 +45,8 @@ docker-build-stage:
       - stage
 
 deploy-stage:
+  environment:
+    name: staging
   image: alpine:3
   stage: deploy
   script:
