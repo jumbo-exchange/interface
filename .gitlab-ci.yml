@@ -1,3 +1,7 @@
+stages:
+  - build
+  - deploy
+
 docker-build-prod:
   image: docker:latest
   stage: build
@@ -10,6 +14,15 @@ docker-build-prod:
     - docker push "$CI_REGISTRY_IMAGE:prod"
   only:
       - main
+
+deploy-prod:
+  image: alpine:3
+  stage: deploy
+  script:
+    - wget --post-data '' "$DEPLOY_TRIGGER_URL_STAGE"
+  when: manual
+  only:
+    - main
 
 docker-build-stage:
   image: docker:latest
@@ -24,3 +37,11 @@ docker-build-stage:
     - curl -X POST "$DEPLOY_TRIGGER_URL_STAGE"
   only:
       - stage
+
+deploy-stage:
+  image: alpine:3
+  stage: deploy
+  script:
+    - wget --post-data '' "$DEPLOY_TRIGGER_URL_STAGE"
+  only:
+    - stage
