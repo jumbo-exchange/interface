@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { FilterButton } from 'components/Button';
 import { isMobile } from 'utils/userAgent';
-import { useStore } from 'store';
 import {
   Container,
   FilterBlock,
@@ -22,7 +21,12 @@ export enum FilterPoolsEnum {
   'Smart Pools',
 }
 
-const filters = [
+interface IFilters {
+  title: string
+  isActive: FilterPoolsEnum,
+  disabled?: boolean,
+}
+const filters: IFilters[] = [
   {
     title: 'All Pools',
     isActive: FilterPoolsEnum['All Pools'],
@@ -38,6 +42,7 @@ const filters = [
   {
     title: 'Smart Pools',
     isActive: FilterPoolsEnum['Smart Pools'],
+    disabled: true,
   },
 ];
 
@@ -48,7 +53,6 @@ interface IMainInfo {
 }
 
 export default function Pool() {
-  const { pools } = useStore();
   const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum['All Pools']);
 
   const mainInfo: IMainInfo[] = [
@@ -81,6 +85,7 @@ export default function Pool() {
             key={el.title}
             isActive={currentFilterPools === el.isActive}
             onClick={() => setCurrentFilterPools(el.isActive)}
+            disabled={el.disabled}
           >
             {el.title}
           </FilterButton>
