@@ -53,9 +53,6 @@ export default function App() {
           <CustomLink to="pool">
             Pool
           </CustomLink>
-          <CustomLink to="...">
-            ...
-          </CustomLink>
         </NavBar>
         <ConnectionButton />
       </Header>

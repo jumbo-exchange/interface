@@ -8,7 +8,7 @@ import { createContract, Transaction } from './wallet';
 import getConfig from './config';
 
 enum SWAP_ENUM { DIRECT_SWAP = 1, INDIRECT_SWAP = 2 }
-const basicViewMethods = ['ft_metadata', 'ft_balance_of', 'get_return'];
+const basicViewMethods = ['get_return'];
 const basicChangeMethods = ['swap'];
 const config = getConfig();
 
@@ -154,7 +154,7 @@ export default class SwapContract {
   }) {
     const transactionsReceipts: Transaction[] = [];
     const accountId = this.walletInstance.getAccountId();
-    const outputTokenStorage = await outputToken.checkStorageBalance({ accountId });
+    const outputTokenStorage = await outputToken.contract.checkStorageBalance({ accountId });
     transactionsReceipts.push(...outputTokenStorage);
     const swapAction = await this.generateTransferMessage(
       pools, amount, inputToken, outputToken,

@@ -50,7 +50,7 @@ export default class FungibleTokenContract {
     this.contractId = props.contractId;
   }
 
-  contract = createContract(
+  contract: any = createContract(
     wallet,
     CONTRACT_ID,
     basicViewMethods,
@@ -78,7 +78,6 @@ export default class FungibleTokenContract {
   }
 
   async getStorageBalance({ accountId } : { accountId: string }) {
-    // @ts-expect-error: Property 'storage_balance_of' does not exist on type 'Contract'.
     return this.contract.storage_balance_of({ account_id: accountId });
   }
 
@@ -87,14 +86,12 @@ export default class FungibleTokenContract {
       this.metadata.decimals !== DECIMALS_DEFAULT_VALUE
       && this.metadata.icon !== ICON_DEFAULT_VALUE
     ) return this.metadata;
-    // @ts-expect-error: Property 'ft_metadata' does not exist on type 'Contract'.
     const metadata = await this.contract.ft_metadata();
     this.metadata = { ...defaultMetadata, ...metadata };
     return metadata;
   }
 
   async getBalanceOf({ accountId }: { accountId: string }) {
-    // @ts-expect-error: Property 'ft_metadata' does not exist on type 'Contract'.
     return this.contract.ft_balance_of({ account_id: accountId });
   }
 

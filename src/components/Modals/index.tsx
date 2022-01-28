@@ -1,15 +1,15 @@
 import React from 'react';
 import AccountModal from './AccountModal';
-import LiquidityModal from './LiquidityModal';
-import AddPoolModal from './AddPoolModal';
+import AddLiquidityModal from './AddLiquidityModal';
+import CreatePoolModal from './CreatePoolModal';
 import SearchModal from './SearchModal';
 
 export default function Modals({ children }: {children: JSX.Element}) {
   return (
     <>
       <AccountModal />
-      <LiquidityModal />
-      <AddPoolModal />
+      <AddLiquidityModal />
+      <CreatePoolModal />
       <SearchModal />
       {children}
     </>

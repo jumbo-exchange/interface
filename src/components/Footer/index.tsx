@@ -68,7 +68,7 @@ export default function Footer() {
             <span>HAPI Protocol</span>
           </HapiTitle>
         </HapiButton>
-        <TextContainer>Copyright 2021</TextContainer>
+        <TextContainer>Copyright 2022</TextContainer>
       </ChildContainer>
     </ContainerMobile>
   ) : (

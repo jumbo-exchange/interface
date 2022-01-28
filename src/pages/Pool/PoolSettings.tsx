@@ -134,8 +134,9 @@ const filters = [
   },
 ];
 
+
 export default function PoolSettings({ currentFilterPools }:{currentFilterPools:FilterPoolsEnum}) {
-  const { setAddPoolModalOpen } = useModalsStore();
+  const { setCreatePollModalOpen } = useModalsStore();
 
   if (isMobile) {
     return (
@@ -163,7 +164,7 @@ export default function PoolSettings({ currentFilterPools }:{currentFilterPools:
           </Wrapper>
         </MobileRow>
         <ButtonSecondary
-          onClick={() => setAddPoolModalOpen(true)}
+          onClick={() => setCreatePollModalOpen(true)}
         >
           <LogoPlus /> Create Pool
         </ButtonSecondary>
@@ -201,7 +202,7 @@ export default function PoolSettings({ currentFilterPools }:{currentFilterPools:
       </Wrapper>
       <Title><Loading />Refresh</Title>
       <ButtonSecondary
-        onClick={() => setAddPoolModalOpen(true)}
+        onClick={() => setCreatePollModalOpen(true)}
       >
         <LogoPlus /> Create Pool
       </ButtonSecondary>
