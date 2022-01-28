@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Big from 'big.js';
 import { useModalsStore, TokenType, useStore } from 'store';
-import { ReactComponent as BackArrow } from 'assets/images-app/icon-back.svg';
+import { ReactComponent as Close } from 'assets/images-app/close.svg';
 import { TOTAL_FEE_DEFAULT } from 'utils/constants';
 import { ButtonPrimary } from 'components/Button';
 import { Layout, ModalBlock, ModalIcon } from '../styles';
@@ -31,12 +31,12 @@ export default function AddPoolModal() {
       <Layout onClick={() => setAddPoolModalOpen(false)}>
         <LiquidityModalContainer onClick={(e) => e.stopPropagation()}>
           <ModalBlock>
-            <ModalIcon onClick={() => setAddPoolModalOpen(false)}>
-              <BackArrow />
-            </ModalIcon>
             <ModalTitle>
-              Add Liquidity
+              Create Pool
             </ModalTitle>
+            <ModalIcon onClick={() => setAddPoolModalOpen(false)}>
+              <Close />
+            </ModalIcon>
           </ModalBlock>
           <ModalBody>
             <TokenBlock
