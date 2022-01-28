@@ -22,10 +22,10 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "docker:build:prod": "docker build -f Dockerfile.prod -t $npm_package_config_registry:prod .",
-    "docker:push:prod": "docker push $npm_package_config_registry:prod",
-    "docker:build:stage": "docker build -f Dockerfile.stage -t $npm_package_config_registry:stage .",
-    "docker:push:stage": "docker push $npm_package_config_registry:stage"
+    "docker:build:prod": "docker build -f Dockerfile.prod -t $REGISTRY .",
+    "docker:push:prod": "docker push $REGISTRY",
+    "docker:build:stage": "docker build -f Dockerfile.stage -t $REGISTRY .",
+    "docker:push:stage": "docker push $REGISTRY"
   },
   "browserslist": {
     "production": [
