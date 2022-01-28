@@ -134,7 +134,7 @@ const filters = [
 ];
 
 export default function PoolSettings() {
-  const { setCreatePollModalOpen } = useModalsStore();
+  const { setCreatePoolModalOpen } = useModalsStore();
   if (isMobile) {
     return (
       <MobileContainer>
@@ -161,7 +161,7 @@ export default function PoolSettings() {
           </Wrapper>
         </MobileRow>
         <ButtonSecondary
-          onClick={() => setCreatePollModalOpen(true)}
+          onClick={() => setCreatePoolModalOpen(true)}
         >
           <LogoPlus /> Create Pool
         </ButtonSecondary>
@@ -199,7 +199,7 @@ export default function PoolSettings() {
       </Wrapper>
       <Title><Loading />Refresh</Title>
       <ButtonSecondary
-        onClick={() => setCreatePollModalOpen(true)}
+        onClick={() => setCreatePoolModalOpen(true)}
       >
         <LogoPlus /> Create Pool
       </ButtonSecondary>

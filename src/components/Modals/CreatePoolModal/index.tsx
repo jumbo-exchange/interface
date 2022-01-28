@@ -17,7 +17,7 @@ import CreatePoolSettings from './CreatePoolSetting';
 
 export default function CreatePoolModal() {
   const { inputToken, outputToken } = useStore();
-  const { isCreatePollModalOpen, setCreatePollModalOpen } = useModalsStore();
+  const { isCreatePoolModalOpen, setCreatePoolModalOpen } = useModalsStore();
   const [fee, setFee] = useState(TOTAL_FEE_DEFAULT);
 
   const canCreatePool = !!fee
@@ -36,14 +36,14 @@ export default function CreatePoolModal() {
 
   return (
     <>
-      {isCreatePollModalOpen && (
-      <Layout onClick={() => setCreatePollModalOpen(false)}>
+      {isCreatePoolModalOpen && (
+      <Layout onClick={() => setCreatePoolModalOpen(false)}>
         <LiquidityModalContainer onClick={(e) => e.stopPropagation()}>
           <ModalBlock>
             <ModalTitle>
               Create Pool
             </ModalTitle>
-            <ModalIcon onClick={() => setCreatePollModalOpen(false)}>
+            <ModalIcon onClick={() => setCreatePoolModalOpen(false)}>
               <Close />
             </ModalIcon>
           </ModalBlock>
