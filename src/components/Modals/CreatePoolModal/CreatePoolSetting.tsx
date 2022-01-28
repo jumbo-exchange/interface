@@ -81,7 +81,7 @@ export default function CreatePoolSettings(
     setFee,
   }:{
     fee: string;
-    setFee:(fee:string) => void
+    setFee:(fee: string) => void
   },
 ) {
   const [error, setError] = useState(false);

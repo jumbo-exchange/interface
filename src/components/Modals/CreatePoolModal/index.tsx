@@ -4,6 +4,7 @@ import { useModalsStore, TokenType, useStore } from 'store';
 import { ReactComponent as BackArrow } from 'assets/images-app/icon-back.svg';
 import { TOTAL_FEE_DEFAULT } from 'utils/constants';
 import { ButtonPrimary } from 'components/Button';
+import PoolContract from 'services/PoolContract';
 import { Layout, ModalBlock, ModalIcon } from '../styles';
 import {
   LiquidityModalContainer,
@@ -24,6 +25,14 @@ export default function CreatePoolModal() {
   && new Big(fee).lt('20')
   && !!inputToken
   && !!outputToken;
+
+  const createPool = async () => {
+    if (!inputToken || !outputToken) return;
+    const poolContract = new PoolContract();
+    await poolContract.createPool(
+      { tokens: [inputToken.contractId, outputToken.contractId], fee },
+    );
+  };
 
   return (
     <>
@@ -53,7 +62,7 @@ export default function CreatePoolModal() {
             />
             <ButtonPrimary
               onClick={() => {
-                if (canCreatePool) { console.log('create pool'); }
+                if (canCreatePool) createPool();
               }}
             >
               <CreateIconContainer />
