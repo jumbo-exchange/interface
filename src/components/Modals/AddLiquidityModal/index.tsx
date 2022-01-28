@@ -22,7 +22,7 @@ import {
   DescriptionAccept,
 } from './styles';
 
-export default function LiquidityModal() {
+export default function AddLiquidityModal() {
   const {
     inputToken,
     outputToken,
@@ -32,16 +32,16 @@ export default function LiquidityModal() {
   const [inputTokenValue, setInputTokenValue] = useState<string>('');
   const [outputTokenValue, setOutputTokenValue] = useState<string>('');
 
-  const { isLiquidityModalOpen, setLiquidityModalOpen } = useModalsStore();
+  const { isAddLiquidityModalOpen, setAddLiquidityModalOpen } = useModalsStore();
 
   return (
     <>
-      {isLiquidityModalOpen && (
-      <Layout onClick={() => setLiquidityModalOpen(false)}>
+      {isAddLiquidityModalOpen && (
+      <Layout onClick={() => setAddLiquidityModalOpen(false)}>
         <LiquidityModalContainer onClick={(e) => e.stopPropagation()}>
           <ModalBlock>
             <Tooltip title={tooltipTitle.back} bottom="45px">
-              <ModalIcon onClick={() => setLiquidityModalOpen(false)}>
+              <ModalIcon onClick={() => setAddLiquidityModalOpen(false)}>
                 <BackArrow />
               </ModalIcon>
             </Tooltip>

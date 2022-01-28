@@ -105,7 +105,7 @@ export default function PoolCard({ pool } : {pool:IPool}) {
     setInputToken,
     setOutputToken,
   } = useStore();
-  const { setLiquidityModalOpen } = useModalsStore();
+  const { setAddLiquidityModalOpen } = useModalsStore();
 
   const [inputToken, outputToken] = pool.tokenAccountIds;
   const tokenInput = tokens[inputToken] ?? null;
@@ -163,7 +163,7 @@ export default function PoolCard({ pool } : {pool:IPool}) {
             onClick={() => {
               setInputToken(tokenInput);
               setOutputToken(tokenOutput);
-              setLiquidityModalOpen(true);
+              setAddLiquidityModalOpen(true);
             }}
           >
             Add Liquidity
