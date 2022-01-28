@@ -55,11 +55,16 @@ export interface ThemeColors {
   pinkActive: string;
 
   greyButton: string;
+  claimButton: string;
+
   backgroundCard: string;
   boxShadowCard: string;
   specialBorderCard: string;
   error: string;
   tooltip: string;
+
+  hakunaLabel: string;
+  matataLabel: string;
 }
 
 export const colors: ThemeColors = {
@@ -99,11 +104,16 @@ export const colors: ThemeColors = {
   pinkActive: '#C71A35',
 
   greyButton: '#454D5C',
+  claimButton: '#151922',
+
   backgroundCard: '#202632',
   boxShadowCard: 'rgba(10, 12, 18, 0.2)',
   specialBorderCard: 'linear-gradient(180deg, rgb(53, 60, 73), rgba(137, 145, 163, 0) 100%)',
   error: '#FF6F6F',
   tooltip: '#454D5C',
+
+  hakunaLabel: '#47872B',
+  matataLabel: '#A91BAC',
 };
 
 function theme(): DefaultTheme {

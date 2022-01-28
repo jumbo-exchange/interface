@@ -6,6 +6,7 @@ export enum ButtonVariant {
   Secondary,
   Third,
   Fourth,
+  Claim,
 }
 
 interface IFilterButton {
@@ -102,6 +103,39 @@ export const FilterButton = styled.button<PropsWithChildren<IFilterButton>>`
   }
 `;
 
+export const ButtonClaim = styled.button`
+  min-width: 170px;
+  outline: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  & > span:first-child {
+    font-style: normal;
+    font-weight: 300;
+    font-size: .75rem;
+    line-height: .875rem;
+    color: ${({ theme }) => theme.globalWhite};
+  }
+
+  & > span:last-child {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    color: ${({ theme }) => theme.pink};
+  }
+
+  border: none;
+  background: ${({ theme }) => theme.claimButton};
+  color: ${({ theme }) => theme.globalWhite};
+  border-radius: 12px;
+  :hover {
+    cursor: pointer;
+  }
+`;
+
 export function Button({ variant }: { variant: ButtonVariant }) {
   switch (variant) {
     case ButtonVariant.Primary:
@@ -112,6 +146,8 @@ export function Button({ variant }: { variant: ButtonVariant }) {
       return <ButtonThird />;
     case ButtonVariant.Fourth:
       return <ButtonFourth />;
+    case ButtonVariant.Claim:
+      return <ButtonClaim />;
     default:
       return <ButtonPrimary />;
   }
