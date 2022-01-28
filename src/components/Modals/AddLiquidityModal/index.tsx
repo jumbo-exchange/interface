@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { TokenType, useModalsStore, useStore } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
-import { ReactComponent as AddIcon } from 'assets/images-app/icon-add.svg';
 import { ButtonPrimary } from 'components/Button';
 import {
   Layout, ModalBlock, ModalIcon,
@@ -18,6 +17,7 @@ import {
   LabelAccept,
   InputAccept,
   DescriptionAccept,
+  LogoButton,
 } from './styles';
 
 export default function AddLiquidityModal() {
@@ -53,9 +53,7 @@ export default function AddLiquidityModal() {
               setValue={setInputTokenValue}
               balance={balances[inputToken?.contractId ?? '']}
             />
-            <LogoContainerAdd>
-              <AddIcon />
-            </LogoContainerAdd>
+            <LogoContainerAdd />
             <Input
               token={outputToken}
               tokenType={TokenType.Output}
@@ -79,6 +77,7 @@ export default function AddLiquidityModal() {
             <ButtonPrimary
               onClick={() => console.log('deposit')}
             >
+              <LogoButton />
               Add Liquidity
             </ButtonPrimary>
           </ModalBody>
