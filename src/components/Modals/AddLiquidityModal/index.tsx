@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { TokenType, useModalsStore, useStore } from 'store';
-import { ReactComponent as BackArrow } from 'assets/images-app/icon-back.svg';
+import { ReactComponent as Close } from 'assets/images-app/close.svg';
 import { ReactComponent as AddIcon } from 'assets/images-app/icon-add.svg';
 import { ButtonPrimary } from 'components/Button';
-import Tooltip from 'components/Tooltip';
-import { tooltipTitle } from 'utils/constants';
 import {
   Layout, ModalBlock, ModalIcon,
 } from '../styles';
@@ -22,7 +20,7 @@ import {
   DescriptionAccept,
 } from './styles';
 
-export default function LiquidityModal() {
+export default function AddLiquidityModal() {
   const {
     inputToken,
     outputToken,
@@ -32,24 +30,19 @@ export default function LiquidityModal() {
   const [inputTokenValue, setInputTokenValue] = useState<string>('');
   const [outputTokenValue, setOutputTokenValue] = useState<string>('');
 
-  const { isLiquidityModalOpen, setLiquidityModalOpen } = useModalsStore();
+  const { isAddLiquidityModalOpen, setAddLiquidityModalOpen } = useModalsStore();
 
   return (
     <>
-      {isLiquidityModalOpen && (
-      <Layout onClick={() => setLiquidityModalOpen(false)}>
+      {isAddLiquidityModalOpen && (
+      <Layout onClick={() => setAddLiquidityModalOpen(false)}>
         <LiquidityModalContainer onClick={(e) => e.stopPropagation()}>
           <ModalBlock>
-            <Tooltip title={tooltipTitle.back} bottom="45px">
-              <ModalIcon onClick={() => setLiquidityModalOpen(false)}>
-                <BackArrow />
-              </ModalIcon>
-            </Tooltip>
             <ModalTitle>
               Add Liquidity
             </ModalTitle>
-            <ModalIcon>
-              <AddIcon />
+            <ModalIcon onClick={() => setAddLiquidityModalOpen(false)}>
+              <Close />
             </ModalIcon>
           </ModalBlock>
           <ModalBody>

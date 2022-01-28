@@ -32,7 +32,7 @@ export const ModalBody = styled.div`
   justify-content: space-between;
 `;
 
-export const AddIconContainer = styled(AddIcon)`
+export const CreateIconContainer = styled(AddIcon)`
   width: 12px;
   height: 12px;
   margin-right: .625rem;

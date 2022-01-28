@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { SpecialContainer } from 'components/SpecialContainer';
+import { ButtonClaim } from 'components/Button';
 
 export const Container = styled.div`
   display: flex;
@@ -11,6 +12,7 @@ export const Container = styled.div`
   white-space: nowrap;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     margin: 0 1rem;
+    max-width: 328px;
   `}
 `;
 
@@ -31,12 +33,24 @@ export const InformationBlock = styled(SpecialContainer)`
   max-width: 736px;
   width: 100%;
   flex-direction: row;
-  border-radius: 12px;
+  border-radius: 24px;
   justify-content: space-between;
   margin: 0;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    flex-direction: column;
+    & > button {
+      margin: 1.25rem 0 0;
+    }
+  `}
   ::before{
-    border-radius: 12px;
+    border-radius: 24px;
   }
+`;
+
+export const WrapperInfoBLock = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 `;
 
 export const InfoBLock = styled.div`
@@ -59,4 +73,15 @@ export const LabelInfo = styled.div`
   font-weight: 500;
   font-size: 1rem;
   line-height: 1.188rem;
+`;
+
+export const BtnClaim = styled(ButtonClaim)`
+  margin-left: 1rem;
+`;
+
+export const PoolResult = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
 `;

@@ -75,13 +75,13 @@ const Error = styled.div`
   color: ${({ theme }) => theme.error};
 `;
 
-export default function AddPoolSettings(
+export default function CreatePoolSettings(
   {
     fee,
     setFee,
   }:{
     fee: string;
-    setFee:(fee:string) => void
+    setFee:(fee: string) => void
   },
 ) {
   const [error, setError] = useState(false);

@@ -7,6 +7,7 @@ export const LiquidityModalContainer = styled(Modal)`
 `;
 
 export const ModalTitle = styled.h2`
+  flex: 1;
   font-style: normal;
   font-weight: 500;
   font-size: 1.5rem;
