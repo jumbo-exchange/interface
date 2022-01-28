@@ -41,7 +41,7 @@ export default function AddLiquidityModal() {
             <ModalTitle>
               Add Liquidity
             </ModalTitle>
-            <ModalIcon onClick={() => setLiquidityModalOpen(false)}>
+            <ModalIcon onClick={() => setAddLiquidityModalOpen(false)}>
               <Close />
             </ModalIcon>
           </ModalBlock>

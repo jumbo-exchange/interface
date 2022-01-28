@@ -43,7 +43,7 @@ export default function CreatePoolModal() {
             <ModalTitle>
               Create Pool
             </ModalTitle>
-            <ModalIcon onClick={() => setAddPoolModalOpen(false)}>
+            <ModalIcon onClick={() => setCreatePollModalOpen(false)}>
               <Close />
             </ModalIcon>
           </ModalBlock>
