@@ -154,7 +154,7 @@ export default class SwapContract {
   }) {
     const transactionsReceipts: Transaction[] = [];
     const accountId = this.walletInstance.getAccountId();
-    const outputTokenStorage = await outputToken.checkStorageBalance({ accountId });
+    const outputTokenStorage = await outputToken.contract.checkStorageBalance({ accountId });
     transactionsReceipts.push(...outputTokenStorage);
     const swapAction = await this.generateTransferMessage(
       pools, amount, inputToken, outputToken,
