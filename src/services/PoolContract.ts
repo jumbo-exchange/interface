@@ -1,12 +1,8 @@
 import { functionCall } from 'near-api-js/lib/transaction';
-
-import { IPool } from 'store/interfaces';
-import { SWAP_FAILED, SWAP_TOKENS_NOT_IN_SWAP_POOL } from 'utils/errors';
-import { ONE_YOCTO_NEAR } from 'utils/constants';
 import Big from 'big.js';
-import FungibleTokenContract from './FungibleToken';
+
 import { getAmount, getGas, wallet } from './near';
-import { createContract, Transaction } from './wallet';
+import { createContract } from './wallet';
 import getConfig from './config';
 
 const basicViewMethods = ['get_return'];
