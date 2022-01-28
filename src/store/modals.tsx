@@ -10,8 +10,8 @@ type ModalsStoreContextType = {
   setAccountModalOpen: Dispatch<SetStateAction<boolean>>;
   isLiquidityModalOpen: boolean;
   setLiquidityModalOpen: Dispatch<SetStateAction<boolean>>;
-  isAddPollModalOpen: boolean;
-  setAddPoolModalOpen: Dispatch<SetStateAction<boolean>>;
+  isCreatePollModalOpen: boolean;
+  setCreatePollModalOpen: Dispatch<SetStateAction<boolean>>;
   isSearchModalOpen: {isOpen: boolean, tokenType: TokenType};
   setSearchModalOpen: Dispatch<SetStateAction<{isOpen: boolean, tokenType: TokenType}>>;
 }
@@ -21,8 +21,8 @@ export const initialModalsState: ModalsStoreContextType = {
   setAccountModalOpen: () => {},
   isLiquidityModalOpen: false,
   setLiquidityModalOpen: () => {},
-  isAddPollModalOpen: false,
-  setAddPoolModalOpen: () => {},
+  isCreatePollModalOpen: false,
+  setCreatePollModalOpen: () => {},
   isSearchModalOpen: { isOpen: false, tokenType: TokenType.Output },
   setSearchModalOpen: () => {},
 };
@@ -38,8 +38,8 @@ export const ModalsContextProvider = (
   const [isLiquidityModalOpen, setLiquidityModalOpen] = useState<boolean>(
     initialModalsState.isLiquidityModalOpen,
   );
-  const [isAddPollModalOpen, setAddPoolModalOpen] = useState<boolean>(
-    initialModalsState.isAddPollModalOpen,
+  const [isCreatePollModalOpen, setCreatePollModalOpen] = useState<boolean>(
+    initialModalsState.isCreatePollModalOpen,
   );
   const [isSearchModalOpen, setSearchModalOpen] = useState<{isOpen: boolean, tokenType: TokenType}>(
     initialModalsState.isSearchModalOpen,
@@ -51,8 +51,8 @@ export const ModalsContextProvider = (
       setAccountModalOpen,
       isLiquidityModalOpen,
       setLiquidityModalOpen,
-      isAddPollModalOpen,
-      setAddPoolModalOpen,
+      isCreatePollModalOpen,
+      setCreatePollModalOpen,
       isSearchModalOpen,
       setSearchModalOpen,
     }}

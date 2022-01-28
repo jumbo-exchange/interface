@@ -9,17 +9,17 @@ import {
   LiquidityModalContainer,
   ModalTitle,
   ModalBody,
-  AddIconContainer,
+  CreateIconContainer,
 } from './styles';
 import TokenBlock from './TokenBlock';
-import AddPoolSettings from './AddPoolSetting';
+import CreatePoolSettings from './CreatePoolSetting';
 
-export default function AddPoolModal() {
+export default function CreatePoolModal() {
   const { inputToken, outputToken } = useStore();
-  const { isAddPollModalOpen, setAddPoolModalOpen } = useModalsStore();
+  const { isCreatePollModalOpen, setCreatePollModalOpen } = useModalsStore();
   const [fee, setFee] = useState(TOTAL_FEE_DEFAULT);
 
-  const canAddPool = !!fee
+  const canCreatePool = !!fee
   && new Big(fee).gt('0.01')
   && new Big(fee).lt('20')
   && !!inputToken
@@ -27,15 +27,15 @@ export default function AddPoolModal() {
 
   return (
     <>
-      {isAddPollModalOpen && (
-      <Layout onClick={() => setAddPoolModalOpen(false)}>
+      {isCreatePollModalOpen && (
+      <Layout onClick={() => setCreatePollModalOpen(false)}>
         <LiquidityModalContainer onClick={(e) => e.stopPropagation()}>
           <ModalBlock>
-            <ModalIcon onClick={() => setAddPoolModalOpen(false)}>
+            <ModalIcon onClick={() => setCreatePollModalOpen(false)}>
               <BackArrow />
             </ModalIcon>
             <ModalTitle>
-              Add Liquidity
+              Create pool
             </ModalTitle>
           </ModalBlock>
           <ModalBody>
@@ -47,16 +47,16 @@ export default function AddPoolModal() {
               token={outputToken}
               tokenType={TokenType.Output}
             />
-            <AddPoolSettings
+            <CreatePoolSettings
               fee={fee}
               setFee={setFee}
             />
             <ButtonPrimary
               onClick={() => {
-                if (canAddPool) { console.log('add pool'); }
+                if (canCreatePool) { console.log('create pool'); }
               }}
             >
-              <AddIconContainer />
+              <CreateIconContainer />
               Create Pool
             </ButtonPrimary>
           </ModalBody>

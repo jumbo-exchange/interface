@@ -75,7 +75,7 @@ const Error = styled.div`
   color: ${({ theme }) => theme.error};
 `;
 
-export default function AddPoolSettings(
+export default function CreatePoolSettings(
   {
     fee,
     setFee,
