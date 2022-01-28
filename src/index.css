@@ -1,23 +1,26 @@
 * {
+  font-family: 'Rubik', monospace;
   box-sizing: border-box;
   user-select: none;
 }
 
+html, body {
+  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
+  overflow: hidden;
+}
+
 body {
   margin: 0;
-  background-color: #1B1B1C;
-  min-height: 100vh;
-  font-family: 'Rubik', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  background-color: #151922;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* background-image: url(./assets/images/intersect.svg); */
   background-position: top left;
   background-repeat: repeat;
+  overflow: scroll;
 }
 
 #root{
-  min-height: 100vh;
   position: relative;
+  height: inherit;
 }

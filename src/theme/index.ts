@@ -19,10 +19,23 @@ const mediaWidthTemplates: {
 }, {}) as any;
 
 export interface ThemeColors {
+  layoutBlack: string;
+  landingBackground: string;
+
   globalBlack: string;
   globalWhite: string;
+  globalGrey: string;
+  globalGreen: string;
+
+  globalGreyOp04: string;
+  globalGreyOp02: string;
+  globalGreyOp01: string;
+
+  globalGreen0p02: string;
+
   black: string;
   white: string;
+
   yellowHapi: string;
   greyText: string;
   greyCard: string;
@@ -35,25 +48,62 @@ export interface ThemeColors {
   redBorder: string;
   darkGreenBg: string;
   greenText: string;
+  greyBorder: string;
+
+  pink: string;
+  pinkHover: string;
+  pinkActive: string;
+
+  greyButton: string;
+  backgroundCard: string;
+  boxShadowCard: string;
+  specialBorderCard: string;
+  error: string;
+  tooltip: string;
 }
 
 export const colors: ThemeColors = {
+  layoutBlack: 'rgba(0, 0, 0, 0.6)',
+  landingBackground: '#1B1B1C',
+
   globalBlack: '#131313',
   globalWhite: '#FFFFFF',
+  globalGrey: '#8991A3',
+  globalGreen: '#84DA18',
+
+  globalGreyOp04: '#4A515F',
+  globalGreyOp02: '#353B49',
+  globalGreyOp01: '#2A313D',
+
+  globalGreen0p02: '#2B3F20',
+
   black: '#000000',
   white: '#ffffff',
+
   yellowHapi: '#FDEE2D',
   greyText: '#91949D',
   greyCard: '#5A5E6D',
   greyCardShadow: 'rgba(19, 19, 19, 0.6)',
   greyFooterLogo: '#6A6D76',
   greySocialNetworkBg: '#2B2B2B',
+  greyBorder: '#727272',
   blackCardBg: 'rgba(19, 19, 19, 0.9)',
   blackCardText: '#A1A4AC',
   blackCardShadow: '#41444d',
   redBorder: '#FE2C55',
   darkGreenBg: '#212C1E;',
   greenText: '#8EF46A',
+
+  pink: '#FE2C55',
+  pinkHover: '#E12243',
+  pinkActive: '#C71A35',
+
+  greyButton: '#454D5C',
+  backgroundCard: '#202632',
+  boxShadowCard: 'rgba(10, 12, 18, 0.2)',
+  specialBorderCard: 'linear-gradient(180deg, rgb(53, 60, 73), rgba(137, 145, 163, 0) 100%)',
+  error: '#FF6F6F',
+  tooltip: '#454D5C',
 };
 
 function theme(): DefaultTheme {

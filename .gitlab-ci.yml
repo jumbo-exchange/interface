@@ -1,3 +1,7 @@
+stages:
+  - build
+  - deploy
+
 docker-build-prod:
   environment:
     name: production
