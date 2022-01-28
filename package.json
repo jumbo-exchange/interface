@@ -1,10 +1,7 @@
 {
   "name": "jumbo",
   "version": "0.1.0",
-  "private": true,
-  "config": {
-    "registry": "registry.gitlab.com/hapi_p/jumbo"
-  },
+  "private": false,
   "dependencies": {
     "big.js": "^6.1.1",
     "bn.js": "^5.2.0",
