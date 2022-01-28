@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FilterButton } from 'components/Button';
 import { isMobile } from 'utils/userAgent';
-import { useStore } from 'store';
 import {
   Container,
   FilterBlock,
@@ -11,27 +10,39 @@ import {
   TitleInfo,
   LabelInfo,
   BtnClaim,
-  PoolResult,
 } from './styles';
 import PoolSettings from './PoolSettings';
-import PoolCard from './PoolCard';
+import PoolResult from './PoolResult';
 
-const filters = [
+export enum FilterPoolsEnum {
+  'All Pools',
+  'Your Liquidity',
+  'Farming',
+  'Smart Pools',
+}
+
+interface IFilters {
+  title: string
+  isActive: FilterPoolsEnum,
+  disabled?: boolean,
+}
+const filters: IFilters[] = [
   {
     title: 'All Pools',
-    isActive: true,
+    isActive: FilterPoolsEnum['All Pools'],
   },
   {
     title: 'Your Liquidity',
-    isActive: false,
+    isActive: FilterPoolsEnum['Your Liquidity'],
   },
   {
-    title: 'LP Farming',
-    isActive: false,
+    title: 'Farming',
+    isActive: FilterPoolsEnum.Farming,
   },
   {
-    title: 'Deprecated',
-    isActive: false,
+    title: 'Smart Pools',
+    isActive: FilterPoolsEnum['Smart Pools'],
+    disabled: true,
   },
 ];
 
@@ -42,7 +53,7 @@ interface IMainInfo {
 }
 
 export default function Pool() {
-  const { pools } = useStore();
+  const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum['All Pools']);
 
   const mainInfo: IMainInfo[] = [
     {
@@ -66,14 +77,15 @@ export default function Pool() {
       show: !!isMobile, // TODO: checking if some brand is available
     },
   ];
-
   return (
     <Container>
       <FilterBlock>
         {filters.map((el) => (
           <FilterButton
             key={el.title}
-            isActive={el.isActive}
+            isActive={currentFilterPools === el.isActive}
+            onClick={() => setCurrentFilterPools(el.isActive)}
+            disabled={el.disabled}
           >
             {el.title}
           </FilterButton>
@@ -102,15 +114,8 @@ export default function Pool() {
           <span>Claim</span>
         </BtnClaim>
       </InformationBlock>
-      <PoolSettings />
-      <PoolResult>
-        {pools.map((pool) => (
-          <PoolCard
-            key={pool.id}
-            pool={pool}
-          />
-        ))}
-      </PoolResult>
+      <PoolSettings currentFilterPools={currentFilterPools} />
+      <PoolResult currentFilterPools={currentFilterPools} />
     </Container>
   );
 }
