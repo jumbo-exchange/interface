@@ -8,7 +8,6 @@ import { ReactComponent as Plus } from 'assets/images-app/plus.svg';
 import { ReactComponent as PlaceHolderLoader } from 'assets/images-app/placeholder-loader.svg';
 import { isMobile } from 'utils/userAgent';
 import { useModalsStore } from 'store';
-import { FilterPoolsEnum } from 'pages/Pool';
 
 const Container = styled.div`
   display: flex;
@@ -26,6 +25,7 @@ const SearchInputBlock = styled.div`
   padding: 13px 11px;
   & > svg {
     margin-right: .75rem;
+    align-self: center;
   }
 `;
 
@@ -33,11 +33,11 @@ const SearchInput = styled.input`
   background: none;
   border: none;
   outline: none;
-  font-style: normal;
-  font-weight: normal;
   width: 100%;
-  font-size: .75rem;
-  line-height: .875rem;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.188rem;
   color: ${({ theme }) => theme.globalWhite};
   transition: all 1s ease;
   ::placeholder {
@@ -134,8 +134,7 @@ const filters = [
   },
 ];
 
-
-export default function PoolSettings({ currentFilterPools }:{currentFilterPools:FilterPoolsEnum}) {
+export default function PoolSettings() {
   const { setCreatePollModalOpen } = useModalsStore();
 
   if (isMobile) {
