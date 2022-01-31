@@ -3,6 +3,7 @@ import { TokenType, useModalsStore, useStore } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
 import { ReactComponent as AddIcon } from 'assets/images-app/icon-add.svg';
 import { ButtonPrimary } from 'components/Button';
+import PoolContract from 'services/PoolContract';
 import {
   Layout, ModalBlock, ModalIcon,
 } from '../styles';
@@ -30,18 +31,18 @@ export default function AddLiquidityModal() {
   const [inputTokenValue, setInputTokenValue] = useState<string>('');
   const [outputTokenValue, setOutputTokenValue] = useState<string>('');
 
-  const { isAddLiquidityModalOpen, setAddLiquidityModalOpen } = useModalsStore();
+  const { addLiquidityModalOpenState, setAddLiquidityModalOpenState } = useModalsStore();
 
   return (
     <>
-      {isAddLiquidityModalOpen && (
-      <Layout onClick={() => setAddLiquidityModalOpen(false)}>
+      {addLiquidityModalOpenState.isOpen && (
+      <Layout onClick={() => setAddLiquidityModalOpenState({ isOpen: false, pool: null })}>
         <LiquidityModalContainer onClick={(e) => e.stopPropagation()}>
           <ModalBlock>
             <ModalTitle>
               Add Liquidity
             </ModalTitle>
-            <ModalIcon onClick={() => setAddLiquidityModalOpen(false)}>
+            <ModalIcon onClick={() => setAddLiquidityModalOpenState({ isOpen: false, pool: null })}>
               <Close />
             </ModalIcon>
           </ModalBlock>
@@ -77,7 +78,17 @@ export default function AddLiquidityModal() {
               </DescriptionAccept>
             </AcceptBlock>
             <ButtonPrimary
-              onClick={() => console.log('deposit')}
+              onClick={() => {
+                const contract = new PoolContract();
+                if (!inputToken || !outputToken || !addLiquidityModalOpenState.pool) return;
+                contract.addLiquidity({
+                  tokenAmounts: [
+                    { token: inputToken, amount: inputTokenValue },
+                    { token: outputToken, amount: outputTokenValue },
+                  ],
+                  pool: addLiquidityModalOpenState.pool,
+                });
+              }}
             >
               Add Liquidity
             </ButtonPrimary>

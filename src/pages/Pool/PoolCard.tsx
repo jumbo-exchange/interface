@@ -217,13 +217,13 @@ const RenderClaimButton = (
   return null;
 };
 
-export default function PoolCard({ pool } : {pool:IPool}) {
+export default function PoolCard({ pool } : {pool: IPool}) {
   const {
     tokens,
     setInputToken,
     setOutputToken,
   } = useStore();
-  const { setAddLiquidityModalOpen } = useModalsStore();
+  const { setAddLiquidityModalOpenState } = useModalsStore();
 
   const [inputToken, outputToken] = pool.tokenAccountIds;
   const tokenInput = tokens[inputToken] ?? null;
@@ -299,7 +299,7 @@ export default function PoolCard({ pool } : {pool:IPool}) {
             onClick={() => {
               setInputToken(tokenInput);
               setOutputToken(tokenOutput);
-              setAddLiquidityModalOpen(true);
+              setAddLiquidityModalOpenState({ isOpen: true, pool });
             }}
           >
             Add Liquidity

@@ -1,3 +1,4 @@
+import Big from 'big.js';
 import { parseNearAmount } from 'near-api-js/lib/utils/format';
 
 export const docsLink = 'https://jumbo-exchange.gitbook.io/product-docs/';
@@ -42,3 +43,8 @@ export const ONE_YOCTO_NEAR = '0.000000000000000000000001';
 export const FT_MINIMUM_STORAGE_BALANCE = parseNearAmount('0.00125') ?? '0';
 export const FT_STORAGE_DEPOSIT_GAS = parseNearAmount('0.00000000003');
 export const FT_TRANSFER_GAS = parseNearAmount('0.00000000003');
+export const ONE_MORE_DEPOSIT_AMOUNT = '0.01';
+export const ACCOUNT_MIN_STORAGE_AMOUNT = '0.005';
+export const MIN_DEPOSIT_PER_TOKEN = new Big('5000000000000000000000');
+export const STORAGE_PER_TOKEN = '0.005';
+export const LP_STORAGE_AMOUNT = '0.01';

@@ -2,14 +2,14 @@ import React, {
   createContext, useContext, useState,
   Dispatch, SetStateAction,
 } from 'react';
-import { TokenType } from 'store';
+import { IPool, TokenType } from 'store';
 import Modals from 'components/Modals';
 
 type ModalsStoreContextType = {
   isAccountModalOpen: boolean;
   setAccountModalOpen: Dispatch<SetStateAction<boolean>>;
-  isAddLiquidityModalOpen: boolean;
-  setAddLiquidityModalOpen: Dispatch<SetStateAction<boolean>>;
+  addLiquidityModalOpenState: {isOpen: boolean, pool: IPool | null};
+  setAddLiquidityModalOpenState: Dispatch<SetStateAction<{isOpen: boolean, pool: IPool | null}>>;
   isCreatePoolModalOpen: boolean;
   setCreatePoolModalOpen: Dispatch<SetStateAction<boolean>>;
   isSearchModalOpen: {isOpen: boolean, tokenType: TokenType};
@@ -19,8 +19,8 @@ type ModalsStoreContextType = {
 export const initialModalsState: ModalsStoreContextType = {
   isAccountModalOpen: false,
   setAccountModalOpen: () => {},
-  isAddLiquidityModalOpen: false,
-  setAddLiquidityModalOpen: () => {},
+  addLiquidityModalOpenState: { isOpen: false, pool: null },
+  setAddLiquidityModalOpenState: () => {},
   isCreatePoolModalOpen: false,
   setCreatePoolModalOpen: () => {},
   isSearchModalOpen: { isOpen: false, tokenType: TokenType.Output },
@@ -35,9 +35,10 @@ export const ModalsContextProvider = (
   const [isAccountModalOpen, setAccountModalOpen] = useState<boolean>(
     initialModalsState.isAccountModalOpen,
   );
-  const [isAddLiquidityModalOpen, setAddLiquidityModalOpen] = useState<boolean>(
-    initialModalsState.isAddLiquidityModalOpen,
-  );
+  const [addLiquidityModalOpenState, setAddLiquidityModalOpenState] = useState<{ isOpen: boolean,
+    pool: IPool | null }>(
+      initialModalsState.addLiquidityModalOpenState,
+    );
   const [isCreatePoolModalOpen, setCreatePoolModalOpen] = useState<boolean>(
     initialModalsState.isCreatePoolModalOpen,
   );
@@ -49,8 +50,8 @@ export const ModalsContextProvider = (
     <ModalsStoreContextHOC.Provider value={{
       isAccountModalOpen,
       setAccountModalOpen,
-      isAddLiquidityModalOpen,
-      setAddLiquidityModalOpen,
+      addLiquidityModalOpenState,
+      setAddLiquidityModalOpenState,
       isCreatePoolModalOpen,
       setCreatePoolModalOpen,
       isSearchModalOpen,
