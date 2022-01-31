@@ -1,10 +1,11 @@
 import React, { PropsWithChildren } from 'react';
 import { ButtonPrimary, ButtonSecondary, ButtonClaim } from 'components/Button';
-import { IPool, useModalsStore, useStore } from 'store';
+import { IPool, useStore } from 'store';
 import styled from 'styled-components';
 import { SpecialContainer } from 'components/SpecialContainer';
 import Tooltip from 'components/Tooltip';
 import { isMobile } from 'utils/userAgent';
+import { useNavigate } from 'react-router-dom';
 import { colors } from 'theme';
 
 interface IColor {
@@ -227,12 +228,8 @@ export default function PoolCard({
   color: string,
   typePool: string,
 }) {
-  const {
-    tokens,
-    setInputToken,
-    setOutputToken,
-  } = useStore();
-  const { setAddLiquidityModalOpen } = useModalsStore();
+  const { tokens } = useStore();
+  const navigate = useNavigate();
 
   const [inputToken, outputToken] = pool.tokenAccountIds;
   const tokenInput = tokens[inputToken] ?? null;
@@ -306,9 +303,7 @@ export default function PoolCard({
           </BtnSecondary>
           <BtnPrimary
             onClick={() => {
-              setInputToken(tokenInput);
-              setOutputToken(tokenOutput);
-              setAddLiquidityModalOpen(true);
+              navigate(`/app/pool/${pool.id}`);
             }}
           >
             Add Liquidity
