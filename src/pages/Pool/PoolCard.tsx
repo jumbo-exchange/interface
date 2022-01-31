@@ -115,12 +115,12 @@ const JumboBlock = styled.div`
   font-weight: normal;
   font-size: .75rem;
   line-height: .875rem;
-  background-color: ${({ theme }) => theme.hakunaLabel};
+  background-color: ${({ theme }) => theme.jumboLabel};
   border-radius: 4px;
 `;
 
 const MiceBlock = styled(JumboBlock)`
-  background-color: ${({ theme }) => theme.matataLabel};
+  background-color: ${({ theme }) => theme.miceLabel};
 `;
 
 const BtnClaim = styled(ButtonClaim)`

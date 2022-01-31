@@ -14,6 +14,10 @@ type ModalsStoreContextType = {
   setCreatePoolModalOpen: Dispatch<SetStateAction<boolean>>;
   isSearchModalOpen: {isOpen: boolean, tokenType: TokenType};
   setSearchModalOpen: Dispatch<SetStateAction<{isOpen: boolean, tokenType: TokenType}>>;
+  isTooltipModalOpen: boolean;
+  setTooltipModalOpen: Dispatch<SetStateAction<boolean>>;
+  titleTooltipModal: string;
+  setTitleTooltipModal: Dispatch<SetStateAction<string>>;
 }
 
 export const initialModalsState: ModalsStoreContextType = {
@@ -25,6 +29,10 @@ export const initialModalsState: ModalsStoreContextType = {
   setCreatePoolModalOpen: () => {},
   isSearchModalOpen: { isOpen: false, tokenType: TokenType.Output },
   setSearchModalOpen: () => {},
+  isTooltipModalOpen: false,
+  setTooltipModalOpen: () => {},
+  titleTooltipModal: '',
+  setTitleTooltipModal: () => {},
 };
 
 const ModalsStoreContextHOC = createContext<ModalsStoreContextType>(initialModalsState);
@@ -45,6 +53,10 @@ export const ModalsContextProvider = (
   const [isSearchModalOpen, setSearchModalOpen] = useState<{isOpen: boolean, tokenType: TokenType}>(
     initialModalsState.isSearchModalOpen,
   );
+  const [isTooltipModalOpen, setTooltipModalOpen] = useState<boolean>(
+    initialModalsState.isTooltipModalOpen,
+  );
+  const [titleTooltipModal, setTitleTooltipModal] = useState<string>('');
 
   return (
     <ModalsStoreContextHOC.Provider value={{
@@ -56,6 +68,10 @@ export const ModalsContextProvider = (
       setCreatePoolModalOpen,
       isSearchModalOpen,
       setSearchModalOpen,
+      isTooltipModalOpen,
+      setTooltipModalOpen,
+      titleTooltipModal,
+      setTitleTooltipModal,
     }}
     >
       <Modals>

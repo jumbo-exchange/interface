@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { TokenType, useModalsStore, useStore } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
-import { ReactComponent as AddIcon } from 'assets/images-app/icon-add.svg';
 import { ButtonPrimary } from 'components/Button';
 import PoolContract from 'services/PoolContract';
 import { useNavigate } from 'react-router-dom';
@@ -20,6 +19,7 @@ import {
   LabelAccept,
   InputAccept,
   DescriptionAccept,
+  LogoButton,
 } from './styles';
 
 export default function AddLiquidityModal() {
@@ -68,9 +68,7 @@ export default function AddLiquidityModal() {
               setValue={setInputTokenValue}
               balance={balances[tokenInput.contractId ?? '']}
             />
-            <LogoContainerAdd>
-              <AddIcon />
-            </LogoContainerAdd>
+            <LogoContainerAdd />
             <Input
               token={tokenOutput}
               tokenType={TokenType.Output}
@@ -104,6 +102,7 @@ export default function AddLiquidityModal() {
                 });
               }}
             >
+              <LogoButton />
               Add Liquidity
             </ButtonPrimary>
           </ModalBody>

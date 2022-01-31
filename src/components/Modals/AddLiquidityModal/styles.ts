@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { ReactComponent as PlaceHolderLoader } from 'assets/images-app/placeholder-loader.svg';
+import { ReactComponent as AddIcon } from 'assets/images-app/icon-add.svg';
 import { Modal } from '../styles';
 
 export const LiquidityModalContainer = styled(Modal)`
@@ -25,10 +26,11 @@ export const ModalBody = styled.div`
   justify-content: space-between;
 `;
 
-export const LogoContainerAdd = styled.div`
+export const LogoContainerAdd = styled(AddIcon)`
   display: flex;
   justify-content: center;
   margin: 1rem 0;
+  align-self: center;
 `;
 
 export const RefreshBlock = styled.div`
@@ -113,4 +115,10 @@ export const DescriptionAccept = styled.div`
   color: ${({ theme }) => theme.globalGrey};
   margin-top: .5rem;
   margin-left: 1.875rem;
+`;
+
+export const LogoButton = styled(AddIcon)`
+  width: 12px;
+  height: 12px;
+  margin-right: .625rem;
 `;

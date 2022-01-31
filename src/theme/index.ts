@@ -63,8 +63,8 @@ export interface ThemeColors {
   error: string;
   tooltip: string;
 
-  hakunaLabel: string;
-  matataLabel: string;
+  jumboLabel: string;
+  miceLabel: string;
 }
 
 export const colors: ThemeColors = {
@@ -112,8 +112,8 @@ export const colors: ThemeColors = {
   error: '#FF6F6F',
   tooltip: '#454D5C',
 
-  hakunaLabel: '#47872B',
-  matataLabel: '#A91BAC',
+  jumboLabel: '#47872B',
+  miceLabel: '#A91BAC',
 };
 
 function theme(): DefaultTheme {
