@@ -47,7 +47,7 @@ export const InformationBlock = styled(SpecialContainer)`
   }
 `;
 
-export const WrapperInfoBLock = styled.div`
+export const WrapperInfoBlock = styled.div`
   display: flex;
   justify-content: space-between;
   width: 100%;

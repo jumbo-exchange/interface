@@ -23,8 +23,7 @@ import {
 
 export default function AddLiquidityModal() {
   const {
-    inputToken,
-    outputToken,
+    tokens,
     balances,
   } = useStore();
 
@@ -32,6 +31,12 @@ export default function AddLiquidityModal() {
   const [outputTokenValue, setOutputTokenValue] = useState<string>('');
 
   const { addLiquidityModalOpenState, setAddLiquidityModalOpenState } = useModalsStore();
+  if (!addLiquidityModalOpenState.pool) return null;
+  const [tokenInputName, tokenOutputName] = addLiquidityModalOpenState.pool.tokenAccountIds;
+
+  const tokenInput = tokens[tokenInputName] ?? null;
+  const tokenOutput = tokens[tokenOutputName] ?? null;
+  if (!tokenInput || !tokenOutput) return null;
 
   return (
     <>
@@ -48,21 +53,21 @@ export default function AddLiquidityModal() {
           </ModalBlock>
           <ModalBody>
             <Input
-              token={inputToken}
+              token={tokenInput}
               tokenType={TokenType.Input}
               value={inputTokenValue}
               setValue={setInputTokenValue}
-              balance={balances[inputToken?.contractId ?? '']}
+              balance={balances[tokenInput.contractId ?? '']}
             />
             <LogoContainerAdd>
               <AddIcon />
             </LogoContainerAdd>
             <Input
-              token={outputToken}
+              token={tokenOutput}
               tokenType={TokenType.Output}
               value={outputTokenValue}
               setValue={setOutputTokenValue}
-              balance={balances[outputToken?.contractId ?? '']}
+              balance={balances[tokenOutput.contractId ?? '']}
             />
             <RefreshBlock>
               <PlaceHolderGif />
@@ -80,11 +85,11 @@ export default function AddLiquidityModal() {
             <ButtonPrimary
               onClick={() => {
                 const contract = new PoolContract();
-                if (!inputToken || !outputToken || !addLiquidityModalOpenState.pool) return;
+                if (!tokenInput || !tokenOutput || !addLiquidityModalOpenState.pool) return;
                 contract.addLiquidity({
                   tokenAmounts: [
-                    { token: inputToken, amount: inputTokenValue },
-                    { token: outputToken, amount: outputTokenValue },
+                    { token: tokenInput, amount: inputTokenValue },
+                    { token: tokenOutput, amount: outputTokenValue },
                   ],
                   pool: addLiquidityModalOpenState.pool,
                 });

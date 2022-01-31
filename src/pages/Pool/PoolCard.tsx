@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { SpecialContainer } from 'components/SpecialContainer';
 import Tooltip from 'components/Tooltip';
 import { isMobile } from 'utils/userAgent';
+import { useNavigate } from 'react-router-dom';
 
 interface IColor {
   isColor?: boolean
@@ -218,13 +219,8 @@ const RenderClaimButton = (
 };
 
 export default function PoolCard({ pool } : {pool: IPool}) {
-  const {
-    tokens,
-    setInputToken,
-    setOutputToken,
-  } = useStore();
-  const { setAddLiquidityModalOpenState } = useModalsStore();
-
+  const { tokens } = useStore();
+  const navigate = useNavigate();
   const [inputToken, outputToken] = pool.tokenAccountIds;
   const tokenInput = tokens[inputToken] ?? null;
   const tokenOutput = tokens[outputToken] ?? null;
@@ -297,9 +293,7 @@ export default function PoolCard({ pool } : {pool: IPool}) {
           </BtnSecondary>
           <BtnPrimary
             onClick={() => {
-              setInputToken(tokenInput);
-              setOutputToken(tokenOutput);
-              setAddLiquidityModalOpenState({ isOpen: true, pool });
+              navigate(`/app/pool/${pool.id}`);
             }}
           >
             Add Liquidity

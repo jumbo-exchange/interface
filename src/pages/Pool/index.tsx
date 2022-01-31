@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FilterButton } from 'components/Button';
 import { isMobile } from 'utils/userAgent';
-import { useStore } from 'store';
+import { useModalsStore, useStore } from 'store';
+import { useParams } from 'react-router-dom';
 import {
   Container,
   FilterBlock,
   InformationBlock,
-  WrapperInfoBLock,
+  WrapperInfoBlock,
   InfoBLock,
   TitleInfo,
   LabelInfo,
@@ -43,6 +44,15 @@ interface IMainInfo {
 
 export default function Pool() {
   const { pools } = useStore();
+  const { setAddLiquidityModalOpenState } = useModalsStore();
+  const { id } = useParams<'id'>();
+
+  useEffect(() => {
+    if (id && pools[Number(id)]) {
+      const pool = pools[Number(id)];
+      setAddLiquidityModalOpenState({ isOpen: true, pool });
+    }
+  }, [id, pools]);
 
   const mainInfo: IMainInfo[] = [
     {
@@ -80,7 +90,7 @@ export default function Pool() {
         ))}
       </FilterBlock>
       <InformationBlock>
-        <WrapperInfoBLock>
+        <WrapperInfoBlock>
           {mainInfo.map((el) => {
             if (!el.show) return null;
             return (
@@ -96,7 +106,7 @@ export default function Pool() {
               </InfoBLock>
             );
           })}
-        </WrapperInfoBLock>
+        </WrapperInfoBlock>
         <BtnClaim>
           <span>50.5004648 DAI</span>
           <span>Claim</span>
