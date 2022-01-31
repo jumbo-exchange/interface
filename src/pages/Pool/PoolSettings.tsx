@@ -1,13 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
+import Tooltip from 'components/Tooltip';
 import { ButtonSecondary, FilterButton } from 'components/Button';
 import { ReactComponent as SearchIcon } from 'assets/images-app/search-icon.svg';
 import { ReactComponent as ArrowDownIcon } from 'assets/images-app/icon-arrow-down.svg';
 import { ReactComponent as Plus } from 'assets/images-app/plus.svg';
 import { ReactComponent as PlaceHolderLoader } from 'assets/images-app/placeholder-loader.svg';
 import { isMobile } from 'utils/userAgent';
-import Tooltip from 'components/Tooltip';
 import { useModalsStore } from 'store';
+import { FilterPoolsEnum } from 'pages/Pool';
 
 const Container = styled.div`
   display: flex;
@@ -133,8 +134,9 @@ const filters = [
   },
 ];
 
-export default function PoolSettings() {
-  const { setCreatePollModalOpen } = useModalsStore();
+export default function PoolSettings({ currentFilterPools }:{currentFilterPools:FilterPoolsEnum}) {
+  const { setCreatePoolModalOpen } = useModalsStore();
+
   if (isMobile) {
     return (
       <MobileContainer>
@@ -161,7 +163,7 @@ export default function PoolSettings() {
           </Wrapper>
         </MobileRow>
         <ButtonSecondary
-          onClick={() => setCreatePollModalOpen(true)}
+          onClick={() => setCreatePoolModalOpen(true)}
         >
           <LogoPlus /> Create Pool
         </ButtonSecondary>
@@ -199,7 +201,7 @@ export default function PoolSettings() {
       </Wrapper>
       <Title><Loading />Refresh</Title>
       <ButtonSecondary
-        onClick={() => setCreatePollModalOpen(true)}
+        onClick={() => setCreatePoolModalOpen(true)}
       >
         <LogoPlus /> Create Pool
       </ButtonSecondary>
