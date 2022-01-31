@@ -1,11 +1,12 @@
 import React, { PropsWithChildren } from 'react';
 import { ButtonPrimary, ButtonSecondary, ButtonClaim } from 'components/Button';
-import { IPool, useModalsStore, useStore } from 'store';
+import { IPool, useStore } from 'store';
 import styled from 'styled-components';
 import { SpecialContainer } from 'components/SpecialContainer';
 import Tooltip from 'components/Tooltip';
 import { isMobile } from 'utils/userAgent';
 import { useNavigate } from 'react-router-dom';
+import { colors } from 'theme';
 
 interface IColor {
   isColor?: boolean
@@ -106,7 +107,7 @@ const LabelPool = styled.div`
   `}
 `;
 
-const HakunaBlock = styled.div`
+const JumboBlock = styled.div`
   display: flex;
   margin-left: .5rem;
   padding: 4px;
@@ -118,7 +119,7 @@ const HakunaBlock = styled.div`
   border-radius: 4px;
 `;
 
-const MatataBlock = styled(HakunaBlock)`
+const MiceBlock = styled(JumboBlock)`
   background-color: ${({ theme }) => theme.matataLabel};
 `;
 
@@ -218,9 +219,18 @@ const RenderClaimButton = (
   return null;
 };
 
-export default function PoolCard({ pool } : {pool: IPool}) {
+export default function PoolCard({
+  pool,
+  color,
+  typePool,
+} : {
+  pool:IPool,
+  color: string,
+  typePool: string,
+}) {
   const { tokens } = useStore();
   const navigate = useNavigate();
+
   const [inputToken, outputToken] = pool.tokenAccountIds;
   const tokenInput = tokens[inputToken] ?? null;
   const tokenOutput = tokens[outputToken] ?? null;
@@ -267,8 +277,8 @@ export default function PoolCard({ pool } : {pool: IPool}) {
         </BlockTitle>
         <LabelPool>
           <p><strong>0.2 NEAR</strong> / day / $1K</p>
-          <HakunaBlock>Hakuna</HakunaBlock>
-          <MatataBlock>Matata</MatataBlock>
+          <JumboBlock>Jumbo</JumboBlock>
+          <MiceBlock>Mice</MiceBlock>
           <RenderClaimButton show={!isMobile} getClaim={getClaim} />
         </LabelPool>
       </UpperRow>

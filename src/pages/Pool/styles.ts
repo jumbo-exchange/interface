@@ -78,10 +78,3 @@ export const LabelInfo = styled.div`
 export const BtnClaim = styled(ButtonClaim)`
   margin-left: 1rem;
 `;
-
-export const PoolResult = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  align-items: center;
-`;
