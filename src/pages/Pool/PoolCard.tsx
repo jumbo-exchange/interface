@@ -1,10 +1,11 @@
 import React, { PropsWithChildren } from 'react';
 import { ButtonPrimary, ButtonSecondary, ButtonClaim } from 'components/Button';
-import { IPool, useModalsStore, useStore } from 'store';
+import { IPool, useStore } from 'store';
 import styled from 'styled-components';
 import { SpecialContainer } from 'components/SpecialContainer';
 import Tooltip from 'components/Tooltip';
 import { isMobile } from 'utils/userAgent';
+import { useNavigate } from 'react-router-dom';
 
 interface IColor {
   isColor?: boolean
@@ -113,12 +114,12 @@ const JumboBlock = styled.div`
   font-weight: normal;
   font-size: .75rem;
   line-height: .875rem;
-  background-color: ${({ theme }) => theme.hakunaLabel};
+  background-color: ${({ theme }) => theme.jumboLabel};
   border-radius: 4px;
 `;
 
 const MiceBlock = styled(JumboBlock)`
-  background-color: ${({ theme }) => theme.matataLabel};
+  background-color: ${({ theme }) => theme.miceLabel};
 `;
 
 const BtnClaim = styled(ButtonClaim)`
@@ -218,12 +219,8 @@ const RenderClaimButton = (
 };
 
 export default function PoolCard({ pool } : { pool:IPool }) {
-  const {
-    tokens,
-    setInputToken,
-    setOutputToken,
-  } = useStore();
-  const { setAddLiquidityModalOpen } = useModalsStore();
+  const { tokens } = useStore();
+  const navigate = useNavigate();
 
   const [inputToken, outputToken] = pool.tokenAccountIds;
   const tokenInput = tokens[inputToken] ?? null;
@@ -297,9 +294,7 @@ export default function PoolCard({ pool } : { pool:IPool }) {
           </BtnSecondary>
           <BtnPrimary
             onClick={() => {
-              setInputToken(tokenInput);
-              setOutputToken(tokenOutput);
-              setAddLiquidityModalOpen(true);
+              navigate(`/app/pool/${pool.id}`);
             }}
           >
             Add Liquidity

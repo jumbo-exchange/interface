@@ -20,14 +20,14 @@ const AppWrapper = () => {
   return (
     <ThemeProvider theme={theme}>
       <StoreContextProvider>
-        <ModalsContextProvider>
-          <Router>
+        <Router>
+          <ModalsContextProvider>
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/app/*" element={<App />} />
             </Routes>
-          </Router>
-        </ModalsContextProvider>
+          </ModalsContextProvider>
+        </Router>
       </StoreContextProvider>
     </ThemeProvider>
   );

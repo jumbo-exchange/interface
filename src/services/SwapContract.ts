@@ -3,7 +3,7 @@ import { IPool } from 'store/interfaces';
 import { SWAP_FAILED, SWAP_TOKENS_NOT_IN_SWAP_POOL } from 'utils/errors';
 import { ONE_YOCTO_NEAR } from 'utils/constants';
 import FungibleTokenContract from './FungibleToken';
-import { getAmount, getGas, wallet } from './near';
+import sendTransactions, { getAmount, getGas, wallet } from './near';
 import { createContract, Transaction } from './wallet';
 import getConfig from './config';
 
@@ -152,15 +152,15 @@ export default class SwapContract {
     amount: string,
     pools: IPool[],
   }) {
-    const transactionsReceipts: Transaction[] = [];
+    const transactions: Transaction[] = [];
     const accountId = this.walletInstance.getAccountId();
     const outputTokenStorage = await outputToken.contract.checkStorageBalance({ accountId });
-    transactionsReceipts.push(...outputTokenStorage);
+    transactions.push(...outputTokenStorage);
     const swapAction = await this.generateTransferMessage(
       pools, amount, inputToken, outputToken,
     );
 
-    transactionsReceipts.push({
+    transactions.push({
       receiverId: inputToken.contractId,
       functionCalls: [{
         methodName: 'ft_transfer_call',
@@ -176,19 +176,6 @@ export default class SwapContract {
       }],
     });
 
-    const transactions = await Promise.all(
-      transactionsReceipts.map((t, i) => wallet.createTransaction({
-        receiverId: t.receiverId,
-        nonceOffset: i + 1,
-        actions: t.functionCalls.map((fc: any) => functionCall(
-          fc.methodName,
-          fc.args,
-          getGas(fc.gas),
-          getAmount(fc.amount),
-        )),
-      })),
-    );
-
-    this.walletInstance.requestSignTransactions({ transactions });
+    sendTransactions(transactions, this.walletInstance);
   }
 }

@@ -61,6 +61,7 @@ export default function App() {
           <Routes>
             <Route path="pool" element={<Pool />} />
             <Route path="swap" element={<Swap />} />
+            <Route path="pool/:id" element={<Pool />} />
           </Routes>
         </Suspense>
       </Body>

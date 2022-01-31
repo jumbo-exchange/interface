@@ -163,7 +163,7 @@ export default function PoolSettings() {
           </Wrapper>
         </MobileRow>
         <ButtonSecondary
-          onClick={() => setCreatePollModalOpen(true)}
+          onClick={() => setCreatePoolModalOpen(true)}
         >
           <LogoPlus /> Create Pool
         </ButtonSecondary>
@@ -201,7 +201,7 @@ export default function PoolSettings() {
       </Wrapper>
       <Title><Loading />Refresh</Title>
       <ButtonSecondary
-        onClick={() => setCreatePollModalOpen(true)}
+        onClick={() => setCreatePoolModalOpen(true)}
       >
         <LogoPlus /> Create Pool
       </ButtonSecondary>
