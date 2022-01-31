@@ -28,6 +28,7 @@ interface IFilters {
   isActive: FilterPoolsEnum,
   disabled?: boolean,
 }
+
 const filters: IFilters[] = [
   {
     title: 'All Pools',
@@ -89,6 +90,7 @@ export default function Pool() {
       show: !!isMobile, // TODO: checking if some brand is available
     },
   ];
+
   return (
     <Container>
       <FilterBlock>
@@ -126,7 +128,7 @@ export default function Pool() {
           <span>Claim</span>
         </BtnClaim>
       </InformationBlock>
-      <PoolSettings currentFilterPools={currentFilterPools} />
+      <PoolSettings />
       <PoolResult currentFilterPools={currentFilterPools} />
     </Container>
   );

@@ -6,7 +6,6 @@ import { SpecialContainer } from 'components/SpecialContainer';
 import Tooltip from 'components/Tooltip';
 import { isMobile } from 'utils/userAgent';
 import { useNavigate } from 'react-router-dom';
-import { colors } from 'theme';
 
 interface IColor {
   isColor?: boolean
@@ -219,15 +218,7 @@ const RenderClaimButton = (
   return null;
 };
 
-export default function PoolCard({
-  pool,
-  color,
-  typePool,
-} : {
-  pool:IPool,
-  color: string,
-  typePool: string,
-}) {
+export default function PoolCard({ pool } : { pool:IPool }) {
   const { tokens } = useStore();
   const navigate = useNavigate();
 

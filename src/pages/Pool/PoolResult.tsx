@@ -26,8 +26,6 @@ export default function PoolResult({ currentFilterPools }:{currentFilterPools:Fi
         <PoolCard
           key={pool.id}
           pool={pool}
-          color="red"
-          typePool="a"
         />
       ))}
     </Wrapper>
