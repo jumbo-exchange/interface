@@ -1,6 +1,9 @@
-import React, { useState, PropsWithChildren } from 'react';
+import React, { useState, PropsWithChildren, useEffect } from 'react';
 import styled from 'styled-components';
 import { ReactComponent as Info } from 'assets/images-app/info.svg';
+import { isMobile, isTablet } from 'utils/userAgent';
+import TooltipModal from 'components/Modals/TooltipModal';
+import { useModalsStore } from 'store';
 
 interface IBottom {
   bottom?: string
@@ -67,15 +70,27 @@ export default function Tooltip(
     bottom?: string;
   },
 ) {
+  const {
+    isTooltipModalOpen,
+    setTooltipModalOpen,
+    setTitleTooltipModal,
+  } = useModalsStore();
   const [show, setShow] = useState(false);
 
+  const handleClick = () => {
+    if (isMobile || isTablet) {
+      setTitleTooltipModal(title);
+      setTooltipModalOpen(true);
+    }
+  };
   return (
     <Container
       onMouseOver={() => setShow(true)}
       onMouseOut={() => setShow(false)}
+      onClick={handleClick}
     >
       {children || <Info />}
-      {show
+      {show && !isTooltipModalOpen
         && (
         <HoverContent className={show ? 'show' : ''} bottom={bottom}>
           {title}

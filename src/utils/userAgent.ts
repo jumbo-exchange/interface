@@ -1,9 +1,17 @@
-import { UAParser } from 'ua-parser-js';
+const userAgent = navigator.userAgent || navigator.vendor;
 
-const parser = new UAParser(window.navigator.userAgent);
-const { type } = parser.getDevice();
+const isMobileCheck = () => {
+  const windows = /windows phone/i.test(userAgent);
+  const android = /android/i.test(userAgent);
+  const iOs = /iPhone/.test(userAgent);
 
-export const userAgent = parser.getResult();
+  return windows || android || iOs;
+};
 
-export const isMobile = type === 'mobile';
-export const isTablet = type === 'tablet';
+const isTabletCheck = () => {
+  const tablet = /Tablet|iPad/i.test(userAgent);
+  return tablet;
+};
+
+export const isMobile = isMobileCheck();
+export const isTablet = isTabletCheck();

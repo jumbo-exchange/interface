@@ -1,37 +1,51 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FilterButton } from 'components/Button';
 import { isMobile } from 'utils/userAgent';
-import { useStore } from 'store';
+import { useModalsStore, useStore } from 'store';
+import { useParams } from 'react-router-dom';
 import {
   Container,
   FilterBlock,
   InformationBlock,
-  WrapperInfoBLock,
+  WrapperInfoBlock,
   InfoBLock,
   TitleInfo,
   LabelInfo,
   BtnClaim,
-  PoolResult,
 } from './styles';
 import PoolSettings from './PoolSettings';
-import PoolCard from './PoolCard';
+import PoolResult from './PoolResult';
 
-const filters = [
+export enum FilterPoolsEnum {
+  'All Pools',
+  'Your Liquidity',
+  'Farming',
+  'Smart Pools',
+}
+
+interface IFilters {
+  title: string
+  isActive: FilterPoolsEnum,
+  disabled?: boolean,
+}
+
+const filters: IFilters[] = [
   {
     title: 'All Pools',
-    isActive: true,
+    isActive: FilterPoolsEnum['All Pools'],
   },
   {
     title: 'Your Liquidity',
-    isActive: false,
+    isActive: FilterPoolsEnum['Your Liquidity'],
   },
   {
-    title: 'LP Farming',
-    isActive: false,
+    title: 'Farming',
+    isActive: FilterPoolsEnum.Farming,
   },
   {
-    title: 'Deprecated',
-    isActive: false,
+    title: 'Smart Pools',
+    isActive: FilterPoolsEnum['Smart Pools'],
+    disabled: true,
   },
 ];
 
@@ -43,6 +57,16 @@ interface IMainInfo {
 
 export default function Pool() {
   const { pools } = useStore();
+  const { setAddLiquidityModalOpenState } = useModalsStore();
+  const { id } = useParams<'id'>();
+
+  useEffect(() => {
+    if (id && pools[Number(id)]) {
+      const pool = pools[Number(id)];
+      setAddLiquidityModalOpenState({ isOpen: true, pool });
+    }
+  }, [id, pools]);
+  const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum['All Pools']);
 
   const mainInfo: IMainInfo[] = [
     {
@@ -73,14 +97,16 @@ export default function Pool() {
         {filters.map((el) => (
           <FilterButton
             key={el.title}
-            isActive={el.isActive}
+            isActive={currentFilterPools === el.isActive}
+            onClick={() => setCurrentFilterPools(el.isActive)}
+            disabled={el.disabled}
           >
             {el.title}
           </FilterButton>
         ))}
       </FilterBlock>
       <InformationBlock>
-        <WrapperInfoBLock>
+        <WrapperInfoBlock>
           {mainInfo.map((el) => {
             if (!el.show) return null;
             return (
@@ -96,21 +122,14 @@ export default function Pool() {
               </InfoBLock>
             );
           })}
-        </WrapperInfoBLock>
+        </WrapperInfoBlock>
         <BtnClaim>
           <span>50.5004648 DAI</span>
           <span>Claim</span>
         </BtnClaim>
       </InformationBlock>
       <PoolSettings />
-      <PoolResult>
-        {pools.map((pool) => (
-          <PoolCard
-            key={pool.id}
-            pool={pool}
-          />
-        ))}
-      </PoolResult>
+      <PoolResult currentFilterPools={currentFilterPools} />
     </Container>
   );
 }

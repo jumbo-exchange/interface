@@ -47,7 +47,7 @@ export const InformationBlock = styled(SpecialContainer)`
   }
 `;
 
-export const WrapperInfoBLock = styled.div`
+export const WrapperInfoBlock = styled.div`
   display: flex;
   justify-content: space-between;
   width: 100%;
@@ -77,11 +77,4 @@ export const LabelInfo = styled.div`
 
 export const BtnClaim = styled(ButtonClaim)`
   margin-left: 1rem;
-`;
-
-export const PoolResult = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  align-items: center;
 `;

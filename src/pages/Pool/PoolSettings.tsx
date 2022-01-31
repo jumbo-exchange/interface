@@ -1,12 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
+import Tooltip from 'components/Tooltip';
 import { ButtonSecondary, FilterButton } from 'components/Button';
 import { ReactComponent as SearchIcon } from 'assets/images-app/search-icon.svg';
 import { ReactComponent as ArrowDownIcon } from 'assets/images-app/icon-arrow-down.svg';
 import { ReactComponent as Plus } from 'assets/images-app/plus.svg';
 import { ReactComponent as PlaceHolderLoader } from 'assets/images-app/placeholder-loader.svg';
 import { isMobile } from 'utils/userAgent';
-import Tooltip from 'components/Tooltip';
 import { useModalsStore } from 'store';
 
 const Container = styled.div`
@@ -25,6 +25,7 @@ const SearchInputBlock = styled.div`
   padding: 13px 11px;
   & > svg {
     margin-right: .75rem;
+    align-self: center;
   }
 `;
 
@@ -32,11 +33,11 @@ const SearchInput = styled.input`
   background: none;
   border: none;
   outline: none;
-  font-style: normal;
-  font-weight: normal;
   width: 100%;
-  font-size: .75rem;
-  line-height: .875rem;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.188rem;
   color: ${({ theme }) => theme.globalWhite};
   transition: all 1s ease;
   ::placeholder {
@@ -134,7 +135,8 @@ const filters = [
 ];
 
 export default function PoolSettings() {
-  const { setCreatePollModalOpen } = useModalsStore();
+  const { setCreatePoolModalOpen } = useModalsStore();
+
   if (isMobile) {
     return (
       <MobileContainer>
@@ -161,7 +163,7 @@ export default function PoolSettings() {
           </Wrapper>
         </MobileRow>
         <ButtonSecondary
-          onClick={() => setCreatePollModalOpen(true)}
+          onClick={() => setCreatePoolModalOpen(true)}
         >
           <LogoPlus /> Create Pool
         </ButtonSecondary>
@@ -199,7 +201,7 @@ export default function PoolSettings() {
       </Wrapper>
       <Title><Loading />Refresh</Title>
       <ButtonSecondary
-        onClick={() => setCreatePollModalOpen(true)}
+        onClick={() => setCreatePoolModalOpen(true)}
       >
         <LogoPlus /> Create Pool
       </ButtonSecondary>

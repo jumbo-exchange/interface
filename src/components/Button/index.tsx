@@ -1,13 +1,5 @@
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import styled from 'styled-components';
-
-export enum ButtonVariant {
-  Primary,
-  Secondary,
-  Third,
-  Fourth,
-  Claim,
-}
 
 interface IFilterButton {
   isActive?: boolean
@@ -101,6 +93,10 @@ export const FilterButton = styled.button<PropsWithChildren<IFilterButton>>`
   :hover {
     cursor: ${({ isActive }) => (isActive ? 'default' : 'pointer')};
   }
+  :disabled {
+    cursor: default;
+    color: ${({ theme }) => theme.globalGreyOp02};
+  }
 `;
 
 export const ButtonClaim = styled.button`
@@ -135,20 +131,3 @@ export const ButtonClaim = styled.button`
     cursor: pointer;
   }
 `;
-
-export function Button({ variant }: { variant: ButtonVariant }) {
-  switch (variant) {
-    case ButtonVariant.Primary:
-      return <ButtonPrimary />;
-    case ButtonVariant.Secondary:
-      return <ButtonSecondary />;
-    case ButtonVariant.Third:
-      return <ButtonThird />;
-    case ButtonVariant.Fourth:
-      return <ButtonFourth />;
-    case ButtonVariant.Claim:
-      return <ButtonClaim />;
-    default:
-      return <ButtonPrimary />;
-  }
-}
