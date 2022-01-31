@@ -135,7 +135,7 @@ const filters = [
 ];
 
 export default function PoolSettings() {
-  const { setCreatePollModalOpen } = useModalsStore();
+  const { setCreatePoolModalOpen } = useModalsStore();
 
   if (isMobile) {
     return (
