@@ -4,6 +4,7 @@ import { ReactComponent as Close } from 'assets/images-app/close.svg';
 import { ReactComponent as AddIcon } from 'assets/images-app/icon-add.svg';
 import { ButtonPrimary } from 'components/Button';
 import PoolContract from 'services/PoolContract';
+import { useNavigate } from 'react-router-dom';
 import {
   Layout, ModalBlock, ModalIcon,
 } from '../styles';
@@ -26,7 +27,7 @@ export default function AddLiquidityModal() {
     tokens,
     balances,
   } = useStore();
-
+  const navigate = useNavigate();
   const [inputTokenValue, setInputTokenValue] = useState<string>('');
   const [outputTokenValue, setOutputTokenValue] = useState<string>('');
 
@@ -41,13 +42,21 @@ export default function AddLiquidityModal() {
   return (
     <>
       {addLiquidityModalOpenState.isOpen && (
-      <Layout onClick={() => setAddLiquidityModalOpenState({ isOpen: false, pool: null })}>
+      <Layout onClick={() => {
+        navigate('/app/pool');
+        setAddLiquidityModalOpenState({ isOpen: false, pool: null });
+      }}
+      >
         <LiquidityModalContainer onClick={(e) => e.stopPropagation()}>
           <ModalBlock>
             <ModalTitle>
               Add Liquidity
             </ModalTitle>
-            <ModalIcon onClick={() => setAddLiquidityModalOpenState({ isOpen: false, pool: null })}>
+            <ModalIcon onClick={() => {
+              navigate('/app/pool');
+              setAddLiquidityModalOpenState({ isOpen: false, pool: null });
+            }}
+            >
               <Close />
             </ModalIcon>
           </ModalBlock>
