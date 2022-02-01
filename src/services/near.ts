@@ -26,6 +26,7 @@ export const sendTransactions = async (
   transactions: Transaction[],
   walletInstance: SpecialWallet,
 ) => {
+  if (!transactions.length) return;
   const nearTransactions = await Promise.all(
     transactions.map((t, i) => walletInstance.createTransaction({
       receiverId: t.receiverId,

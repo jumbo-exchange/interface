@@ -1,9 +1,9 @@
-import { functionCall } from 'near-api-js/lib/transaction';
 import { IPool } from 'store/interfaces';
 import { SWAP_FAILED, SWAP_TOKENS_NOT_IN_SWAP_POOL } from 'utils/errors';
 import { ONE_YOCTO_NEAR } from 'utils/constants';
+import { NEAR_TOKEN_ID } from 'store';
 import FungibleTokenContract from './FungibleToken';
-import sendTransactions, { getAmount, getGas, wallet } from './near';
+import sendTransactions, { wallet } from './near';
 import { createContract, Transaction } from './wallet';
 import getConfig from './config';
 
@@ -44,6 +44,10 @@ export default class SwapContract {
     tokenIn: FungibleTokenContract,
     tokenOut: FungibleTokenContract,
   ) {
+    if (tokenIn.contractId === config.nearAddress && tokenOut.contractId === config.nearAddress) {
+      return [amount, amount];
+    }
+
     if (pools.length === SWAP_ENUM.DIRECT_SWAP) {
       const [currentPool] = pools;
       const tokens = currentPool.tokenAccountIds;
@@ -152,29 +156,39 @@ export default class SwapContract {
     amount: string,
     pools: IPool[],
   }) {
+    const tokens = [inputToken.contractId, outputToken.contractId];
+
     const transactions: Transaction[] = [];
     const accountId = this.walletInstance.getAccountId();
     const outputTokenStorage = await outputToken.contract.checkStorageBalance({ accountId });
     transactions.push(...outputTokenStorage);
-    const swapAction = await this.generateTransferMessage(
-      pools, amount, inputToken, outputToken,
-    );
 
-    transactions.push({
-      receiverId: inputToken.contractId,
-      functionCalls: [{
-        methodName: 'ft_transfer_call',
-        args: {
-          receiver_id: CONTRACT_ID,
-          msg: JSON.stringify({
-            force: 0,
-            actions: [...swapAction],
-          }),
-          amount,
-        },
-        amount: ONE_YOCTO_NEAR,
-      }],
-    });
+    if (tokens.includes(NEAR_TOKEN_ID) && tokens.includes(config.nearAddress)) {
+      if (inputToken.contractId === NEAR_TOKEN_ID) {
+        transactions.push(...outputToken.contract.wrap({ amount }));
+      } else {
+        transactions.push(...inputToken.contract.unwrap({ amount }));
+      }
+    } else {
+      const swapAction = await this.generateTransferMessage(
+        pools, amount, inputToken, outputToken,
+      );
+      transactions.push({
+        receiverId: inputToken.contractId,
+        functionCalls: [{
+          methodName: 'ft_transfer_call',
+          args: {
+            receiver_id: CONTRACT_ID,
+            msg: JSON.stringify({
+              force: 0,
+              actions: [...swapAction],
+            }),
+            amount,
+          },
+          amount: ONE_YOCTO_NEAR,
+        }],
+      });
+    }
 
     sendTransactions(transactions, this.walletInstance);
   }

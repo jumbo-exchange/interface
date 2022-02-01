@@ -13,7 +13,7 @@ import FungibleTokenContract from 'services/FungibleToken';
 
 const config = getConfig();
 const INITIAL_POOL_ID = 0;
-
+export const NEAR_TOKEN_ID = 'NEAR';
 const initialState: StoreContextType = {
   loading: false,
   setLoading: () => {},
@@ -83,7 +83,13 @@ export const StoreContextProvider = (
       const isSignedIn = nearWallet.isSignedIn();
 
       const poolsResult = await contract.get_pools({ from_index: 0, limit: 100 });
-      const tokenAddresses = poolsResult.flatMap((pool: any) => pool.token_account_ids);
+      const tokenAddresses = [
+        ...poolsResult
+          .flatMap((pool: any) => pool.token_account_ids),
+        config.nearAddress,
+        NEAR_TOKEN_ID,
+      ];
+
       const poolArray = poolsResult.map((pool:any, index:number) => formatPool(pool, index));
 
       const tokensMetadata: any[] = await Promise.all(

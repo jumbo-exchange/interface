@@ -2,11 +2,15 @@ import React, { useCallback, useState, useEffect } from 'react';
 import { ButtonPrimary, ButtonSecondary } from 'components/Button';
 import { wallet } from 'services/near';
 import { getUpperCase } from 'utils';
-import { useStore, useModalsStore, TokenType } from 'store';
+import {
+  useStore, useModalsStore, TokenType, NEAR_TOKEN_ID,
+} from 'store';
 import { SLIPPAGE_TOLERANCE_DEFAULT } from 'utils/constants';
 import SwapContract from 'services/SwapContract';
 import useDebounce from 'hooks/useDebounce';
 import { formatTokenAmount, parseTokenAmount } from 'utils/calculations';
+import FungibleTokenContract from 'services/FungibleToken';
+import getConfig from 'services/config';
 import Input from './SwapInput';
 import SwapSettings from './SwapSettings';
 import {
@@ -46,7 +50,6 @@ const RenderButton = ({
   disabled?: boolean
 }) => {
   const title = isConnected ? 'Swap' : 'Connect wallet';
-
   if (isConnected) {
     return (
       <ButtonPrimary
@@ -73,7 +76,9 @@ export default function Swap() {
     balances,
     loading,
     currentPools,
+    tokens,
   } = useStore();
+  const config = getConfig();
 
   const { setAccountModalOpen, setSearchModalOpen } = useModalsStore();
   const [independentField, setIndependentField] = useState(TokenType.Input);
@@ -102,21 +107,32 @@ export default function Swap() {
     setInputToken(oldOutputToken);
   };
 
+  const verifyToken = (
+    token: FungibleTokenContract,
+  ) => {
+    if (token.contractId === NEAR_TOKEN_ID) {
+      const wrappedTokenId = config.nearAddress;
+      return tokens[wrappedTokenId];
+    } return token;
+  };
+
   useEffect(() => {
     if (!inputToken || !outputToken || !debouncedInputValue) return;
     if (independentField === TokenType.Input) {
       const formattedValue = parseTokenAmount(debouncedInputValue, inputToken.metadata.decimals);
+      const verifiedInputToken = verifyToken(inputToken);
+      const verifiedOutputToken = verifyToken(outputToken);
       swapContract.getReturnForPools(
         currentPools,
         formattedValue,
-        inputToken,
-        outputToken,
+        verifiedInputToken,
+        verifiedOutputToken,
       ).then((minOutput) => {
         const lastIndex = minOutput.length - 1;
         setOutputTokenValue(
           formatTokenAmount(
             minOutput[lastIndex],
-            outputToken.metadata.decimals,
+            verifiedOutputToken.metadata.decimals,
             5,
           ),
         );
@@ -128,17 +144,19 @@ export default function Swap() {
     if (!inputToken || !outputToken || !debouncedOutputValue) return;
     if (independentField === TokenType.Output) {
       const formattedValue = parseTokenAmount(debouncedOutputValue, outputToken.metadata.decimals);
+      const verifiedInputToken = verifyToken(inputToken);
+      const verifiedOutputToken = verifyToken(outputToken);
       swapContract.getReturnForPools(
         currentPools,
         formattedValue,
-        outputToken,
-        inputToken,
+        verifiedOutputToken,
+        verifiedInputToken,
       ).then((minOutput) => {
         const lastIndex = minOutput.length - 1;
         setInputTokenValue(
           formatTokenAmount(
             minOutput[lastIndex],
-            inputToken.metadata.decimals, 5,
+            verifiedInputToken.metadata.decimals, 5,
           ),
         );
       });
@@ -204,8 +222,12 @@ export default function Swap() {
   const intersectionToken = currentPools.length === 2
     ? currentPools[0].tokenAccountIds.find((el) => el !== inputToken?.contractId) : null;
   const canSwap = !!slippageTolerance
-  && (!!inputTokenValue && !!outputTokenValue)
-  && currentPools.length > 0;
+    && (!!inputTokenValue && !!outputTokenValue)
+    && currentPools.length > 0;
+  const isWrap = inputToken && outputToken
+    && (inputToken.contractId === config.nearAddress && outputToken.contractId === NEAR_TOKEN_ID);
+  const isUnwrap = inputToken && outputToken
+    && (outputToken.contractId === config.nearAddress && inputToken.contractId === NEAR_TOKEN_ID);
 
   return (
     <Container>
@@ -286,7 +308,7 @@ export default function Swap() {
         isConnected={isConnected}
         swapToken={swapToken}
         setAccountModalOpen={setAccountModalOpen}
-        disabled={!canSwap}
+        disabled={!canSwap && !isWrap && !isUnwrap}
       />
     </Container>
   );
