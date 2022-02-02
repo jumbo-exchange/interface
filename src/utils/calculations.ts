@@ -27,3 +27,9 @@ export const formatTokenAmount = (value:string, decimals = 18, precision = 2) =>
 export const parseTokenAmount = (value:string, decimals = 18) => value
   && Big(value).times(Big(BASE).pow(decimals)).toFixed();
 export const removeTrailingZeros = (amount: string) => amount.replace(/\.?0*$/, '');
+
+export const percentLess = (percent: number | string, num: number | string): string => {
+  const FULL_AMOUNT_PERCENT = 100;
+  const percentDiff = Big(FULL_AMOUNT_PERCENT).minus(percent);
+  return removeTrailingZeros(Big(num).div(FULL_AMOUNT_PERCENT).mul(percentDiff).toFixed(6));
+};

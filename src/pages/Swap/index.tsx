@@ -8,10 +8,13 @@ import {
 import { FEE_DIVISOR, SLIPPAGE_TOLERANCE_DEFAULT } from 'utils/constants';
 import SwapContract from 'services/SwapContract';
 import useDebounce from 'hooks/useDebounce';
-import { formatTokenAmount, parseTokenAmount, removeTrailingZeros } from 'utils/calculations';
+import {
+  formatTokenAmount, parseTokenAmount, removeTrailingZeros, percentLess,
+} from 'utils/calculations';
 import FungibleTokenContract from 'services/FungibleToken';
 import getConfig from 'services/config';
 import Big from 'big.js';
+
 import Input from './SwapInput';
 import SwapSettings from './SwapSettings';
 import {
@@ -94,6 +97,9 @@ export default function Swap() {
 
   const isConnected = wallet.isSignedIn();
   const exchangeLabel = `1 ${getUpperCase(inputToken?.metadata.symbol ?? '')} ≈ 4923.333 ${getUpperCase(outputToken?.metadata.symbol ?? '')}`;
+  const minAmountOut = outputTokenValue
+    ? percentLess(slippageTolerance, outputTokenValue)
+    : '';
 
   const openModal = useCallback(
     (tokenType: TokenType) => {
@@ -197,11 +203,11 @@ export default function Swap() {
   const swapToken = async () => {
     if (!inputToken || !outputToken) return;
     const formattedValue = parseTokenAmount(inputTokenValue, inputToken.metadata.decimals);
-
+    const minAmountSlippage = percentLess(slippageTolerance, formattedValue);
     await swapContract.swap({
       inputToken,
       outputToken,
-      amount: formattedValue,
+      amount: minAmountSlippage,
       pools: currentPools,
     });
   };
@@ -284,7 +290,7 @@ export default function Swap() {
             </RouteBlock>
             <RowInfo>
               <TitleInfo>Minimum Received<LogoInfo /></TitleInfo>
-              <LabelInfo>{outputTokenValue} {outputToken?.metadata.symbol}</LabelInfo>
+              <LabelInfo>{minAmountOut} {outputToken?.metadata.symbol}</LabelInfo>
             </RowInfo>
             <RowInfo>
               <TitleInfo>Price Impact<LogoInfo /></TitleInfo>
@@ -296,7 +302,7 @@ export default function Swap() {
             </RowInfo>
             <RowInfo>
               <TitleInfo>Slippage Tolerance<LogoInfo /></TitleInfo>
-              <LabelInfo>{slippageTolerance}</LabelInfo>
+              <LabelInfo>{slippageTolerance}%</LabelInfo>
             </RowInfo>
           </SwapInformation>
         ) : null
