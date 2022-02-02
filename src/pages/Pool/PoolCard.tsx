@@ -98,7 +98,7 @@ const LabelPool = styled.div`
   }
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     width: 100%;
-    justify-content: space-between;
+    justify-content: flex-end;
     p {
       flex: 1;
       text-align: left;
@@ -244,10 +244,6 @@ export default function PoolCard({ pool } : { pool:IPool }) {
     },
   ];
 
-  const getWithdraw = () => {
-    console.log('Withdraw');
-  };
-
   const getClaim = () => {
     console.log('Claim');
   };
@@ -267,7 +263,6 @@ export default function PoolCard({ pool } : { pool:IPool }) {
           </TitlePool>
         </BlockTitle>
         <LabelPool>
-          <p><strong>0.2 NEAR</strong> / day / $1K</p>
           <JumboBlock>Jumbo</JumboBlock>
           <MiceBlock>Mice</MiceBlock>
           <RenderClaimButton show={!isMobile} getClaim={getClaim} />
@@ -288,13 +283,15 @@ export default function PoolCard({ pool } : { pool:IPool }) {
         <RenderClaimButton show={isMobile} getClaim={getClaim} />
         <BlockButton>
           <BtnSecondary
-            onClick={() => getWithdraw()}
+            onClick={() => {
+              navigate(`/app/pool/remove-liquidity/${pool.id}`);
+            }}
           >
             Withdraw
           </BtnSecondary>
           <BtnPrimary
             onClick={() => {
-              navigate(`/app/pool/${pool.id}`);
+              navigate(`/app/pool/add-liquidity/${pool.id}`);
             }}
           >
             Add Liquidity

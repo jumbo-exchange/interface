@@ -143,8 +143,8 @@ export default function Input({
   token: FungibleTokenContract | null,
   tokenType: TokenType,
   value: string,
-  setValue: any,
-  balance:string,
+  setValue: React.Dispatch<React.SetStateAction<string>>,
+  balance: string,
 }) {
   const currentBalance = new Big(balance ?? 0);
   const setHalfAmount = () => {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Tooltip from 'components/Tooltip';
 import { ButtonSecondary, FilterButton } from 'components/Button';
@@ -8,6 +8,7 @@ import { ReactComponent as Plus } from 'assets/images-app/plus.svg';
 import { ReactComponent as PlaceHolderLoader } from 'assets/images-app/placeholder-loader.svg';
 import { isMobile } from 'utils/userAgent';
 import { useModalsStore } from 'store';
+import { FilterPoolsEnum } from '.';
 
 const Container = styled.div`
   display: flex;
@@ -22,11 +23,14 @@ const SearchInputBlock = styled.div`
   border: 1px solid ${({ theme }) => theme.globalGreyOp04};
   box-sizing: border-box;
   border-radius: 12px;
-  padding: 13px 11px;
+  padding: 9px 9px;
   & > svg {
     margin-right: .75rem;
     align-self: center;
   }
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    max-width: 220px;
+  `}
 `;
 
 const SearchInput = styled.input`
@@ -51,20 +55,37 @@ const Wrapper = styled.div`
   justify-content: space-between;
   height: 100%;
   & > div:last-child {
-    margin-bottom: .25rem;
+    margin: .25rem 0 .25rem;
   }
+`;
+
+const APRWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  & > div:last-child {
+    margin: .5rem 0 .25rem;
+  }
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+  width: 100%;
+    & > div {
+      justify-content: flex-end;
+    }
+  `}
 `;
 
 const Title = styled.div`
   display: flex;
   font-style: normal;
-  font-weight: 300;
+  font-weight: 500;
   font-size: .75rem;
   line-height: .875rem;
   color: ${({ theme }) => theme.globalGrey};
 `;
 
 const FilterBlock = styled.div`
+  display: flex;
   & > button:nth-child(2) {
     margin: 0 1rem;
   }
@@ -119,48 +140,81 @@ const MobileRow = styled.div`
   margin: 1rem 0;
 `;
 
-const filters = [
+enum APRFiletEnum {
+  '24H',
+  '7D',
+  '30D',
+}
+
+interface IAPRFilters {
+  title: string
+  isActive: APRFiletEnum,
+  disabled?: boolean,
+}
+
+const aprFilters: IAPRFilters[] = [
   {
     title: '24H',
-    isActive: false,
+    isActive: APRFiletEnum['24H'],
   },
   {
     title: '7D',
-    isActive: false,
+    isActive: APRFiletEnum['7D'],
+    disabled: true,
   },
   {
     title: '30D',
-    isActive: true,
+    isActive: APRFiletEnum['30D'],
+    disabled: true,
   },
 ];
 
-export default function PoolSettings() {
+export default function PoolSettings({
+  currentFilterPools,
+}:{
+  currentFilterPools: FilterPoolsEnum
+}) {
   const { setCreatePoolModalOpen } = useModalsStore();
+  const [currentAPRFilter, setCurrentAPRFilter] = useState(APRFiletEnum['24H']);
 
   if (isMobile) {
     return (
       <MobileContainer>
-        <SearchInputBlock>
-          <SearchIcon />
-          <SearchInput
-            placeholder="Search"
-          />
-        </SearchInputBlock>
         <MobileRow>
+          <SearchInputBlock>
+            <SearchIcon />
+            <SearchInput
+              placeholder="Search"
+            />
+          </SearchInputBlock>
           <Title><Loading />Refresh</Title>
+        </MobileRow>
+        <MobileRow>
+          {currentFilterPools === FilterPoolsEnum['All Pools']
+          && (
           <Wrapper>
+            <Title>Sort by</Title>
+            <SortBlock>
+              Liquidity (dsc)
+              <ArrowDown />
+            </SortBlock>
+          </Wrapper>
+          )}
+          <APRWrapper>
             <Title>APR Basis <Tooltip title="APR Basis" /></Title>
             <FilterBlock>
-              {filters.map((el) => (
+              {aprFilters.map((el) => (
                 <FilterButton
                   key={el.title}
-                  isActive={el.isActive}
+                  isActive={currentAPRFilter === el.isActive}
+                  onClick={() => setCurrentAPRFilter(el.isActive)}
+                  disabled={el.disabled}
                 >
                   {el.title}
                 </FilterButton>
               ))}
             </FilterBlock>
-          </Wrapper>
+          </APRWrapper>
         </MobileRow>
         <ButtonSecondary
           onClick={() => setCreatePoolModalOpen(true)}
@@ -186,19 +240,21 @@ export default function PoolSettings() {
           <ArrowDown />
         </SortBlock>
       </Wrapper>
-      <Wrapper>
+      <APRWrapper>
         <Title>APR Basis <Tooltip title="APR Basis" /></Title>
         <FilterBlock>
-          {filters.map((el) => (
+          {aprFilters.map((el) => (
             <FilterButton
               key={el.title}
-              isActive={el.isActive}
+              isActive={currentAPRFilter === el.isActive}
+              onClick={() => setCurrentAPRFilter(el.isActive)}
+              disabled={el.disabled}
             >
               {el.title}
             </FilterButton>
           ))}
         </FilterBlock>
-      </Wrapper>
+      </APRWrapper>
       <Title><Loading />Refresh</Title>
       <ButtonSecondary
         onClick={() => setCreatePoolModalOpen(true)}
