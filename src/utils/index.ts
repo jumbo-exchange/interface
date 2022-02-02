@@ -1,12 +1,7 @@
 import Big from 'big.js';
 import { IPool } from 'store';
 
-const BASE = 10;
 const ACCOUNT_TRIM_LENGTH = 8;
-
-export const formatAmount = (amount: string, decimals?: number): string => (
-  new Big(amount).div(new Big(BASE).pow(decimals ?? 0)).toFixed()
-);
 
 export const trimAccountId = (isMobile: boolean, accountId: string) => (isMobile
   ? `${accountId.slice(0, ACCOUNT_TRIM_LENGTH)}...` : accountId

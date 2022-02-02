@@ -1,11 +1,13 @@
 import Big from 'big.js';
 
+const BASE = 10;
+
 export const round = (decimals: number, minAmountOut: string) => (
   Number.isInteger(Number(minAmountOut))
     ? minAmountOut
     : Math.ceil(
-      Math.round(Number(minAmountOut) * (10 ** decimals))
-          / (10 ** decimals),
+      Math.round(Number(minAmountOut) * (BASE ** decimals))
+          / (BASE ** decimals),
     ).toString());
 
 export const toNonDivisibleNumber = (
@@ -21,7 +23,7 @@ export const toNonDivisibleNumber = (
 };
 
 export const formatTokenAmount = (value:string, decimals = 18, precision = 2) => value
-  && Big(value).div(Big(10).pow(decimals)).toFixed(precision);
+  && Big(value).div(Big(BASE).pow(decimals)).toFixed(precision);
 export const parseTokenAmount = (value:string, decimals = 18) => value
-  && Big(value).times(Big(10).pow(decimals)).toFixed();
+  && Big(value).times(Big(BASE).pow(decimals)).toFixed();
 export const removeTrailingZeros = (amount: string) => amount.replace(/\.?0*$/, '');

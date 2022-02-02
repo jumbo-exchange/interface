@@ -5,7 +5,9 @@ import tokenLogo from 'assets/images-app/placeholder-token.svg';
 import Big from 'big.js';
 
 import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
-import { formatAmount, getUpperCase } from 'utils';
+import { getUpperCase } from 'utils';
+import { formatTokenAmount } from 'utils/calculations';
+
 import { TokenType } from 'store';
 import FungibleTokenContract from 'services/FungibleToken';
 
@@ -125,7 +127,7 @@ const getCurrentBalance = (
   currentBalance: Big,
   token: FungibleTokenContract | null,
 ) => {
-  const newBalance = formatAmount(currentBalance.toFixed() ?? 0, token?.metadata.decimals);
+  const newBalance = formatTokenAmount(currentBalance.toFixed() ?? 0, token?.metadata.decimals);
   if (newBalance !== '0') {
     return new Big(newBalance).toFixed(3);
   }
@@ -149,13 +151,15 @@ export default function Input({
   const currentBalance = new Big(balance ?? 0);
   const setHalfAmount = () => {
     if (!balance) return;
-    const newBalance = currentBalance.div(2);
-    setValue(formatAmount(newBalance.toFixed(), token?.metadata.decimals));
+    const newBalance = currentBalance.div(2).toFixed();
+    setValue(formatTokenAmount(newBalance, token?.metadata.decimals, 0));
   };
 
   const setMaxAmount = () => {
     if (!balance) return;
-    const newBalance = formatAmount(currentBalance.toFixed() ?? 0, token?.metadata.decimals);
+    const newBalance = formatTokenAmount(
+      currentBalance.toFixed() ?? 0, token?.metadata.decimals, 0,
+    );
     setValue(newBalance);
   };
 

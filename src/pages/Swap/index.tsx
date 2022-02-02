@@ -171,6 +171,7 @@ export default function Swap() {
 
     if (newAverageFee !== averageFee) setAverageFee(removeTrailingZeros(newAverageFee));
   }, [currentPools]);
+
   const handleAmountChange = async (tokenType: TokenType, value: string) => {
     if (tokenType === TokenType.Input) {
       setInputTokenValue(value);
@@ -269,7 +270,7 @@ export default function Swap() {
         </SettingsHeader>
       </SettingsBlock>
       {
-        currentPools.length ? (
+        currentPools.length && outputTokenValue && Big(outputTokenValue ?? 0).gt(0) ? (
           <SwapInformation>
             <RouteBlock>
               <TitleInfo>Route <LogoInfo /></TitleInfo>
@@ -282,8 +283,8 @@ export default function Swap() {
               </div>
             </RouteBlock>
             <RowInfo>
-              <TitleInfo>Minimum Recieved<LogoInfo /></TitleInfo>
-              <LabelInfo>0.005053 USDT</LabelInfo>
+              <TitleInfo>Minimum Received<LogoInfo /></TitleInfo>
+              <LabelInfo>{outputTokenValue} {outputToken?.metadata.symbol}</LabelInfo>
             </RowInfo>
             <RowInfo>
               <TitleInfo>Price Impact<LogoInfo /></TitleInfo>
