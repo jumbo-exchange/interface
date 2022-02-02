@@ -49,3 +49,4 @@ export const MIN_DEPOSIT_PER_TOKEN = new Big('5000000000000000000000');
 export const STORAGE_PER_TOKEN = '0.005';
 export const LP_STORAGE_AMOUNT = '0.01';
 export const YOCTO_IN_NEAR_DECIMALS = 24;
+export const FEE_DIVISOR = 100;

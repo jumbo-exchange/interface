@@ -34,6 +34,13 @@ export function formatPool(pool: any, id: number): IPool {
     poolKind: pool.pool_kind,
     tokenAccountIds: pool.token_account_ids,
     amounts: pool.amounts,
+    supplies: pool.amounts.reduce(
+      (acc: { [tokenId: string]: string }, amount: string, i: number) => {
+        acc[pool.token_account_ids[i]] = amount;
+        return acc;
+      },
+      {},
+    ),
     totalFee: pool.total_fee,
     sharesTotalSupply: pool.shares_total_supply,
     amp: pool.amp,

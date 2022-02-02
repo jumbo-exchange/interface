@@ -5,12 +5,13 @@ import { getUpperCase } from 'utils';
 import {
   useStore, useModalsStore, TokenType, NEAR_TOKEN_ID,
 } from 'store';
-import { SLIPPAGE_TOLERANCE_DEFAULT } from 'utils/constants';
+import { FEE_DIVISOR, SLIPPAGE_TOLERANCE_DEFAULT } from 'utils/constants';
 import SwapContract from 'services/SwapContract';
 import useDebounce from 'hooks/useDebounce';
-import { formatTokenAmount, parseTokenAmount } from 'utils/calculations';
+import { formatTokenAmount, parseTokenAmount, removeTrailingZeros } from 'utils/calculations';
 import FungibleTokenContract from 'services/FungibleToken';
 import getConfig from 'services/config';
+import Big from 'big.js';
 import Input from './SwapInput';
 import SwapSettings from './SwapSettings';
 import {
@@ -89,6 +90,7 @@ export default function Swap() {
 
   const [slippageTolerance, setSlippageTolerance] = useState<string>(SLIPPAGE_TOLERANCE_DEFAULT);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [averageFee, setAverageFee] = useState<string>('0');
 
   const isConnected = wallet.isSignedIn();
   const exchangeLabel = `1 ${getUpperCase(inputToken?.metadata.symbol ?? '')} ≈ 4923.333 ${getUpperCase(outputToken?.metadata.symbol ?? '')}`;
@@ -138,7 +140,7 @@ export default function Swap() {
         );
       });
     }
-  }, [debouncedInputValue]);
+  }, [debouncedInputValue, inputToken, outputToken]);
 
   useEffect(() => {
     if (!inputToken || !outputToken || !debouncedOutputValue) return;
@@ -161,8 +163,14 @@ export default function Swap() {
         );
       });
     }
-  }, [debouncedOutputValue]);
+  }, [debouncedOutputValue, inputToken, outputToken]);
 
+  useEffect(() => {
+    const newAverageFee = Big(currentPools.reduce((acc, item) => acc + item.totalFee, 0))
+      .div(FEE_DIVISOR).toFixed(4);
+
+    if (newAverageFee !== averageFee) setAverageFee(removeTrailingZeros(newAverageFee));
+  }, [currentPools]);
   const handleAmountChange = async (tokenType: TokenType, value: string) => {
     if (tokenType === TokenType.Input) {
       setInputTokenValue(value);
@@ -197,28 +205,6 @@ export default function Swap() {
     });
   };
 
-  const swapInformation = [
-    {
-      title: 'Minimum Recieved',
-      label: '0.005053 USDT',
-      color: false,
-    },
-    {
-      title: 'Price Impact',
-      label: '0.02%',
-      color: true,
-    },
-    {
-      title: 'Liquidity Provider Fee',
-      label: '0.000000007477 ETH',
-      color: false,
-    },
-    {
-      title: 'Slippage Tolerance',
-      label: `${slippageTolerance}%`,
-      color: false,
-    },
-  ];
   const intersectionToken = currentPools.length === 2
     ? currentPools[0].tokenAccountIds.find((el) => el !== inputToken?.contractId) : null;
   const canSwap = !!slippageTolerance
@@ -295,12 +281,22 @@ export default function Swap() {
                 {outputToken?.metadata.symbol}
               </div>
             </RouteBlock>
-            {swapInformation.map((el) => (
-              <RowInfo key={el.title}>
-                <TitleInfo>{el.title} <LogoInfo /></TitleInfo>
-                <LabelInfo isColor={el.color}>{el.label}</LabelInfo>
-              </RowInfo>
-            ))}
+            <RowInfo>
+              <TitleInfo>Minimum Recieved<LogoInfo /></TitleInfo>
+              <LabelInfo>0.005053 USDT</LabelInfo>
+            </RowInfo>
+            <RowInfo>
+              <TitleInfo>Price Impact<LogoInfo /></TitleInfo>
+              <LabelInfo isColor>0.02%</LabelInfo>
+            </RowInfo>
+            <RowInfo>
+              <TitleInfo>Liquidity Provider Fee<LogoInfo /></TitleInfo>
+              <LabelInfo>{averageFee}%</LabelInfo>
+            </RowInfo>
+            <RowInfo>
+              <TitleInfo>Slippage Tolerance<LogoInfo /></TitleInfo>
+              <LabelInfo>{slippageTolerance}</LabelInfo>
+            </RowInfo>
           </SwapInformation>
         ) : null
       }

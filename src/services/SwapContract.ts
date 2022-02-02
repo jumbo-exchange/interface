@@ -61,37 +61,39 @@ export default class SwapContract {
         tokenOut.contractId,
       );
       return [minOutput];
-    }
-    const [firstPool, secondPool] = pools;
-    const firstPoolTokens = firstPool.tokenAccountIds;
-    const secondPoolTokens = secondPool.tokenAccountIds;
-    if (
-      !firstPoolTokens.includes(tokenIn.contractId)
+    } if (pools.length === SWAP_ENUM.INDIRECT_SWAP) {
+      const [firstPool, secondPool] = pools;
+      const firstPoolTokens = firstPool.tokenAccountIds;
+      const secondPoolTokens = secondPool.tokenAccountIds;
+      if (
+        !firstPoolTokens.includes(tokenIn.contractId)
         && !secondPoolTokens.includes(tokenOut.contractId)
-    ) {
-      throw Error(SWAP_TOKENS_NOT_IN_SWAP_POOL);
+      ) {
+        throw Error(SWAP_TOKENS_NOT_IN_SWAP_POOL);
+      }
+      const swapToken = firstPoolTokens.find((tokenName) => tokenName !== tokenIn.contractId);
+      if (!swapToken) throw Error(SWAP_FAILED);
+
+      const minAmountOutFirst = await this.getReturn(
+        firstPool.id,
+        tokenIn.contractId,
+        amount,
+        swapToken,
+      );
+
+      const minAmountOutSecond = await this.getReturn(
+        secondPool.id,
+        swapToken,
+        minAmountOutFirst,
+        tokenOut.contractId,
+      );
+
+      return [
+        minAmountOutFirst,
+        minAmountOutSecond,
+      ];
     }
-    const swapToken = firstPoolTokens.find((tokenName) => tokenName !== tokenIn.contractId);
-    if (!swapToken) throw Error(SWAP_FAILED);
-
-    const minAmountOutFirst = await this.getReturn(
-      firstPool.id,
-      tokenIn.contractId,
-      amount,
-      swapToken,
-    );
-
-    const minAmountOutSecond = await this.getReturn(
-      secondPool.id,
-      swapToken,
-      minAmountOutFirst,
-      tokenOut.contractId,
-    );
-
-    return [
-      minAmountOutFirst,
-      minAmountOutSecond,
-    ];
+    return [0, 0];
   }
 
   // TODO: REFACTOR

@@ -17,6 +17,7 @@ export interface IPool {
   poolSharePrice?: string;
   poolShares?: string;
   poolTotalShares?: string;
+  supplies: { [key: string]: string };
   amp: string;
 
   volumes?: string;
