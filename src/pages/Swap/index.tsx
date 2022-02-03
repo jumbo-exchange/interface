@@ -130,21 +130,21 @@ export default function Swap() {
       const formattedValue = parseTokenAmount(debouncedInputValue, inputToken.metadata.decimals);
       const verifiedInputToken = verifyToken(inputToken);
       const verifiedOutputToken = verifyToken(outputToken);
-      swapContract.getReturnForPools(
+      const minOutput = SwapContract.getReturnForPools(
         currentPools,
         formattedValue,
         verifiedInputToken,
         verifiedOutputToken,
-      ).then((minOutput) => {
-        const lastIndex = minOutput.length - 1;
-        setOutputTokenValue(
-          formatTokenAmount(
-            minOutput[lastIndex],
-            verifiedOutputToken.metadata.decimals,
-            5,
-          ),
-        );
-      });
+        tokens,
+      );
+      const lastIndex = minOutput.length - 1;
+      setOutputTokenValue(
+        formatTokenAmount(
+          minOutput[lastIndex],
+          verifiedOutputToken.metadata.decimals,
+          5,
+        ),
+      );
     }
   }, [debouncedInputValue, inputToken, outputToken]);
 
@@ -154,20 +154,20 @@ export default function Swap() {
       const formattedValue = parseTokenAmount(debouncedOutputValue, outputToken.metadata.decimals);
       const verifiedInputToken = verifyToken(inputToken);
       const verifiedOutputToken = verifyToken(outputToken);
-      swapContract.getReturnForPools(
+      const minOutput = SwapContract.getReturnForPools(
         currentPools,
         formattedValue,
         verifiedOutputToken,
         verifiedInputToken,
-      ).then((minOutput) => {
-        const lastIndex = minOutput.length - 1;
-        setInputTokenValue(
-          formatTokenAmount(
-            minOutput[lastIndex],
-            verifiedInputToken.metadata.decimals, 5,
-          ),
-        );
-      });
+        tokens,
+      );
+      const lastIndex = minOutput.length - 1;
+      setInputTokenValue(
+        formatTokenAmount(
+          minOutput[lastIndex],
+          verifiedInputToken.metadata.decimals, 5,
+        ),
+      );
     }
   }, [debouncedOutputValue, inputToken, outputToken]);
 
@@ -203,12 +203,13 @@ export default function Swap() {
   const swapToken = async () => {
     if (!inputToken || !outputToken) return;
     const formattedValue = parseTokenAmount(inputTokenValue, inputToken.metadata.decimals);
-    const minAmountSlippage = percentLess(slippageTolerance, formattedValue);
     await swapContract.swap({
       inputToken,
       outputToken,
-      amount: minAmountSlippage,
+      amount: formattedValue,
       pools: currentPools,
+      tokens,
+      slippageAmount: slippageTolerance,
     });
   };
 

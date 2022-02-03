@@ -14,12 +14,6 @@ export const ONLY_ZEROS = /^0*\.?0*$/;
 //   token?: FungibleTokenContract;
 // }
 
-// export const percentLess = (percent: number, num: number | string): string => {
-//   const FULL_AMOUNT_PERCENT = 100;
-//   const percentDiff = Big(FULL_AMOUNT_PERCENT).minus(percent);
-//   return Big(num).div(FULL_AMOUNT_PERCENT).mul(percentDiff).toFixed(2);
-// };
-
 // export function formatWithCommas(value: string): string {
 //   const pattern = /(-?\d+)(\d{3})/;
 //   let result = value;
@@ -34,7 +28,8 @@ export const ONLY_ZEROS = /^0*\.?0*$/;
 //   tokenIn: FungibleTokenContract,
 //   tokenOut: FungibleTokenContract,
 // ) => {
-//   const amount1 = formatTokenAmount(pool.supplies[tokenIn.contractId], tokenIn.metadata.decimals);
+//   const amount1 =
+// formatTokenAmount(pool.supplies[tokenIn.contractId], tokenIn.metadata.decimals);
 //   const amount2 = formatTokenAmount(
 //     pool.supplies[tokenOut.contractId],
 //     tokenOut.metadata.decimals,
