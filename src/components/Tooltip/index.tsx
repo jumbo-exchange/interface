@@ -1,8 +1,7 @@
-import React, { useState, PropsWithChildren, useEffect } from 'react';
+import React, { useState, PropsWithChildren } from 'react';
 import styled from 'styled-components';
 import { ReactComponent as Info } from 'assets/images-app/info.svg';
 import { isMobile, isTablet } from 'utils/userAgent';
-import TooltipModal from 'components/Modals/TooltipModal';
 import { useModalsStore } from 'store';
 
 interface IBottom {

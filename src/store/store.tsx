@@ -90,7 +90,7 @@ export const StoreContextProvider = (
         NEAR_TOKEN_ID,
       ];
 
-      const poolArray = poolsResult.map((pool:any, index:number) => formatPool(pool, index));
+      const poolArray = poolsResult.map((pool: any, index: number) => formatPool(pool, index));
       const tokensMetadata: any[] = await Promise.all(
         tokenAddresses.map(async (address: string) => {
           const ftTokenContract: FungibleTokenContract = new FungibleTokenContract(

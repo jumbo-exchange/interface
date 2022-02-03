@@ -1,61 +1,70 @@
 import Big from 'big.js';
 import { IPool } from 'store';
-import { formatTokenAmount } from 'utils/calculations';
-
+import { formatTokenAmount, percent } from 'utils/calculations';
 import FungibleTokenContract from './FungibleToken';
 
-export const POOL_TOKEN_REFRESH_INTERVAL = 1000;
-export const ONLY_ZEROS = /^0*\.?0*$/;
+export const calculateAmountReceived = (
+  pool: IPool,
+  amountIn: string,
+  tokenIn: FungibleTokenContract,
+  tokenOut: FungibleTokenContract,
+) => {
+  const partialAmountIn = formatTokenAmount(amountIn, tokenIn.metadata.decimals);
 
-// export interface EstimateSwapView {
-//   estimate: string;
-//   pool: IPool;s
-//   dy?: string;
-//   token?: FungibleTokenContract;
-// }
+  const inBalance = formatTokenAmount(
+    pool.supplies[tokenIn.contractId],
+    tokenIn.metadata.decimals,
+  );
+  const outBalance = formatTokenAmount(
+    pool.supplies[tokenOut.contractId],
+    tokenOut.metadata.decimals,
+  );
 
-// export function formatWithCommas(value: string): string {
-//   const pattern = /(-?\d+)(\d{3})/;
-//   let result = value;
-//   while (pattern.test(result)) {
-//     result = value.replace(pattern, '$1,$2');
-//   }
-//   return result;
-// }
+  const bigInBalance = Big(inBalance);
+  const bigOutBalance = Big(outBalance);
 
-// export const getLiquidity = (
-//   pool: IPool,
-//   tokenIn: FungibleTokenContract,
-//   tokenOut: FungibleTokenContract,
-// ) => {
-//   const amount1 =
-// formatTokenAmount(pool.supplies[tokenIn.contractId], tokenIn.metadata.decimals);
-//   const amount2 = formatTokenAmount(
-//     pool.supplies[tokenOut.contractId],
-//     tokenOut.metadata.decimals,
-//   );
+  const constantProduct = bigInBalance.mul(bigOutBalance);
 
-//   const lp = new Big(amount1).times(new Big(amount2));
+  const newInBalance = bigInBalance.plus(partialAmountIn);
 
-//   return Number(lp);
-// };
+  const newOutBalance = constantProduct.div(newInBalance);
 
-// export const toPrecision = (
-//   number: string,
-//   precision: number,
-//   withCommas: boolean = false,
-//   atLeastOne: boolean = true,
-// ): string => {
-//   const [whole, decimal = ''] = number.split('.');
+  const tokenOutReceived = bigOutBalance.minus(newOutBalance);
 
-//   let str = `${withCommas ? formatWithCommas(whole) : whole}.${decimal.slice(
-//     0,
-//     precision,
-//   )}`.replace(/\.$/, '');
-//   if (atLeastOne && Number(str) === 0 && str.length > 1) {
-//     const n = str.lastIndexOf('0');
-//     str = str.slice(0, n) + str.slice(n).replace('0', '1');
-//   }
+  return tokenOutReceived;
+};
 
-//   return str;
-// };
+export const calculatePriceImpact = (
+  pool: IPool,
+  tokenIn: FungibleTokenContract,
+  tokenOut: FungibleTokenContract,
+  tokenInAmount: string,
+) => {
+  const inBalance = formatTokenAmount(
+    pool.supplies[tokenIn.contractId],
+    tokenIn.metadata.decimals,
+  );
+
+  const outBalance = formatTokenAmount(
+    pool.supplies[tokenOut.contractId],
+    tokenOut.metadata.decimals,
+  );
+
+  const finalMarketPrice = Big(inBalance).minus(outBalance);
+
+  const amountReceived = calculateAmountReceived(
+    pool,
+    tokenInAmount,
+    tokenIn,
+    tokenOut,
+  );
+
+  const newMarketPrice = Big(tokenInAmount).div(amountReceived).toFixed(0);
+
+  const priceImpact = percent(
+    Big(newMarketPrice).minus(finalMarketPrice).toFixed(0),
+    newMarketPrice,
+  ).toString();
+
+  return priceImpact;
+};

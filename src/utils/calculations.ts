@@ -37,3 +37,63 @@ export const percentLess = (
   const percentDiff = Big(FULL_AMOUNT_PERCENT).minus(percent);
   return removeTrailingZeros(Big(num).div(FULL_AMOUNT_PERCENT).mul(percentDiff).toFixed(precision));
 };
+
+export const percent = (numerator: string, denominator: string) => Big(numerator)
+  .div(denominator).mul(100);
+
+export function scientificNotationToString(strParam: string) {
+  const flag = /e/.test(strParam);
+  if (!flag) return strParam;
+
+  let sysbol = true;
+  if (/e-/.test(strParam)) {
+    sysbol = false;
+  }
+
+  const negative = Number(strParam) < 0 ? '-' : '';
+
+  const index = Number((strParam).match(/\d+$/)?.[0] ?? '0');
+
+  // eslint-disable-next-line no-useless-escape
+  const basis = strParam.match(/[\d\.]+/)?.[0] ?? '0';
+
+  const ifFraction = basis.includes('.');
+
+  let wholeStr;
+  let fractionStr;
+
+  if (ifFraction) {
+    [wholeStr, fractionStr] = basis.split('.');
+  } else {
+    wholeStr = basis;
+    fractionStr = '';
+  }
+
+  if (sysbol) {
+    if (!ifFraction) {
+      return negative + wholeStr.padEnd(index + wholeStr.length, '0');
+    }
+    if (fractionStr.length <= index) {
+      return negative + wholeStr + fractionStr.padEnd(index, '0');
+    }
+    return (
+      `${negative
+            + wholeStr
+            + fractionStr.substring(0, index)
+      }.${
+        fractionStr.substring(index)}`
+    );
+  }
+  if (!ifFraction) {
+    return (
+      negative
+          + wholeStr.padStart(index + wholeStr.length, '0').replace(/^0/, '0.')
+    );
+  }
+
+  return (
+    negative
+          + wholeStr.padStart(index + wholeStr.length, '0').replace(/^0/, '0.')
+          + fractionStr
+  );
+}

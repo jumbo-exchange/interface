@@ -4,9 +4,11 @@ import SpecialWallet from 'services/wallet';
 
 export enum StatusLink { Swap = 'swap', Pool ='pool', Farm = 'farm' }
 export enum TokenType { 'Input', 'Output'}
+export enum PoolType {'SIMPLE_POOL', 'STABLE_SWAP'}
 
 export interface IPool {
   id: number;
+  type: PoolType;
   poolKind: string;
   tokenAccountIds: string[];
   amounts: string[];
@@ -23,6 +25,7 @@ export interface IPool {
   volumes?: string;
   myShares?: string;
 }
+
 export interface ITokenMetadata {
   version: string;
   name: string;

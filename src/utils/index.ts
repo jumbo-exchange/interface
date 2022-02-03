@@ -1,5 +1,5 @@
 import Big from 'big.js';
-import { IPool } from 'store';
+import { IPool, PoolType } from 'store';
 
 const ACCOUNT_TRIM_LENGTH = 8;
 
@@ -26,6 +26,7 @@ export function escapeRegExp(string: string): string {
 export function formatPool(pool: any, id: number): IPool {
   return {
     id,
+    type: pool === PoolType.STABLE_SWAP ? PoolType.STABLE_SWAP : PoolType.SIMPLE_POOL,
     poolKind: pool.pool_kind,
     tokenAccountIds: pool.token_account_ids,
     amounts: pool.amounts,
