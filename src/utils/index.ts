@@ -31,13 +31,6 @@ export function formatPool(pool: any, id: number): IPool {
     totalFee: pool.total_fee,
     sharesTotalSupply: pool.shares_total_supply,
     amp: pool.amp,
-    supplies: pool.amounts.reduce(
-      (acc: { [tokenId: string]: string }, amount: string, i: number) => {
-        acc[pool.token_account_ids[i]] = amount;
-        return acc;
-      },
-      {},
-    ),
   };
 }
 

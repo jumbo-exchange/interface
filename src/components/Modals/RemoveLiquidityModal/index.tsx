@@ -5,8 +5,10 @@ import { useModalsStore, useStore } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
 import { ButtonPrimary } from 'components/Button';
 import { useNavigate } from 'react-router-dom';
-import { formatAmount, getUpperCase } from 'utils';
-import { calculateFairShare, toNonDivisibleNumber, formatBalance } from 'utils/calculations';
+import { getUpperCase } from 'utils';
+import {
+  calculateFairShare, toNonDivisibleNumber, formatBalance, formatTokenAmount,
+} from 'utils/calculations';
 import Big from 'big.js';
 import Input from './Input';
 import {
@@ -58,17 +60,17 @@ export default function RemoveLiquidityModal() {
   const tokensData = [
     {
       token: tokenInput,
-      value: formatAmount(inputToken[1], tokenInput.metadata.decimals),
+      value: formatTokenAmount(inputToken[1], tokenInput.metadata.decimals),
     },
     {
       token: tokenOutput,
-      value: formatAmount(outputToken[1], tokenOutput.metadata.decimals),
+      value: formatTokenAmount(outputToken[1], tokenOutput.metadata.decimals),
     },
   ];
 
   const onChange = () => {
     const withdrawValueBN = new Big(withdrawValue);
-    const shareBN = new Big(formatAmount(pool?.shares ?? '', 24));
+    const shareBN = new Big(formatTokenAmount(pool?.shares ?? '', 24));
     if (Number(withdrawValue) === 0) {
       setError(true);
     }
@@ -109,7 +111,7 @@ export default function RemoveLiquidityModal() {
           </ModalBlock>
           <ModalBody>
             <Input
-              shares={formatAmount(pool?.shares ?? '', 24)}
+              shares={formatTokenAmount(pool?.shares ?? '', 24)}
               withdrawValue={withdrawValue}
               setWithdrawValue={setWithdrawValue}
             />
