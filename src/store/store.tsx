@@ -5,7 +5,9 @@ import { wallet as nearWallet } from 'services/near';
 import {
   contractMethods, IPool, StoreContextType, TokenType,
 } from 'store';
-import { formatPool, getPoolsPath } from 'utils';
+import {
+  formatPool, getPoolsPath, toArray, toMap,
+} from 'utils';
 
 import getConfig from 'services/config';
 import SpecialWallet, { createContract } from 'services/wallet';
@@ -13,7 +15,7 @@ import FungibleTokenContract from 'services/FungibleToken';
 import { PoolType } from './interfaces';
 
 const config = getConfig();
-const INITIAL_POOL_ID = 0;
+const INITIAL_POOL_ID = 8;
 export const NEAR_TOKEN_ID = 'NEAR';
 const initialState: StoreContextType = {
   loading: false,
@@ -25,7 +27,7 @@ const initialState: StoreContextType = {
   balances: {},
   setBalances: () => {},
 
-  pools: [],
+  pools: {},
   setPools: () => {},
   currentPools: [],
   setCurrentPools: () => {},
@@ -51,7 +53,7 @@ export const StoreContextProvider = (
   const [wallet, setWallet] = useState<SpecialWallet| null>(initialState.wallet);
   const [balances, setBalances] = useState<{[key:string]: string}>(initialState.balances);
 
-  const [pools, setPools] = useState<IPool[]>(initialState.pools);
+  const [pools, setPools] = useState<{[key:string]: IPool}>(initialState.pools);
   const [currentPools, setCurrentPools] = useState<IPool[]>(initialState.currentPools);
   const [tokens, setTokens] = useState<{[key: string]: FungibleTokenContract}>(initialState.tokens);
 
@@ -63,17 +65,18 @@ export const StoreContextProvider = (
   );
 
   const setCurrentToken = (tokenAddress: string, tokenType: TokenType) => {
+    const poolArray = toArray(pools);
     if (tokenType === TokenType.Output) {
       if (!inputToken) return;
       const outputTokenData = tokens[tokenAddress] ?? null;
       setOutputToken(outputTokenData);
-      const availablePools = getPoolsPath(inputToken.contractId, tokenAddress, pools);
+      const availablePools = getPoolsPath(inputToken.contractId, tokenAddress, poolArray);
       setCurrentPools(availablePools);
     } else {
       if (!outputToken) return;
       const inputTokenData = tokens[tokenAddress] ?? null;
       setInputToken(inputTokenData);
-      const availablePools = getPoolsPath(tokenAddress, outputToken.contractId, pools);
+      const availablePools = getPoolsPath(tokenAddress, outputToken.contractId, poolArray);
       setCurrentPools(availablePools);
     }
   };
@@ -122,7 +125,7 @@ export const StoreContextProvider = (
         setBalances(balancesMap);
       }
       setTokens(tokensMetadata.reduce((acc, curr) => ({ ...acc, [curr.contractId]: curr }), {}));
-      setPools(poolArray);
+      setPools(toMap(poolArray));
     } catch (e) {
       console.warn(e);
     } finally {
@@ -135,7 +138,7 @@ export const StoreContextProvider = (
   }, []);
 
   useEffect(() => {
-    if (pools.length) {
+    if (toArray(pools).length) {
       const initialPool = pools[INITIAL_POOL_ID];
       const outputTokenData = tokens[initialPool.tokenAccountIds[0]] ?? null;
       setOutputToken(outputTokenData);
@@ -145,11 +148,11 @@ export const StoreContextProvider = (
       const availablePools = getPoolsPath(
         inputTokenData.contractId,
         outputTokenData.contractId,
-        pools,
+        toArray(pools),
       );
       setCurrentPools(availablePools);
     }
-  }, [pools.length]);
+  }, [toArray(pools).length]);
 
   return (
     <StoreContextHOC.Provider value={{

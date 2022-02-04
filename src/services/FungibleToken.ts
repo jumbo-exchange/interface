@@ -171,13 +171,13 @@ export default class FungibleTokenContract {
     accountId,
     inputToken,
     amount,
-    message,
+    message = '',
   }:
   {
     accountId: string,
     inputToken: string,
     amount: string,
-    message: string,
+    message?: string,
   }): Promise<Transaction[]> {
     const transactions: Transaction[] = [];
     const checkStorage = await this.checkStorageBalance({ accountId });

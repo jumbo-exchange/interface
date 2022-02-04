@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useStore } from 'store';
 import { FilterPoolsEnum } from 'pages/Pool';
+import { toArray } from 'utils';
 import PoolCard from './PoolCard';
 
 const Wrapper = styled.div`
@@ -22,7 +23,7 @@ export default function PoolResult({ currentFilterPools }:{currentFilterPools:Fi
 
   return (
     <Wrapper>
-      {pools.map((pool) => (
+      {toArray(pools).map((pool) => (
         <PoolCard
           key={pool.id}
           pool={pool}

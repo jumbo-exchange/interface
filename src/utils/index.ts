@@ -85,3 +85,8 @@ export function getPoolsPath(
   }
   return [];
 }
+
+export const toArray = (map: {[key: string]: any}) => Object.values(map);
+export const toMap = (array: any[]) => array.reduce(
+  (acc, item) => ({ ...acc, [item.id]: item }), {},
+);

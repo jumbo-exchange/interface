@@ -44,8 +44,8 @@ export type StoreContextType = {
   balances: {[key: string]: string};
   setBalances: Dispatch<SetStateAction<{[key: string]: string}>>;
 
-  pools: IPool[];
-  setPools: Dispatch<SetStateAction<IPool[]>>;
+  pools: {[key:string]: IPool};
+  setPools: Dispatch<SetStateAction<{[key:string]: IPool}>>;
   currentPools: IPool[];
   setCurrentPools: (pools: IPool[]) => void;
   tokens: {[key: string]: FungibleTokenContract};

@@ -73,6 +73,20 @@ export default class PoolContract {
     const transactions: Transaction[] = [];
     const storageAmount = await this.checkStorage();
     const [inputToken, outputToken] = tokenAmounts;
+    const [firstTokenName, secondTokenName] = pool.tokenAccountIds;
+    const firstToken = tokenAmounts.find((el) => el.token.contractId === firstTokenName);
+    const secondToken = tokenAmounts.find((el) => el.token.contractId === secondTokenName);
+    if (!firstToken || !secondToken) return;
+
+    const tokenInAmount = toNonDivisibleNumber(
+      firstToken.token.metadata.decimals,
+      firstToken.amount,
+    );
+
+    const tokenOutAmount = toNonDivisibleNumber(
+      secondToken.token.metadata.decimals,
+      secondToken.amount,
+    );
     if (storageAmount) {
       transactions.push({
         receiverId: this.contractId,
@@ -83,28 +97,24 @@ export default class PoolContract {
         }],
       });
     }
-    const isInputTokenStorage = await inputToken.token.contract.checkStorageBalance(
-      { accountId: this.contractId },
+    const isInputTokenStorage = await inputToken.token.contract.transfer(
+      {
+        accountId: this.contractId,
+        inputToken: inputToken.token.contractId,
+        amount: tokenInAmount,
+      },
     );
-    if (isInputTokenStorage.length) transactions.push(isInputTokenStorage);
+    if (isInputTokenStorage.length) transactions.push(...isInputTokenStorage);
 
-    const isOutputTokenStorage = await outputToken.token.contract.checkStorageBalance(
-      { accountId: this.contractId },
+    const isOutputTokenStorage = await outputToken.token.contract.transfer(
+      {
+        accountId: this.contractId,
+        inputToken: outputToken.token.contractId,
+        amount: tokenOutAmount,
+      },
     );
-    if (isOutputTokenStorage.length) transactions.push(isOutputTokenStorage);
+    if (isOutputTokenStorage.length) transactions.push(...isOutputTokenStorage);
 
-    const [firstTokenName, secondTokenName] = pool.tokenAccountIds;
-    const firstToken = tokenAmounts.find((el) => el.token.contractId === firstTokenName);
-    const secondToken = tokenAmounts.find((el) => el.token.contractId === secondTokenName);
-    if (!firstToken || !secondToken) return;
-    const tokenInAmount = toNonDivisibleNumber(
-      firstToken.token.metadata.decimals,
-      firstToken.amount,
-    );
-    const tokenOutAmount = toNonDivisibleNumber(
-      secondToken.token.metadata.decimals,
-      secondToken.amount,
-    );
     transactions.push({
       receiverId: this.contractId,
       functionCalls: [{
@@ -120,7 +130,7 @@ export default class PoolContract {
   async checkStorageState(accountId = wallet.getAccountId()) {
     // @ts-expect-error: Property 'get_user_storage_state' does not exist on type 'Contract'.
     const storage = await this.contract.get_user_storage_state({ account_id: accountId });
-    return new Big(storage?.deposit).lte(new Big(storage?.usage));
+    return storage ? new Big(storage?.deposit).lte(new Big(storage?.usage)) : false;
   }
 
   async currentStorageBalance(accountId = wallet.getAccountId()) {
