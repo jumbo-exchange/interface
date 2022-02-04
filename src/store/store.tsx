@@ -10,6 +10,7 @@ import { formatPool, getPoolsPath } from 'utils';
 import getConfig from 'services/config';
 import SpecialWallet, { createContract } from 'services/wallet';
 import FungibleTokenContract from 'services/FungibleToken';
+import { PoolType } from './interfaces';
 
 const config = getConfig();
 const INITIAL_POOL_ID = 0;
@@ -90,7 +91,12 @@ export const StoreContextProvider = (
         NEAR_TOKEN_ID,
       ];
 
-      const poolArray = poolsResult.map((pool: any, index: number) => formatPool(pool, index));
+      const poolArray = poolsResult
+        .map((pool: any, index: number) => formatPool(pool, index))
+        .filter((pool: IPool) => pool.type === PoolType.SIMPLE_POOL);
+        // WILL BE OPENED AS SOON AS STABLE SWAP WILL BE AVAILABLE
+        // || (pool.type === PoolType.STABLE_SWAP && pool.id === config.stablePoolId)
+
       const tokensMetadata: any[] = await Promise.all(
         tokenAddresses.map(async (address: string) => {
           const ftTokenContract: FungibleTokenContract = new FungibleTokenContract(

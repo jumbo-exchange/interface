@@ -15,6 +15,7 @@ import FungibleTokenContract from 'services/FungibleToken';
 import getConfig from 'services/config';
 import Big from 'big.js';
 
+import { calculatePriceImpact } from 'services/swap';
 import Input from './SwapInput';
 import SwapSettings from './SwapSettings';
 import {
@@ -100,7 +101,9 @@ export default function Swap() {
   const minAmountOut = outputTokenValue
     ? percentLess(slippageTolerance, outputTokenValue)
     : '';
-
+  const priceImpact = calculatePriceImpact(
+    currentPools, inputToken, outputToken, inputTokenValue, tokens,
+  );
   const openModal = useCallback(
     (tokenType: TokenType) => {
       setSearchModalOpen({ isOpen: true, tokenType });
@@ -295,7 +298,7 @@ export default function Swap() {
             </RowInfo>
             <RowInfo>
               <TitleInfo>Price Impact<LogoInfo /></TitleInfo>
-              <LabelInfo isColor>0.02%</LabelInfo>
+              <LabelInfo isColor>{priceImpact}</LabelInfo>
             </RowInfo>
             <RowInfo>
               <TitleInfo>Liquidity Provider Fee<LogoInfo /></TitleInfo>

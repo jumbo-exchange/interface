@@ -26,8 +26,7 @@ export function escapeRegExp(string: string): string {
 export function formatPool(pool: any, id: number): IPool {
   return {
     id,
-    type: pool === PoolType.STABLE_SWAP ? PoolType.STABLE_SWAP : PoolType.SIMPLE_POOL,
-    poolKind: pool.pool_kind,
+    type: pool.pool_kind === PoolType.STABLE_SWAP ? PoolType.STABLE_SWAP : PoolType.SIMPLE_POOL,
     tokenAccountIds: pool.token_account_ids,
     amounts: pool.amounts,
     supplies: pool.amounts.reduce(

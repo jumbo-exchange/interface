@@ -9,7 +9,7 @@ import sendTransactions, { wallet } from './near';
 import { createContract, Transaction } from './wallet';
 import getConfig from './config';
 
-enum SWAP_ENUM { DIRECT_SWAP = 1, INDIRECT_SWAP = 2 }
+export enum SWAP_ENUM { DIRECT_SWAP = 1, INDIRECT_SWAP = 2 }
 const basicViewMethods = ['get_return'];
 const basicChangeMethods = ['swap'];
 const config = getConfig();

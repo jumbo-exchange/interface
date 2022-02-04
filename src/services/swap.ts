@@ -1,7 +1,28 @@
 import Big from 'big.js';
-import { IPool } from 'store';
-import { formatTokenAmount, percent } from 'utils/calculations';
+import { IPool, PoolType } from 'store';
+import { formatTokenAmount, percent, scientificNotationToString } from 'utils/calculations';
 import FungibleTokenContract from './FungibleToken';
+import { SWAP_ENUM } from './SwapContract';
+
+export const calculateMarketPrice = (
+  pool: IPool,
+  tokenIn: FungibleTokenContract,
+  tokenOut: FungibleTokenContract,
+) => {
+  if (pool.type === PoolType.STABLE_SWAP) {
+    return '1';
+  }
+  const tokenInBalance = formatTokenAmount(
+    pool.supplies[tokenIn.contractId],
+    tokenIn.metadata.decimals,
+  );
+
+  const tokenOutBalance = formatTokenAmount(
+    pool.supplies[tokenOut.contractId],
+    tokenOut.metadata.decimals,
+  );
+  return Big(tokenInBalance).div(tokenOutBalance).toFixed();
+};
 
 export const calculateAmountReceived = (
   pool: IPool,
@@ -9,7 +30,7 @@ export const calculateAmountReceived = (
   tokenIn: FungibleTokenContract,
   tokenOut: FungibleTokenContract,
 ) => {
-  const partialAmountIn = formatTokenAmount(amountIn, tokenIn.metadata.decimals);
+  const partialAmountIn = amountIn;
 
   const inBalance = formatTokenAmount(
     pool.supplies[tokenIn.contractId],
@@ -19,7 +40,6 @@ export const calculateAmountReceived = (
     pool.supplies[tokenOut.contractId],
     tokenOut.metadata.decimals,
   );
-
   const bigInBalance = Big(inBalance);
   const bigOutBalance = Big(outBalance);
 
@@ -35,36 +55,54 @@ export const calculateAmountReceived = (
 };
 
 export const calculatePriceImpact = (
-  pool: IPool,
-  tokenIn: FungibleTokenContract,
-  tokenOut: FungibleTokenContract,
+  pools: IPool[],
+  tokenIn: FungibleTokenContract | null,
+  tokenOut: FungibleTokenContract | null,
   tokenInAmount: string,
+  tokens: {[key: string]: FungibleTokenContract},
 ) => {
-  const inBalance = formatTokenAmount(
-    pool.supplies[tokenIn.contractId],
-    tokenIn.metadata.decimals,
-  );
+  if (!tokenIn || !tokenOut || !tokenInAmount || !pools.length) return '0';
+  if (Big(tokenInAmount).lte(0)) return '0';
+  let generalMarketPrice = new Big(0);
 
-  const outBalance = formatTokenAmount(
-    pool.supplies[tokenOut.contractId],
-    tokenOut.metadata.decimals,
-  );
+  let tokenOutReceived = new Big(0);
+  if (pools.length === SWAP_ENUM.DIRECT_SWAP) {
+    const [currentPool] = pools;
+    const marketPrice = calculateMarketPrice(currentPool, tokenIn, tokenOut);
 
-  const finalMarketPrice = Big(inBalance).minus(outBalance);
+    generalMarketPrice = generalMarketPrice.add(marketPrice);
+    tokenOutReceived = calculateAmountReceived(
+      currentPool,
+      tokenInAmount,
+      tokenIn,
+      tokenOut,
+    );
+  } else {
+    const [firstPool, secondPool] = pools;
+    const tokenMidId = firstPool.tokenAccountIds.find((token) => token !== tokenIn.contractId);
+    const tokenMid = tokens[tokenMidId as string];
+    const firstPoolMarketPrice = calculateMarketPrice(firstPool, tokenIn, tokenMid);
+    const secondPoolMarketPrice = calculateMarketPrice(secondPool, tokenMid, tokenOut);
+    generalMarketPrice = Big(firstPoolMarketPrice).mul(secondPoolMarketPrice);
 
-  const amountReceived = calculateAmountReceived(
-    pool,
-    tokenInAmount,
-    tokenIn,
-    tokenOut,
-  );
+    const tokenMidReceived = calculateAmountReceived(
+      firstPool,
+      formatTokenAmount(tokenInAmount, tokenIn.metadata.decimals),
+      tokenIn,
+      tokenMid,
+    );
+    tokenOutReceived = calculateAmountReceived(
+      secondPool,
+      formatTokenAmount(tokenMidReceived.toFixed(0), tokenMid.metadata.decimals),
+      tokenMid,
+      tokenOut,
+    );
+  }
+  const newMarketPrice = new Big(tokenInAmount).div(tokenOutReceived).toFixed();
 
-  const newMarketPrice = Big(tokenInAmount).div(amountReceived).toFixed(0);
-
-  const priceImpact = percent(
-    Big(newMarketPrice).minus(finalMarketPrice).toFixed(0),
+  const PriceImpact = percent(
+    new Big(newMarketPrice).minus(generalMarketPrice).toFixed(),
     newMarketPrice,
   ).toString();
-
-  return priceImpact;
+  return scientificNotationToString(PriceImpact);
 };
