@@ -10,6 +10,7 @@ import { formatPool, getPoolsPath } from 'utils';
 import getConfig from 'services/config';
 import SpecialWallet, { createContract } from 'services/wallet';
 import FungibleTokenContract from 'services/FungibleToken';
+import PoolContract from 'services/PoolContract';
 
 const config = getConfig();
 const INITIAL_POOL_ID = 0;
@@ -44,6 +45,7 @@ export const StoreContextProvider = (
   { children }:{ children: JSX.Element },
 ) => {
   const contract: any = createContract(nearWallet, config.contractId, contractMethods);
+  const poolContract = new PoolContract();
 
   const [loading, setLoading] = useState<boolean>(initialState.loading);
 
@@ -86,6 +88,16 @@ export const StoreContextProvider = (
       const tokenAddresses = poolsResult.flatMap((pool: any) => pool.token_account_ids);
       const poolArray = poolsResult.map((pool:any, index:number) => formatPool(pool, index));
 
+      const newPoolArray = await Promise.all(poolArray.map(async (pool: IPool) => {
+        const volumes = await poolContract.getPoolVolumes(pool);
+        const shares = await poolContract.getSharesInPool(pool.id);
+        return {
+          ...pool,
+          volumes,
+          shares,
+        };
+      }));
+
       const tokensMetadata: any[] = await Promise.all(
         tokenAddresses.map(async (address: string) => {
           const ftTokenContract: FungibleTokenContract = new FungibleTokenContract(
@@ -111,7 +123,8 @@ export const StoreContextProvider = (
         setBalances(balancesMap);
       }
       setTokens(tokensMetadata.reduce((acc, curr) => ({ ...acc, [curr.contractId]: curr }), {}));
-      setPools(poolArray);
+
+      setPools(newPoolArray);
     } catch (e) {
       console.warn(e);
     } finally {

@@ -7,6 +7,7 @@ import {
   ONE_MORE_DEPOSIT_AMOUNT,
   LP_STORAGE_AMOUNT,
   STORAGE_PER_TOKEN,
+  ONE_YOCTO_NEAR,
 } from 'utils/constants';
 import { toNonDivisibleNumber } from 'utils/calculations';
 import { IPool } from 'store';
@@ -15,13 +16,30 @@ import { createContract, Transaction } from './wallet';
 import getConfig from './config';
 import FungibleTokenContract from './FungibleToken';
 
-const basicViewMethods = ['get_return', 'get_user_storage_state', 'storage_balance_of'];
-const basicChangeMethods = ['swap', 'storage_deposit', 'add_liquidity'];
+const basicViewMethods = [
+  'get_return',
+  'get_user_storage_state',
+  'storage_balance_of',
+  'get_pool_shares',
+  'get_pool_volumes',
+  'get_deposits',
+];
+const basicChangeMethods = [
+  'swap',
+  'storage_deposit',
+  'add_liquidity',
+  'remove_liquidity',
+  'withdraw',
+];
 const config = getConfig();
 const CREATE_POOL_NEAR_AMOUNT = '0.05';
 const CONTRACT_ID = config.contractId;
 
-interface LiquidityToken {
+interface IPoolVolumes {
+  [tokenId: string]: { input: string; output: string };
+}
+
+interface ILiquidityToken {
   token: FungibleTokenContract;
   amount: string
 }
@@ -66,7 +84,7 @@ export default class PoolContract {
       pool,
     }:
     {
-      tokenAmounts: LiquidityToken[],
+      tokenAmounts: ILiquidityToken[],
       pool: IPool,
     },
   ) {
@@ -147,4 +165,124 @@ export default class PoolContract {
 
     return storageNeeded.toString();
   }
+
+  async removeLiquidity(
+    {
+      pool,
+      shares,
+      minAmount,
+    }:
+    {
+      pool: IPool,
+      shares: string | undefined;
+      minAmount: { [tokenId: string]: string; };
+    },
+  ) {
+    const transactions: Transaction[] = [];
+    const storageAmount = await this.checkStorage();
+
+    if (storageAmount) {
+      transactions.push({
+        receiverId: this.contractId,
+        functionCalls: [{
+          methodName: 'storage_deposit',
+          args: { registration_only: false },
+          amount: storageAmount,
+        }],
+      });
+    }
+
+    const amounts = pool.tokenAccountIds.map((tokenId) => Big(minAmount[tokenId]).toFixed(0));
+
+    transactions.push({
+      receiverId: this.contractId,
+      functionCalls: [{
+        methodName: 'remove_liquidity',
+        args: { pool_id: pool.id, shares, min_amounts: amounts },
+        amount: ONE_YOCTO_NEAR,
+      }],
+    });
+
+    pool.tokenAccountIds.map((tokenId) => transactions.push({
+      receiverId: this.contractId,
+      functionCalls: [
+        {
+          methodName: 'withdraw',
+          args: { token_id: tokenId, amount: minAmount[tokenId] },
+          gas: '100000000000000',
+          amount: ONE_YOCTO_NEAR,
+        },
+      ],
+    }));
+
+    sendTransactions(transactions, this.walletInstance);
+  }
+
+  async getPoolVolumes(pool: IPool) {
+    // @ts-expect-error: Property 'get_pool_volumes' does not exist on type 'Contract'.
+    const volumes = this.contract.get_pool_volumes(
+      { pool_id: pool.id },
+    );
+
+    const sumValues = pool.tokenAccountIds.reduce((acc: IPoolVolumes, tokenId, i) => {
+      acc[tokenId] = volumes[i];
+      return acc;
+    }, {});
+    return sumValues;
+  }
+
+  async getSharesInPool(poolId: any, accountId = wallet.getAccountId()) {
+    // @ts-expect-error: Property 'get_pool_shares' does not exist on type 'Contract'.
+    return this.contract.get_pool_shares(
+      { pool_id: poolId, account_id: accountId },
+    );
+  }
 }
+
+// export const withdraw = async ({
+//   token,
+//   amount,
+//   unregister = false,
+// }: WithdrawOptions) => {
+//   if (token.id === WRAP_NEAR_CONTRACT_ID) {
+//     return unwrapNear(amount);
+//   }
+
+//   const transactions: Transaction[] = [];
+//   const parsedAmount = toNonDivisibleNumber(token.decimals, amount);
+//   const ftBalance = await ftGetStorageBalance(token.id);
+
+//   transactions.unshift({
+//     receiverId: REF_FI_CONTRACT_ID,
+//     functionCalls: [
+//       {
+//         methodName: 'withdraw',
+//         args: { token_id: token.id, amount: parsedAmount, unregister },
+//         gas: '100000000000000',
+//         amount: ONE_YOCTO_NEAR,
+//       },
+//     ],
+//   });
+
+//   if (ftBalance === null) {
+//     transactions.unshift({
+//       receiverId: token.id,
+//       functionCalls: [
+//         storageDepositAction({
+//           registrationOnly: true,
+//           amount: STORAGE_TO_REGISTER_WITH_FT,
+//         }),
+//       ],
+//     });
+//   }
+
+//   const neededStorage = await checkTokenNeedsStorageDeposit();
+//   if (neededStorage) {
+//     transactions.unshift({
+//       receiverId: REF_FI_CONTRACT_ID,
+//       functionCalls: [storageDepositAction({ amount: neededStorage })],
+//     });
+//   }
+
+//   return executeMultipleTransactions(transactions);
+// };

@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import tokenLogo from 'assets/images-app/placeholder-token.svg';
+import PoolContract from 'services/PoolContract';
 import { useModalsStore, useStore } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
-import tokenLogo from 'assets/images-app/placeholder-token.svg';
 import { ButtonPrimary } from 'components/Button';
 import { useNavigate } from 'react-router-dom';
-import { getUpperCase } from 'utils';
+import { formatAmount, getUpperCase } from 'utils';
+import { calculateFairShare, toNonDivisibleNumber, formatBalance } from 'utils/calculations';
+import Big from 'big.js';
 import Input from './Input';
 import {
   Layout, ModalBlock, ModalIcon,
@@ -20,32 +23,69 @@ import {
   TokenValueBlock,
 } from './styles';
 
-export default function AddLiquidityModal() {
+export default function RemoveLiquidityModal() {
   const {
     tokens,
   } = useStore();
 
   const navigate = useNavigate();
   const { removeLiquidityModalOpenState, setRemoveLiquidityModalOpenState } = useModalsStore();
-  const [withdrawValue, setWithdrawValue] = useState<string>('');
+  const { pool } = removeLiquidityModalOpenState;
 
-  if (!removeLiquidityModalOpenState.pool) return null;
-  const [tokenInputName, tokenOutputName] = removeLiquidityModalOpenState.pool.tokenAccountIds;
+  const [withdrawValue, setWithdrawValue] = useState<string>('');
+  const [error, setError] = useState<boolean>(false);
+
+  if (!pool) return null;
+  const [tokenInputName, tokenOutputName] = pool.tokenAccountIds;
 
   const tokenInput = tokens[tokenInputName] ?? null;
   const tokenOutput = tokens[tokenOutputName] ?? null;
   if (!tokenInput || !tokenOutput) return null;
+  const CheckTotalSupply = pool?.sharesTotalSupply === '0' ? '1' : pool?.sharesTotalSupply;
 
+  const minAmount = Object.entries(pool.supplies).reduce<{
+    [tokenId: string]: string;
+  }>((acc, [tokenId, totalSupply]) => {
+    acc[tokenId] = calculateFairShare(
+      totalSupply,
+      withdrawValue ? toNonDivisibleNumber(24, withdrawValue) : '0',
+      CheckTotalSupply,
+    );
+    return acc;
+  }, {});
+
+  const [inputToken, outputToken] = Object.entries(minAmount).map((el) => el);
   const tokensData = [
     {
       token: tokenInput,
-      value: 0.3235,
+      value: formatAmount(inputToken[1], tokenInput.metadata.decimals),
     },
     {
       token: tokenOutput,
-      value: 0.14351,
+      value: formatAmount(outputToken[1], tokenOutput.metadata.decimals),
     },
   ];
+
+  const onChange = () => {
+    const withdrawValueBN = new Big(withdrawValue);
+    const shareBN = new Big(formatAmount(pool?.shares ?? '', 24));
+    if (Number(withdrawValue) === 0) {
+      setError(true);
+    }
+    if (withdrawValueBN.gt(shareBN)) {
+      setError(true);
+    }
+    if (!error) {
+      const contract = new PoolContract();
+      if (!tokenInput || !tokenOutput || !removeLiquidityModalOpenState.pool) return;
+      contract.removeLiquidity({
+        pool,
+        shares: withdrawValue,
+        minAmount,
+      });
+    }
+  };
+  console.log('pool', pool);
 
   return (
     <>
@@ -70,6 +110,7 @@ export default function AddLiquidityModal() {
           </ModalBlock>
           <ModalBody>
             <Input
+              shares={formatAmount(pool?.shares ?? '', 24)}
               withdrawValue={withdrawValue}
               setWithdrawValue={setWithdrawValue}
             />
@@ -86,7 +127,7 @@ export default function AddLiquidityModal() {
                     />
                   </TokenLogo>
                   <TokenValueBlock>
-                    <p>{value}</p>
+                    <p>{formatBalance(value)}</p>
                     &nbsp;
                     <p>{getUpperCase(token?.metadata.symbol ?? '')}</p>
                   </TokenValueBlock>
@@ -94,7 +135,7 @@ export default function AddLiquidityModal() {
               ))}
             </WithdrawTokenBlock>
             <ButtonPrimary
-              onClick={() => console.log('Withdraw')}
+              onClick={onChange}
             >
               Withdraw
             </ButtonPrimary>

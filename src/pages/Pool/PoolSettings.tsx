@@ -24,6 +24,7 @@ const SearchInputBlock = styled.div`
   box-sizing: border-box;
   border-radius: 12px;
   padding: 9px 9px;
+  max-width: 180px;
   & > svg {
     margin-right: .75rem;
     align-self: center;

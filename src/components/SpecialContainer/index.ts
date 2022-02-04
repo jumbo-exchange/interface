@@ -7,7 +7,8 @@ export const SpecialContainer = styled.div`
 
   max-width: 100%;
   min-width: 310px;
-  height: fit-content;
+  /* height: fit-content; */
+  min-height: 100px;
 
   display: flex;
   flex-direction: column;

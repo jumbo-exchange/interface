@@ -12,16 +12,13 @@ export interface IPool {
   amounts: string[];
   totalFee: number;
   sharesTotalSupply: string;
-  poolFee?: string;
-  poolVolumes?: string;
-  poolSharePrice?: string;
-  poolShares?: string;
-  poolTotalShares?: string;
   amp: string;
+  supplies: { [key: string]: string };
 
-  volumes?: string;
-  myShares?: string;
+  shares?: string;
+  volumes?: { [key: string]: string };
 }
+
 export interface ITokenMetadata {
   version: string;
   name: string;

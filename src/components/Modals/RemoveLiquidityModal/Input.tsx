@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import CurrencyInputPanel from 'components/CurrencyInputPanel';
 import { getUpperCase } from 'utils';
+import { formatBalance } from 'utils/calculations';
 
 const Block = styled.div`
   display: flex;
@@ -109,10 +110,12 @@ const TokenContainer = styled.div`
 `;
 
 export default function Input({
+  shares,
   withdrawValue,
   setWithdrawValue,
 }:
 {
+  shares: string,
   withdrawValue: string,
   setWithdrawValue: React.Dispatch<React.SetStateAction<string>>,
 }) {
@@ -121,7 +124,7 @@ export default function Input({
       <InputLabel>
         <TotalShares>
           Shares: &nbsp;
-          <span>0.14</span>
+          <span>{formatBalance(shares)}</span>
         </TotalShares>
 
         <ButtonHalfWallet onClick={() => console.log('HALF')}>
