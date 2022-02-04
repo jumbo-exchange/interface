@@ -61,7 +61,6 @@ export default function Pool() {
   const { id } = useParams<'id'>();
 
   useEffect(() => {
-    console.log(pools, id);
     if (id && pools[Number(id)]) {
       const pool = pools[Number(id)];
       setAddLiquidityModalOpenState({ isOpen: true, pool });

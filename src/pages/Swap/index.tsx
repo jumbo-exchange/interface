@@ -72,6 +72,18 @@ const RenderButton = ({
   );
 };
 
+const checkInvalidAmount = (
+  balances:{[key:string]: string},
+  token: FungibleTokenContract | null,
+  amount: string,
+) => {
+  if (amount === '') return true;
+  if (!token) return false;
+  const balance = token ? balances[token.contractId] : 0;
+  return Big(amount)
+    .gt(formatTokenAmount(balance.toString(), token.metadata.decimals, 0));
+};
+
 export default function Swap() {
   const {
     inputToken,
@@ -225,6 +237,9 @@ export default function Swap() {
     && (inputToken.contractId === config.nearAddress && outputToken.contractId === NEAR_TOKEN_ID);
   const isUnwrap = inputToken && outputToken
     && (outputToken.contractId === config.nearAddress && inputToken.contractId === NEAR_TOKEN_ID);
+  const invalidInput = checkInvalidAmount(balances, inputToken, inputTokenValue);
+  const invalidOutput = checkInvalidAmount(balances, outputToken, outputTokenValue);
+  const invalidAmounts = invalidInput || invalidOutput;
 
   return (
     <Container>
@@ -280,42 +295,45 @@ export default function Swap() {
         </SettingsHeader>
       </SettingsBlock>
       {
-        currentPools.length && outputTokenValue && Big(outputTokenValue ?? 0).gt(0) ? (
-          <SwapInformation>
-            <RouteBlock>
-              <TitleInfo>Route <LogoInfo /></TitleInfo>
-              <div>
-                {inputToken?.metadata.symbol}
-                {' '}
-                {intersectionToken ? `> ${intersectionToken}` : null }
-                {'> '}
-                {outputToken?.metadata.symbol}
-              </div>
-            </RouteBlock>
-            <RowInfo>
-              <TitleInfo>Minimum Received<LogoInfo /></TitleInfo>
-              <LabelInfo>{minAmountOut} {outputToken?.metadata.symbol}</LabelInfo>
-            </RowInfo>
-            <RowInfo>
-              <TitleInfo>Price Impact<LogoInfo /></TitleInfo>
-              <LabelInfo isColor>{priceImpact}</LabelInfo>
-            </RowInfo>
-            <RowInfo>
-              <TitleInfo>Liquidity Provider Fee<LogoInfo /></TitleInfo>
-              <LabelInfo>{averageFee}%</LabelInfo>
-            </RowInfo>
-            <RowInfo>
-              <TitleInfo>Slippage Tolerance<LogoInfo /></TitleInfo>
-              <LabelInfo>{slippageTolerance}%</LabelInfo>
-            </RowInfo>
-          </SwapInformation>
-        ) : null
+        currentPools.length
+        && outputTokenValue && Big(outputTokenValue ?? 0).gt(0)
+        && inputTokenValue && Big(inputTokenValue ?? 0).gt(0)
+          ? (
+            <SwapInformation>
+              <RouteBlock>
+                <TitleInfo>Route <LogoInfo /></TitleInfo>
+                <div>
+                  {inputToken?.metadata.symbol}
+                  {' '}
+                  {intersectionToken ? `> ${intersectionToken}` : null }
+                  {'> '}
+                  {outputToken?.metadata.symbol}
+                </div>
+              </RouteBlock>
+              <RowInfo>
+                <TitleInfo>Minimum Received<LogoInfo /></TitleInfo>
+                <LabelInfo>{minAmountOut} {outputToken?.metadata.symbol}</LabelInfo>
+              </RowInfo>
+              <RowInfo>
+                <TitleInfo>Price Impact<LogoInfo /></TitleInfo>
+                <LabelInfo isColor>{priceImpact}</LabelInfo>
+              </RowInfo>
+              <RowInfo>
+                <TitleInfo>Liquidity Provider Fee<LogoInfo /></TitleInfo>
+                <LabelInfo>{averageFee}%</LabelInfo>
+              </RowInfo>
+              <RowInfo>
+                <TitleInfo>Slippage Tolerance<LogoInfo /></TitleInfo>
+                <LabelInfo>{slippageTolerance}%</LabelInfo>
+              </RowInfo>
+            </SwapInformation>
+          ) : null
       }
       <RenderButton
         isConnected={isConnected}
         swapToken={swapToken}
         setAccountModalOpen={setAccountModalOpen}
-        disabled={!canSwap && !isWrap && !isUnwrap}
+        disabled={(!canSwap && !isWrap && !isUnwrap) || invalidAmounts}
       />
     </Container>
   );
