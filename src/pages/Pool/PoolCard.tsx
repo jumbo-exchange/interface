@@ -6,6 +6,7 @@ import { SpecialContainer } from 'components/SpecialContainer';
 import Tooltip from 'components/Tooltip';
 import { isMobile } from 'utils/userAgent';
 import { useNavigate } from 'react-router-dom';
+import Big from 'big.js';
 
 interface IColor {
   isColor?: boolean
@@ -248,6 +249,8 @@ export default function PoolCard({ pool } : { pool:IPool }) {
     console.log('Claim');
   };
 
+  const canWithdraw = pool.shares === '0' || pool.shares === undefined || Big(pool.shares) === Big('0');
+
   return (
     <Wrapper>
       <UpperRow>
@@ -282,6 +285,7 @@ export default function PoolCard({ pool } : { pool:IPool }) {
         </BlockVolume>
         <RenderClaimButton show={isMobile} getClaim={getClaim} />
         <BlockButton>
+          {!canWithdraw && (
           <BtnSecondary
             onClick={() => {
               navigate(`/app/pool/remove-liquidity/${pool.id}`);
@@ -289,6 +293,8 @@ export default function PoolCard({ pool } : { pool:IPool }) {
           >
             Withdraw
           </BtnSecondary>
+          )}
+
           <BtnPrimary
             onClick={() => {
               navigate(`/app/pool/add-liquidity/${pool.id}`);

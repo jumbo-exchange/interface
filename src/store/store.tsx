@@ -87,16 +87,7 @@ export const StoreContextProvider = (
       const poolsResult = await contract.get_pools({ from_index: 0, limit: 100 });
       const tokenAddresses = poolsResult.flatMap((pool: any) => pool.token_account_ids);
       const poolArray = poolsResult.map((pool:any, index:number) => formatPool(pool, index));
-
-      const newPoolArray = await Promise.all(poolArray.map(async (pool: IPool) => {
-        const volumes = await poolContract.getPoolVolumes(pool);
-        const shares = await poolContract.getSharesInPool(pool.id);
-        return {
-          ...pool,
-          volumes,
-          shares,
-        };
-      }));
+      let newPoolArray = poolArray;
 
       const tokensMetadata: any[] = await Promise.all(
         tokenAddresses.map(async (address: string) => {
@@ -121,6 +112,15 @@ export const StoreContextProvider = (
           { ...acc, [curr.contractId]: curr.balance }
         ), {});
         setBalances(balancesMap);
+        newPoolArray = await Promise.all(poolArray.map(async (pool: IPool) => {
+          const volumes = await poolContract.getPoolVolumes(pool);
+          const shares = await poolContract.getSharesInPool(pool.id);
+          return {
+            ...pool,
+            volumes,
+            shares,
+          };
+        }));
       }
       setTokens(tokensMetadata.reduce((acc, curr) => ({ ...acc, [curr.contractId]: curr }), {}));
 

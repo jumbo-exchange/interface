@@ -85,7 +85,6 @@ export default function RemoveLiquidityModal() {
       });
     }
   };
-  console.log('pool', pool);
 
   return (
     <>
