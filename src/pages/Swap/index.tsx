@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { ButtonPrimary, ButtonSecondary } from 'components/Button';
 import { wallet } from 'services/near';
-import { getUpperCase } from 'utils';
+import { getUpperCase, toArray } from 'utils';
 import {
   useStore, useModalsStore, TokenType, NEAR_TOKEN_ID,
 } from 'store';
@@ -73,15 +73,15 @@ const RenderButton = ({
 };
 
 const checkInvalidAmount = (
-  balances:{[key:string]: string},
+  balances: {[key:string]: string},
   token: FungibleTokenContract | null,
   amount: string,
 ) => {
   if (amount === '') return true;
-  if (!token) return false;
-  const balance = token ? balances[token.contractId] : 0;
+  if (!token || !toArray(balances).length) return false;
+  const balance = token ? balances[token.contractId] : '0';
   return Big(amount)
-    .gt(formatTokenAmount(balance.toString(), token.metadata.decimals, 0));
+    .gt(formatTokenAmount(balance, token.metadata.decimals, 0));
 };
 
 export default function Swap() {
