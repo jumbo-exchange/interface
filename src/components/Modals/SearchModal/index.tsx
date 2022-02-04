@@ -161,7 +161,7 @@ export default function SearchModal() {
           <SearchModalContainer onClick={(e) => e.stopPropagation()}>
             <ModalBlock>
               <ModalTitle>
-                Select a token
+                Select Token
               </ModalTitle>
               <ModalIcon onClick={() => setSearchModalOpen(initialModalsState.isSearchModalOpen)}>
                 <CloseIcon />

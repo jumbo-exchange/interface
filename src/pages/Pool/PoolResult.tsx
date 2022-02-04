@@ -17,9 +17,6 @@ export default function PoolResult({ currentFilterPools }:{currentFilterPools:Fi
   if (currentFilterPools === FilterPoolsEnum['Your Liquidity']) {
     return null;
   }
-  if (currentFilterPools === FilterPoolsEnum.Farming) {
-    return null;
-  }
 
   return (
     <Wrapper>

@@ -7,14 +7,6 @@ export const trimAccountId = (isMobile: boolean, accountId: string) => (isMobile
   ? `${accountId.slice(0, ACCOUNT_TRIM_LENGTH)}...` : accountId
 );
 
-export const formatBalance = (value:string):string => {
-  if (!value || value === '0') return '0';
-  const formattedValue = new Big(value);
-
-  if (formattedValue.lte('0.00001')) return '>0.00001';
-  return formattedValue.toFixed(5);
-};
-
 export const getUpperCase = (value:string) => value.toUpperCase();
 
 export const inputRegex = RegExp('^\\d*(?:\\\\[.])?\\d*$'); // match escaped "." characters via in a non-capturing group
@@ -39,6 +31,13 @@ export function formatPool(pool: any, id: number): IPool {
     totalFee: pool.total_fee,
     sharesTotalSupply: pool.shares_total_supply,
     amp: pool.amp,
+    supplies: pool.amounts.reduce(
+      (acc: { [tokenId: string]: string }, amount: string, i: number) => {
+        acc[pool.token_account_ids[i]] = amount;
+        return acc;
+      },
+      {},
+    ),
   };
 }
 

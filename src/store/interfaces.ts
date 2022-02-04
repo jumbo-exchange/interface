@@ -21,8 +21,8 @@ export interface IPool {
   supplies: { [key: string]: string };
   amp: string;
 
-  volumes?: string;
-  myShares?: string;
+  shares?: string;
+  volumes?: { [key: string]: string };
 }
 
 export interface ITokenMetadata {

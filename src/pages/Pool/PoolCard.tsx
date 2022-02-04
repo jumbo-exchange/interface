@@ -6,6 +6,7 @@ import { SpecialContainer } from 'components/SpecialContainer';
 import Tooltip from 'components/Tooltip';
 import { isMobile } from 'utils/userAgent';
 import { useNavigate } from 'react-router-dom';
+import Big from 'big.js';
 
 interface IColor {
   isColor?: boolean
@@ -98,7 +99,7 @@ const LabelPool = styled.div`
   }
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     width: 100%;
-    justify-content: space-between;
+    justify-content: flex-end;
     p {
       flex: 1;
       text-align: left;
@@ -244,13 +245,11 @@ export default function PoolCard({ pool } : { pool:IPool }) {
     },
   ];
 
-  const getWithdraw = () => {
-    console.log('Withdraw');
-  };
-
   const getClaim = () => {
     console.log('Claim');
   };
+
+  const canWithdraw = pool.shares === '0' || pool.shares === undefined || Big(pool.shares) === Big('0');
 
   return (
     <Wrapper>
@@ -267,7 +266,6 @@ export default function PoolCard({ pool } : { pool:IPool }) {
           </TitlePool>
         </BlockTitle>
         <LabelPool>
-          <p><strong>0.2 NEAR</strong> / day / $1K</p>
           <JumboBlock>Jumbo</JumboBlock>
           <MiceBlock>Mice</MiceBlock>
           <RenderClaimButton show={!isMobile} getClaim={getClaim} />
@@ -287,14 +285,19 @@ export default function PoolCard({ pool } : { pool:IPool }) {
         </BlockVolume>
         <RenderClaimButton show={isMobile} getClaim={getClaim} />
         <BlockButton>
+          {!canWithdraw && (
           <BtnSecondary
-            onClick={() => getWithdraw()}
+            onClick={() => {
+              navigate(`/app/pool/remove-liquidity/${pool.id}`);
+            }}
           >
             Withdraw
           </BtnSecondary>
+          )}
+
           <BtnPrimary
             onClick={() => {
-              navigate(`/app/pool/${pool.id}`);
+              navigate(`/app/pool/add-liquidity/${pool.id}`);
             }}
           >
             Add Liquidity

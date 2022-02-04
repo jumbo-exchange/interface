@@ -8,7 +8,7 @@ interface ICurrentTab {
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100%;
 `;
 
 export const Header = styled.div`
@@ -33,6 +33,7 @@ export const Header = styled.div`
 `;
 
 export const LogoContainer = styled.div`
+  flex: 1;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -51,7 +52,9 @@ export const LogoTitle = styled.h1`
 `;
 
 export const NavBar = styled.div`
+  flex: 1;
   display: flex;
+  justify-content: center;
   color: white;
   & > a {
     text-decoration: none;
@@ -96,6 +99,12 @@ export const NavButton = styled.div<PropsWithChildren<ICurrentTab>>`
     line-height: 1.188rem;
     margin: 0 8px;
   `}
+`;
+
+export const BlockButton = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
 `;
 
 export const Body = styled.div`

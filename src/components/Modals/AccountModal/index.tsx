@@ -59,7 +59,7 @@ export default function AccountModal() {
   const { wallet, setWallet } = useStore();
   const { isAccountModalOpen, setAccountModalOpen } = useModalsStore();
 
-  const headerTitle = wallet ? 'Your account' : 'Connect wallet';
+  const headerTitle = wallet ? 'Your Wallet' : 'Connect Wallet';
   const config = getConfig();
 
   return (
