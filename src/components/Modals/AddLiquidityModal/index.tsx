@@ -15,10 +15,6 @@ import {
   LogoContainerAdd,
   RefreshBlock,
   PlaceHolderGif,
-  AcceptBlock,
-  LabelAccept,
-  InputAccept,
-  DescriptionAccept,
   LogoButton,
 } from './styles';
 
@@ -80,15 +76,6 @@ export default function AddLiquidityModal() {
               <PlaceHolderGif />
               Refresh
             </RefreshBlock>
-            {/* <AcceptBlock>
-              <LabelAccept htmlFor="accept">
-                <InputAccept type="checkbox" id="accept" />
-                <span>Checkbox text</span>
-              </LabelAccept>
-              <DescriptionAccept>
-                Description text if needed
-              </DescriptionAccept>
-            </AcceptBlock> */}
             <ButtonPrimary
               onClick={() => {
                 const contract = new PoolContract();
