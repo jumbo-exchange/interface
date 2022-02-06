@@ -9,7 +9,7 @@ import {
   STORAGE_PER_TOKEN,
   ONE_YOCTO_NEAR,
 } from 'utils/constants';
-import { toNonDivisibleNumber } from 'utils/calculations';
+import { calculateFairShare, percentLess, toNonDivisibleNumber } from 'utils/calculations';
 import { IPool } from 'store';
 import sendTransactions, { getAmount, getGas, wallet } from './near';
 import { createContract, Transaction } from './wallet';
@@ -180,12 +180,13 @@ export default class PoolContract {
     {
       pool,
       shares,
-      minAmount,
+      minAmounts,
     }:
     {
       pool: IPool,
       shares: string | undefined;
-      minAmount: { [tokenId: string]: string; };
+      minAmounts: { [tokenId: string]: string; };
+      slippageTolerance?: string
     },
   ) {
     const transactions: Transaction[] = [];
@@ -202,23 +203,23 @@ export default class PoolContract {
       });
     }
 
-    const amounts = pool.tokenAccountIds.map((tokenId) => Big(minAmount[tokenId]).toFixed(0));
-
     transactions.push({
       receiverId: this.contractId,
       functionCalls: [{
         methodName: 'remove_liquidity',
-        args: { pool_id: pool.id, shares, min_amounts: amounts },
+        args: { pool_id: pool.id, shares, min_amounts: Object.values(minAmounts) },
         amount: ONE_YOCTO_NEAR,
       }],
     });
-
     pool.tokenAccountIds.map((tokenId) => transactions.push({
       receiverId: this.contractId,
       functionCalls: [
         {
           methodName: 'withdraw',
-          args: { token_id: tokenId, amount: minAmount[tokenId] },
+          args: {
+            token_id: tokenId,
+            amount: minAmounts[tokenId],
+          },
           gas: '100000000000000',
           amount: ONE_YOCTO_NEAR,
         },
@@ -248,51 +249,3 @@ export default class PoolContract {
     );
   }
 }
-
-// export const withdraw = async ({
-//   token,
-//   amount,
-//   unregister = false,
-// }: WithdrawOptions) => {
-//   if (token.id === WRAP_NEAR_CONTRACT_ID) {
-//     return unwrapNear(amount);
-//   }
-
-//   const transactions: Transaction[] = [];
-//   const parsedAmount = toNonDivisibleNumber(token.decimals, amount);
-//   const ftBalance = await ftGetStorageBalance(token.id);
-
-//   transactions.unshift({
-//     receiverId: REF_FI_CONTRACT_ID,
-//     functionCalls: [
-//       {
-//         methodName: 'withdraw',
-//         args: { token_id: token.id, amount: parsedAmount, unregister },
-//         gas: '100000000000000',
-//         amount: ONE_YOCTO_NEAR,
-//       },
-//     ],
-//   });
-
-//   if (ftBalance === null) {
-//     transactions.unshift({
-//       receiverId: token.id,
-//       functionCalls: [
-//         storageDepositAction({
-//           registrationOnly: true,
-//           amount: STORAGE_TO_REGISTER_WITH_FT,
-//         }),
-//       ],
-//     });
-//   }
-
-//   const neededStorage = await checkTokenNeedsStorageDeposit();
-//   if (neededStorage) {
-//     transactions.unshift({
-//       receiverId: REF_FI_CONTRACT_ID,
-//       functionCalls: [storageDepositAction({ amount: neededStorage })],
-//     });
-//   }
-
-//   return executeMultipleTransactions(transactions);
-// };

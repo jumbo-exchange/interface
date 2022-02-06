@@ -7,7 +7,13 @@ import { ButtonPrimary } from 'components/Button';
 import { useNavigate } from 'react-router-dom';
 import { getUpperCase } from 'utils';
 import {
-  calculateFairShare, toNonDivisibleNumber, formatBalance, formatTokenAmount,
+  calculateFairShare,
+  toNonDivisibleNumber,
+  formatBalance,
+  formatTokenAmount,
+  removeTrailingZeros,
+  percentLess,
+  parseTokenAmount,
 } from 'utils/calculations';
 import Big from 'big.js';
 import Input from './Input';
@@ -24,6 +30,8 @@ import {
   TokenBlock,
   TokenValueBlock,
 } from './styles';
+
+export const POOL_SHARES_DECIMALS = 24;
 
 export default function RemoveLiquidityModal() {
   const {
@@ -43,34 +51,34 @@ export default function RemoveLiquidityModal() {
   const tokenInput = tokens[tokenInputName] ?? null;
   const tokenOutput = tokens[tokenOutputName] ?? null;
   if (!tokenInput || !tokenOutput) return null;
-  const CheckTotalSupply = pool?.sharesTotalSupply === '0' ? '1' : pool?.sharesTotalSupply;
+  const checkTotalSupply = pool?.sharesTotalSupply === '0' ? '1' : pool?.sharesTotalSupply;
 
-  const minAmount = Object.entries(pool.supplies).reduce<{
+  const minAmounts = Object.entries(pool.supplies).reduce<{
     [tokenId: string]: string;
   }>((acc, [tokenId, totalSupply]) => {
-    acc[tokenId] = calculateFairShare(
+    acc[tokenId] = percentLess(10, calculateFairShare(
       totalSupply,
-      withdrawValue ? toNonDivisibleNumber(24, withdrawValue) : '0',
-      CheckTotalSupply,
-    );
+      withdrawValue ? toNonDivisibleNumber(POOL_SHARES_DECIMALS, withdrawValue) : '0',
+      checkTotalSupply,
+    ), 0);
     return acc;
   }, {});
 
-  const [inputToken, outputToken] = Object.entries(minAmount).map((el) => el);
+  const [inputToken, outputToken] = Object.entries(minAmounts).map((el) => el);
   const tokensData = [
     {
       token: tokenInput,
-      value: formatTokenAmount(inputToken[1], tokenInput.metadata.decimals),
+      value: formatTokenAmount(inputToken[1], tokenInput.metadata.decimals, 5),
     },
     {
       token: tokenOutput,
-      value: formatTokenAmount(outputToken[1], tokenOutput.metadata.decimals),
+      value: formatTokenAmount(outputToken[1], tokenOutput.metadata.decimals, 5),
     },
   ];
 
   const onChange = () => {
     const withdrawValueBN = new Big(withdrawValue);
-    const shareBN = new Big(formatTokenAmount(pool?.shares ?? '', 24));
+    const shareBN = new Big(formatTokenAmount(pool?.shares ?? '', POOL_SHARES_DECIMALS));
     if (Number(withdrawValue) === 0) {
       setError(true);
     }
@@ -82,12 +90,15 @@ export default function RemoveLiquidityModal() {
       if (!tokenInput || !tokenOutput || !removeLiquidityModalOpenState.pool) return;
       contract.removeLiquidity({
         pool,
-        shares: withdrawValue,
-        minAmount,
+        shares: parseTokenAmount(withdrawValue, POOL_SHARES_DECIMALS),
+        minAmounts,
       });
     }
   };
+  const formattedPoolShares = formatTokenAmount(pool?.shares ?? '0', POOL_SHARES_DECIMALS);
 
+  const buttonDisabled = withdrawValue
+    ? (new Big(withdrawValue).lte(0) || new Big(withdrawValue).gt(formattedPoolShares)) : true;
   return (
     <>
       {removeLiquidityModalOpenState.isOpen && (
@@ -111,7 +122,7 @@ export default function RemoveLiquidityModal() {
           </ModalBlock>
           <ModalBody>
             <Input
-              shares={formatTokenAmount(pool?.shares ?? '', 24)}
+              shares={formattedPoolShares}
               withdrawValue={withdrawValue}
               setWithdrawValue={setWithdrawValue}
             />
@@ -128,7 +139,7 @@ export default function RemoveLiquidityModal() {
                     />
                   </TokenLogo>
                   <TokenValueBlock>
-                    <p>{formatBalance(value)}</p>
+                    <p>{removeTrailingZeros(formatBalance(value)) }</p>
                     &nbsp;
                     <p>{getUpperCase(token?.metadata.symbol ?? '')}</p>
                   </TokenValueBlock>
@@ -137,6 +148,7 @@ export default function RemoveLiquidityModal() {
             </WithdrawTokenBlock>
             <ButtonPrimary
               onClick={onChange}
+              disabled={buttonDisabled}
             >
               Withdraw
             </ButtonPrimary>

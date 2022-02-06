@@ -2,7 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import CurrencyInputPanel from 'components/CurrencyInputPanel';
 import { getUpperCase } from 'utils';
-import { formatBalance } from 'utils/calculations';
+import { formatBalance, removeTrailingZeros } from 'utils/calculations';
+import Big from 'big.js';
 
 const Block = styled.div`
   display: flex;
@@ -119,18 +120,32 @@ export default function Input({
   withdrawValue: string,
   setWithdrawValue: React.Dispatch<React.SetStateAction<string>>,
 }) {
+  const setHalf = () => {
+    const halfShares = new Big(shares).div(2);
+    if (halfShares.gte(0)) {
+      setWithdrawValue(removeTrailingZeros(halfShares.toFixed(5)));
+    }
+  };
+
+  const setMax = () => {
+    const maxShares = new Big(shares);
+    if (maxShares.gte(0)) {
+      setWithdrawValue(removeTrailingZeros(maxShares.toFixed(5)));
+    }
+  };
+
   return (
     <Block>
       <InputLabel>
         <TotalShares>
           Shares: &nbsp;
-          <span>{formatBalance(shares)}</span>
+          <span>{removeTrailingZeros(formatBalance(shares))}</span>
         </TotalShares>
 
-        <ButtonHalfWallet onClick={() => console.log('HALF')}>
+        <ButtonHalfWallet onClick={setHalf}>
           <span>HALF</span>
         </ButtonHalfWallet>
-        <ButtonMaxWallet onClick={() => console.log('HALF')}>
+        <ButtonMaxWallet onClick={setMax}>
           <span>MAX</span>
         </ButtonMaxWallet>
 
