@@ -11,7 +11,6 @@ export const Container = styled.div`
   max-width: 736px;
   white-space: nowrap;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    margin: 0 1rem;
     max-width: 328px;
   `}
 `;

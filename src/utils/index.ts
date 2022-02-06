@@ -1,24 +1,11 @@
 import Big from 'big.js';
-import { IPool } from 'store';
+import { IPool, PoolType } from 'store';
 
-const BASE = 10;
 const ACCOUNT_TRIM_LENGTH = 8;
-
-export const formatAmount = (amount: string, decimals?: number): string => (
-  new Big(amount).div(new Big(BASE).pow(decimals ?? 0)).toFixed()
-);
 
 export const trimAccountId = (isMobile: boolean, accountId: string) => (isMobile
   ? `${accountId.slice(0, ACCOUNT_TRIM_LENGTH)}...` : accountId
 );
-
-export const formatBalance = (value:string):string => {
-  if (!value || value === '0') return '0';
-  const formattedValue = new Big(value);
-
-  if (formattedValue.lte('0.00001')) return '>0.00001';
-  return formattedValue.toFixed(5);
-};
 
 export const getUpperCase = (value:string) => value.toUpperCase();
 
@@ -31,9 +18,16 @@ export function escapeRegExp(string: string): string {
 export function formatPool(pool: any, id: number): IPool {
   return {
     id,
-    poolKind: pool.pool_kind,
+    type: pool.pool_kind === PoolType.STABLE_SWAP ? PoolType.STABLE_SWAP : PoolType.SIMPLE_POOL,
     tokenAccountIds: pool.token_account_ids,
     amounts: pool.amounts,
+    supplies: pool.amounts.reduce(
+      (acc: { [tokenId: string]: string }, amount: string, i: number) => {
+        acc[pool.token_account_ids[i]] = amount;
+        return acc;
+      },
+      {},
+    ),
     totalFee: pool.total_fee,
     sharesTotalSupply: pool.shares_total_supply,
     amp: pool.amp,
@@ -83,3 +77,8 @@ export function getPoolsPath(
   }
   return [];
 }
+
+export const toArray = (map: {[key: string]: any}) => Object.values(map);
+export const toMap = (array: any[]) => array.reduce(
+  (acc, item) => ({ ...acc, [item.id]: item }), {},
+);

@@ -58,7 +58,15 @@ Internal SWAP~SWAP
 near call $CONTRACT_ID swap '{"actions": [{"pool_id": '$POOL_ID',"token_in": "'$TOKEN_1'","amount_in": "1","token_out": "'$TOKEN_2'","min_amount_out": "0"}]}' --accountId $OWNER_ID
 ```
 
+Remove liquidity
+```
+near call $CONTRACT_ID remove_liquidity '{"pool_id": $POOL_ID, "shares": "1000000000000000000000000", "min_amounts": ["1", "1"]}' --accountId $OWNER_ID --depositYocto=840000000000000000000
+```
 
+Withdraw Funds
+```
+near call $CONTRACT_ID withdraw "{\"token_id\": \"$TOKEN1\", \"amount\": \"900000000000\"}" --accountId $OWNER_ID --depositYocto=840000000000000000000
+```
 
 
 ## Errors
@@ -66,3 +74,8 @@ E10: account not registered
 ```
 near call $CONTRACT_ID storage_deposit '{"account_id": "'$OWNER_ID'", "registration_only":true}' --accountId=$OWNER_ID --deposit=0.0125
 ```
+## All commands for checking
+
+1. [Deposit balances](https://web.nearapi.org/?q=woPCqGNvbnRyYWN0w5kgcmVmLcSCxITEhsSILnNvbG5pZWNoxJh5LnRlc3RuZXTCpm3EpWhvZMKsZ8SlX2RlcG9zaXRzwqZwYcSGbXPCgcKqxIfEgnXEhF9pZMKwcHJvdmVya2HEn8ShxKPEpQ)
+2. [Get pool's information](https://web.nearapi.org/?q=woPCqGNvbnRyYWN0w5kgcmVmLcSCxITEhsSILnNvbG5pZWNoxJh5LnRlc3RuZXTCpm3EpWhvZMKoZ8SlX3BvxJbCpnBhxIZtc8KBwqfEscSWX2lkAA)
+3. [Get number of liquidity shares in the pool](https://web.nearapi.org/?q=woPCqGNvbnRyYWN0w5kgcmVmLcSCxITEhsSILnNvbG5pZWNoxJh5LnRlc3RuZXTCpm3EpWhvZMKvZ8SlX3BvxJZfc2hhxIxzwqZwxLdhbXPCgsKnxLHEs2lkAMKqxIfEgnXEhF_FhMKwcHJvdmVya2HEn8ShxKPEpQ)

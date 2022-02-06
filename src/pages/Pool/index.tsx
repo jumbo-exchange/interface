@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FilterButton } from 'components/Button';
 import { isMobile } from 'utils/userAgent';
 import { useModalsStore, useStore } from 'store';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import {
   Container,
   FilterBlock,
@@ -41,6 +41,7 @@ const filters: IFilters[] = [
   {
     title: 'Farming',
     isActive: FilterPoolsEnum.Farming,
+    disabled: true,
   },
   {
     title: 'Smart Pools',
@@ -57,13 +58,19 @@ interface IMainInfo {
 
 export default function Pool() {
   const { pools } = useStore();
-  const { setAddLiquidityModalOpenState } = useModalsStore();
+  const { setAddLiquidityModalOpenState, setRemoveLiquidityModalOpenState } = useModalsStore();
   const { id } = useParams<'id'>();
+
+  const location = useLocation();
 
   useEffect(() => {
     if (id && pools[Number(id)]) {
       const pool = pools[Number(id)];
-      setAddLiquidityModalOpenState({ isOpen: true, pool });
+      if (location.pathname === `/app/pool/remove-liquidity/${pool.id}`) {
+        setRemoveLiquidityModalOpenState({ isOpen: true, pool });
+      } else if (location.pathname === `/app/pool/add-liquidity/${pool.id}`) {
+        setAddLiquidityModalOpenState({ isOpen: true, pool });
+      }
     }
   }, [id, pools]);
   const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum['All Pools']);
@@ -82,12 +89,12 @@ export default function Pool() {
     {
       title: 'JUMBO Price',
       label: '$9.26',
-      show: true,
+      show: !isMobile,
     },
     {
       title: 'Weekly Emissions',
       label: '300k NEAR',
-      show: !!isMobile, // TODO: checking if some brand is available
+      show: currentFilterPools === FilterPoolsEnum['All Pools'] && !isMobile, // TODO: checking if some brand is available
     },
   ];
 
@@ -123,12 +130,14 @@ export default function Pool() {
             );
           })}
         </WrapperInfoBlock>
+        {currentFilterPools !== FilterPoolsEnum['All Pools'] && (
         <BtnClaim>
           <span>50.5004648 DAI</span>
           <span>Claim</span>
         </BtnClaim>
+        )}
       </InformationBlock>
-      <PoolSettings />
+      <PoolSettings currentFilterPools={currentFilterPools} />
       <PoolResult currentFilterPools={currentFilterPools} />
     </Container>
   );

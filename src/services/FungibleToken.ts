@@ -1,9 +1,13 @@
 import BN from 'bn.js';
 import * as nearApiJs from 'near-api-js';
-
-import { ITokenMetadata } from 'store';
+import nearIcon from 'assets/images-app/near.svg';
+import wrapNearIcon from 'assets/images-app/wNEAR.svg';
+import { ITokenMetadata, NEAR_TOKEN_ID } from 'store';
 import {
-  FT_MINIMUM_STORAGE_BALANCE, FT_STORAGE_DEPOSIT_GAS, FT_TRANSFER_GAS, ONE_YOCTO_NEAR,
+  FT_MINIMUM_STORAGE_BALANCE,
+  FT_STORAGE_DEPOSIT_GAS,
+  FT_TRANSFER_GAS,
+  ONE_YOCTO_NEAR,
 } from 'utils/constants';
 import { formatTokenAmount, parseTokenAmount, removeTrailingZeros } from 'utils/calculations';
 import { wallet } from './near';
@@ -20,11 +24,20 @@ const {
 } = nearApiJs;
 
 const basicViewMethods: string[] = ['ft_metadata', 'ft_balance_of', 'storage_balance_of'];
-const basicChangeMethods: string[] = [];
+const basicChangeMethods: string[] = ['near_deposit', 'near_withdraw'];
 const config = getConfig();
 const DECIMALS_DEFAULT_VALUE = 0;
 const ICON_DEFAULT_VALUE = '';
 const CONTRACT_ID = config.contractId;
+
+const NEAR_TOKEN = {
+  decimals: 24,
+  icon: nearIcon,
+  name: 'Near token',
+  version: '0',
+  symbol: 'NEAR',
+  reference: '',
+};
 
 interface FungibleTokenContractInterface {
   wallet: SpecialWallet;
@@ -61,7 +74,7 @@ export default class FungibleTokenContract {
 
   metadata: ITokenMetadata = defaultMetadata;
 
-  static getParsedTokenAmount(amount:string, symbol:string, decimals:number) {
+  static getParsedTokenAmount(amount: string, symbol: string, decimals: number) {
     const parsedTokenAmount = symbol === 'NEAR'
       ? parseNearAmount(amount)
       : parseTokenAmount(amount, decimals);
@@ -69,7 +82,7 @@ export default class FungibleTokenContract {
     return parsedTokenAmount;
   }
 
-  static getFormattedTokenAmount(amount:string, symbol:string, decimals:number) {
+  static getFormattedTokenAmount(amount: string, symbol: string, decimals: number) {
     const formattedTokenAmount = symbol === 'NEAR'
       ? formatNearAmount(amount, 5)
       : removeTrailingZeros(formatTokenAmount(amount, decimals, 5));
@@ -82,16 +95,29 @@ export default class FungibleTokenContract {
   }
 
   async getMetadata() {
+    if (this.contractId === NEAR_TOKEN_ID) {
+      this.metadata = { ...defaultMetadata, ...NEAR_TOKEN };
+      return NEAR_TOKEN;
+    }
+
     if (
       this.metadata.decimals !== DECIMALS_DEFAULT_VALUE
       && this.metadata.icon !== ICON_DEFAULT_VALUE
     ) return this.metadata;
+
     const metadata = await this.contract.ft_metadata();
+    if (this.contractId === config.nearAddress) metadata.icon = wrapNearIcon;
+    if (!metadata.icon) metadata.icon = wrapNearIcon;
+
     this.metadata = { ...defaultMetadata, ...metadata };
     return metadata;
   }
 
   async getBalanceOf({ accountId }: { accountId: string }) {
+    if (this.contractId === NEAR_TOKEN_ID) {
+      return wallet.account().getAccountBalance()
+        .then((balances) => balances.available);
+    }
     return this.contract.ft_balance_of({ account_id: accountId });
   }
 
@@ -114,6 +140,7 @@ export default class FungibleTokenContract {
   }
 
   async isStorageBalanceAvailable({ accountId }:{ accountId: string }) {
+    if (this.contractId === NEAR_TOKEN_ID) return true;
     const storageBalance = await this.getStorageBalance({ accountId });
     return storageBalance?.total !== undefined;
   }
@@ -129,7 +156,7 @@ export default class FungibleTokenContract {
       { accountId },
     );
 
-    if (!storageAvailable) {
+    if (!storageAvailable && this.contractId !== NEAR_TOKEN_ID) {
       transactions.push({
         receiverId: this.contractId,
         functionCalls: [{
@@ -149,13 +176,13 @@ export default class FungibleTokenContract {
     accountId,
     inputToken,
     amount,
-    message,
+    message = '',
   }:
   {
     accountId: string,
     inputToken: string,
     amount: string,
-    message: string,
+    message?: string,
   }): Promise<Transaction[]> {
     const transactions: Transaction[] = [];
     const checkStorage = await this.checkStorageBalance({ accountId });
@@ -172,6 +199,39 @@ export default class FungibleTokenContract {
         amount: ONE_YOCTO_NEAR,
       }],
     });
+    return transactions;
+  }
+
+  wrap({ amount }:{ amount: string, }) {
+    if (this.contractId === NEAR_TOKEN_ID) throw Error('Can\'t wrap from NEAR token');
+    const transactions: Transaction[] = [];
+
+    transactions.push({
+      receiverId: this.contractId,
+      functionCalls: [{
+        methodName: 'near_deposit',
+        amount: formatNearAmount(amount) as string,
+        args: {},
+        gas: FT_TRANSFER_GAS as string,
+      }],
+    });
+    return transactions;
+  }
+
+  unwrap({ amount }:{ amount: string}) {
+    if (this.contractId === NEAR_TOKEN_ID) throw Error('Can\'t wrap from NEAR token');
+    const transactions: Transaction[] = [];
+
+    transactions.push({
+      receiverId: this.contractId,
+      functionCalls: [{
+        methodName: 'near_withdraw',
+        args: { amount },
+        gas: FT_TRANSFER_GAS as string,
+        amount: ONE_YOCTO_NEAR,
+      }],
+    });
+
     return transactions;
   }
 }

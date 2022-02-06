@@ -188,6 +188,6 @@ export const LabelInfo = styled.p<PropsWithChildren<IColor>>`
   font-weight: 300;
   font-size: 12px;
   line-height: 14px;
-  color: ${({ theme, isColor }) => (isColor ? theme.globalGreen : theme.globalWhite)};
+  color: ${({ theme, isColor = false }) => (isColor ? theme.globalGreen : theme.globalWhite)};
   margin: 0;
 `;

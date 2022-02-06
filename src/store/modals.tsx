@@ -18,6 +18,8 @@ type ModalsStoreContextType = {
   setTooltipModalOpen: Dispatch<SetStateAction<boolean>>;
   titleTooltipModal: string;
   setTitleTooltipModal: Dispatch<SetStateAction<string>>;
+  removeLiquidityModalOpenState: {isOpen: boolean, pool: IPool | null};
+  setRemoveLiquidityModalOpenState: Dispatch<SetStateAction<{isOpen: boolean, pool: IPool | null}>>;
 }
 
 export const initialModalsState: ModalsStoreContextType = {
@@ -33,6 +35,8 @@ export const initialModalsState: ModalsStoreContextType = {
   setTooltipModalOpen: () => {},
   titleTooltipModal: '',
   setTitleTooltipModal: () => {},
+  removeLiquidityModalOpenState: { isOpen: false, pool: null },
+  setRemoveLiquidityModalOpenState: () => {},
 };
 
 const ModalsStoreContextHOC = createContext<ModalsStoreContextType>(initialModalsState);
@@ -43,10 +47,12 @@ export const ModalsContextProvider = (
   const [isAccountModalOpen, setAccountModalOpen] = useState<boolean>(
     initialModalsState.isAccountModalOpen,
   );
-  const [addLiquidityModalOpenState, setAddLiquidityModalOpenState] = useState<{ isOpen: boolean,
-    pool: IPool | null }>(
-      initialModalsState.addLiquidityModalOpenState,
-    );
+  const [addLiquidityModalOpenState, setAddLiquidityModalOpenState] = useState<{
+    isOpen: boolean,
+    pool: IPool | null
+  }>(
+    initialModalsState.addLiquidityModalOpenState,
+  );
   const [isCreatePoolModalOpen, setCreatePoolModalOpen] = useState<boolean>(
     initialModalsState.isCreatePoolModalOpen,
   );
@@ -57,6 +63,13 @@ export const ModalsContextProvider = (
     initialModalsState.isTooltipModalOpen,
   );
   const [titleTooltipModal, setTitleTooltipModal] = useState<string>('');
+
+  const [removeLiquidityModalOpenState, setRemoveLiquidityModalOpenState] = useState<{
+    isOpen: boolean,
+    pool: IPool | null
+  }>(
+    initialModalsState.removeLiquidityModalOpenState,
+  );
 
   return (
     <ModalsStoreContextHOC.Provider value={{
@@ -72,6 +85,8 @@ export const ModalsContextProvider = (
       setTooltipModalOpen,
       titleTooltipModal,
       setTitleTooltipModal,
+      removeLiquidityModalOpenState,
+      setRemoveLiquidityModalOpenState,
     }}
     >
       <Modals>

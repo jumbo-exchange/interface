@@ -71,10 +71,10 @@ export const ModalIcon = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   border-radius: 8px;
-  svg {
+  & > svg {
     justify-self: center;
     transition: all 1s ease;
   }
@@ -87,16 +87,4 @@ export const ModalIcon = styled.div`
       }
     }
   }
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    & > svg {
-      width: 25px;
-      height: 25px;
-    }
-  `}
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    & > svg {
-      width: 16px;
-      height: 17px;
-    }
-  `}
 `;

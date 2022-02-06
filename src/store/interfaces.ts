@@ -4,10 +4,11 @@ import SpecialWallet from 'services/wallet';
 
 export enum StatusLink { Swap = 'swap', Pool ='pool', Farm = 'farm' }
 export enum TokenType { 'Input', 'Output'}
+export enum PoolType {'SIMPLE_POOL' = 'SIMPLE_POOL', 'STABLE_SWAP' = 'STABLE_SWAP'}
 
 export interface IPool {
   id: number;
-  poolKind: string;
+  type: PoolType;
   tokenAccountIds: string[];
   amounts: string[];
   totalFee: number;
@@ -17,11 +18,13 @@ export interface IPool {
   poolSharePrice?: string;
   poolShares?: string;
   poolTotalShares?: string;
+  supplies: { [key: string]: string };
   amp: string;
 
-  volumes?: string;
-  myShares?: string;
+  shares?: string;
+  volumes?: { [key: string]: string };
 }
+
 export interface ITokenMetadata {
   version: string;
   name: string;
@@ -41,8 +44,8 @@ export type StoreContextType = {
   balances: {[key: string]: string};
   setBalances: Dispatch<SetStateAction<{[key: string]: string}>>;
 
-  pools: IPool[];
-  setPools: Dispatch<SetStateAction<IPool[]>>;
+  pools: {[key:string]: IPool};
+  setPools: Dispatch<SetStateAction<{[key:string]: IPool}>>;
   currentPools: IPool[];
   setCurrentPools: (pools: IPool[]) => void;
   tokens: {[key: string]: FungibleTokenContract};

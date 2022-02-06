@@ -80,7 +80,7 @@ export default function AddLiquidityModal() {
               <PlaceHolderGif />
               Refresh
             </RefreshBlock>
-            <AcceptBlock>
+            {/* <AcceptBlock>
               <LabelAccept htmlFor="accept">
                 <InputAccept type="checkbox" id="accept" />
                 <span>Checkbox text</span>
@@ -88,7 +88,7 @@ export default function AddLiquidityModal() {
               <DescriptionAccept>
                 Description text if needed
               </DescriptionAccept>
-            </AcceptBlock>
+            </AcceptBlock> */}
             <ButtonPrimary
               onClick={() => {
                 const contract = new PoolContract();

@@ -5,7 +5,8 @@ import { wallet } from 'services/near';
 import {
   initialModalsState, TokenType, useModalsStore, useStore,
 } from 'store';
-import { formatAmount } from 'utils';
+import { formatTokenAmount } from 'utils/calculations';
+
 import FungibleTokenContract from 'services/FungibleToken';
 
 interface ICurrentToken {
@@ -135,7 +136,7 @@ const getCurrentBalance = (
   balances: {[key: string]: string;},
   token: FungibleTokenContract,
 ) => {
-  const currentBalance = formatAmount(balances[token.contractId], token.metadata.decimals);
+  const currentBalance = formatTokenAmount(balances[token.contractId], token.metadata.decimals);
   if (currentBalance !== '0') {
     return new Big(currentBalance).toFixed(3);
   }
@@ -146,7 +147,7 @@ const getCurrentPrice = (
   balances: {[key: string]: string;},
   token: FungibleTokenContract,
 ) => {
-  const currentBalance = formatAmount(balances[token.contractId], token.metadata.decimals);
+  const currentBalance = formatTokenAmount(balances[token.contractId], token.metadata.decimals);
   if (currentBalance !== '0') {
     return '~$3141';
   }

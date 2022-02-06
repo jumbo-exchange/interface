@@ -7,21 +7,39 @@ import {
   ONE_MORE_DEPOSIT_AMOUNT,
   LP_STORAGE_AMOUNT,
   STORAGE_PER_TOKEN,
+  ONE_YOCTO_NEAR,
 } from 'utils/constants';
-import { toNonDivisibleNumber } from 'utils/calculations';
+import { calculateFairShare, percentLess, toNonDivisibleNumber } from 'utils/calculations';
 import { IPool } from 'store';
 import sendTransactions, { getAmount, getGas, wallet } from './near';
 import { createContract, Transaction } from './wallet';
 import getConfig from './config';
 import FungibleTokenContract from './FungibleToken';
 
-const basicViewMethods = ['get_return', 'get_user_storage_state', 'storage_balance_of'];
-const basicChangeMethods = ['swap', 'storage_deposit', 'add_liquidity'];
+const basicViewMethods = [
+  'get_return',
+  'get_user_storage_state',
+  'storage_balance_of',
+  'get_pool_shares',
+  'get_pool_volumes',
+  'get_deposits',
+];
+const basicChangeMethods = [
+  'swap',
+  'storage_deposit',
+  'add_liquidity',
+  'remove_liquidity',
+  'withdraw',
+];
 const config = getConfig();
 const CREATE_POOL_NEAR_AMOUNT = '0.05';
 const CONTRACT_ID = config.contractId;
 
-interface LiquidityToken {
+interface IPoolVolumes {
+  [tokenId: string]: { input: string; output: string };
+}
+
+interface ILiquidityToken {
   token: FungibleTokenContract;
   amount: string
 }
@@ -66,13 +84,27 @@ export default class PoolContract {
       pool,
     }:
     {
-      tokenAmounts: LiquidityToken[],
+      tokenAmounts: ILiquidityToken[],
       pool: IPool,
     },
   ) {
     const transactions: Transaction[] = [];
     const storageAmount = await this.checkStorage();
     const [inputToken, outputToken] = tokenAmounts;
+    const [firstTokenName, secondTokenName] = pool.tokenAccountIds;
+    const firstToken = tokenAmounts.find((el) => el.token.contractId === firstTokenName);
+    const secondToken = tokenAmounts.find((el) => el.token.contractId === secondTokenName);
+    if (!firstToken || !secondToken) return;
+
+    const tokenInAmount = toNonDivisibleNumber(
+      firstToken.token.metadata.decimals,
+      firstToken.amount,
+    );
+
+    const tokenOutAmount = toNonDivisibleNumber(
+      secondToken.token.metadata.decimals,
+      secondToken.amount,
+    );
     if (storageAmount) {
       transactions.push({
         receiverId: this.contractId,
@@ -83,28 +115,24 @@ export default class PoolContract {
         }],
       });
     }
-    const isInputTokenStorage = await inputToken.token.contract.checkStorageBalance(
-      { accountId: this.contractId },
+    const isInputTokenStorage = await inputToken.token.contract.transfer(
+      {
+        accountId: this.contractId,
+        inputToken: inputToken.token.contractId,
+        amount: tokenInAmount,
+      },
     );
-    if (isInputTokenStorage.length) transactions.push(isInputTokenStorage);
+    if (isInputTokenStorage.length) transactions.push(...isInputTokenStorage);
 
-    const isOutputTokenStorage = await outputToken.token.contract.checkStorageBalance(
-      { accountId: this.contractId },
+    const isOutputTokenStorage = await outputToken.token.contract.transfer(
+      {
+        accountId: this.contractId,
+        inputToken: outputToken.token.contractId,
+        amount: tokenOutAmount,
+      },
     );
-    if (isOutputTokenStorage.length) transactions.push(isOutputTokenStorage);
+    if (isOutputTokenStorage.length) transactions.push(...isOutputTokenStorage);
 
-    const [firstTokenName, secondTokenName] = pool.tokenAccountIds;
-    const firstToken = tokenAmounts.find((el) => el.token.contractId === firstTokenName);
-    const secondToken = tokenAmounts.find((el) => el.token.contractId === secondTokenName);
-    if (!firstToken || !secondToken) return;
-    const tokenInAmount = toNonDivisibleNumber(
-      firstToken.token.metadata.decimals,
-      firstToken.amount,
-    );
-    const tokenOutAmount = toNonDivisibleNumber(
-      secondToken.token.metadata.decimals,
-      secondToken.amount,
-    );
     transactions.push({
       receiverId: this.contractId,
       functionCalls: [{
@@ -120,7 +148,7 @@ export default class PoolContract {
   async checkStorageState(accountId = wallet.getAccountId()) {
     // @ts-expect-error: Property 'get_user_storage_state' does not exist on type 'Contract'.
     const storage = await this.contract.get_user_storage_state({ account_id: accountId });
-    return new Big(storage?.deposit).lte(new Big(storage?.usage));
+    return storage ? new Big(storage?.deposit).lte(new Big(storage?.usage)) : false;
   }
 
   async currentStorageBalance(accountId = wallet.getAccountId()) {
@@ -146,5 +174,78 @@ export default class PoolContract {
     }
 
     return storageNeeded.toString();
+  }
+
+  async removeLiquidity(
+    {
+      pool,
+      shares,
+      minAmounts,
+    }:
+    {
+      pool: IPool,
+      shares: string | undefined;
+      minAmounts: { [tokenId: string]: string; };
+      slippageTolerance?: string
+    },
+  ) {
+    const transactions: Transaction[] = [];
+    const storageAmount = await this.checkStorage();
+
+    if (storageAmount) {
+      transactions.push({
+        receiverId: this.contractId,
+        functionCalls: [{
+          methodName: 'storage_deposit',
+          args: { registration_only: false },
+          amount: storageAmount,
+        }],
+      });
+    }
+
+    transactions.push({
+      receiverId: this.contractId,
+      functionCalls: [{
+        methodName: 'remove_liquidity',
+        args: { pool_id: pool.id, shares, min_amounts: Object.values(minAmounts) },
+        amount: ONE_YOCTO_NEAR,
+      }],
+    });
+    pool.tokenAccountIds.map((tokenId) => transactions.push({
+      receiverId: this.contractId,
+      functionCalls: [
+        {
+          methodName: 'withdraw',
+          args: {
+            token_id: tokenId,
+            amount: minAmounts[tokenId],
+          },
+          gas: '100000000000000',
+          amount: ONE_YOCTO_NEAR,
+        },
+      ],
+    }));
+
+    sendTransactions(transactions, this.walletInstance);
+  }
+
+  async getPoolVolumes(pool: IPool) {
+    // @ts-expect-error: Property 'get_pool_volumes' does not exist on type 'Contract'.
+    const volumes = this.contract.get_pool_volumes(
+      { pool_id: pool.id },
+    );
+
+    const sumValues = pool.tokenAccountIds.reduce((acc: IPoolVolumes, tokenId, i) => {
+      acc[tokenId] = volumes[i];
+      return acc;
+    }, {});
+    return sumValues;
+  }
+
+  async getSharesInPool(poolId: any, accountId = wallet.getAccountId()) {
+    // @ts-expect-error: Property 'get_pool_shares' does not exist on type 'Contract'.
+    return this.contract.get_pool_shares(
+      { pool_id: poolId, account_id: accountId },
+    );
   }
 }

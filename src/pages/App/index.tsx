@@ -14,6 +14,7 @@ import {
   LogoTitle,
   NavBar,
   NavButton,
+  BlockButton,
   Body,
 } from './styles';
 import ConnectionButton from './ConnectionButton';
@@ -56,14 +57,17 @@ export default function App() {
             Pool
           </CustomLink>
         </NavBar>
-        <ConnectionButton />
+        <BlockButton>
+          <ConnectionButton />
+        </BlockButton>
       </Header>
       <Body>
         <Suspense fallback={<div>Loading...</div>}>
           <Routes>
             <Route path="pool" element={<Pool />} />
             <Route path="swap" element={<Swap />} />
-            <Route path="pool/:id" element={<Pool />} />
+            <Route path="pool/add-liquidity/:id" element={<Pool />} />
+            <Route path="pool/remove-liquidity/:id" element={<Pool />} />
           </Routes>
         </Suspense>
       </Body>

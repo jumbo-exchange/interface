@@ -41,7 +41,7 @@ export default function ConnectionButton() {
   const isConnected = wallet.isSignedIn();
   const { setAccountModalOpen } = useModalsStore();
 
-  const title = 'Connect wallet';
+  const title = 'Connect Wallet';
 
   if (isConnected) {
     return (
