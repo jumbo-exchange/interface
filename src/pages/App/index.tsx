@@ -42,10 +42,12 @@ export default function App() {
   return (
     <Container>
       <Header>
-        <LogoContainer>
-          <JumboLogo />
-          {isMobile ? null : (<LogoTitle>jumbo</LogoTitle>)}
-        </LogoContainer>
+        <Link to="/">
+          <LogoContainer>
+            <JumboLogo />
+            {isMobile ? null : (<LogoTitle>jumbo</LogoTitle>)}
+          </LogoContainer>
+        </Link>
         <NavBar>
           <CustomLink to="swap">
             Swap

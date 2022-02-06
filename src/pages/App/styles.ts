@@ -21,6 +21,9 @@ export const Header = styled.div`
   white-space: nowrap;
   color: ${({ theme }) => theme.globalWhite};
   padding: 1.5rem 4.5rem 2.563rem 4.5rem;
+  & > a{
+    text-decoration: none;
+  }
   ${({ theme }) => theme.mediaWidth.upToMedium`
     padding: 1.5rem 2rem 2.563rem 2rem;
   `}
