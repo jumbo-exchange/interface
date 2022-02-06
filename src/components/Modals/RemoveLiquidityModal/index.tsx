@@ -63,7 +63,6 @@ export default function RemoveLiquidityModal() {
     ), 0);
     return acc;
   }, {});
-
   const [inputToken, outputToken] = Object.entries(minAmounts).map((el) => el);
   const tokensData = [
     {

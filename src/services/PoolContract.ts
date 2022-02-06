@@ -9,7 +9,7 @@ import {
   STORAGE_PER_TOKEN,
   ONE_YOCTO_NEAR,
 } from 'utils/constants';
-import { calculateFairShare, percentLess, toNonDivisibleNumber } from 'utils/calculations';
+import { toNonDivisibleNumber } from 'utils/calculations';
 import { IPool } from 'store';
 import sendTransactions, { getAmount, getGas, wallet } from './near';
 import { createContract, Transaction } from './wallet';

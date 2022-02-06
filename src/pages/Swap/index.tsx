@@ -111,7 +111,7 @@ export default function Swap() {
   const isConnected = wallet.isSignedIn();
   const exchangeLabel = `1 ${getUpperCase(inputToken?.metadata.symbol ?? '')} ≈ 4923.333 ${getUpperCase(outputToken?.metadata.symbol ?? '')}`;
   const minAmountOut = outputTokenValue
-    ? percentLess(slippageTolerance, outputTokenValue)
+    ? percentLess(slippageTolerance, outputTokenValue, 0)
     : '';
   const priceImpact = calculatePriceImpact(
     currentPools, inputToken, outputToken, inputTokenValue, tokens,

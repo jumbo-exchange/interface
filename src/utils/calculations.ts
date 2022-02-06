@@ -35,7 +35,7 @@ export const percentLess = (
 ): string => {
   const FULL_AMOUNT_PERCENT = 100;
   const percentDiff = Big(FULL_AMOUNT_PERCENT).minus(percent);
-  return removeTrailingZeros(Big(num).div(FULL_AMOUNT_PERCENT).mul(percentDiff).toFixed(precision));
+  return Big(num).div(FULL_AMOUNT_PERCENT).mul(percentDiff).toFixed(precision);
 };
 
 export const percent = (numerator: string, denominator: string) => Big(numerator)
