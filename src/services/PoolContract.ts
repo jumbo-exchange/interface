@@ -35,7 +35,7 @@ const config = getConfig();
 const CREATE_POOL_NEAR_AMOUNT = '0.05';
 const CONTRACT_ID = config.contractId;
 
-interface IPoolVolumes {
+export interface IPoolVolumes {
   [tokenId: string]: { input: string; output: string };
 }
 
@@ -231,7 +231,7 @@ export default class PoolContract {
 
   async getPoolVolumes(pool: IPool) {
     // @ts-expect-error: Property 'get_pool_volumes' does not exist on type 'Contract'.
-    const volumes = this.contract.get_pool_volumes(
+    const volumes = await this.contract.get_pool_volumes(
       { pool_id: pool.id },
     );
 

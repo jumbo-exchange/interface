@@ -17,6 +17,8 @@ import { PoolType } from './interfaces';
 
 const config = getConfig();
 const INITIAL_POOL_ID = 8;
+const DEFAULT_PAGE_LIMIT = 100;
+
 export const NEAR_TOKEN_ID = 'NEAR';
 const initialState: StoreContextType = {
   loading: false,
@@ -88,8 +90,16 @@ export const StoreContextProvider = (
     try {
       setLoading(true);
       const isSignedIn = nearWallet.isSignedIn();
+      const poolsLength = await contract.get_number_of_pools();
+      const pages = Math.ceil(poolsLength / DEFAULT_PAGE_LIMIT);
 
-      const poolsResult = await contract.get_pools({ from_index: 0, limit: 100 });
+      const poolsResult = (await Promise.all(
+        [...Array(pages)]
+          .map((_, i) => contract.get_pools(
+            { from_index: i * DEFAULT_PAGE_LIMIT, limit: DEFAULT_PAGE_LIMIT },
+          )),
+      )).flat();
+
       const tokenAddresses = [
         ...poolsResult
           .flatMap((pool: any) => pool.token_account_ids),
@@ -118,25 +128,30 @@ export const StoreContextProvider = (
       if (isSignedIn) {
         setWallet(nearWallet);
         const accountId = nearWallet.getAccountId();
-        const balancesArray = await Promise.all(
-          tokensMetadata.map(async (token) => {
-            const balance = await token.contract.getBalanceOf({ accountId });
-            return { contractId: token.contractId, balance };
-          }),
-        );
-        const balancesMap = balancesArray.reduce((acc, curr) => (
-          { ...acc, [curr.contractId]: curr.balance }
-        ), {});
-        setBalances(balancesMap);
-        newPoolArray = await Promise.all(poolArray.map(async (pool: IPool) => {
-          const volumes = await poolContract.getPoolVolumes(pool);
-          const shares = await poolContract.getSharesInPool(pool.id);
-          return {
-            ...pool,
-            volumes,
-            shares,
-          };
-        }));
+        try {
+          const balancesArray = await Promise.all(
+            tokensMetadata.map(async (token) => {
+              const balance = await token.contract.getBalanceOf({ accountId });
+              return { contractId: token.contractId, balance };
+            }),
+          );
+          const balancesMap = balancesArray.reduce((acc, curr) => (
+            { ...acc, [curr.contractId]: curr.balance }
+          ), {});
+          setBalances(balancesMap);
+          newPoolArray = await Promise.all(poolArray.map(async (pool: IPool) => {
+            const volumes = await poolContract.getPoolVolumes(pool);
+            const shares = await poolContract.getSharesInPool(pool.id);
+
+            return {
+              ...pool,
+              volumes,
+              shares,
+            };
+          }));
+        } catch (e) {
+          console.warn(e, 'while initial loading user specific data');
+        }
       }
       setTokens(tokensMetadata.reduce((acc, curr) => ({ ...acc, [curr.contractId]: curr }), {}));
       setPools(toMap(newPoolArray));
