@@ -1,6 +1,7 @@
 import BN from 'bn.js';
 import * as nearApiJs from 'near-api-js';
 import nearIcon from 'assets/images-app/near.svg';
+import wrapNearIcon from 'assets/images-app/wNEAR.svg';
 import { ITokenMetadata, NEAR_TOKEN_ID } from 'store';
 import {
   FT_MINIMUM_STORAGE_BALANCE,
@@ -103,7 +104,11 @@ export default class FungibleTokenContract {
       this.metadata.decimals !== DECIMALS_DEFAULT_VALUE
       && this.metadata.icon !== ICON_DEFAULT_VALUE
     ) return this.metadata;
+
     const metadata = await this.contract.ft_metadata();
+    if (this.contractId === config.nearAddress) metadata.icon = wrapNearIcon;
+    if (!metadata.icon) metadata.icon = wrapNearIcon;
+
     this.metadata = { ...defaultMetadata, ...metadata };
     return metadata;
   }
