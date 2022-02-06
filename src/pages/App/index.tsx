@@ -16,6 +16,7 @@ import {
   NavButton,
   BlockButton,
   Body,
+  LinkContainer,
 } from './styles';
 import ConnectionButton from './ConnectionButton';
 
@@ -43,12 +44,14 @@ export default function App() {
   return (
     <Container>
       <Header>
-        <Link to="/">
-          <LogoContainer>
-            <JumboLogo />
-            {isMobile ? null : (<LogoTitle>jumbo</LogoTitle>)}
-          </LogoContainer>
-        </Link>
+        <LinkContainer>
+          <Link to="/">
+            <LogoContainer>
+              <JumboLogo />
+              {isMobile ? null : (<LogoTitle>jumbo</LogoTitle>)}
+            </LogoContainer>
+          </Link>
+        </LinkContainer>
         <NavBar>
           <CustomLink to="swap">
             Swap

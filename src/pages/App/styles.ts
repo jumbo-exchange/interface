@@ -117,3 +117,10 @@ export const Body = styled.div`
   display: flex;
   justify-content: center;
 `;
+
+export const LinkContainer = styled.div`
+  flex: 1;
+  & > a {
+    text-decoration:none;
+  }
+`;
