@@ -40,6 +40,7 @@ const initialState: StoreContextType = {
   outputToken: null,
   setOutputToken: () => {},
   setCurrentToken: () => {},
+  updatePools: () => {},
 };
 
 const StoreContextHOC = createContext<StoreContextType>(initialState);
@@ -167,6 +168,11 @@ export const StoreContextProvider = (
     }
   }, [toArray(pools).length]);
 
+  const updatePools = (newPools: IPool[]) => {
+    const newPoolSet = newPools.reduce((acc, item) => ({ ...acc, [item.id]: item }), pools);
+    setPools(newPoolSet);
+  };
+
   return (
     <StoreContextHOC.Provider value={{
       loading,
@@ -180,6 +186,7 @@ export const StoreContextProvider = (
 
       pools,
       setPools,
+      updatePools,
       currentPools,
       setCurrentPools,
       tokens,

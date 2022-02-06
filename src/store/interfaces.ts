@@ -56,6 +56,7 @@ export type StoreContextType = {
   setInputToken: Dispatch<SetStateAction<FungibleTokenContract | null>>;
   outputToken: FungibleTokenContract | null;
   setOutputToken: Dispatch<SetStateAction<FungibleTokenContract | null>>;
+  updatePools: (newPools: IPool[]) => void;
 }
 
 export const contractMethods = [
