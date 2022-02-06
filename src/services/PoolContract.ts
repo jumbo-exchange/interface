@@ -105,7 +105,7 @@ export default class PoolContract {
       secondToken.token.metadata.decimals,
       secondToken.amount,
     );
-    if (storageAmount) {
+    if (Big(storageAmount).gt(0)) {
       transactions.push({
         receiverId: this.contractId,
         functionCalls: [{
