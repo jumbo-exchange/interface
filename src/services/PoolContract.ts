@@ -148,7 +148,7 @@ export default class PoolContract {
   async checkStorageState(accountId = wallet.getAccountId()) {
     // @ts-expect-error: Property 'get_user_storage_state' does not exist on type 'Contract'.
     const storage = await this.contract.get_user_storage_state({ account_id: accountId });
-    return storage ? new Big(storage?.deposit).lte(new Big(storage?.usage)) : false;
+    return storage ? new Big(storage?.deposit).lte(new Big(storage?.usage)) : true;
   }
 
   async currentStorageBalance(accountId = wallet.getAccountId()) {
