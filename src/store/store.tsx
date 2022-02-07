@@ -16,7 +16,6 @@ import PoolContract from 'services/PoolContract';
 import { PoolType } from './interfaces';
 
 const config = getConfig();
-const INITIAL_POOL_ID = 8;
 const DEFAULT_PAGE_LIMIT = 100;
 
 export const NEAR_TOKEN_ID = 'NEAR';
@@ -168,10 +167,9 @@ export const StoreContextProvider = (
 
   useEffect(() => {
     if (toArray(pools).length) {
-      const initialPool = pools[INITIAL_POOL_ID];
-      const outputTokenData = tokens[initialPool.tokenAccountIds[0]] ?? null;
+      const outputTokenData = tokens[config.nearAddress] ?? null;
       setOutputToken(outputTokenData);
-      const inputTokenData = tokens[initialPool.tokenAccountIds[1]] ?? null;
+      const inputTokenData = tokens[NEAR_TOKEN_ID] ?? null;
       setInputToken(inputTokenData);
 
       const availablePools = getPoolsPath(
