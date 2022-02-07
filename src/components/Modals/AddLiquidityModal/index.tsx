@@ -45,8 +45,8 @@ export default function AddLiquidityModal() {
   const tokenOutput = tokens[tokenOutputName] ?? null;
   if (!tokenInput || !tokenOutput) return null;
 
-  const [inputTokenSupplies, outputTokenSupplies] = Object.entries(pool.supplies).map(
-    (el) => el[1],
+  const [inputTokenSupplies, outputTokenSupplies] = Object.values(pool.supplies).map(
+    (el) => el,
   );
 
   const handleInputChange = (value: string) => {
