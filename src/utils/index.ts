@@ -1,4 +1,3 @@
-import Big from 'big.js';
 import { IPool, PoolType } from 'store';
 
 const ACCOUNT_TRIM_LENGTH = 8;

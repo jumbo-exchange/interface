@@ -109,8 +109,8 @@ export const calculateFairShare = (
 };
 
 export const formatBalance = (value: string): string => {
-  if (!value || value === '0') return '0';
   const formattedValue = new Big(value);
+  if (!value || formattedValue.eq(0)) return value;
 
   if (formattedValue.lte('0.00001')) return '>0.00001';
   if (formattedValue.lt('1000')) return formattedValue.toFixed(5);

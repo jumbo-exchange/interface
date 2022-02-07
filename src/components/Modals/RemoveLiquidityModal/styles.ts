@@ -28,7 +28,7 @@ export const ModalBody = styled.div`
   `}
 `;
 
-export const TitleAction = styled.p`
+export const TitleAction = styled.div`
   margin: 1rem .875rem;
   display: flex;
   align-items: center;
@@ -89,4 +89,9 @@ export const TokenValueBlock = styled.div`
   & > p {
     margin: 0;
   }
+`;
+
+export const SlippageBlock = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
