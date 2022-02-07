@@ -232,15 +232,15 @@ export default function PoolCard({ pool } : { pool:IPool }) {
   const volume: IVolume[] = [
     {
       title: 'Total Liquidity',
-      label: '$34550.53',
+      label: '-',
     },
     {
       title: '24h Volume',
-      label: '$5321.03',
+      label: '-',
     },
     {
       title: 'APR',
-      label: '12%',
+      label: '-',
       color: true,
     },
   ];
