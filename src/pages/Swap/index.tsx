@@ -16,6 +16,7 @@ import getConfig from 'services/config';
 import Big from 'big.js';
 
 import { calculatePriceImpact } from 'services/swap';
+import { useUpdatePoolsService } from 'services/updatePoolService';
 import Input from './SwapInput';
 import SwapSettings from './SwapSettings';
 import {
@@ -82,6 +83,7 @@ export default function Swap() {
     loading,
     currentPools,
     tokens,
+    updatePools,
   } = useStore();
   const config = getConfig();
 
@@ -111,6 +113,8 @@ export default function Swap() {
     },
     [],
   );
+
+  useUpdatePoolsService(wallet, currentPools, updatePools);
 
   const changeToken = () => {
     const oldOutputToken = outputToken;

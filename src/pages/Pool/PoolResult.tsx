@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useStore } from 'store';
 import { FilterPoolsEnum } from 'pages/Pool';
 import { toArray } from 'utils';
+import Big from 'big.js';
 import PoolCard from './PoolCard';
 
 const Wrapper = styled.div`
@@ -15,7 +16,18 @@ const Wrapper = styled.div`
 export default function PoolResult({ currentFilterPools }:{currentFilterPools:FilterPoolsEnum}) {
   const { pools } = useStore();
   if (currentFilterPools === FilterPoolsEnum['Your Liquidity']) {
-    return null;
+    const filteredPools = toArray(pools)
+      .filter((pool) => pool.shares && Big(pool.shares).gt(0));
+    return (
+      <Wrapper>
+        {filteredPools.map((pool) => (
+          <PoolCard
+            key={pool.id}
+            pool={pool}
+          />
+        ))}
+      </Wrapper>
+    );
   }
 
   return (
