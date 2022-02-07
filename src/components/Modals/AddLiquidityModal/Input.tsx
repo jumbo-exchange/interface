@@ -136,16 +136,14 @@ const getCurrentBalance = (
 
 export default function Input({
   token,
-  tokenType,
   value,
   setValue,
   balance,
 }:
 {
   token: FungibleTokenContract | null,
-  tokenType: TokenType,
   value: string,
-  setValue: React.Dispatch<React.SetStateAction<string>>,
+  setValue: (value: string)=> void,
   balance: string,
 }) {
   const currentBalance = new Big(balance ?? 0);
@@ -170,17 +168,12 @@ export default function Input({
           <LogoWallet />
           {getCurrentBalance(currentBalance, token)}
         </WalletInformation>
-        {(tokenType === TokenType.Input) && (
-          <>
-            <ButtonHalfWallet onClick={setHalfAmount}>
-              <span>HALF</span>
-            </ButtonHalfWallet>
-            <ButtonMaxWallet onClick={setMaxAmount}>
-              <span>MAX</span>
-            </ButtonMaxWallet>
-          </>
-        )}
-
+        <ButtonHalfWallet onClick={setHalfAmount}>
+          <span>HALF</span>
+        </ButtonHalfWallet>
+        <ButtonMaxWallet onClick={setMaxAmount}>
+          <span>MAX</span>
+        </ButtonMaxWallet>
       </InputLabel>
       <InputContainer>
         <LogoContainer>

@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { ButtonPrimary, ButtonSecondary } from 'components/Button';
 import { wallet } from 'services/near';
-import { getUpperCase, toArray } from 'utils';
+import { getUpperCase } from 'utils';
 import {
   useStore, useModalsStore, TokenType, NEAR_TOKEN_ID,
 } from 'store';
@@ -9,7 +9,7 @@ import { FEE_DIVISOR, SLIPPAGE_TOLERANCE_DEFAULT } from 'utils/constants';
 import SwapContract from 'services/SwapContract';
 import useDebounce from 'hooks/useDebounce';
 import {
-  formatTokenAmount, parseTokenAmount, removeTrailingZeros, percentLess,
+  formatTokenAmount, parseTokenAmount, removeTrailingZeros, percentLess, checkInvalidAmount,
 } from 'utils/calculations';
 import FungibleTokenContract from 'services/FungibleToken';
 import getConfig from 'services/config';
@@ -71,18 +71,6 @@ const RenderButton = ({
       {title}
     </ButtonSecondary>
   );
-};
-
-const checkInvalidAmount = (
-  balances: {[key:string]: string},
-  token: FungibleTokenContract | null,
-  amount: string,
-) => {
-  if (amount === '') return true;
-  if (!token || !toArray(balances).length) return false;
-  const balance = token ? balances[token.contractId] : '0';
-  return Big(amount)
-    .gt(formatTokenAmount(balance, token.metadata.decimals, 0));
 };
 
 export default function Swap() {

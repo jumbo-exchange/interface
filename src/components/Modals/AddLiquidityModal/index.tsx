@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
-import { TokenType, useModalsStore, useStore } from 'store';
+import { useModalsStore, useStore } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
 import { ButtonPrimary } from 'components/Button';
 import PoolContract from 'services/PoolContract';
 import { useNavigate } from 'react-router-dom';
+import {
+  calculateFairShare,
+  checkInvalidAmount,
+  formatTokenAmount,
+  removeTrailingZeros,
+  toNonDivisibleNumber,
+} from 'utils/calculations';
+
 import {
   Layout, ModalBlock, ModalIcon,
 } from '../styles';
@@ -28,12 +36,77 @@ export default function AddLiquidityModal() {
   const [outputTokenValue, setOutputTokenValue] = useState<string>('');
 
   const { addLiquidityModalOpenState, setAddLiquidityModalOpenState } = useModalsStore();
-  if (!addLiquidityModalOpenState.pool) return null;
-  const [tokenInputName, tokenOutputName] = addLiquidityModalOpenState.pool.tokenAccountIds;
+  const { pool } = addLiquidityModalOpenState;
+
+  if (!pool) return null;
+  const [tokenInputName, tokenOutputName] = pool.tokenAccountIds;
 
   const tokenInput = tokens[tokenInputName] ?? null;
   const tokenOutput = tokens[tokenOutputName] ?? null;
   if (!tokenInput || !tokenOutput) return null;
+
+  const [inputTokenSupplies, outputTokenSupplies] = Object.values(pool.supplies).map(
+    (el) => el,
+  );
+
+  const handleInputChange = (value: string) => {
+    if (Object.values(pool.supplies).every((s) => s === '0')) {
+      setInputTokenValue(value);
+    } else {
+      const fairShares = calculateFairShare(
+        pool.sharesTotalSupply,
+        toNonDivisibleNumber(tokenInput.metadata.decimals, value),
+        inputTokenSupplies,
+      );
+      let outputValue = '';
+      if (value) {
+        outputValue = removeTrailingZeros(
+          formatTokenAmount(
+            calculateFairShare(
+              outputTokenSupplies,
+              fairShares,
+              pool.sharesTotalSupply,
+            ),
+            tokenOutput.metadata.decimals,
+          ),
+        );
+      }
+      setInputTokenValue(value);
+      setOutputTokenValue(outputValue);
+    }
+  };
+
+  const handleOutputChange = (value: string) => {
+    if (Object.values(pool.supplies).every((s) => s === '0')) {
+      setOutputTokenValue(value);
+    } else {
+      const fairShares = calculateFairShare(
+        pool.sharesTotalSupply,
+        toNonDivisibleNumber(tokenOutput.metadata.decimals, value),
+        outputTokenSupplies,
+      );
+      let inputValue = '';
+      if (value) {
+        inputValue = removeTrailingZeros(
+          formatTokenAmount(
+            calculateFairShare(
+              inputTokenSupplies,
+              fairShares,
+              pool.sharesTotalSupply,
+            ),
+            tokenInput.metadata.decimals,
+          ),
+        );
+      }
+      setOutputTokenValue(value);
+      setInputTokenValue(inputValue);
+    }
+  };
+
+  const canAddLiquidity = !!inputTokenValue
+  && !!outputTokenValue
+  && !checkInvalidAmount(balances, tokenInput, inputTokenValue)
+  && !checkInvalidAmount(balances, tokenOutput, outputTokenValue);
 
   return (
     <>
@@ -59,17 +132,15 @@ export default function AddLiquidityModal() {
           <ModalBody>
             <Input
               token={tokenInput}
-              tokenType={TokenType.Input}
               value={inputTokenValue}
-              setValue={setInputTokenValue}
+              setValue={handleInputChange}
               balance={balances[tokenInput.contractId ?? '']}
             />
             <LogoContainerAdd />
             <Input
               token={tokenOutput}
-              tokenType={TokenType.Output}
               value={outputTokenValue}
-              setValue={setOutputTokenValue}
+              setValue={handleOutputChange}
               balance={balances[tokenOutput.contractId ?? '']}
             />
             <RefreshBlock>
@@ -77,15 +148,16 @@ export default function AddLiquidityModal() {
               Refresh
             </RefreshBlock>
             <ButtonPrimary
+              disabled={!canAddLiquidity}
               onClick={() => {
                 const contract = new PoolContract();
-                if (!tokenInput || !tokenOutput || !addLiquidityModalOpenState.pool) return;
+                if (!tokenInput || !tokenOutput || !pool) return;
                 contract.addLiquidity({
                   tokenAmounts: [
                     { token: tokenInput, amount: inputTokenValue },
                     { token: tokenOutput, amount: outputTokenValue },
                   ],
-                  pool: addLiquidityModalOpenState.pool,
+                  pool,
                 });
               }}
             >

@@ -1,10 +1,9 @@
 import React, { PropsWithChildren } from 'react';
-import { ButtonPrimary, ButtonSecondary, ButtonClaim } from 'components/Button';
+import { ButtonPrimary, ButtonSecondary } from 'components/Button';
 import { IPool, useStore } from 'store';
 import styled from 'styled-components';
 import { SpecialContainer } from 'components/SpecialContainer';
 import Tooltip from 'components/Tooltip';
-import { isMobile } from 'utils/userAgent';
 import { useNavigate } from 'react-router-dom';
 import Big from 'big.js';
 
@@ -123,15 +122,6 @@ const MiceBlock = styled(JumboBlock)`
   background-color: ${({ theme }) => theme.miceLabel};
 `;
 
-const BtnClaim = styled(ButtonClaim)`
-  margin-left: 1.5rem;
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    height: 48px;
-    margin: 0;
-    width: 100%;
-  `}
-`;
-
 const BlockVolume = styled.div`
   display: flex;
   width: 100%;
@@ -199,26 +189,6 @@ interface IVolume {
   color?: boolean;
 }
 
-const RenderClaimButton = (
-  {
-    show,
-    getClaim,
-  }:{
-    show:boolean,
-    getClaim:() => void
-  },
-) => {
-  if (show) {
-    return (
-      <BtnClaim onClick={getClaim}>
-        <span>50.5004648 DAI</span>
-        <span>Claim</span>
-      </BtnClaim>
-    );
-  }
-  return null;
-};
-
 export default function PoolCard({ pool } : { pool:IPool }) {
   const { tokens } = useStore();
   const navigate = useNavigate();
@@ -245,10 +215,6 @@ export default function PoolCard({ pool } : { pool:IPool }) {
     },
   ];
 
-  const getClaim = () => {
-    console.log('Claim');
-  };
-
   const canWithdraw = pool.shares === '0' || pool.shares === undefined || Big(pool.shares) === Big('0');
 
   return (
@@ -268,7 +234,6 @@ export default function PoolCard({ pool } : { pool:IPool }) {
         <LabelPool>
           <JumboBlock>Jumbo</JumboBlock>
           <MiceBlock>Mice</MiceBlock>
-          <RenderClaimButton show={!isMobile} getClaim={getClaim} />
         </LabelPool>
       </UpperRow>
       <LowerRow>
@@ -283,7 +248,6 @@ export default function PoolCard({ pool } : { pool:IPool }) {
             </Column>
           ))}
         </BlockVolume>
-        <RenderClaimButton show={isMobile} getClaim={getClaim} />
         <BlockButton>
           {!canWithdraw && (
           <BtnSecondary
