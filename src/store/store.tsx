@@ -75,13 +75,13 @@ export const StoreContextProvider = (
       if (!inputToken) return;
       const outputTokenData = tokens[tokenAddress] ?? null;
       setOutputToken(outputTokenData);
-      const availablePools = getPoolsPath(inputToken.contractId, tokenAddress, poolArray);
+      const availablePools = getPoolsPath(inputToken.contractId, tokenAddress, poolArray, tokens);
       setCurrentPools(availablePools);
     } else {
       if (!outputToken) return;
       const inputTokenData = tokens[tokenAddress] ?? null;
       setInputToken(inputTokenData);
-      const availablePools = getPoolsPath(tokenAddress, outputToken.contractId, poolArray);
+      const availablePools = getPoolsPath(tokenAddress, outputToken.contractId, poolArray, tokens);
       setCurrentPools(availablePools);
     }
   };
@@ -178,6 +178,7 @@ export const StoreContextProvider = (
         inputTokenData.contractId,
         outputTokenData.contractId,
         toArray(pools),
+        tokens,
       );
       setCurrentPools(availablePools);
     }

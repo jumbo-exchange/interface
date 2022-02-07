@@ -1,5 +1,7 @@
 import Big from 'big.js';
+import FungibleTokenContract from 'services/FungibleToken';
 import { IPool, PoolType } from 'store';
+import { formatTokenAmount } from './calculations';
 
 const ACCOUNT_TRIM_LENGTH = 8;
 
@@ -40,24 +42,41 @@ export interface IVertex {
   predecessor: IVertex | null;
 }
 
+export const sortPoolsByLiquidity = (
+  pools:IPool[], tokens: {[key:string]: FungibleTokenContract},
+) => (
+  pools.sort((first, second) => {
+    const firstPoolLiquidity = Object.entries(first.supplies)
+      .reduce((acc, [key, value]) => acc.add(
+        formatTokenAmount(value, tokens[key as string].metadata.decimals),
+      ), Big(0));
+    const secondPoolLiquidity = Object.entries(second.supplies)
+      .reduce((acc, [key, value]) => acc.add(
+        formatTokenAmount(value, tokens[key as string].metadata.decimals),
+      ), Big(0));
+    return secondPoolLiquidity.minus(firstPoolLiquidity).toNumber();
+  })
+);
+
 export function getPoolsPath(
   tokenAddressInput: string,
   tokenAddressOutput: string,
   pools: IPool[],
+  tokensMap: {[key:string]: FungibleTokenContract},
 ) :IPool[] {
   const tokens = pools.map((pool) => pool.tokenAccountIds).flat();
   if (!tokens.includes(tokenAddressInput) || !tokens.includes(tokenAddressOutput)) return [];
   if (tokenAddressInput === tokenAddressOutput) return [];
-
-  const directSwap = pools.find(
+  const sortedPools = sortPoolsByLiquidity(pools, tokensMap);
+  const directSwap = sortedPools.find(
     (pool) => pool.tokenAccountIds.includes(tokenAddressInput)
     && pool.tokenAccountIds.includes(tokenAddressOutput),
   );
   if (directSwap) return [directSwap];
-  const inputTokenPools = pools.filter((pool) => pool.tokenAccountIds.includes(tokenAddressInput));
-  const outputTokenPools = pools.filter(
-    (pool) => pool.tokenAccountIds.includes(tokenAddressOutput),
-  );
+  const inputTokenPools = sortedPools
+    .filter((pool) => pool.tokenAccountIds.includes(tokenAddressInput));
+  const outputTokenPools = sortedPools
+    .filter((pool) => pool.tokenAccountIds.includes(tokenAddressOutput));
   const outputTokens = outputTokenPools.map((el) => el.tokenAccountIds).flat();
   const intersectionPairs = inputTokenPools
     .map((el) => el.tokenAccountIds)
