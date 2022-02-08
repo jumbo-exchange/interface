@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import FungibleTokenContract from 'services/FungibleToken';
+import { IPoolVolumes } from 'services/PoolContract';
 import SpecialWallet from 'services/wallet';
 
 export enum StatusLink { Swap = 'swap', Pool ='pool', Farm = 'farm' }
@@ -22,7 +23,7 @@ export interface IPool {
   amp: string;
 
   shares?: string;
-  volumes?: { [key: string]: string };
+  volumes?: IPoolVolumes ;
 }
 
 export interface ITokenMetadata {
@@ -56,6 +57,7 @@ export type StoreContextType = {
   setInputToken: Dispatch<SetStateAction<FungibleTokenContract | null>>;
   outputToken: FungibleTokenContract | null;
   setOutputToken: Dispatch<SetStateAction<FungibleTokenContract | null>>;
+  updatePools: (newPools: IPool[]) => void;
 }
 
 export const contractMethods = [

@@ -132,6 +132,13 @@ const SearchSubtitle = styled.div`
   transition: all 1s ease;
 `;
 
+const NoResultContainer = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+`;
+
 const getCurrentBalance = (
   balances: {[key: string]: string;},
   token: FungibleTokenContract,
@@ -149,7 +156,7 @@ const getCurrentPrice = (
 ) => {
   const currentBalance = formatTokenAmount(balances[token.contractId], token.metadata.decimals);
   if (currentBalance !== '0') {
-    return '~$3141';
+    return 'Price Unavailable';
   }
   return '-';
 };
@@ -183,7 +190,7 @@ export default function SearchRow({ tokensArray }:{tokensArray: FungibleTokenCon
 
   return (
     <>
-      {tokensArray.map((token) => {
+      {tokensArray.length ? tokensArray.map((token) => {
         getCurrentToken(inputToken, outputToken, token, isSearchModalOpen.tokenType);
         return (
           <Container
@@ -210,7 +217,11 @@ export default function SearchRow({ tokensArray }:{tokensArray: FungibleTokenCon
             </SearchRowContainer>
           </Container>
         );
-      })}
+      }) : (
+        <NoResultContainer>
+          <p>No results found</p>
+        </NoResultContainer>
+      )}
     </>
   );
 }
