@@ -133,7 +133,9 @@ export default function RenderWarning() {
     );
   }
 
-  if (!loading && inputToken === near && (havePoolPathInputToken || havePoolPathOutputToken)) {
+  if (!loading
+    && (inputToken === near || outputToken === near)
+    && (havePoolPathInputToken || havePoolPathOutputToken)) {
     return (
       <WarningBlock>
         <Warning
