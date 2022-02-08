@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import Big from 'big.js';
+import PoolContract from 'services/PoolContract';
 import { useModalsStore, TokenType, useStore } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
 import { TOTAL_FEE_DEFAULT } from 'utils/constants';
 import { ButtonPrimary } from 'components/Button';
-import PoolContract from 'services/PoolContract';
+import { wallet } from 'services/near';
 import { Layout, ModalBlock, ModalIcon } from '../styles';
 import {
   LiquidityModalContainer,
@@ -16,11 +17,13 @@ import TokenBlock from './TokenBlock';
 import CreatePoolSettings from './CreatePoolSetting';
 
 export default function CreatePoolModal() {
+  const isConnected = wallet.isSignedIn();
   const { inputToken, outputToken } = useStore();
   const { isCreatePoolModalOpen, setCreatePoolModalOpen } = useModalsStore();
   const [fee, setFee] = useState(TOTAL_FEE_DEFAULT);
 
-  const canCreatePool = !!fee
+  const canCreatePool = isConnected
+  && !!fee
   && new Big(fee).gt('0.01')
   && new Big(fee).lt('20')
   && !!inputToken

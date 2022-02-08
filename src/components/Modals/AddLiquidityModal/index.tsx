@@ -11,7 +11,7 @@ import {
   removeTrailingZeros,
   toNonDivisibleNumber,
 } from 'utils/calculations';
-
+import { wallet } from 'services/near';
 import {
   Layout, ModalBlock, ModalIcon,
 } from '../styles';
@@ -27,6 +27,7 @@ import {
 } from './styles';
 
 export default function AddLiquidityModal() {
+  const isConnected = wallet.isSignedIn();
   const {
     tokens,
     balances,
@@ -103,7 +104,8 @@ export default function AddLiquidityModal() {
     }
   };
 
-  const canAddLiquidity = !!inputTokenValue
+  const canAddLiquidity = isConnected
+  && !!inputTokenValue
   && !!outputTokenValue
   && !checkInvalidAmount(balances, tokenInput, inputTokenValue)
   && !checkInvalidAmount(balances, tokenOutput, outputTokenValue);
