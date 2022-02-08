@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import styled from 'styled-components';
 import {
   initialModalsState, NEAR_TOKEN_ID, useModalsStore, useStore,
 } from 'store';
 import getConfig from 'services/config';
+import { getCurrentToken } from './constants';
 
 const config = getConfig();
+
+interface ICurrentToken {
+  isActive?: boolean
+}
 
 const Container = styled.div`
   display: flex;
@@ -13,15 +18,6 @@ const Container = styled.div`
   padding: 0 .5rem .5rem .5rem;
   position: relative;
   width: 100%;
-  ::after {
-    content: '';
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 1px;
-    background-color: ${({ theme }) => theme.globalGreyOp04};
-  }
 `;
 
 const Title = styled.div`
@@ -46,11 +42,14 @@ const TokensContainer = styled.div`
   flex-wrap: wrap;
 `;
 
-const TokenBlock = styled.div`
+const TokenBlock = styled.div<PropsWithChildren<ICurrentToken>>`
   display: flex;
   align-items: center;
   margin-right: 1.5rem;
   margin-top: 1.5rem;
+  background-color: ${({ theme, isActive }) => (isActive ? theme.globalGreyOp01 : 'none')};
+  padding: 5px;
+  border-radius: 12px;
   & > img {
     width: 1.5rem;
     height: 1.5rem;
@@ -92,6 +91,8 @@ const TokenTitle = styled.div`
 export default function PopularToken() {
   const {
     tokens,
+    inputToken,
+    outputToken,
     loading,
     setCurrentToken,
   } = useStore();
@@ -109,6 +110,7 @@ export default function PopularToken() {
         {tokensArray.map((token) => (
           <TokenBlock
             key={token.contractId}
+            isActive={getCurrentToken(inputToken, outputToken, token, isSearchModalOpen.tokenType)}
             onClick={() => {
               setCurrentToken(token.contractId, isSearchModalOpen.tokenType);
               setSearchModalOpen(initialModalsState.isSearchModalOpen);

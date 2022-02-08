@@ -1,13 +1,12 @@
 import React, { PropsWithChildren } from 'react';
-import Big from 'big.js';
 import styled from 'styled-components';
 import { wallet } from 'services/near';
 import {
-  initialModalsState, TokenType, useModalsStore, useStore,
+  initialModalsState, useModalsStore, useStore,
 } from 'store';
-import { formatTokenAmount } from 'utils/calculations';
 
 import FungibleTokenContract from 'services/FungibleToken';
+import { getCurrentBalance, getCurrentPrice, getCurrentToken } from './constants';
 
 interface ICurrentToken {
   isActive?: boolean
@@ -139,42 +138,6 @@ const NoResultContainer = styled.div`
     align-items: center;
     text-align: center;
 `;
-
-const getCurrentBalance = (
-  balances: {[key: string]: string;},
-  token: FungibleTokenContract,
-) => {
-  const currentBalance = formatTokenAmount(balances[token.contractId], token.metadata.decimals);
-  if (currentBalance !== '0') {
-    return new Big(currentBalance).toFixed(3);
-  }
-  return 0;
-};
-
-const getCurrentPrice = (
-  balances: {[key: string]: string;},
-  token: FungibleTokenContract,
-) => {
-  const currentBalance = formatTokenAmount(balances[token.contractId], token.metadata.decimals);
-  if (currentBalance !== '0') {
-    return 'Price Unavailable';
-  }
-  return '-';
-};
-
-const getCurrentToken = (
-  inputToken: FungibleTokenContract | null,
-  outputToken: FungibleTokenContract | null,
-  token: FungibleTokenContract | null,
-  tokenType: TokenType,
-) => {
-  if (inputToken === token && tokenType === TokenType.Input) {
-    return true;
-  } if (outputToken === token && tokenType === TokenType.Output) {
-    return true;
-  }
-  return false;
-};
 
 export default function SearchRow({ tokensArray }:{tokensArray: FungibleTokenContract[]}) {
   const isConnected = wallet.isSignedIn();
