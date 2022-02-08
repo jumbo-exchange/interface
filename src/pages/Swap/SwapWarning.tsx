@@ -93,7 +93,12 @@ export default function RenderWarning() {
   const havePoolPathInputToken = poolPathInputToken.length !== 0;
   const havePoolPathOutputToken = poolPathOutputToken.length !== 0;
 
-  if (!loading && inputToken === near && outputToken === wNear) {
+  if (!loading
+    && (
+      (inputToken === near && outputToken === wNear)
+      || (inputToken === wNear && outputToken === near)
+    )
+  ) {
     return null;
   }
 
