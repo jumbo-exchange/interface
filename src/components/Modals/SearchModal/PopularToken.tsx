@@ -1,15 +1,18 @@
 import React from 'react';
 import styled from 'styled-components';
 import {
-  initialModalsState, useModalsStore, useStore,
+  initialModalsState, NEAR_TOKEN_ID, useModalsStore, useStore,
 } from 'store';
-import FungibleTokenContract from 'services/FungibleToken';
+import getConfig from 'services/config';
+
+const config = getConfig();
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0 .5rem .5rem .5rem;
   position: relative;
+  width: 100%;
   ::after {
     content: '';
     position: absolute;
@@ -86,14 +89,19 @@ const TokenTitle = styled.div`
   line-height: 1.188rem;
 `;
 
-export default function PopularToken({ tokensArray } : {tokensArray: FungibleTokenContract[]}) {
+export default function PopularToken() {
   const {
+    tokens,
     loading,
     setCurrentToken,
   } = useStore();
   const { isSearchModalOpen, setSearchModalOpen } = useModalsStore();
   if (loading) return <h1>Loading</h1>;
 
+  const near = tokens[NEAR_TOKEN_ID] ?? null;
+  const wNear = tokens[config.nearAddress] ?? null;
+
+  const tokensArray = [near, wNear];
   return (
     <Container>
       <Title>Popular</Title>

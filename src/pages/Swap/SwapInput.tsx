@@ -49,8 +49,8 @@ const ButtonHalfWallet = styled.button`
     align-items: center;
     text-align: right;
     font-style: normal;
-    font-weight: normal;
-    font-size: 0.75rem;
+    font-weight: 500;
+    font-size: .75rem;
     line-height: .875rem;
     color: ${({ theme }) => theme.globalGrey};
   }
@@ -60,6 +60,18 @@ const ButtonHalfWallet = styled.button`
       color: ${({ theme }) => theme.globalWhite};
     }
   }
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    & > span {
+      font-size: 1.125rem;
+      line-height: 1.313rem;
+    }
+  `}
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    & > span {
+      font-size: .75rem;
+      line-height: .875rem;
+    }
+  `}
 `;
 
 const ButtonMaxWallet = styled(ButtonHalfWallet)`

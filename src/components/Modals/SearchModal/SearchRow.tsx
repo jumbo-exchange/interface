@@ -46,7 +46,8 @@ const Container = styled.div<PropsWithChildren<ICurrentToken>>`
   `}
   transition: all 1s ease;
   :hover {
-    cursor: pointer;
+    cursor: ${({ isActive }) => (isActive ? 'default' : 'pointer')};
+    background-color: ${({ theme }) => theme.globalGreyOp01};
   }
 `;
 
@@ -199,6 +200,9 @@ export default function SearchRow({ tokensArray }:{tokensArray: FungibleTokenCon
           >
             <SearchRowContainer
               onClick={() => {
+                if (getCurrentToken(inputToken, outputToken, token, isSearchModalOpen.tokenType)) {
+                  return;
+                }
                 setCurrentToken(token.contractId, isSearchModalOpen.tokenType);
                 setSearchModalOpen(initialModalsState.isSearchModalOpen);
               }}

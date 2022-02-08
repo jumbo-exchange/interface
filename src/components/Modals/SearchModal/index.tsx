@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { ReactComponent as CloseIcon } from 'assets/images-app/close.svg';
 import { ReactComponent as SearchIcon } from 'assets/images-app/search-icon.svg';
+import { ReactComponent as ClearSearch } from 'assets/images-app/clear-search.svg';
 
 import {
   initialModalsState, useModalsStore, useStore,
@@ -125,6 +126,12 @@ const SearchResults = styled(ModalBlock)`
   }
 `;
 
+const ClearSearchIcon = styled(ClearSearch)`
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+`;
+
 export default function SearchModal() {
   const { loading, tokens } = useStore();
   const { isSearchModalOpen, setSearchModalOpen } = useModalsStore();
@@ -175,10 +182,17 @@ export default function SearchModal() {
                   onChange={onChange}
                   placeholder="Search name or paste address"
                 />
+                {searchValue && (
+                <ClearSearchIcon onClick={() => {
+                  setSearchValue('');
+                  setTokensArray(initialTokens);
+                }}
+                />
+                )}
               </SearchInputContainer>
             </SearchInputBlock>
             <PopularTokenResult>
-              <PopularToken tokensArray={tokensArray} />
+              <PopularToken />
             </PopularTokenResult>
             <SearchResults>
               <SearchRow tokensArray={tokensArray} />
