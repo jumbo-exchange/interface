@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import getConfig from 'services/config';
 import Warning from 'components/Warning';
 import styled from 'styled-components';
 import { warning } from 'utils/constants';
@@ -6,7 +7,7 @@ import { NEAR_TOKEN_ID, useStore } from 'store';
 import { ReactComponent as RouteArrow } from 'assets/images-app/route-arrow.svg';
 import { ReactComponent as Wallet } from 'assets/images-app/wallet.svg';
 import { ButtonSecondary } from 'components/Button';
-import getConfig from 'services/config';
+import { getPoolsPath, toArray } from 'utils';
 
 const config = getConfig();
 
@@ -41,11 +42,16 @@ const LogoWallet = styled(Wallet)`
   margin-right: .313rem;
 `;
 
+const getPool = () => {
+
+};
+
 export default function RenderWarning() {
   const {
     balances,
     loading,
     tokens,
+    pools,
     inputToken,
     setInputToken,
     outputToken,
@@ -55,11 +61,28 @@ export default function RenderWarning() {
   const near = tokens[NEAR_TOKEN_ID] ?? null;
   const wNear = tokens[config.nearAddress] ?? null;
 
+  const poolPathInputToken = getPoolsPath(
+    inputToken?.contractId ?? '',
+    wNear?.contractId,
+    toArray(pools),
+    tokens,
+  );
+  const poolPathOutputToken = getPoolsPath(
+    wNear?.contractId,
+    outputToken?.contractId ?? '',
+    toArray(pools),
+    tokens,
+  );
+  const havePoolPathInputToken = poolPathInputToken.length !== 0;
+  const havePoolPathOutputToken = poolPathOutputToken.length !== 0;
+
   if (!loading && inputToken === near && outputToken === wNear) {
     return null;
   }
 
-  if (!loading && balances[wNear.contractId] === '0' && inputToken === wNear) {
+  if (!loading && balances[wNear.contractId] === '0'
+  && (inputToken === wNear || outputToken === wNear)
+  ) {
     return (
       <WarningBlock>
         <Warning
@@ -96,7 +119,10 @@ export default function RenderWarning() {
     );
   }
 
-  if (!loading && inputToken === near && outputToken !== wNear) {
+  if (!loading
+    && (inputToken === near || outputToken === near)
+    && !havePoolPathInputToken
+    && !havePoolPathOutputToken) {
     return (
       <WarningBlock>
         <Warning
@@ -107,7 +133,7 @@ export default function RenderWarning() {
     );
   }
 
-  if (!loading && inputToken === near) {
+  if (!loading && inputToken === near && (havePoolPathInputToken || havePoolPathOutputToken)) {
     return (
       <WarningBlock>
         <Warning

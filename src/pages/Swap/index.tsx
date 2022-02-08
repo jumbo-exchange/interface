@@ -40,6 +40,8 @@ import {
   RowInfo,
   LabelInfo,
   LogoInfo,
+  TokenImg,
+  RouteArrowLogo,
 } from './styles';
 
 const swapContract = new SwapContract();
@@ -297,10 +299,19 @@ export default function Swap() {
               <RouteBlock>
                 <TitleInfo>Route <LogoInfo /></TitleInfo>
                 <div>
+                  <TokenImg
+                    src={inputToken?.metadata.icon}
+                    alt={inputToken?.metadata.symbol}
+                  />
                   {inputToken?.metadata.symbol}
-                  {' '}
-                  {intersectionToken ? `> ${intersectionToken}` : null }
-                  {'> '}
+                  {intersectionToken
+                    ? (<><RouteArrowLogo />${intersectionToken}</>) // TODO: check correct display
+                    : null}
+                  <RouteArrowLogo />
+                  <TokenImg
+                    src={outputToken?.metadata.icon}
+                    alt={outputToken?.metadata.symbol}
+                  />
                   {outputToken?.metadata.symbol}
                 </div>
               </RouteBlock>
