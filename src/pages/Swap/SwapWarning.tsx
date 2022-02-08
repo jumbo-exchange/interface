@@ -25,13 +25,34 @@ const RouteBlock = styled.div`
   & > div {
     display: flex;
     align-items: center;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.188rem;
   }
+  & > button {
+    padding: .625rem;
+    font-weight: 500;
+    font-size: .75rem;
+    line-height: 1.063rem;
+  }
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    & > div {
+      font-size: .75rem;
+      line-height: .875rem;
+    }
+  `}
 `;
 
 const TokenImg = styled.img`
   margin-right: .5rem;
   width: 24px;
   height: 24px;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    margin-right: .25rem;
+    width: 16px;
+    height: 16px;
+  `}
 `;
 
 const RouteArrowLogo = styled(RouteArrow)`
@@ -41,10 +62,6 @@ const RouteArrowLogo = styled(RouteArrow)`
 const LogoWallet = styled(Wallet)`
   margin-right: .313rem;
 `;
-
-const getPool = () => {
-
-};
 
 export default function RenderWarning() {
   const {

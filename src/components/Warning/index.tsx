@@ -26,6 +26,7 @@ const Title = styled.div`
 `;
 
 const Description = styled.div`
+  text-align: left;
   font-style: normal;
   font-weight: 300;
   font-size: .75rem;
