@@ -1,4 +1,6 @@
 import Big, { BigSource } from 'big.js';
+import FungibleTokenContract from 'services/FungibleToken';
+import { toArray } from 'utils';
 
 const BASE = 10;
 
@@ -116,4 +118,16 @@ export const formatBalance = (value: string): string => {
   if (formattedValue.lt('1000')) return formattedValue.toFixed(5);
   if (formattedValue.gt('100000')) return formattedValue.toPrecision(1);
   return formattedValue.toFixed(0);
+};
+
+export const checkInvalidAmount = (
+  balances: {[key:string]: string},
+  token: FungibleTokenContract | null,
+  amount: string,
+) => {
+  if (amount === '') return true;
+  if (!token || !toArray(balances).length) return false;
+  const balance = token ? balances[token.contractId] : '0';
+  return Big(amount)
+    .gt(formatTokenAmount(balance, token.metadata.decimals, 0));
 };

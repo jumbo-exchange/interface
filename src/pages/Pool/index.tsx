@@ -78,22 +78,22 @@ export default function Pool() {
   const mainInfo: IMainInfo[] = [
     {
       title: 'Total Value Locked',
-      label: '$935,059,293',
+      label: '-',
       show: true,
     },
     {
       title: 'Total 24h Volume',
-      label: '$88,890,241',
+      label: '-',
       show: true,
     },
     {
       title: 'JUMBO Price',
-      label: '$9.26',
+      label: '-',
       show: !isMobile,
     },
     {
       title: 'Weekly Emissions',
-      label: '300k NEAR',
+      label: '-',
       show: currentFilterPools === FilterPoolsEnum['All Pools'] && !isMobile, // TODO: checking if some brand is available
     },
   ];

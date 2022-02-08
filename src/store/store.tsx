@@ -16,7 +16,8 @@ import PoolContract from 'services/PoolContract';
 import { PoolType } from './interfaces';
 
 const config = getConfig();
-const INITIAL_POOL_ID = 8;
+const DEFAULT_PAGE_LIMIT = 100;
+
 export const NEAR_TOKEN_ID = 'NEAR';
 const initialState: StoreContextType = {
   loading: false,
@@ -40,6 +41,7 @@ const initialState: StoreContextType = {
   outputToken: null,
   setOutputToken: () => {},
   setCurrentToken: () => {},
+  updatePools: () => {},
 };
 
 const StoreContextHOC = createContext<StoreContextType>(initialState);
@@ -72,13 +74,13 @@ export const StoreContextProvider = (
       if (!inputToken) return;
       const outputTokenData = tokens[tokenAddress] ?? null;
       setOutputToken(outputTokenData);
-      const availablePools = getPoolsPath(inputToken.contractId, tokenAddress, poolArray);
+      const availablePools = getPoolsPath(inputToken.contractId, tokenAddress, poolArray, tokens);
       setCurrentPools(availablePools);
     } else {
       if (!outputToken) return;
       const inputTokenData = tokens[tokenAddress] ?? null;
       setInputToken(inputTokenData);
-      const availablePools = getPoolsPath(tokenAddress, outputToken.contractId, poolArray);
+      const availablePools = getPoolsPath(tokenAddress, outputToken.contractId, poolArray, tokens);
       setCurrentPools(availablePools);
     }
   };
@@ -87,8 +89,16 @@ export const StoreContextProvider = (
     try {
       setLoading(true);
       const isSignedIn = nearWallet.isSignedIn();
+      const poolsLength = await contract.get_number_of_pools();
+      const pages = Math.ceil(poolsLength / DEFAULT_PAGE_LIMIT);
 
-      const poolsResult = await contract.get_pools({ from_index: 0, limit: 100 });
+      const poolsResult = (await Promise.all(
+        [...Array(pages)]
+          .map((_, i) => contract.get_pools(
+            { from_index: i * DEFAULT_PAGE_LIMIT, limit: DEFAULT_PAGE_LIMIT },
+          )),
+      )).flat();
+
       const tokenAddresses = [
         ...poolsResult
           .flatMap((pool: any) => pool.token_account_ids),
@@ -117,25 +127,30 @@ export const StoreContextProvider = (
       if (isSignedIn) {
         setWallet(nearWallet);
         const accountId = nearWallet.getAccountId();
-        const balancesArray = await Promise.all(
-          tokensMetadata.map(async (token) => {
-            const balance = await token.contract.getBalanceOf({ accountId });
-            return { contractId: token.contractId, balance };
-          }),
-        );
-        const balancesMap = balancesArray.reduce((acc, curr) => (
-          { ...acc, [curr.contractId]: curr.balance }
-        ), {});
-        setBalances(balancesMap);
-        newPoolArray = await Promise.all(poolArray.map(async (pool: IPool) => {
-          const volumes = await poolContract.getPoolVolumes(pool);
-          const shares = await poolContract.getSharesInPool(pool.id);
-          return {
-            ...pool,
-            volumes,
-            shares,
-          };
-        }));
+        try {
+          const balancesArray = await Promise.all(
+            tokensMetadata.map(async (token) => {
+              const balance = await token.contract.getBalanceOf({ accountId });
+              return { contractId: token.contractId, balance };
+            }),
+          );
+          const balancesMap = balancesArray.reduce((acc, curr) => (
+            { ...acc, [curr.contractId]: curr.balance }
+          ), {});
+          setBalances(balancesMap);
+          newPoolArray = await Promise.all(poolArray.map(async (pool: IPool) => {
+            const volumes = await poolContract.getPoolVolumes(pool);
+            const shares = await poolContract.getSharesInPool(pool.id);
+
+            return {
+              ...pool,
+              volumes,
+              shares,
+            };
+          }));
+        } catch (e) {
+          console.warn(e, 'while initial loading user specific data');
+        }
       }
       setTokens(tokensMetadata.reduce((acc, curr) => ({ ...acc, [curr.contractId]: curr }), {}));
       setPools(toMap(newPoolArray));
@@ -152,20 +167,25 @@ export const StoreContextProvider = (
 
   useEffect(() => {
     if (toArray(pools).length) {
-      const initialPool = pools[INITIAL_POOL_ID];
-      const outputTokenData = tokens[initialPool.tokenAccountIds[0]] ?? null;
+      const outputTokenData = tokens[config.nearAddress] ?? null;
       setOutputToken(outputTokenData);
-      const inputTokenData = tokens[initialPool.tokenAccountIds[1]] ?? null;
+      const inputTokenData = tokens[NEAR_TOKEN_ID] ?? null;
       setInputToken(inputTokenData);
 
       const availablePools = getPoolsPath(
         inputTokenData.contractId,
         outputTokenData.contractId,
         toArray(pools),
+        tokens,
       );
       setCurrentPools(availablePools);
     }
   }, [toArray(pools).length]);
+
+  const updatePools = (newPools: IPool[]) => {
+    const newPoolSet = newPools.reduce((acc, item) => ({ ...acc, [item.id]: item }), pools);
+    setPools(newPoolSet);
+  };
 
   return (
     <StoreContextHOC.Provider value={{
@@ -180,6 +200,7 @@ export const StoreContextProvider = (
 
       pools,
       setPools,
+      updatePools,
       currentPools,
       setCurrentPools,
       tokens,

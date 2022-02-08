@@ -47,6 +47,7 @@ export const ModalBlock = styled.div`
   flex: 1;
   flex-grow: 0;
   flex-shrink: 0;
+  position: relative;
 `;
 
 export const ModalTitle = styled.h2`
@@ -68,6 +69,8 @@ export const ModalTitle = styled.h2`
 `;
 
 export const ModalIcon = styled.div`
+  position: absolute;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: center;

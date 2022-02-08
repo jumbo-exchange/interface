@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { ButtonPrimary, ButtonSecondary } from 'components/Button';
 import { wallet } from 'services/near';
-import { getUpperCase, toArray } from 'utils';
+import { getUpperCase } from 'utils';
 import {
   useStore, useModalsStore, TokenType, NEAR_TOKEN_ID,
 } from 'store';
@@ -9,13 +9,14 @@ import { FEE_DIVISOR, SLIPPAGE_TOLERANCE_DEFAULT } from 'utils/constants';
 import SwapContract from 'services/SwapContract';
 import useDebounce from 'hooks/useDebounce';
 import {
-  formatTokenAmount, parseTokenAmount, removeTrailingZeros, percentLess,
+  formatTokenAmount, parseTokenAmount, removeTrailingZeros, percentLess, checkInvalidAmount,
 } from 'utils/calculations';
 import FungibleTokenContract from 'services/FungibleToken';
 import getConfig from 'services/config';
 import Big from 'big.js';
 
 import { calculatePriceImpact } from 'services/swap';
+import { useUpdatePoolsService } from 'services/updatePoolService';
 import Input from './SwapInput';
 import SwapSettings from './SwapSettings';
 import {
@@ -72,18 +73,6 @@ const RenderButton = ({
   );
 };
 
-const checkInvalidAmount = (
-  balances: {[key:string]: string},
-  token: FungibleTokenContract | null,
-  amount: string,
-) => {
-  if (amount === '') return true;
-  if (!token || !toArray(balances).length) return false;
-  const balance = token ? balances[token.contractId] : '0';
-  return Big(amount)
-    .gt(formatTokenAmount(balance, token.metadata.decimals, 0));
-};
-
 export default function Swap() {
   const {
     inputToken,
@@ -94,6 +83,7 @@ export default function Swap() {
     loading,
     currentPools,
     tokens,
+    updatePools,
   } = useStore();
   const config = getConfig();
 
@@ -123,6 +113,8 @@ export default function Swap() {
     },
     [],
   );
+
+  useUpdatePoolsService(wallet, currentPools, updatePools);
 
   const changeToken = () => {
     const oldOutputToken = outputToken;
