@@ -97,7 +97,7 @@ const SearchTitle = styled.div`
   font-weight: 500;
   font-size: 1rem;
   line-height: 1.188rem;
-  margin-bottom: .25rem;
+  margin-bottom: .5rem;
   ${({ theme }) => theme.mediaWidth.upToMedium`
     font-size: 1.5rem;
     line-height: 1.75rem;

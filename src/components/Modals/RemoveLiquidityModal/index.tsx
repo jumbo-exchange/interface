@@ -15,15 +15,15 @@ import {
   percentLess,
   parseTokenAmount,
 } from 'utils/calculations';
+import { POOL_SHARES_DECIMALS } from 'utils/constants';
 import { wallet } from 'services/near';
 import Big from 'big.js';
 import Input from './Input';
 import {
-  Layout, ModalBlock, ModalIcon,
+  Layout, ModalBlock, ModalIcon, ModalTitle,
 } from '../styles';
 import {
   LiquidityModalContainer,
-  ModalTitle,
   ModalBody,
   TitleAction,
   WithdrawTokenBlock,
@@ -31,8 +31,6 @@ import {
   TokenBlock,
   TokenValueBlock,
 } from './styles';
-
-export const POOL_SHARES_DECIMALS = 24;
 
 export default function RemoveLiquidityModal() {
   const isConnected = wallet.isSignedIn();

@@ -51,16 +51,14 @@ export const ModalBlock = styled.div`
 `;
 
 export const ModalTitle = styled.h2`
+  text-align: left;
   font-style: normal;
   font-weight: 500;
   font-size: 1rem;
   line-height: 1.188rem;
   margin-block-start: 0;
   margin-block-end: 0;
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    font-size: 1.5rem;
-    line-height: 1.75rem;
-  `}
+  color: ${({ theme }) => theme.globalWhite};
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: 1rem;
     line-height: 1.188rem;

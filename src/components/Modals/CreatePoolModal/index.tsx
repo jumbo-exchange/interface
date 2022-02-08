@@ -6,10 +6,11 @@ import { ReactComponent as Close } from 'assets/images-app/close.svg';
 import { TOTAL_FEE_DEFAULT } from 'utils/constants';
 import { ButtonPrimary } from 'components/Button';
 import { wallet } from 'services/near';
-import { Layout, ModalBlock, ModalIcon } from '../styles';
+import {
+  Layout, ModalBlock, ModalIcon, ModalTitle,
+} from '../styles';
 import {
   LiquidityModalContainer,
-  ModalTitle,
   ModalBody,
   CreateIconContainer,
 } from './styles';
