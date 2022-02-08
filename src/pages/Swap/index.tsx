@@ -18,6 +18,7 @@ import Big from 'big.js';
 import { calculatePriceImpact } from 'services/swap';
 import Input from './SwapInput';
 import SwapSettings from './SwapSettings';
+import RenderWarning from './SwapWarning';
 import {
   Container,
   ActionContainer,
@@ -262,6 +263,7 @@ export default function Swap() {
           {loading ? 'Loading...' : <div>{exchangeLabel}</div>}
         </ExchangeLabel>
       </ExchangeBlock>
+      <RenderWarning />
       <SettingsBlock>
         {
           isSettingsOpen
