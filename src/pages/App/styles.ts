@@ -64,7 +64,9 @@ export const NavBar = styled.div`
   }
 `;
 
-export const NavButton = styled.div<PropsWithChildren<ICurrentTab>>`
+export const NavButton = styled.button<PropsWithChildren<ICurrentTab>>`
+  background-color: transparent;
+  border: none;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -76,6 +78,7 @@ export const NavButton = styled.div<PropsWithChildren<ICurrentTab>>`
   line-height: 1.438rem;
   color: ${({ theme, isActive }) => (isActive ? theme.pink : theme.globalGrey)};
   margin: 0 12px;
+  padding: 0;
   position: relative;
   transition: all .3s ease;
   :after {
@@ -96,6 +99,10 @@ export const NavButton = styled.div<PropsWithChildren<ICurrentTab>>`
   :hover {
     cursor: pointer;
     color: ${({ theme }) => theme.pink}
+  }
+  :disabled {
+    color: ${({ theme }) => theme.globalGreyOp02};
+    cursor: default;
   }
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: 1rem;

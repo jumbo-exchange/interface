@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { SpecialContainer } from 'components/SpecialContainer';
 import { ButtonClaim } from 'components/Button';
+import { ReactComponent as Soon } from 'assets/images-app/logo-soon.svg';
 
 export const Container = styled.div`
   display: flex;
@@ -18,6 +19,7 @@ export const Container = styled.div`
 export const FilterBlock = styled.div`
   display: flex;
   margin-bottom: 2.375rem;
+  align-content: center;
   & > button {
     margin: 0 .625rem;
   }
@@ -76,4 +78,8 @@ export const LabelInfo = styled.div`
 
 export const BtnClaim = styled(ButtonClaim)`
   margin-left: 1rem;
+`;
+
+export const LogoSoon = styled(Soon)`
+  margin-left: .25rem;
 `;
