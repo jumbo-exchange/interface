@@ -1,11 +1,12 @@
 import React, { PropsWithChildren } from 'react';
+import styled from 'styled-components';
+import Tooltip from 'components/Tooltip';
+import Big from 'big.js';
 import { ButtonPrimary, ButtonSecondary } from 'components/Button';
 import { IPool, useStore } from 'store';
-import styled from 'styled-components';
 import { SpecialContainer } from 'components/SpecialContainer';
-import Tooltip from 'components/Tooltip';
 import { useNavigate } from 'react-router-dom';
-import Big from 'big.js';
+import { ReactComponent as AddIcon } from 'assets/images-app/icon-add.svg';
 
 interface IColor {
   isColor?: boolean
@@ -177,12 +178,20 @@ const BtnPrimary = styled(ButtonPrimary)`
     margin: .75rem 0;
   `}
 `;
+
 const BtnSecondary = styled(ButtonSecondary)`
   margin-right: .75rem;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     margin: 0;
   `}
 `;
+
+const LogoButton = styled(AddIcon)`
+  width: 12px;
+  height: 12px;
+  margin-right: .625rem;
+`;
+
 interface IVolume {
   title: string;
   label: string;
@@ -233,7 +242,7 @@ export default function PoolCard({ pool } : { pool:IPool }) {
         </BlockTitle>
         <LabelPool>
           <JumboBlock>Jumbo</JumboBlock>
-          <MiceBlock>Mice</MiceBlock>
+          {/* <MiceBlock>Mice</MiceBlock> */}
         </LabelPool>
       </UpperRow>
       <LowerRow>
@@ -264,7 +273,7 @@ export default function PoolCard({ pool } : { pool:IPool }) {
               navigate(`/app/pool/add-liquidity/${pool.id}`);
             }}
           >
-            Add Liquidity
+            <LogoButton />Add Liquidity
           </BtnPrimary>
         </BlockButton>
       </LowerRow>

@@ -6,18 +6,6 @@ export const LiquidityModalContainer = styled(Modal)`
   min-width: 328px;
 `;
 
-export const ModalTitle = styled.h2`
-  flex: 1;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 1.5rem;
-  line-height: 1.75rem;
-  margin-block-start: 0;
-  margin-block-end: 0;
-  text-align: center;
-  color: ${({ theme }) => theme.globalWhite};
-`;
-
 export const ModalBody = styled.div`
   margin: 0 1.5rem 1.5rem;
   display: flex;
@@ -48,15 +36,10 @@ export const WithdrawTokenBlock = styled.div`
   display: flex;
   flex-direction: row;
   margin: 0 .875rem 2rem;
-  & > div:last-child {
-    flex: 1;
-    justify-content: center;
-  }
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     flex-direction: column;
     margin: 0 .5rem 2rem;
     & > div:last-child {
-      flex: 0;
       justify-content: flex-start;
       margin-top: .75rem;
     }
@@ -75,8 +58,10 @@ export const TokenLogo = styled.div`
 `;
 
 export const TokenBlock = styled.div`
+  flex: 1;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
 `;
 
 export const TokenValueBlock = styled.div`

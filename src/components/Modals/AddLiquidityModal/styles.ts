@@ -7,18 +7,6 @@ export const LiquidityModalContainer = styled(Modal)`
   max-width: 500px;
 `;
 
-export const ModalTitle = styled.h2`
-  flex: 1;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 1.5rem;
-  line-height: 1.75rem;
-  margin-block-start: 0;
-  margin-block-end: 0;
-  text-align: center;
-  color: ${({ theme }) => theme.globalWhite};
-`;
-
 export const ModalBody = styled.div`
   margin: 0 1.5rem 1.5rem;
   display: flex;
@@ -48,4 +36,24 @@ export const LogoButton = styled(AddIcon)`
   width: 12px;
   height: 12px;
   margin-right: .625rem;
+`;
+
+export const YourSharesBlock = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 1rem;
+  line-height: 1.188rem;
+  color: ${({ theme }) => theme.globalGrey};
+  margin-top: 1.5rem;
+  & > span {
+    color: ${({ theme }) => theme.globalWhite};
+  }
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: .75rem;
+    line-height: .875rem;
+  `}
 `;

@@ -1,13 +1,12 @@
 import React, { PropsWithChildren } from 'react';
-import Big from 'big.js';
 import styled from 'styled-components';
 import { wallet } from 'services/near';
 import {
-  initialModalsState, TokenType, useModalsStore, useStore,
+  initialModalsState, useModalsStore, useStore,
 } from 'store';
-import { formatTokenAmount } from 'utils/calculations';
 
 import FungibleTokenContract from 'services/FungibleToken';
+import { getCurrentBalance, getCurrentPrice, isCurrentToken } from './constants';
 
 interface ICurrentToken {
   isActive?: boolean
@@ -46,7 +45,9 @@ const Container = styled.div<PropsWithChildren<ICurrentToken>>`
   `}
   transition: all 1s ease;
   :hover {
-    cursor: pointer;
+    cursor: ${({ isActive }) => (isActive ? 'default' : 'pointer')};
+    background-color: ${({ theme }) => theme.globalGreyOp01};
+    transition: all .2s ease;
   }
 `;
 
@@ -97,7 +98,7 @@ const SearchTitle = styled.div`
   font-weight: 500;
   font-size: 1rem;
   line-height: 1.188rem;
-  margin-bottom: .25rem;
+  margin-bottom: .5rem;
   ${({ theme }) => theme.mediaWidth.upToMedium`
     font-size: 1.5rem;
     line-height: 1.75rem;
@@ -133,47 +134,20 @@ const SearchSubtitle = styled.div`
 `;
 
 const NoResultContainer = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-style: normal;
+  font-weight: 300;
+  font-size: 1rem;
+  line-height: 1.188;
+  margin-top: 2rem;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: .75rem;
+    margin-top: 1.5rem;
+  `}
 `;
-
-const getCurrentBalance = (
-  balances: {[key: string]: string;},
-  token: FungibleTokenContract,
-) => {
-  const currentBalance = formatTokenAmount(balances[token.contractId], token.metadata.decimals);
-  if (currentBalance !== '0') {
-    return new Big(currentBalance).toFixed(3);
-  }
-  return 0;
-};
-
-const getCurrentPrice = (
-  balances: {[key: string]: string;},
-  token: FungibleTokenContract,
-) => {
-  const currentBalance = formatTokenAmount(balances[token.contractId], token.metadata.decimals);
-  if (currentBalance !== '0') {
-    return 'Price Unavailable';
-  }
-  return '-';
-};
-
-const getCurrentToken = (
-  inputToken: FungibleTokenContract | null,
-  outputToken: FungibleTokenContract | null,
-  token: FungibleTokenContract | null,
-  tokenType: TokenType,
-) => {
-  if (inputToken === token && tokenType === TokenType.Input) {
-    return true;
-  } if (outputToken === token && tokenType === TokenType.Output) {
-    return true;
-  }
-  return false;
-};
 
 export default function SearchRow({ tokensArray }:{tokensArray: FungibleTokenContract[]}) {
   const isConnected = wallet.isSignedIn();
@@ -191,14 +165,17 @@ export default function SearchRow({ tokensArray }:{tokensArray: FungibleTokenCon
   return (
     <>
       {tokensArray.length ? tokensArray.map((token) => {
-        getCurrentToken(inputToken, outputToken, token, isSearchModalOpen.tokenType);
+        isCurrentToken(inputToken, outputToken, token, isSearchModalOpen.tokenType);
         return (
           <Container
             key={token.contractId}
-            isActive={getCurrentToken(inputToken, outputToken, token, isSearchModalOpen.tokenType)}
+            isActive={isCurrentToken(inputToken, outputToken, token, isSearchModalOpen.tokenType)}
           >
             <SearchRowContainer
               onClick={() => {
+                if (isCurrentToken(inputToken, outputToken, token, isSearchModalOpen.tokenType)) {
+                  return;
+                }
                 setCurrentToken(token.contractId, isSearchModalOpen.tokenType);
                 setSearchModalOpen(initialModalsState.isSearchModalOpen);
               }}
