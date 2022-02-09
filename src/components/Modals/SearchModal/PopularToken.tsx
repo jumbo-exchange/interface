@@ -1,16 +1,11 @@
-import React, { PropsWithChildren } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import {
   initialModalsState, NEAR_TOKEN_ID, useModalsStore, useStore,
 } from 'store';
 import getConfig from 'services/config';
-import { getCurrentToken } from './constants';
 
 const config = getConfig();
-
-interface ICurrentToken {
-  isActive?: boolean
-}
 
 const Container = styled.div`
   display: flex;
@@ -42,12 +37,11 @@ const TokensContainer = styled.div`
   flex-wrap: wrap;
 `;
 
-const TokenBlock = styled.div<PropsWithChildren<ICurrentToken>>`
+const TokenBlock = styled.div`
   display: flex;
   align-items: center;
   margin-right: 1.5rem;
   margin-top: 1.5rem;
-  background-color: ${({ theme, isActive }) => (isActive ? theme.globalGreyOp01 : 'none')};
   padding: 5px;
   border-radius: 12px;
   & > img {
@@ -75,9 +69,9 @@ const TokenBlock = styled.div<PropsWithChildren<ICurrentToken>>`
       margin-right: .5rem;
     }
   `}
-  transition: all 1s ease;
   :hover {
     cursor: pointer;
+    background-color: ${({ theme }) => theme.globalGreyOp01};
   }
 `;
 
@@ -91,8 +85,6 @@ const TokenTitle = styled.div`
 export default function PopularToken() {
   const {
     tokens,
-    inputToken,
-    outputToken,
     loading,
     setCurrentToken,
   } = useStore();
@@ -102,15 +94,14 @@ export default function PopularToken() {
   const near = tokens[NEAR_TOKEN_ID] ?? null;
   const wNear = tokens[config.nearAddress] ?? null;
 
-  const tokensArray = [near, wNear];
+  const popularTokensArray = [near, wNear];
   return (
     <Container>
       <Title>Popular</Title>
       <TokensContainer>
-        {tokensArray.map((token) => (
+        {popularTokensArray.map((token) => (
           <TokenBlock
             key={token.contractId}
-            isActive={getCurrentToken(inputToken, outputToken, token, isSearchModalOpen.tokenType)}
             onClick={() => {
               setCurrentToken(token.contractId, isSearchModalOpen.tokenType);
               setSearchModalOpen(initialModalsState.isSearchModalOpen);

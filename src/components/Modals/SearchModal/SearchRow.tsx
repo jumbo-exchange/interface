@@ -6,7 +6,7 @@ import {
 } from 'store';
 
 import FungibleTokenContract from 'services/FungibleToken';
-import { getCurrentBalance, getCurrentPrice, getCurrentToken } from './constants';
+import { getCurrentBalance, getCurrentPrice, isCurrentToken } from './constants';
 
 interface ICurrentToken {
   isActive?: boolean
@@ -47,6 +47,7 @@ const Container = styled.div<PropsWithChildren<ICurrentToken>>`
   :hover {
     cursor: ${({ isActive }) => (isActive ? 'default' : 'pointer')};
     background-color: ${({ theme }) => theme.globalGreyOp01};
+    transition: all .2s ease;
   }
 `;
 
@@ -133,10 +134,19 @@ const SearchSubtitle = styled.div`
 `;
 
 const NoResultContainer = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-style: normal;
+  font-weight: 300;
+  font-size: 1rem;
+  line-height: 1.188;
+  margin-top: 2rem;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: .75rem;
+    margin-top: 1.5rem;
+  `}
 `;
 
 export default function SearchRow({ tokensArray }:{tokensArray: FungibleTokenContract[]}) {
@@ -155,15 +165,15 @@ export default function SearchRow({ tokensArray }:{tokensArray: FungibleTokenCon
   return (
     <>
       {tokensArray.length ? tokensArray.map((token) => {
-        getCurrentToken(inputToken, outputToken, token, isSearchModalOpen.tokenType);
+        isCurrentToken(inputToken, outputToken, token, isSearchModalOpen.tokenType);
         return (
           <Container
             key={token.contractId}
-            isActive={getCurrentToken(inputToken, outputToken, token, isSearchModalOpen.tokenType)}
+            isActive={isCurrentToken(inputToken, outputToken, token, isSearchModalOpen.tokenType)}
           >
             <SearchRowContainer
               onClick={() => {
-                if (getCurrentToken(inputToken, outputToken, token, isSearchModalOpen.tokenType)) {
+                if (isCurrentToken(inputToken, outputToken, token, isSearchModalOpen.tokenType)) {
                   return;
                 }
                 setCurrentToken(token.contractId, isSearchModalOpen.tokenType);

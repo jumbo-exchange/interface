@@ -25,7 +25,7 @@ export const getCurrentPrice = (
   return '-';
 };
 
-export const getCurrentToken = (
+export const isCurrentToken = (
   inputToken: FungibleTokenContract | null,
   outputToken: FungibleTokenContract | null,
   token: FungibleTokenContract | null,
