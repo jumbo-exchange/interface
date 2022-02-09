@@ -25,7 +25,7 @@ export const RefreshBlock = styled.div`
   display: flex;
   justify-content: flex-start;
   white-space: nowrap;
-  margin: 1rem .75rem;
+  margin: 2.063rem .75rem;
 `;
 
 export const PlaceHolderGif = styled(PlaceHolderLoader)`
@@ -48,7 +48,7 @@ export const YourSharesBlock = styled.div`
   font-size: 1rem;
   line-height: 1.188rem;
   color: ${({ theme }) => theme.globalGrey};
-  margin-top: 1.5rem;
+  margin: 1.5rem .75rem 0;
   & > span {
     color: ${({ theme }) => theme.globalWhite};
   }

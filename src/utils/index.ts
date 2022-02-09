@@ -3,11 +3,14 @@ import FungibleTokenContract from 'services/FungibleToken';
 import { IPool, PoolType } from 'store';
 import { formatTokenAmount } from './calculations';
 
-const ACCOUNT_TRIM_LENGTH = 8;
+const ACCOUNT_TRIM_LENGTH = 10;
 
-export const trimAccountId = (isMobile: boolean, accountId: string) => (isMobile
-  ? `${accountId.slice(0, ACCOUNT_TRIM_LENGTH)}...` : accountId
-);
+export const trimAccountId = (accountId: string) => {
+  if (accountId.length > 20) {
+    return `${accountId.slice(0, ACCOUNT_TRIM_LENGTH)}...`;
+  }
+  return accountId;
+};
 
 export const getUpperCase = (value:string) => value.toUpperCase();
 

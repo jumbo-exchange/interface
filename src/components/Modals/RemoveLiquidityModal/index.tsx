@@ -11,6 +11,7 @@ import {
   slippageToleranceOptions,
   SLIPPAGE_TOLERANCE_DEFAULT,
   tooltipTitle,
+  POOL_SHARES_DECIMALS,
 } from 'utils/constants';
 import { useModalsStore, useStore } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
@@ -26,9 +27,7 @@ import {
   percentLess,
   parseTokenAmount,
 } from 'utils/calculations';
-import { POOL_SHARES_DECIMALS } from 'utils/constants';
 import { wallet } from 'services/near';
-import Big from 'big.js';
 import Input from './Input';
 import {
   Layout, ModalBlock, ModalIcon, ModalTitle,

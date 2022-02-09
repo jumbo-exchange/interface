@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { SpecialContainer } from 'components/SpecialContainer';
-import { ButtonClaim } from 'components/Button';
 import { ReactComponent as Soon } from 'assets/images-app/logo-soon.svg';
 
 export const Container = styled.div`
@@ -74,10 +73,6 @@ export const LabelInfo = styled.div`
   font-weight: 500;
   font-size: 1rem;
   line-height: 1.188rem;
-`;
-
-export const BtnClaim = styled(ButtonClaim)`
-  margin-left: 1rem;
 `;
 
 export const LogoSoon = styled(Soon)`
