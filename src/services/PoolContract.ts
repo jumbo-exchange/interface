@@ -16,6 +16,16 @@ import { createContract, Transaction } from './wallet';
 import getConfig from './config';
 import FungibleTokenContract from './FungibleToken';
 
+export const registerTokensAction = (contractId: string, tokenIds: string[]) => ({
+  receiverId: contractId,
+  functionCalls: [{
+    methodName: 'register_tokens',
+    args: { token_ids: tokenIds },
+    amount: ONE_YOCTO_NEAR,
+    gas: '30000000000000',
+  }],
+});
+
 const basicViewMethods = [
   'get_return',
   'get_user_storage_state',
@@ -23,6 +33,8 @@ const basicViewMethods = [
   'get_pool_shares',
   'get_pool_volumes',
   'get_deposits',
+  'get_whitelisted_tokens',
+  'get_user_whitelisted_tokens',
 ];
 const basicChangeMethods = [
   'swap',
@@ -115,6 +127,16 @@ export default class PoolContract {
         }],
       });
     }
+    const whitelistedTokens = await this.getWhitelistedTokens();
+
+    pool.tokenAccountIds.forEach((tokenId: string) => {
+      if (!whitelistedTokens.includes(tokenId)) {
+        transactions.push(registerTokensAction(
+          this.contractId, [tokenId],
+        ));
+      }
+    });
+
     const isInputTokenStorage = await inputToken.token.contract.transfer(
       {
         accountId: this.contractId,
@@ -240,6 +262,22 @@ export default class PoolContract {
       return acc;
     }, {});
     return sumValues;
+  }
+
+  async getWhitelistedTokens() {
+    let userWhitelist = [];
+    // @ts-expect-error: Property 'get_whitelisted_tokens' does not exist on type 'Contract'.
+    const globalWhitelist = await this.contract.get_whitelisted_tokens();
+    if (wallet.isSignedIn()) {
+      // @ts-expect-error: Property 'get_user_whitelisted_tokens' does not exist on type 'Contract'.
+      userWhitelist = await this.contract.get_user_whitelisted_tokens(
+        { account_id: wallet.getAccountId() },
+      );
+    }
+    const tokenList = [...globalWhitelist, ...userWhitelist];
+    const uniqueTokens = new Set(tokenList);
+
+    return Array.from(uniqueTokens);
   }
 
   async getSharesInPool(poolId: any, accountId = wallet.getAccountId()) {
