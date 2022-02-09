@@ -90,8 +90,15 @@ export default function RenderWarning() {
     toArray(pools),
     tokens,
   );
-  const havePoolPathInputToken = poolPathInputToken.length !== 0;
-  const havePoolPathOutputToken = poolPathOutputToken.length !== 0;
+  const poolPathToken = getPoolsPath(
+    inputToken?.contractId ?? '',
+    outputToken?.contractId ?? '',
+    toArray(pools),
+    tokens,
+  );
+  const havePoolPathInputToken = poolPathInputToken.length > 0;
+  const havePoolPathOutputToken = poolPathOutputToken.length > 0;
+  const havePoolPathToken = poolPathToken.length > 0;
 
   if (!loading
     && (
@@ -143,20 +150,6 @@ export default function RenderWarning() {
 
   if (!loading
     && (inputToken === near || outputToken === near)
-    && !havePoolPathInputToken
-    && !havePoolPathOutputToken) {
-    return (
-      <WarningBlock>
-        <Warning
-          title={warning.doesNotExist}
-        />
-
-      </WarningBlock>
-    );
-  }
-
-  if (!loading
-    && (inputToken === near || outputToken === near)
     && (havePoolPathInputToken || havePoolPathOutputToken)) {
     return (
       <WarningBlock>
@@ -192,5 +185,18 @@ export default function RenderWarning() {
       </WarningBlock>
     );
   }
+
+  if (!loading
+    && !havePoolPathToken) {
+    return (
+      <WarningBlock>
+        <Warning
+          title={warning.doesNotExist}
+        />
+
+      </WarningBlock>
+    );
+  }
+
   return null;
 }

@@ -223,8 +223,11 @@ export default function Swap() {
     });
   };
 
-  const intersectionToken = currentPools.length === 2
+  const intersectionTokenId = currentPools.length === 2
     ? currentPools[0].tokenAccountIds.find((el) => el !== inputToken?.contractId) : null;
+
+  const intersectionToken = tokens[intersectionTokenId ?? ''] ?? null;
+
   const canSwap = !!slippageTolerance
     && (!!inputTokenValue && !!outputTokenValue)
     && currentPools.length > 0;
@@ -304,8 +307,17 @@ export default function Swap() {
                     alt={inputToken?.metadata.symbol}
                   />
                   {inputToken?.metadata.symbol}
-                  {intersectionToken
-                    ? (<><RouteArrowLogo />${intersectionToken}</>) // TODO: check correct display
+                  {intersectionTokenId
+                    ? (
+                      <>
+                        <RouteArrowLogo />
+                        <TokenImg
+                          src={intersectionToken?.metadata.icon}
+                          alt={intersectionToken?.metadata.symbol}
+                        />
+                        {intersectionToken?.metadata.symbol}
+                      </>
+                    ) // TODO: check correct display
                     : null}
                   <RouteArrowLogo />
                   <TokenImg
