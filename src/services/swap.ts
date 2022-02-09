@@ -62,6 +62,9 @@ export const calculatePriceImpact = (
   tokens: {[key: string]: FungibleTokenContract},
 ) => {
   if (!tokenIn || !tokenOut || !tokenInAmount || !pools.length) return '0';
+  const amounts = pools.map((pool) => pool.amounts).flat();
+  if (!amounts.every((amount) => Big(amount).gt('0'))) return '0';
+
   if (Big(tokenInAmount).lte(0)) return '0';
   let generalMarketPrice = new Big(0);
 
