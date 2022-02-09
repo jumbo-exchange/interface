@@ -59,6 +59,8 @@ export default function App() {
           <CustomLink to="pool">
             Pool
           </CustomLink>
+          <NavButton disabled>Staking</NavButton>
+          <NavButton disabled>...</NavButton>
         </NavBar>
         <BlockButton>
           <ConnectionButton />

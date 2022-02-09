@@ -65,6 +65,8 @@ export interface ThemeColors {
 
   jumboLabel: string;
   miceLabel: string;
+
+  warningBg: string;
 }
 
 export const colors: ThemeColors = {
@@ -114,6 +116,8 @@ export const colors: ThemeColors = {
 
   jumboLabel: '#47872B',
   miceLabel: '#A91BAC',
+
+  warningBg: '#4C2739',
 };
 
 function theme(): DefaultTheme {

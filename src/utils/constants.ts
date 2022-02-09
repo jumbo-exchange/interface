@@ -27,6 +27,14 @@ export const tooltipTitle = {
   slippageTolerance: 'Slippage means the difference between what  you expect to get and what you actually get due to other executing first',
 };
 
+export const warning = {
+  zeroBalance: 'Zero balance',
+  zeroBalanceDesc: 'Insufficient balance of wNEAR. Swap NEAR to wNEAR in order to proceed by clicking “Go to Pair”',
+  doesNotExist: 'The given pair doesn\'t exist',
+  noSuchPairExists: 'No such pair exists',
+  noSuchPairExistsDesc: 'In order to trade wNEAR is needed. Click “Go to Pair” to Swap NEAR to wNEAR',
+};
+
 export const poolFeeOptions = [
   { label: '0.20%', value: '0.20' },
   { label: '0.30%', value: '0.30' },

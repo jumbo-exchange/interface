@@ -12,6 +12,7 @@ import {
   TitleInfo,
   LabelInfo,
   BtnClaim,
+  LogoSoon,
 } from './styles';
 import PoolSettings from './PoolSettings';
 import PoolResult from './PoolResult';
@@ -27,6 +28,7 @@ interface IFilters {
   title: string
   isActive: FilterPoolsEnum,
   disabled?: boolean,
+  logoSoon?: boolean,
 }
 
 const filters: IFilters[] = [
@@ -47,6 +49,7 @@ const filters: IFilters[] = [
     title: 'Smart Pools',
     isActive: FilterPoolsEnum['Smart Pools'],
     disabled: true,
+    logoSoon: !isMobile,
   },
 ];
 
@@ -109,6 +112,7 @@ export default function Pool() {
             disabled={el.disabled}
           >
             {el.title}
+            {el.logoSoon && <LogoSoon />}
           </FilterButton>
         ))}
       </FilterBlock>

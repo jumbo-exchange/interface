@@ -7,6 +7,7 @@ import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-do
 import { ReactComponent as Exchange } from 'assets/images-app/exchange.svg';
 import { ReactComponent as PlaceHolderLoader } from 'assets/images-app/placeholder-loader.svg';
 import { ReactComponent as Info } from 'assets/images-app/info.svg';
+import { ReactComponent as RouteArrow } from 'assets/images-app/route-arrow.svg';
 
 interface ICurrent {
   isActive?: boolean
@@ -162,6 +163,8 @@ export const RouteBlock = styled.div`
   margin-bottom: 2rem;
   & > div {
     margin-top: 1rem;
+    display: flex;
+    align-items: center;
   }
 `;
 
@@ -190,4 +193,14 @@ export const LabelInfo = styled.p<PropsWithChildren<IColor>>`
   line-height: 14px;
   color: ${({ theme, isColor = false }) => (isColor ? theme.globalGreen : theme.globalWhite)};
   margin: 0;
+`;
+
+export const TokenImg = styled.img`
+  margin-right: .5rem;
+  width: 24px;
+  height: 24px;
+`;
+
+export const RouteArrowLogo = styled(RouteArrow)`
+  margin: 0 1rem;
 `;

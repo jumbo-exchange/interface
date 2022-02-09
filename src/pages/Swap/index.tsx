@@ -19,6 +19,7 @@ import { calculatePriceImpact } from 'services/swap';
 import { useUpdatePoolsService } from 'services/updatePoolService';
 import Input from './SwapInput';
 import SwapSettings from './SwapSettings';
+import RenderWarning from './SwapWarning';
 import {
   Container,
   ActionContainer,
@@ -39,6 +40,8 @@ import {
   RowInfo,
   LabelInfo,
   LogoInfo,
+  TokenImg,
+  RouteArrowLogo,
 } from './styles';
 
 const swapContract = new SwapContract();
@@ -220,8 +223,11 @@ export default function Swap() {
     });
   };
 
-  const intersectionToken = currentPools.length === 2
+  const intersectionTokenId = currentPools.length === 2
     ? currentPools[0].tokenAccountIds.find((el) => el !== inputToken?.contractId) : null;
+
+  const intersectionToken = tokens[intersectionTokenId ?? ''] ?? null;
+
   const canSwap = !!slippageTolerance
     && (!!inputTokenValue && !!outputTokenValue)
     && currentPools.length > 0;
@@ -266,6 +272,7 @@ export default function Swap() {
           {loading ? 'Loading...' : <div>{exchangeLabel}</div>}
         </ExchangeLabel>
       </ExchangeBlock>
+      <RenderWarning />
       <SettingsBlock>
         {
           isSettingsOpen
@@ -295,10 +302,28 @@ export default function Swap() {
               <RouteBlock>
                 <TitleInfo>Route <LogoInfo /></TitleInfo>
                 <div>
+                  <TokenImg
+                    src={inputToken?.metadata.icon}
+                    alt={inputToken?.metadata.symbol}
+                  />
                   {inputToken?.metadata.symbol}
-                  {' '}
-                  {intersectionToken ? `> ${intersectionToken}` : null }
-                  {'> '}
+                  {intersectionTokenId
+                    ? (
+                      <>
+                        <RouteArrowLogo />
+                        <TokenImg
+                          src={intersectionToken?.metadata.icon}
+                          alt={intersectionToken?.metadata.symbol}
+                        />
+                        {intersectionToken?.metadata.symbol}
+                      </>
+                    ) // TODO: check correct display
+                    : null}
+                  <RouteArrowLogo />
+                  <TokenImg
+                    src={outputToken?.metadata.icon}
+                    alt={outputToken?.metadata.symbol}
+                  />
                   {outputToken?.metadata.symbol}
                 </div>
               </RouteBlock>
