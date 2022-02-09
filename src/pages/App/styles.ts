@@ -131,3 +131,9 @@ export const LinkContainer = styled.div`
     text-decoration:none;
   }
 `;
+
+export const LoadingBlock = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
