@@ -11,22 +11,25 @@ import {
   removeTrailingZeros,
   toNonDivisibleNumber,
 } from 'utils/calculations';
-
+import { wallet } from 'services/near';
+import { POOL_SHARES_DECIMALS } from 'utils/constants';
+import Big from 'big.js';
 import {
-  Layout, ModalBlock, ModalIcon,
+  Layout, ModalBlock, ModalIcon, ModalTitle,
 } from '../styles';
 import Input from './Input';
 import {
   LiquidityModalContainer,
-  ModalTitle,
   ModalBody,
   LogoContainerAdd,
   RefreshBlock,
   PlaceHolderGif,
   LogoButton,
+  YourSharesBlock,
 } from './styles';
 
 export default function AddLiquidityModal() {
+  const isConnected = wallet.isSignedIn();
   const {
     tokens,
     balances,
@@ -34,6 +37,7 @@ export default function AddLiquidityModal() {
   const navigate = useNavigate();
   const [inputTokenValue, setInputTokenValue] = useState<string>('');
   const [outputTokenValue, setOutputTokenValue] = useState<string>('');
+  const [preShare, setPreShare] = useState<string>('');
 
   const { addLiquidityModalOpenState, setAddLiquidityModalOpenState } = useModalsStore();
   const { pool } = addLiquidityModalOpenState;
@@ -73,6 +77,7 @@ export default function AddLiquidityModal() {
       }
       setInputTokenValue(value);
       setOutputTokenValue(outputValue);
+      setPreShare(formatTokenAmount(fairShares, POOL_SHARES_DECIMALS));
     }
   };
 
@@ -100,13 +105,30 @@ export default function AddLiquidityModal() {
       }
       setOutputTokenValue(value);
       setInputTokenValue(inputValue);
+      setPreShare(formatTokenAmount(fairShares, POOL_SHARES_DECIMALS));
     }
   };
 
-  const canAddLiquidity = !!inputTokenValue
+  const canAddLiquidity = isConnected
+  && !!inputTokenValue
   && !!outputTokenValue
   && !checkInvalidAmount(balances, tokenInput, inputTokenValue)
   && !checkInvalidAmount(balances, tokenOutput, outputTokenValue);
+
+  const shareDisplay = () => {
+    let result = '';
+    if (preShare && new Big('0').lt(preShare)) {
+      const yourShareBig = new Big(preShare);
+      if (yourShareBig.lt('0.001')) {
+        result = '<0.001';
+      } else {
+        result = `≈ ${yourShareBig.toFixed(3)}`;
+      }
+    } else {
+      result = '0';
+    }
+    return result;
+  };
 
   return (
     <>
@@ -143,6 +165,10 @@ export default function AddLiquidityModal() {
               setValue={handleOutputChange}
               balance={balances[tokenOutput.contractId ?? '']}
             />
+            <YourSharesBlock>
+              Your Pool Shares: &nbsp;
+              <span>{shareDisplay()}</span>
+            </YourSharesBlock>
             <RefreshBlock>
               <PlaceHolderGif />
               Refresh

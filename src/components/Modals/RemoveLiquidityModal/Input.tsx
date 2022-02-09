@@ -49,7 +49,7 @@ const ButtonHalfWallet = styled.button`
     text-align: right;
     font-style: normal;
     font-weight: 500;
-    font-size: 1.125rem;
+    font-size: 1rem;
     line-height: 1.313rem;
     color: ${({ theme }) => theme.globalGrey};
   }
@@ -59,6 +59,11 @@ const ButtonHalfWallet = styled.button`
       color: ${({ theme }) => theme.globalWhite};
     }
   }
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    & > span {
+      font-size: 1.125rem;
+    }
+  `}
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     & > span {
       font-size: .75rem;

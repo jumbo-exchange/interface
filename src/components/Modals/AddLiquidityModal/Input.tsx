@@ -3,13 +3,11 @@ import styled from 'styled-components';
 import CurrencyInputPanel from 'components/CurrencyInputPanel';
 import tokenLogo from 'assets/images-app/placeholder-token.svg';
 import Big from 'big.js';
+import FungibleTokenContract from 'services/FungibleToken';
 
 import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { getUpperCase } from 'utils';
 import { formatTokenAmount } from 'utils/calculations';
-
-import { TokenType } from 'store';
-import FungibleTokenContract from 'services/FungibleToken';
 
 const Block = styled.div`
   display: flex;
@@ -48,8 +46,8 @@ const ButtonHalfWallet = styled.button`
     text-align: right;
     font-style: normal;
     font-weight: 500;
-    font-size: 18px;
-    line-height: 21px;
+    font-size: 1rem;
+    line-height: 1.313rem;
     color: ${({ theme }) => theme.globalGrey};
   }
   :hover {
@@ -58,6 +56,17 @@ const ButtonHalfWallet = styled.button`
       color: ${({ theme }) => theme.globalWhite};
     }
   }
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    & > span {
+      font-size: 1.125rem;
+    }
+  `}
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    & > span {
+      font-size: .75rem;
+      line-height: .875rem;
+    }
+  `}
 `;
 
 const ButtonMaxWallet = styled(ButtonHalfWallet)`

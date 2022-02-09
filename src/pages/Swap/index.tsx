@@ -58,7 +58,7 @@ const RenderButton = ({
   setAccountModalOpen: (isOpen: boolean) => void,
   disabled?: boolean
 }) => {
-  const title = isConnected ? 'Swap' : 'Connect wallet';
+  const title = isConnected ? 'Swap' : 'Connect Wallet';
   if (isConnected) {
     return (
       <ButtonPrimary
