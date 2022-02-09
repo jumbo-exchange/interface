@@ -11,11 +11,13 @@ import {
   COEFFICIENT_SLIPPAGE,
 } from 'utils/constants';
 
-// TODO: add transition to container
-const Container = styled.div`
+const Container = styled.div<{isSettingsOpen?: boolean}>`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  height: ${({ isSettingsOpen }) => (isSettingsOpen ? '110px' : '0')};
+  transition: .3s;
+  overflow: hidden;
 `;
 
 const Title = styled.div`
@@ -50,9 +52,11 @@ export default function SwapSettings(
   {
     slippageTolerance,
     setSlippageTolerance,
+    isSettingsOpen,
   }:{
     slippageTolerance: string,
     setSlippageTolerance: (slippageTolerance:string) => void,
+    isSettingsOpen: boolean,
   },
 ) {
   const [error, setError] = useState(false);
@@ -81,7 +85,7 @@ export default function SwapSettings(
   };
 
   return (
-    <Container>
+    <Container isSettingsOpen={isSettingsOpen}>
       <Title>
         Slippage Tolerance
         <Tooltip title={tooltipTitle.slippageTolerance} />

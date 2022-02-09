@@ -102,7 +102,7 @@ export default function Swap() {
   const [averageFee, setAverageFee] = useState<string>('0');
 
   const isConnected = wallet.isSignedIn();
-  const exchangeLabel = `1 ${getUpperCase(inputToken?.metadata.symbol ?? '')} ≈ 4923.333 ${getUpperCase(outputToken?.metadata.symbol ?? '')}`;
+
   const minAmountOut = outputTokenValue
     ? percentLess(slippageTolerance, outputTokenValue, 0)
     : '';
@@ -238,6 +238,10 @@ export default function Swap() {
   const invalidInput = checkInvalidAmount(balances, inputToken, inputTokenValue);
   const invalidOutput = checkInvalidAmount(balances, outputToken, outputTokenValue);
   const invalidAmounts = invalidInput || invalidOutput;
+  const exchangeLabel = `
+  1 ${getUpperCase(inputToken?.metadata.symbol ?? '')} 
+  ≈ 4923.333 ${getUpperCase(outputToken?.metadata.symbol ?? '')}
+  `;
 
   return (
     <Container>
@@ -274,15 +278,11 @@ export default function Swap() {
       </ExchangeBlock>
       <RenderWarning />
       <SettingsBlock>
-        {
-          isSettingsOpen
-            ? (
-              <SwapSettings
-                slippageTolerance={slippageTolerance}
-                setSlippageTolerance={setSlippageTolerance}
-              />
-            ) : null
-        }
+        <SwapSettings
+          slippageTolerance={slippageTolerance}
+          setSlippageTolerance={setSlippageTolerance}
+          isSettingsOpen={isSettingsOpen}
+        />
         <SettingsHeader>
           <SettingsLabel
             isActive={isSettingsOpen}
