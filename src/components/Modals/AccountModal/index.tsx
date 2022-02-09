@@ -1,12 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
+import getConfig from 'services/config';
+import nearLogo from 'assets/images-app/near.svg';
 import { useModalsStore, useStore } from 'store';
 import { ReactComponent as CloseIcon } from 'assets/images-app/close.svg';
-import nearLogo from 'assets/images-app/near.svg';
 import { ReactComponent as RightArrow } from 'assets/images-app/right-arrow.svg';
+import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { ButtonSecondary, ButtonFourth } from 'components/Button';
 import { wallet as nearWallet } from 'services/near';
-import getConfig from 'services/config';
 import {
   Modal, Layout, ModalBlock, ModalTitle, ModalIcon,
 } from '../styles';
@@ -49,10 +50,13 @@ const WalletTitle = styled.div`
 const ModalFooter = styled.div`
   margin: 1.5rem;
   & > button {
-    color: ${({ theme }) => theme.pink};
     width: 100%;
     padding: 1.156rem;
   }
+`;
+
+const WalletIcon = styled(WalletImage)`
+  margin-right: .313rem;
 `;
 
 export default function AccountModal() {
@@ -103,7 +107,7 @@ export default function AccountModal() {
               setWallet(null);
             }}
             >
-              Disconnect
+              <WalletIcon /> Disconnect
             </ButtonSecondary>
           </ModalFooter>
           )}
