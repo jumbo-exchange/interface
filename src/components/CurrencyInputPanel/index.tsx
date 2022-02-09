@@ -27,6 +27,9 @@ export const Input = styled.input`
 
 export default function CurrencyInputPanel({ value, setValue, disabled = false }: IInputPanel) {
   const enforcer = (nextUserInput: string) => {
+    if (nextUserInput[0] === '.' || nextUserInput[0] === ',') {
+      return;
+    }
     if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {
       setValue(nextUserInput);
     }

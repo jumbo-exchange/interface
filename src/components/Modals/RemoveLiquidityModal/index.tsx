@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
 import tokenLogo from 'assets/images-app/placeholder-token.svg';
 import PoolContract from 'services/PoolContract';
+import Big from 'big.js';
+import Toggle from 'components/Toggle';
+import Tooltip from 'components/Tooltip';
+import {
+  COEFFICIENT_SLIPPAGE,
+  MAX_SLIPPAGE_TOLERANCE,
+  MIN_SLIPPAGE_TOLERANCE,
+  slippageToleranceOptions,
+  SLIPPAGE_TOLERANCE_DEFAULT,
+  tooltipTitle,
+} from 'utils/constants';
 import { useModalsStore, useStore } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
 import { ButtonPrimary } from 'components/Button';
@@ -30,6 +41,7 @@ import {
   TokenLogo,
   TokenBlock,
   TokenValueBlock,
+  SlippageBlock,
 } from './styles';
 
 export default function RemoveLiquidityModal() {
@@ -43,7 +55,8 @@ export default function RemoveLiquidityModal() {
   const { pool } = removeLiquidityModalOpenState;
 
   const [withdrawValue, setWithdrawValue] = useState<string>('');
-  const [error, setError] = useState<boolean>(false);
+  const [warning, setWarning] = useState<boolean>(false);
+  const [slippageTolerance, setSlippageTolerance] = useState<string>(SLIPPAGE_TOLERANCE_DEFAULT);
 
   if (!pool) return null;
   const [tokenInputName, tokenOutputName] = pool.tokenAccountIds;
@@ -56,22 +69,23 @@ export default function RemoveLiquidityModal() {
   const minAmounts = Object.entries(pool.supplies).reduce<{
     [tokenId: string]: string;
   }>((acc, [tokenId, totalSupply]) => {
-    acc[tokenId] = percentLess(10, calculateFairShare(
+    acc[tokenId] = percentLess(slippageTolerance, calculateFairShare(
       totalSupply,
       withdrawValue ? toNonDivisibleNumber(POOL_SHARES_DECIMALS, withdrawValue) : '0',
       checkTotalSupply,
     ), 0);
     return acc;
   }, {});
-  const [inputToken, outputToken] = Object.entries(minAmounts).map((el) => el);
+  const [inputToken, outputToken] = Object.values(minAmounts).map((el) => el);
+
   const tokensData = [
     {
       token: tokenInput,
-      value: formatTokenAmount(inputToken[1], tokenInput.metadata.decimals, 5),
+      value: formatTokenAmount(inputToken, tokenInput.metadata.decimals, 5),
     },
     {
       token: tokenOutput,
-      value: formatTokenAmount(outputToken[1], tokenOutput.metadata.decimals, 5),
+      value: formatTokenAmount(outputToken, tokenOutput.metadata.decimals, 5),
     },
   ];
 
@@ -79,12 +93,12 @@ export default function RemoveLiquidityModal() {
     const withdrawValueBN = new Big(withdrawValue);
     const shareBN = new Big(formatTokenAmount(pool?.shares ?? '', POOL_SHARES_DECIMALS));
     if (Number(withdrawValue) === 0) {
-      setError(true);
+      setWarning(true);
     }
     if (withdrawValueBN.gt(shareBN)) {
-      setError(true);
+      setWarning(true);
     }
-    if (!error) {
+    if (!warning) {
       const contract = new PoolContract();
       if (!tokenInput || !tokenOutput || !removeLiquidityModalOpenState.pool) return;
       contract.removeLiquidity({
@@ -98,6 +112,29 @@ export default function RemoveLiquidityModal() {
 
   const buttonDisabled = isConnected && withdrawValue
     ? (new Big(withdrawValue).lte(0) || new Big(withdrawValue).gt(formattedPoolShares)) : true;
+
+  const onChangeSlippage = (value:string) => {
+    if (!value || Number(value) <= 0) {
+      setSlippageTolerance(MIN_SLIPPAGE_TOLERANCE.toString());
+      setWarning(true);
+      return;
+    }
+    const bigValue = new Big(value);
+    if (!bigValue.gt(MIN_SLIPPAGE_TOLERANCE)) {
+      setSlippageTolerance(MIN_SLIPPAGE_TOLERANCE.toString());
+      setWarning(true);
+      return;
+    }
+    if (!bigValue.lt(MAX_SLIPPAGE_TOLERANCE + 1)) {
+      setSlippageTolerance(MAX_SLIPPAGE_TOLERANCE.toString());
+      setWarning(true);
+      return;
+    }
+
+    setSlippageTolerance(bigValue.toString());
+
+    setWarning(false);
+  };
   return (
     <>
       {removeLiquidityModalOpenState.isOpen && (
@@ -125,6 +162,18 @@ export default function RemoveLiquidityModal() {
               withdrawValue={withdrawValue}
               setWithdrawValue={setWithdrawValue}
             />
+            <SlippageBlock>
+              <TitleAction>
+                Slippage Tolerance
+                <Tooltip title={tooltipTitle.slippageTolerance} />
+              </TitleAction>
+              <Toggle
+                value={slippageTolerance}
+                coefficient={COEFFICIENT_SLIPPAGE}
+                options={slippageToleranceOptions}
+                onChange={onChangeSlippage}
+              />
+            </SlippageBlock>
             <TitleAction>
               Withdrawal Amount
             </TitleAction>
