@@ -128,14 +128,14 @@ export default function Input({
   const setHalf = () => {
     const halfShares = new Big(shares).div(2);
     if (halfShares.gte(0)) {
-      setWithdrawValue(removeTrailingZeros(halfShares.toFixed(5)));
+      setWithdrawValue(removeTrailingZeros(halfShares.toFixed()));
     }
   };
 
   const setMax = () => {
     const maxShares = new Big(shares);
     if (maxShares.gte(0)) {
-      setWithdrawValue(removeTrailingZeros(maxShares.toFixed(5)));
+      setWithdrawValue(removeTrailingZeros(maxShares.toFixed()));
     }
   };
 

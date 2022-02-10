@@ -241,8 +241,6 @@ export default function Swap() {
   const isUnwrap = inputToken && outputToken
     && (outputToken.contractId === config.nearAddress && inputToken.contractId === NEAR_TOKEN_ID);
   const invalidInput = checkInvalidAmount(balances, inputToken, inputTokenValue);
-  const invalidOutput = checkInvalidAmount(balances, outputToken, outputTokenValue);
-  const invalidAmounts = invalidInput || invalidOutput;
 
   const [exchangeAmount, setExchangeAmount] = useState<string>('');
 
@@ -381,7 +379,7 @@ export default function Swap() {
           isConnected={isConnected}
           swapToken={swapToken}
           setAccountModalOpen={setAccountModalOpen}
-          disabled={(!canSwap && !isWrap && !isUnwrap) || invalidAmounts}
+          disabled={(!canSwap && !isWrap && !isUnwrap) || invalidInput}
         />
       </BlockButton>
 
