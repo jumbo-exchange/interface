@@ -16,8 +16,8 @@ const Container = styled.div<{isSettingsOpen?: boolean}>`
   flex-direction: column;
   align-items: flex-start;
   height: ${({ isSettingsOpen }) => (isSettingsOpen ? '110px' : '0')};
-  transition: .3s;
-  overflow: hidden;
+  transition: .5s;
+  overflow: ${({ isSettingsOpen }) => (isSettingsOpen ? 'visible' : 'hidden')};
 `;
 
 const Title = styled.div`
