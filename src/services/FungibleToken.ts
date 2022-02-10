@@ -11,6 +11,7 @@ import {
   ONE_YOCTO_NEAR,
 } from 'utils/constants';
 import { formatTokenAmount, parseTokenAmount, removeTrailingZeros } from 'utils/calculations';
+import Big from 'big.js';
 import { wallet } from './near';
 import SpecialWallet, { createContract, Transaction } from './wallet';
 import getConfig from './config';
@@ -140,18 +141,13 @@ export default class FungibleTokenContract {
       .toString();
   }
 
-  async isStorageBalanceAvailable({ accountId }:{ accountId: string }) {
+  async isStorageBalanceAvailable({ accountId }: { accountId: string }) {
     if (this.contractId === NEAR_TOKEN_ID) return true;
     const storageBalance = await this.getStorageBalance({ accountId });
-    return storageBalance?.total !== undefined;
+    return storageBalance?.total !== undefined && Big(storageBalance?.available ?? '0').gt(0);
   }
 
-  async checkStorageBalance({
-    accountId,
-  }:
-  {
-    accountId: string,
-  }) {
+  async checkStorageBalance({ accountId }: { accountId: string }) {
     const transactions: Transaction[] = [];
     const storageAvailable = await this.isStorageBalanceAvailable(
       { accountId },
@@ -166,7 +162,7 @@ export default class FungibleTokenContract {
             account_id: accountId,
             registration_only: true,
           },
-          amount: FT_MINIMUM_STORAGE_BALANCE,
+          amount: '0.00125',
         }],
       });
     }

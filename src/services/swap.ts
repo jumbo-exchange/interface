@@ -90,17 +90,18 @@ export const calculatePriceImpact = (
 
     const tokenMidReceived = calculateAmountReceived(
       firstPool,
-      formatTokenAmount(tokenInAmount, tokenIn.metadata.decimals),
+      tokenInAmount,
       tokenIn,
       tokenMid,
     );
     tokenOutReceived = calculateAmountReceived(
       secondPool,
-      formatTokenAmount(tokenMidReceived.toFixed(0), tokenMid.metadata.decimals),
+      tokenMidReceived.toFixed(0),
       tokenMid,
       tokenOut,
     );
   }
+
   const newMarketPrice = new Big(tokenInAmount).div(tokenOutReceived).toFixed();
 
   const PriceImpact = percent(
