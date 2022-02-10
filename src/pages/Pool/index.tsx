@@ -11,7 +11,6 @@ import {
   InfoBLock,
   TitleInfo,
   LabelInfo,
-  BtnClaim,
   LogoSoon,
 } from './styles';
 import PoolSettings from './PoolSettings';
@@ -97,7 +96,7 @@ export default function Pool() {
     {
       title: 'Weekly Emissions',
       label: '-',
-      show: currentFilterPools === FilterPoolsEnum['All Pools'] && !isMobile, // TODO: checking if some brand is available
+      show: !isMobile,
     },
   ];
 
@@ -134,12 +133,6 @@ export default function Pool() {
             );
           })}
         </WrapperInfoBlock>
-        {currentFilterPools !== FilterPoolsEnum['All Pools'] && (
-        <BtnClaim>
-          <span>50.5004648 DAI</span>
-          <span>Claim</span>
-        </BtnClaim>
-        )}
       </InformationBlock>
       <PoolSettings currentFilterPools={currentFilterPools} />
       <PoolResult currentFilterPools={currentFilterPools} />

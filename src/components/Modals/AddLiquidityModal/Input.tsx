@@ -159,13 +159,13 @@ export default function Input({
   const setHalfAmount = () => {
     if (!balance) return;
     const newBalance = currentBalance.div(2).toFixed();
-    setValue(formatTokenAmount(newBalance, token?.metadata.decimals, 0));
+    setValue(formatTokenAmount(newBalance, token?.metadata.decimals));
   };
 
   const setMaxAmount = () => {
     if (!balance) return;
     const newBalance = formatTokenAmount(
-      currentBalance.toFixed() ?? 0, token?.metadata.decimals, 0,
+      currentBalance.toFixed() ?? 0, token?.metadata.decimals,
     );
     setValue(newBalance);
   };

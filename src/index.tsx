@@ -13,6 +13,7 @@ import theme from 'theme';
 import useFullHeightHook from 'hooks/useFullHeightHook';
 
 import App from 'pages/App';
+import Error from 'pages/Error';
 
 const AppWrapper = () => {
   useFullHeightHook();
@@ -25,6 +26,7 @@ const AppWrapper = () => {
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/app/*" element={<App />} />
+              <Route path="/*" element={<Error />} />
             </Routes>
           </ModalsContextProvider>
         </Router>

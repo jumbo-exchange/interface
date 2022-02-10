@@ -1,5 +1,5 @@
 import React from 'react';
-import gif from 'assets/images/El_4.gif';
+import gif from 'assets/gif/El_4.gif';
 import Footer from 'components/Footer';
 import { ReactComponent as NearLogo } from 'assets/images/near-logo.svg';
 import { isMobile, isTablet } from 'utils/userAgent';

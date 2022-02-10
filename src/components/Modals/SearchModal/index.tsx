@@ -124,6 +124,15 @@ const SearchResults = styled(ModalBlock)`
   & > div{
     width: 100%;
   }
+
+  ::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: ${({ theme }) => theme.globalGreyOp04};
+    border-radius: 10px;
+  }
 `;
 
 const ClearSearchIcon = styled(ClearSearch)`

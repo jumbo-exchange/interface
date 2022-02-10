@@ -90,7 +90,6 @@ export const ExchangeLabel = styled.div`
 export const SettingsBlock = styled.div`
   display: flex;
   flex-direction: column;
-  margin-bottom: 1.625rem;
 `;
 
 export const SettingsHeader = styled.div`
@@ -203,4 +202,13 @@ export const TokenImg = styled.img`
 
 export const RouteArrowLogo = styled(RouteArrow)`
   margin: 0 1rem;
+`;
+
+export const BlockButton = styled.div`
+  z-index: 4;
+  background-color: ${({ theme }) => theme.backgroundCard};
+  padding-top: 1.625rem;
+  & > button {
+    width: 100%;
+  }
 `;

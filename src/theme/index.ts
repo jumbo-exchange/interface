@@ -53,6 +53,7 @@ export interface ThemeColors {
   pink: string;
   pinkHover: string;
   pinkActive: string;
+  darkPink: string;
 
   greyButton: string;
   claimButton: string;
@@ -104,6 +105,7 @@ export const colors: ThemeColors = {
   pink: '#FE2C55',
   pinkHover: '#E12243',
   pinkActive: '#C71A35',
+  darkPink: '#722136',
 
   greyButton: '#454D5C',
   claimButton: '#151922',

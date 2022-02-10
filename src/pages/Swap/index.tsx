@@ -42,6 +42,7 @@ import {
   LogoInfo,
   TokenImg,
   RouteArrowLogo,
+  BlockButton,
 } from './styles';
 
 const swapContract = new SwapContract();
@@ -102,7 +103,7 @@ export default function Swap() {
   const [averageFee, setAverageFee] = useState<string>('0');
 
   const isConnected = wallet.isSignedIn();
-  const exchangeLabel = `1 ${getUpperCase(inputToken?.metadata.symbol ?? '')} ≈ 4923.333 ${getUpperCase(outputToken?.metadata.symbol ?? '')}`;
+
   const minAmountOut = outputTokenValue
     ? percentLess(slippageTolerance, outputTokenValue, 0)
     : '';
@@ -149,10 +150,11 @@ export default function Swap() {
       );
       const lastIndex = minOutput.length - 1;
       setOutputTokenValue(
-        formatTokenAmount(
-          minOutput[lastIndex],
-          verifiedOutputToken.metadata.decimals,
-          5,
+        removeTrailingZeros(
+          formatTokenAmount(
+            minOutput[lastIndex],
+            verifiedOutputToken.metadata.decimals,
+          ),
         ),
       );
     }
@@ -173,9 +175,11 @@ export default function Swap() {
       );
       const lastIndex = minOutput.length - 1;
       setInputTokenValue(
-        formatTokenAmount(
-          minOutput[lastIndex],
-          verifiedInputToken.metadata.decimals, 5,
+        removeTrailingZeros(
+          formatTokenAmount(
+            minOutput[lastIndex],
+            verifiedInputToken.metadata.decimals,
+          ),
         ),
       );
     }
@@ -239,6 +243,35 @@ export default function Swap() {
   const invalidOutput = checkInvalidAmount(balances, outputToken, outputTokenValue);
   const invalidAmounts = invalidInput || invalidOutput;
 
+  const [exchangeAmount, setExchangeAmount] = useState<string>('');
+
+  useEffect(() => {
+    if (!inputToken || !outputToken) return;
+    const formattedValue = parseTokenAmount('1', outputToken.metadata.decimals);
+    const verifiedInputToken = verifyToken(inputToken);
+    const verifiedOutputToken = verifyToken(outputToken);
+    const minOutput = SwapContract.getReturnForPools(
+      currentPools,
+      formattedValue,
+      verifiedOutputToken,
+      verifiedInputToken,
+      tokens,
+    );
+    const lastIndex = minOutput.length - 1;
+    setExchangeAmount(
+      formatTokenAmount(
+        minOutput[lastIndex],
+        verifiedInputToken.metadata.decimals,
+        5,
+      ),
+    );
+  }, [inputToken, outputToken]);
+
+  const exchangeLabel = `
+  1 ${getUpperCase(inputToken?.metadata.symbol ?? '')} 
+  ≈ ${removeTrailingZeros(exchangeAmount)} ${getUpperCase(outputToken?.metadata.symbol ?? '')}
+  `;
+
   return (
     <Container>
       <ActionContainer>
@@ -274,15 +307,11 @@ export default function Swap() {
       </ExchangeBlock>
       <RenderWarning />
       <SettingsBlock>
-        {
-          isSettingsOpen
-            ? (
-              <SwapSettings
-                slippageTolerance={slippageTolerance}
-                setSlippageTolerance={setSlippageTolerance}
-              />
-            ) : null
-        }
+        <SwapSettings
+          slippageTolerance={slippageTolerance}
+          setSlippageTolerance={setSlippageTolerance}
+          isSettingsOpen={isSettingsOpen}
+        />
         <SettingsHeader>
           <SettingsLabel
             isActive={isSettingsOpen}
@@ -346,12 +375,15 @@ export default function Swap() {
             </SwapInformation>
           ) : null
       }
-      <RenderButton
-        isConnected={isConnected}
-        swapToken={swapToken}
-        setAccountModalOpen={setAccountModalOpen}
-        disabled={(!canSwap && !isWrap && !isUnwrap) || invalidAmounts}
-      />
+      <BlockButton>
+        <RenderButton
+          isConnected={isConnected}
+          swapToken={swapToken}
+          setAccountModalOpen={setAccountModalOpen}
+          disabled={(!canSwap && !isWrap && !isUnwrap) || invalidAmounts}
+        />
+      </BlockButton>
+
     </Container>
   );
 }

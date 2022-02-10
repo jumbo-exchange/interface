@@ -1,7 +1,8 @@
 import React, { Suspense, lazy } from 'react';
 import Footer from 'components/Footer';
-import { ReactComponent as JumboLogo } from 'assets/images/jumbo-logo.svg';
 import { isMobile } from 'utils/userAgent';
+import GifLoading from 'assets/gif/loading.gif';
+import { ReactComponent as JumboLogo } from 'assets/images/jumbo-logo.svg';
 
 import {
   Route, Routes, useMatch, useResolvedPath, Link,
@@ -17,6 +18,7 @@ import {
   BlockButton,
   Body,
   LinkContainer,
+  LoadingBlock,
 } from './styles';
 import ConnectionButton from './ConnectionButton';
 
@@ -67,7 +69,7 @@ export default function App() {
         </BlockButton>
       </Header>
       <Body>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<LoadingBlock><img src={GifLoading} alt="loading" /></LoadingBlock>}>
           <Routes>
             <Route path="pool" element={<Pool />} />
             <Route path="swap" element={<Swap />} />

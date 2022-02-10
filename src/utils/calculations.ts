@@ -24,8 +24,8 @@ export const toNonDivisibleNumber = (
     .padStart(1, '0');
 };
 
-export const formatTokenAmount = (value: string, decimals = 18, precision = 2) => value
-  && Big(value).div(Big(BASE).pow(decimals)).toFixed(precision);
+export const formatTokenAmount = (value: string, decimals = 18, precision?: number) => value
+  && Big(value).div(Big(BASE).pow(decimals)).toFixed(precision && precision);
 export const parseTokenAmount = (value:string, decimals = 18) => value
   && Big(value).times(Big(BASE).pow(decimals)).toFixed();
 export const removeTrailingZeros = (amount: string) => amount.replace(/\.?0*$/, '');
@@ -111,8 +111,8 @@ export const calculateFairShare = (
 };
 
 export const formatBalance = (value: string): string => {
-  if (!value || value === '0') return '0';
   const formattedValue = new Big(value);
+  if (!value || formattedValue.eq(0)) return value;
 
   if (formattedValue.lte('0.00001')) return '>0.00001';
   if (formattedValue.lt('1000')) return formattedValue.toFixed(5);

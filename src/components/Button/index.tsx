@@ -35,17 +35,36 @@ export const ButtonPrimary = styled.button`
   :disabled{
     background: ${({ theme }) => theme.globalGreyOp01};
     border: 1px solid ${({ theme }) => theme.globalGreyOp01};
+    color: ${({ theme }) => theme.globalGrey};
+    & svg > {
+      path {
+        fill: ${({ theme }) => theme.globalGrey};
+      }
+    }
   }
 `;
 
 export const ButtonSecondary = styled(ButtonPrimary)`
   background: transparent;
+  border-color: ${({ theme }) => theme.darkPink};
   :hover {
     cursor: pointer;
     background: transparent;
+    border-color: ${({ theme }) => theme.pinkHover};
   }
   :active {
     background: transparent;
+    border-color: ${({ theme }) => theme.pinkActive};
+  }
+  :disabled{
+    background: transparent;
+    border: 1px solid ${({ theme }) => theme.globalGreyOp01};
+    color: ${({ theme }) => theme.globalGrey};
+    & svg > {
+      path {
+        fill: ${({ theme }) => theme.globalGrey};
+      }
+    }
   }
 `;
 
