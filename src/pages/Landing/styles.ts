@@ -24,6 +24,7 @@ export const UpperContainer = styled.div`
     margin: 4.375rem 4.5rem;
     width: unset;
     align-items: flex-start;
+    flex-direction: ${isTablet && 'column'};
   `}
   ${({ theme }) => theme.mediaWidth.upToMedium`
     flex-direction: column;
