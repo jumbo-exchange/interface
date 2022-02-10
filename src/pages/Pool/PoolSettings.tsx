@@ -8,6 +8,7 @@ import { ReactComponent as Plus } from 'assets/images-app/plus.svg';
 import { ReactComponent as PlaceHolderLoader } from 'assets/images-app/placeholder-loader.svg';
 import { isMobile } from 'utils/userAgent';
 import { useModalsStore } from 'store';
+import Refresh from 'components/Refresh';
 import { FilterPoolsEnum } from '.';
 
 const Container = styled.div`
@@ -188,7 +189,7 @@ export default function PoolSettings({
               placeholder="Search"
             />
           </SearchInputBlock>
-          <Title><Loading />Refresh</Title>
+          <Refresh />
         </MobileRow>
         <MobileRow>
           {currentFilterPools === FilterPoolsEnum['All Pools']
@@ -256,7 +257,7 @@ export default function PoolSettings({
           ))}
         </FilterBlock>
       </APRWrapper>
-      <Title><Loading />Refresh</Title>
+      <Title><Refresh /></Title>
       <ButtonSecondary
         onClick={() => setCreatePoolModalOpen(true)}
       >
