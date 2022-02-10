@@ -9,7 +9,8 @@ import { FEE_DIVISOR, SLIPPAGE_TOLERANCE_DEFAULT } from 'utils/constants';
 import SwapContract from 'services/SwapContract';
 import useDebounce from 'hooks/useDebounce';
 import {
-  formatTokenAmount, parseTokenAmount, removeTrailingZeros, percentLess, checkInvalidAmount,
+  formatTokenAmount, parseTokenAmount, removeTrailingZeros,
+  percentLess, checkInvalidAmount, formatBalance,
 } from 'utils/calculations';
 import FungibleTokenContract from 'services/FungibleToken';
 import getConfig from 'services/config';
@@ -39,10 +40,12 @@ import {
   TitleInfo,
   RowInfo,
   LabelInfo,
+  LabelError,
   LogoInfo,
   TokenImg,
   RouteArrowLogo,
   BlockButton,
+  IconSwap,
 } from './styles';
 
 const swapContract = new SwapContract();
@@ -65,7 +68,7 @@ const RenderButton = ({
       <ButtonPrimary
         onClick={swapToken}
         disabled={disabled}
-      >{title}
+      >{title} <IconSwap />
       </ButtonPrimary>
     );
   }
@@ -240,8 +243,6 @@ export default function Swap() {
   const isUnwrap = inputToken && outputToken
     && (outputToken.contractId === config.nearAddress && inputToken.contractId === NEAR_TOKEN_ID);
   const invalidInput = checkInvalidAmount(balances, inputToken, inputTokenValue);
-  const invalidOutput = checkInvalidAmount(balances, outputToken, outputTokenValue);
-  const invalidAmounts = invalidInput || invalidOutput;
 
   const [exchangeAmount, setExchangeAmount] = useState<string>('');
 
@@ -362,7 +363,11 @@ export default function Swap() {
               </RowInfo>
               <RowInfo>
                 <TitleInfo>Price Impact<LogoInfo /></TitleInfo>
-                <LabelInfo isColor>{priceImpact}</LabelInfo>
+                {
+                  Number(formatBalance(priceImpact)) > 2
+                    ? <LabelError>{formatBalance(priceImpact)}%</LabelError>
+                    : <LabelInfo isColor>{formatBalance(priceImpact)}%</LabelInfo>
+                }
               </RowInfo>
               <RowInfo>
                 <TitleInfo>Liquidity Provider Fee<LogoInfo /></TitleInfo>
@@ -380,7 +385,7 @@ export default function Swap() {
           isConnected={isConnected}
           swapToken={swapToken}
           setAccountModalOpen={setAccountModalOpen}
-          disabled={(!canSwap && !isWrap && !isUnwrap) || invalidAmounts}
+          disabled={(!canSwap && !isWrap && !isUnwrap) || invalidInput}
         />
       </BlockButton>
 

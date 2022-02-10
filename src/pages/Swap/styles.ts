@@ -8,6 +8,7 @@ import { ReactComponent as Exchange } from 'assets/images-app/exchange.svg';
 import { ReactComponent as PlaceHolderLoader } from 'assets/images-app/placeholder-loader.svg';
 import { ReactComponent as Info } from 'assets/images-app/info.svg';
 import { ReactComponent as RouteArrow } from 'assets/images-app/route-arrow.svg';
+import { ReactComponent as SwapIcon } from 'assets/images-app/swap-icon.svg';
 
 interface ICurrent {
   isActive?: boolean
@@ -188,10 +189,14 @@ export const TitleInfo = styled.p`
 export const LabelInfo = styled.p<PropsWithChildren<IColor>>`
   font-style: normal;
   font-weight: 300;
-  font-size: 12px;
-  line-height: 14px;
+  font-size: .75rem;
+  line-height: .875rem;
   color: ${({ theme, isColor = false }) => (isColor ? theme.globalGreen : theme.globalWhite)};
   margin: 0;
+`;
+
+export const LabelError = styled(LabelInfo)`
+  color: ${({ theme }) => theme.error};
 `;
 
 export const TokenImg = styled.img`
@@ -211,4 +216,8 @@ export const BlockButton = styled.div`
   & > button {
     width: 100%;
   }
+`;
+
+export const IconSwap = styled(SwapIcon)`
+  margin-left: .75rem;
 `;

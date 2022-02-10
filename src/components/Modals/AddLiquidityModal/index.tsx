@@ -8,7 +8,6 @@ import {
   calculateFairShare,
   checkInvalidAmount,
   formatTokenAmount,
-  removeTrailingZeros,
   toNonDivisibleNumber,
 } from 'utils/calculations';
 import { wallet } from 'services/near';
@@ -64,15 +63,13 @@ export default function AddLiquidityModal() {
       );
       let outputValue = '';
       if (value) {
-        outputValue = removeTrailingZeros(
-          formatTokenAmount(
-            calculateFairShare(
-              outputTokenSupplies,
-              fairShares,
-              pool.sharesTotalSupply,
-            ),
-            tokenOutput.metadata.decimals,
+        outputValue = formatTokenAmount(
+          calculateFairShare(
+            outputTokenSupplies,
+            fairShares,
+            pool.sharesTotalSupply,
           ),
+          tokenOutput.metadata.decimals,
         );
       }
       setInputTokenValue(value);
@@ -90,17 +87,15 @@ export default function AddLiquidityModal() {
         toNonDivisibleNumber(tokenOutput.metadata.decimals, value),
         outputTokenSupplies,
       );
-      let inputValue = '';
+      const inputValue = '';
       if (value) {
-        inputValue = removeTrailingZeros(
-          formatTokenAmount(
-            calculateFairShare(
-              inputTokenSupplies,
-              fairShares,
-              pool.sharesTotalSupply,
-            ),
-            tokenInput.metadata.decimals,
+        formatTokenAmount(
+          calculateFairShare(
+            inputTokenSupplies,
+            fairShares,
+            pool.sharesTotalSupply,
           ),
+          tokenInput.metadata.decimals,
         );
       }
       setOutputTokenValue(value);
