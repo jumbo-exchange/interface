@@ -9,7 +9,8 @@ import { FEE_DIVISOR, SLIPPAGE_TOLERANCE_DEFAULT } from 'utils/constants';
 import SwapContract from 'services/SwapContract';
 import useDebounce from 'hooks/useDebounce';
 import {
-  formatTokenAmount, parseTokenAmount, removeTrailingZeros, percentLess, checkInvalidAmount,
+  formatTokenAmount, parseTokenAmount, removeTrailingZeros,
+  percentLess, checkInvalidAmount, formatBalance,
 } from 'utils/calculations';
 import FungibleTokenContract from 'services/FungibleToken';
 import getConfig from 'services/config';
@@ -39,6 +40,7 @@ import {
   TitleInfo,
   RowInfo,
   LabelInfo,
+  LabelError,
   LogoInfo,
   TokenImg,
   RouteArrowLogo,
@@ -361,7 +363,11 @@ export default function Swap() {
               </RowInfo>
               <RowInfo>
                 <TitleInfo>Price Impact<LogoInfo /></TitleInfo>
-                <LabelInfo isColor>{priceImpact}</LabelInfo>
+                {
+                  Number(formatBalance(priceImpact)) > 2
+                    ? <LabelError>{formatBalance(priceImpact)}%</LabelError>
+                    : <LabelInfo isColor>{formatBalance(priceImpact)}%</LabelInfo>
+                }
               </RowInfo>
               <RowInfo>
                 <TitleInfo>Liquidity Provider Fee<LogoInfo /></TitleInfo>

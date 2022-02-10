@@ -189,10 +189,14 @@ export const TitleInfo = styled.p`
 export const LabelInfo = styled.p<PropsWithChildren<IColor>>`
   font-style: normal;
   font-weight: 300;
-  font-size: 12px;
-  line-height: 14px;
+  font-size: .75rem;
+  line-height: .875rem;
   color: ${({ theme, isColor = false }) => (isColor ? theme.globalGreen : theme.globalWhite)};
   margin: 0;
+`;
+
+export const LabelError = styled(LabelInfo)`
+  color: ${({ theme }) => theme.error};
 `;
 
 export const TokenImg = styled.img`
