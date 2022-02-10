@@ -28,7 +28,7 @@ export const formatTokenAmount = (value: string, decimals = 18, precision?: numb
   && Big(value).div(Big(BASE).pow(decimals)).toFixed(precision && precision);
 export const parseTokenAmount = (value:string, decimals = 18) => value
   && Big(value).times(Big(BASE).pow(decimals)).toFixed();
-export const removeTrailingZeros = (amount: string) => amount.replace(/\.?0*$/, '');
+export const removeTrailingZeros = (amount: string) => amount.replace(/\.,?0*$/, '');
 
 export const percentLess = (
   percent: number | string,
@@ -128,6 +128,7 @@ export const checkInvalidAmount = (
   if (amount === '') return true;
   if (!token || !toArray(balances).length) return false;
   const balance = token ? balances[token.contractId] : '0';
+  console.log(amount);
   return Big(formatTokenAmount(amount, token.metadata.decimals, 0))
     .gt(formatTokenAmount(balance, token.metadata.decimals, 0));
 };
