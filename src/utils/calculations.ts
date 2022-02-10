@@ -128,6 +128,6 @@ export const checkInvalidAmount = (
   if (amount === '') return true;
   if (!token || !toArray(balances).length) return false;
   const balance = token ? balances[token.contractId] : '0';
-  return Big(amount)
+  return Big(formatTokenAmount(amount, token.metadata.decimals, 0))
     .gt(formatTokenAmount(balance, token.metadata.decimals, 0));
 };

@@ -8,6 +8,7 @@ import { ReactComponent as Exchange } from 'assets/images-app/exchange.svg';
 import { ReactComponent as PlaceHolderLoader } from 'assets/images-app/placeholder-loader.svg';
 import { ReactComponent as Info } from 'assets/images-app/info.svg';
 import { ReactComponent as RouteArrow } from 'assets/images-app/route-arrow.svg';
+import { ReactComponent as SwapIcon } from 'assets/images-app/swap-icon.svg';
 
 interface ICurrent {
   isActive?: boolean
@@ -211,4 +212,8 @@ export const BlockButton = styled.div`
   & > button {
     width: 100%;
   }
+`;
+
+export const IconSwap = styled(SwapIcon)`
+  margin-left: .75rem;
 `;

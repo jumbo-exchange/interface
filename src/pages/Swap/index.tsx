@@ -43,6 +43,7 @@ import {
   TokenImg,
   RouteArrowLogo,
   BlockButton,
+  IconSwap,
 } from './styles';
 
 const swapContract = new SwapContract();
@@ -65,7 +66,7 @@ const RenderButton = ({
       <ButtonPrimary
         onClick={swapToken}
         disabled={disabled}
-      >{title}
+      >{title} <IconSwap />
       </ButtonPrimary>
     );
   }

@@ -109,8 +109,9 @@ export default function RemoveLiquidityModal() {
   };
   const formattedPoolShares = formatTokenAmount(pool?.shares ?? '0', POOL_SHARES_DECIMALS);
 
-  const buttonDisabled = isConnected && withdrawValue
-    ? (new Big(withdrawValue).lte(0) || new Big(withdrawValue).gt(formattedPoolShares)) : true;
+  const buttonDisabled = isConnected && withdrawValue && Big(slippageTolerance).gt(0)
+    ? (new Big(withdrawValue).lte(0) || new Big(withdrawValue).gt(formattedPoolShares))
+    : true;
 
   const onChangeSlippage = (value:string) => {
     if (!value || Number(value) <= 0) {
