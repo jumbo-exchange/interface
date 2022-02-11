@@ -141,10 +141,9 @@ const Button = styled.div`
     width: 100%;
   `}
 `;
+const numberVolume = Array.from(Array(3).keys());
 
 export default function PoolCardPlaceholder() {
-  const volume = [1, 2, 3];
-
   return (
     <Wrapper>
       <UpperRow>
@@ -162,7 +161,7 @@ export default function PoolCardPlaceholder() {
       </UpperRow>
       <LowerRow>
         <BlockVolume>
-          {volume.map((el) => (
+          {numberVolume.map((el) => (
             <Column key={el}>
               <TitleVolume />
               <LabelVolume />
