@@ -1,4 +1,3 @@
-import { functionCall } from 'near-api-js/lib/transaction';
 import Big from 'big.js';
 
 import {
@@ -10,8 +9,8 @@ import {
   ONE_YOCTO_NEAR,
 } from 'utils/constants';
 import { toNonDivisibleNumber } from 'utils/calculations';
-import { IPool } from 'store';
-import sendTransactions, { getAmount, getGas, wallet } from './near';
+import { IPool, NEAR_TOKEN_ID } from 'store';
+import sendTransactions, { wallet } from './near';
 import { createContract, Transaction } from './wallet';
 import getConfig from './config';
 import FungibleTokenContract from './FungibleToken';
@@ -36,6 +35,7 @@ const basicViewMethods = [
   'get_whitelisted_tokens',
   'get_user_whitelisted_tokens',
 ];
+
 const basicChangeMethods = [
   'swap',
   'storage_deposit',
@@ -43,6 +43,7 @@ const basicChangeMethods = [
   'remove_liquidity',
   'withdraw',
 ];
+
 const config = getConfig();
 const CREATE_POOL_NEAR_AMOUNT = '0.05';
 const CONTRACT_ID = config.contractId;
@@ -69,25 +70,30 @@ export default class PoolContract {
 
   contractId = CONTRACT_ID;
 
-  async createPool({ tokens, fee }: { tokens: string[], fee: string }) {
+  async createPool({ tokens, fee }: { tokens: FungibleTokenContract[], fee: string }) {
+    const transactions: Transaction[] = [];
+    const tokensStorages = await Promise.all(tokens.map(
+      (token) => token.contract.checkSwapStorageBalance({ accountId: this.contractId }),
+    ));
+    const tokensStoragesAmounts = tokensStorages.flat();
+    if (tokensStoragesAmounts.length) {
+      transactions.push(...tokensStoragesAmounts);
+    }
+
     const formattedFee = new Big(fee).mul(100).toFixed(0, 0);
-    const action = functionCall(
-      'add_simple_pool',
-      { tokens, fee: Number(formattedFee) },
-      getGas(),
-      getAmount(CREATE_POOL_NEAR_AMOUNT),
-    );
-
-    const transaction = await wallet.createTransaction({
+    transactions.push({
       receiverId: this.contractId,
-      nonceOffset: this.nonce,
-      actions: [action],
+      functionCalls: [{
+        methodName: 'add_simple_pool',
+        args: {
+          tokens: tokens.map((token) => token.contractId),
+          fee: Number(formattedFee),
+        },
+        amount: CREATE_POOL_NEAR_AMOUNT,
+      }],
     });
-    this.nonce += 1;
 
-    this.walletInstance.requestSignTransactions(
-      { transactions: [transaction] },
-    );
+    sendTransactions(transactions, this.walletInstance);
   }
 
   async addLiquidity(
@@ -101,7 +107,7 @@ export default class PoolContract {
     },
   ) {
     const transactions: Transaction[] = [];
-    const storageAmount = await this.checkStorage();
+    const storageAmount = await this.checkStorageBalance();
     const [inputToken, outputToken] = tokenAmounts;
     const [firstTokenName, secondTokenName] = pool.tokenAccountIds;
     const firstToken = tokenAmounts.find((el) => el.token.contractId === firstTokenName);
@@ -117,16 +123,7 @@ export default class PoolContract {
       secondToken.token.metadata.decimals,
       secondToken.amount,
     );
-    if (Big(storageAmount).gt(0)) {
-      transactions.push({
-        receiverId: this.contractId,
-        functionCalls: [{
-          methodName: 'storage_deposit',
-          args: { registration_only: false },
-          amount: storageAmount,
-        }],
-      });
-    }
+    if (storageAmount.length) transactions.push(...storageAmount);
     const whitelistedTokens = await this.getWhitelistedTokens();
 
     pool.tokenAccountIds.forEach((tokenId: string) => {
@@ -168,9 +165,13 @@ export default class PoolContract {
   }
 
   async checkStorageState(accountId = wallet.getAccountId()) {
-    // @ts-expect-error: Property 'get_user_storage_state' does not exist on type 'Contract'.
-    const storage = await this.contract.get_user_storage_state({ account_id: accountId });
+    const storage = await this.getStorageState(accountId);
     return storage ? new Big(storage?.deposit).lte(new Big(storage?.usage)) : true;
+  }
+
+  async getStorageState(accountId = wallet.getAccountId()) {
+    // @ts-expect-error: Property 'get_user_storage_state' does not exist on type 'Contract'.
+    return this.contract.get_user_storage_state({ account_id: accountId });
   }
 
   async currentStorageBalance(accountId = wallet.getAccountId()) {
@@ -178,24 +179,41 @@ export default class PoolContract {
     return this.contract.storage_balance_of({ account_id: accountId });
   }
 
-  async checkStorage() {
-    let storageNeeded = Big(0);
-    const needDeposit = await this.checkStorageState();
-    if (needDeposit) {
-      storageNeeded = Big(ONE_MORE_DEPOSIT_AMOUNT);
+  async checkStorageBalance(accountId: string = wallet.getAccountId()) {
+    const transactions: Transaction[] = [];
+
+    let storageAmount = new Big(0);
+
+    const storageAvailable = await this.getStorageState(accountId);
+
+    if (!storageAvailable) {
+      storageAmount = new Big(ONE_MORE_DEPOSIT_AMOUNT);
     } else {
-      const balance = await this.currentStorageBalance(wallet.getAccountId());
+      const balance = await this.currentStorageBalance(accountId);
 
       if (!balance) {
-        storageNeeded = storageNeeded.plus(Number(ACCOUNT_MIN_STORAGE_AMOUNT));
+        storageAmount = new Big(ACCOUNT_MIN_STORAGE_AMOUNT);
       }
 
       if (new Big(balance?.available || '0').lt(MIN_DEPOSIT_PER_TOKEN)) {
-        storageNeeded = storageNeeded.plus(Number(STORAGE_PER_TOKEN));
+        storageAmount = storageAmount.plus(Number(STORAGE_PER_TOKEN));
       }
     }
 
-    return storageNeeded.toString();
+    if (storageAmount.gt(0) && this.contractId !== NEAR_TOKEN_ID) {
+      transactions.push({
+        receiverId: this.contractId,
+        functionCalls: [{
+          methodName: 'storage_deposit',
+          args: {
+            registration_only: false,
+            account_id: accountId,
+          },
+          amount: storageAmount.toFixed(),
+        }],
+      });
+    }
+    return transactions;
   }
 
   async removeLiquidity(
@@ -212,18 +230,9 @@ export default class PoolContract {
     },
   ) {
     const transactions: Transaction[] = [];
-    const storageAmount = await this.checkStorage();
+    const storageAmount = await this.checkStorageBalance();
 
-    if (storageAmount) {
-      transactions.push({
-        receiverId: this.contractId,
-        functionCalls: [{
-          methodName: 'storage_deposit',
-          args: { registration_only: false },
-          amount: storageAmount,
-        }],
-      });
-    }
+    if (storageAmount.length) transactions.push(...storageAmount);
 
     transactions.push({
       receiverId: this.contractId,
@@ -233,6 +242,7 @@ export default class PoolContract {
         amount: ONE_YOCTO_NEAR,
       }],
     });
+
     pool.tokenAccountIds.map((tokenId) => transactions.push({
       receiverId: this.contractId,
       functionCalls: [

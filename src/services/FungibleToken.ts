@@ -1,12 +1,9 @@
-import BN from 'bn.js';
 import * as nearApiJs from 'near-api-js';
 import nearIcon from 'assets/images-app/near.svg';
 import wrapNearIcon from 'assets/images-app/wNEAR.svg';
 import defaultToken from 'assets/images-app/defaultToken.svg';
 import { ITokenMetadata, NEAR_TOKEN_ID } from 'store';
 import {
-  FT_MINIMUM_STORAGE_BALANCE,
-  FT_STORAGE_DEPOSIT_GAS,
   FT_TRANSFER_GAS,
   ONE_YOCTO_NEAR,
 } from 'utils/constants';
@@ -31,6 +28,11 @@ const config = getConfig();
 const DECIMALS_DEFAULT_VALUE = 0;
 const ICON_DEFAULT_VALUE = '';
 const CONTRACT_ID = config.contractId;
+export const ACCOUNT_MIN_STORAGE_AMOUNT = '0.005';
+export const MIN_DEPOSIT_PER_TOKEN = new Big('5000000000000000000000');
+export const STORAGE_PER_TOKEN = '0.005';
+export const STORAGE_TO_REGISTER_FT = '0.00125';
+export const ONE_MORE_DEPOSIT_AMOUNT = '0.01';
 
 const NEAR_TOKEN = {
   decimals: 24,
@@ -53,6 +55,8 @@ const defaultMetadata = {
   symbol: 'TKN',
   reference: '',
 };
+
+export enum StorageType {'Swap' = 'Swap', 'Liquidity' = 'Liquidity'}
 
 export default class FungibleTokenContract {
   constructor(props: FungibleTokenContractInterface) {
@@ -97,22 +101,27 @@ export default class FungibleTokenContract {
   }
 
   async getMetadata() {
-    if (this.contractId === NEAR_TOKEN_ID) {
-      this.metadata = { ...defaultMetadata, ...NEAR_TOKEN };
-      return NEAR_TOKEN;
-    }
+    try {
+      if (this.contractId === NEAR_TOKEN_ID) {
+        this.metadata = { ...defaultMetadata, ...NEAR_TOKEN };
+        return NEAR_TOKEN;
+      }
 
-    if (
-      this.metadata.decimals !== DECIMALS_DEFAULT_VALUE
+      if (
+        this.metadata.decimals !== DECIMALS_DEFAULT_VALUE
       && this.metadata.icon !== ICON_DEFAULT_VALUE
-    ) return this.metadata;
+      ) return this.metadata;
 
-    const metadata = await this.contract.ft_metadata();
-    if (this.contractId === config.nearAddress) metadata.icon = wrapNearIcon;
-    if (!metadata.icon) metadata.icon = defaultToken;
+      const metadata = await this.contract.ft_metadata();
+      if (this.contractId === config.nearAddress) metadata.icon = wrapNearIcon;
+      if (!metadata.icon) metadata.icon = defaultToken;
 
-    this.metadata = { ...defaultMetadata, ...metadata };
-    return metadata;
+      this.metadata = { ...defaultMetadata, ...metadata };
+      return metadata;
+    } catch (e) {
+      console.warn(e, 'while loading', this.contractId);
+    }
+    return null;
   }
 
   async getBalanceOf({ accountId }: { accountId: string }) {
@@ -123,48 +132,24 @@ export default class FungibleTokenContract {
     return this.contract.ft_balance_of({ account_id: accountId });
   }
 
-  async getEstimatedTotalFees({ accountId = '', contractName = '' } = {}) {
-    if (contractName
-        && accountId
-        && !await this.isStorageBalanceAvailable({ accountId })) {
-      return new BN(FT_TRANSFER_GAS as string)
-        .add(new BN(FT_MINIMUM_STORAGE_BALANCE as string))
-        .add(new BN(FT_STORAGE_DEPOSIT_GAS as string))
-        .toString();
-    }
-    return FT_TRANSFER_GAS as string;
-  }
-
-  async getEstimatedTotalNearAmount({ amount }:{ amount: string }) {
-    return new BN(amount)
-      .add(new BN(await this.getEstimatedTotalFees()))
-      .toString();
-  }
-
-  async isStorageBalanceAvailable({ accountId }: { accountId: string }) {
-    if (this.contractId === NEAR_TOKEN_ID) return true;
-    const storageBalance = await this.getStorageBalance({ accountId });
-    return storageBalance?.total !== undefined && Big(storageBalance?.available ?? '0').gt(0);
-  }
-
-  async checkStorageBalance({ accountId }: { accountId: string }) {
+  async checkSwapStorageBalance({ accountId }: { accountId: string }) {
     const transactions: Transaction[] = [];
-    const storageAvailable = await this.isStorageBalanceAvailable(
-      { accountId },
-    );
+    const storageAvailable = await this.getStorageBalance({ accountId });
 
-    if (!storageAvailable && this.contractId !== NEAR_TOKEN_ID) {
-      transactions.push({
-        receiverId: this.contractId,
-        functionCalls: [{
-          methodName: 'storage_deposit',
-          args: {
-            account_id: accountId,
-            registration_only: true,
-          },
-          amount: '0.00125',
-        }],
-      });
+    if (storageAvailable === null || storageAvailable.total === '0') {
+      transactions.push(
+        {
+          receiverId: this.contractId,
+          functionCalls: [{
+            methodName: 'storage_deposit',
+            args: {
+              registration_only: true,
+              account_id: accountId,
+            },
+            amount: STORAGE_TO_REGISTER_FT,
+          }],
+        },
+      );
     }
     return transactions;
   }
@@ -182,7 +167,7 @@ export default class FungibleTokenContract {
     message?: string,
   }): Promise<Transaction[]> {
     const transactions: Transaction[] = [];
-    const checkStorage = await this.checkStorageBalance({ accountId });
+    const checkStorage = await this.checkSwapStorageBalance({ accountId });
     transactions.push(...checkStorage);
     transactions.push({
       receiverId: inputToken,

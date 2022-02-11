@@ -162,7 +162,7 @@ export default class SwapContract {
           pool_id: firstPool.id,
           token_in: inputToken.contractId,
           token_out: swapToken,
-          min_amount_out: 0,
+          min_amount_out: '0',
         }, {
           pool_id: secondPool.id,
           token_in: swapToken,
@@ -193,7 +193,7 @@ export default class SwapContract {
 
     const transactions: Transaction[] = [];
     const accountId = this.walletInstance.getAccountId();
-    const outputTokenStorage = await outputToken.contract.checkStorageBalance({ accountId });
+    const outputTokenStorage = await outputToken.contract.checkSwapStorageBalance({ accountId });
     transactions.push(...outputTokenStorage);
 
     if (tokensIds.includes(NEAR_TOKEN_ID) && tokensIds.includes(config.nearAddress)) {
