@@ -114,8 +114,9 @@ const TitleVolume = styled.div`
   display: flex;
   background-color: ${({ theme }) => theme.globalGreyOp02};
   border-radius: 12px;
-  width: 27px;
-  height: 6px;
+
+  width: 63px;
+  height: 12px;
   margin-bottom: .75rem;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     margin: 0;
@@ -126,19 +127,20 @@ const LabelVolume = styled.div`
   display: flex;
   background-color: ${({ theme }) => theme.globalGreyOp02};
   border-radius: 12px;
-  width: 63px;
-  height: 12px;
+  width: 27px;
+  height: 6px;
 `;
 
 const Button = styled.div`
   display: flex;
   justify-content: flex-end;
-  width: 142px;
-  height: 40px;
+  max-width: 157px;
+  width: 100%;
+  height: 48px;
   background-color: ${({ theme }) => theme.globalGreyOp02};
   border-radius: 12px;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    width: 100%;
+    max-width: 100%;
   `}
 `;
 const numberVolume = Array.from(Array(3).keys());
@@ -155,8 +157,8 @@ export default function PoolCardPlaceholder() {
           <TitlePool />
         </BlockTitle>
         <LabelPool>
-          <JumboBlock />
           <MiceBlock />
+          <JumboBlock />
         </LabelPool>
       </UpperRow>
       <LowerRow>
