@@ -56,7 +56,7 @@ export const WrapperInfoBlock = styled.div`
 export const InfoBLock = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 0 1.375rem;
+  padding: 0 1.5rem;
 `;
 
 export const TitleInfo = styled.div`
