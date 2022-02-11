@@ -30,9 +30,14 @@ export const tooltipTitle = {
 export const warning = {
   zeroBalance: 'Zero balance',
   zeroBalanceDesc: 'Insufficient balance of wNEAR. Swap NEAR to wNEAR in order to proceed by clicking “Go to Pair”',
+
   doesNotExist: 'The given pair doesn\'t exist',
+
   noSuchPairExists: 'No such pair exists',
   noSuchPairExistsDesc: 'In order to trade wNEAR is needed. Click “Go to Pair” to Swap NEAR to wNEAR',
+
+  zeroPoolLiquidity: 'Zero liquidity pool',
+  zeroPoolLiquidityDesc: 'Zero liquidity pool, you can add liquidity to the pool',
 };
 
 export const poolFeeOptions = [
