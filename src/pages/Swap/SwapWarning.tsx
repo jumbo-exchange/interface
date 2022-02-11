@@ -192,8 +192,7 @@ export default function RenderWarning() {
     );
   }
 
-  if (!loading
-    && !havePoolPathToken) {
+  if (!loading && !havePoolPathToken) {
     return (
       <WarningBlock>
         <Warning
@@ -204,8 +203,7 @@ export default function RenderWarning() {
     );
   }
 
-  if (!loading
-    && isMissingShares) {
+  if (!loading && isMissingShares) {
     return (
       <WarningBlock>
         <Warning
