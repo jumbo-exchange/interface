@@ -12,6 +12,8 @@ export const calculateMarketPrice = (
   if (pool.type === PoolType.STABLE_SWAP) {
     return '1';
   }
+  // if (!pool.supplies[tokenIn.contractId] || pool.supplies[tokenOut.contractId]) return '0';
+
   const tokenInBalance = formatTokenAmount(
     pool.supplies[tokenIn.contractId],
     tokenIn.metadata.decimals,
@@ -71,6 +73,7 @@ export const calculatePriceImpact = (
   let tokenOutReceived = new Big(0);
   if (pools.length === SWAP_ENUM.DIRECT_SWAP) {
     const [currentPool] = pools;
+
     const marketPrice = calculateMarketPrice(currentPool, tokenIn, tokenOut);
 
     generalMarketPrice = generalMarketPrice.add(marketPrice);
@@ -84,6 +87,9 @@ export const calculatePriceImpact = (
     const [firstPool, secondPool] = pools;
     const tokenMidId = firstPool.tokenAccountIds.find((token) => token !== tokenIn.contractId);
     const tokenMid = tokens[tokenMidId as string];
+    if (!firstPool.supplies[tokenIn.contractId] || !firstPool.supplies[tokenMid.contractId]) return '0';
+    if (!secondPool.supplies[tokenMid.contractId] || !secondPool.supplies[tokenOut.contractId]) return '0';
+
     const firstPoolMarketPrice = calculateMarketPrice(firstPool, tokenIn, tokenMid);
     const secondPoolMarketPrice = calculateMarketPrice(secondPool, tokenMid, tokenOut);
     generalMarketPrice = Big(firstPoolMarketPrice).mul(secondPoolMarketPrice);

@@ -77,7 +77,7 @@ export default class SwapContract {
       const [currentPool] = pools;
       const tokensIds = currentPool.tokenAccountIds;
       if (!tokensIds.includes(tokenIn.contractId) || !tokensIds.includes(tokenOut.contractId)) {
-        throw Error(SWAP_TOKENS_NOT_IN_SWAP_POOL);
+        throw Error(`1 ${SWAP_TOKENS_NOT_IN_SWAP_POOL} ${tokenIn.contractId} ${tokenOut.contractId}`);
       }
       const minOutput = SwapContract.getLocalReturn(
         tokenIn,
@@ -94,7 +94,7 @@ export default class SwapContract {
         !firstPoolTokens.includes(tokenIn.contractId)
         && !secondPoolTokens.includes(tokenOut.contractId)
       ) {
-        throw Error(SWAP_TOKENS_NOT_IN_SWAP_POOL);
+        throw Error(`2 ${SWAP_TOKENS_NOT_IN_SWAP_POOL} ${tokenIn.contractId} ${tokenOut.contractId}`);
       }
       const swapToken = firstPoolTokens.find((tokenName) => tokenName !== tokenIn.contractId);
       if (!swapToken || !tokens[swapToken]) throw Error(SWAP_FAILED);
@@ -152,7 +152,7 @@ export default class SwapContract {
         !firstPoolTokens.includes(inputToken.contractId)
         && !secondPoolTokens.includes(outputToken.contractId)
       ) {
-        throw Error(SWAP_TOKENS_NOT_IN_SWAP_POOL);
+        throw Error(`3 ${SWAP_TOKENS_NOT_IN_SWAP_POOL} ${inputToken.contractId} ${outputToken.contractId}`);
       }
       const swapToken = firstPoolTokens.find((tokenName) => tokenName !== inputToken.contractId);
       if (!swapToken) throw Error(SWAP_FAILED);

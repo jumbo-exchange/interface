@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 import {
-  Route, BrowserRouter as Router, Routes,
+  Route, BrowserRouter as Router, Routes, useLocation,
 } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import { StoreContextProvider, ModalsContextProvider } from 'store';

@@ -119,10 +119,6 @@ const JumboBlock = styled.div`
   border-radius: 4px;
 `;
 
-const MiceBlock = styled(JumboBlock)`
-  background-color: ${({ theme }) => theme.miceLabel};
-`;
-
 const BlockVolume = styled.div`
   display: flex;
   width: 100%;
@@ -242,7 +238,6 @@ export default function PoolCard({ pool } : { pool:IPool }) {
         </BlockTitle>
         <LabelPool>
           <JumboBlock>Jumbo</JumboBlock>
-          {/* <MiceBlock>Mice</MiceBlock> */}
         </LabelPool>
       </UpperRow>
       <LowerRow>

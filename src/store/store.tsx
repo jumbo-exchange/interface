@@ -42,6 +42,7 @@ const initialState: StoreContextType = {
   setOutputToken: () => {},
   setCurrentToken: () => {},
   updatePools: () => {},
+  swapTokens: () => {},
 };
 
 const StoreContextHOC = createContext<StoreContextType>(initialState);
@@ -83,6 +84,17 @@ export const StoreContextProvider = (
       const availablePools = getPoolsPath(tokenAddress, outputToken.contractId, poolArray, tokens);
       setCurrentPools(availablePools);
     }
+  };
+  const swapTokens = () => {
+    const poolArray = toArray(pools);
+    if (!inputToken || !outputToken || inputToken === outputToken) return;
+    setInputToken(outputToken);
+    setOutputToken(inputToken);
+
+    const availablePools = getPoolsPath(
+      outputToken.contractId, inputToken.contractId, poolArray, tokens,
+    );
+    setCurrentPools(availablePools);
   };
 
   const initialLoading = async () => {
@@ -217,6 +229,7 @@ export const StoreContextProvider = (
       outputToken,
       setOutputToken,
       setCurrentToken,
+      swapTokens,
     }}
     >
       {children}

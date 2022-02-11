@@ -83,9 +83,8 @@ const RenderButton = ({
 export default function Swap() {
   const {
     inputToken,
-    setInputToken,
     outputToken,
-    setOutputToken,
+    swapTokens,
     balances,
     loading,
     currentPools,
@@ -122,12 +121,6 @@ export default function Swap() {
   );
 
   useUpdatePoolsService(wallet, currentPools, updatePools);
-
-  const changeToken = () => {
-    const oldOutputToken = outputToken;
-    setOutputToken(inputToken);
-    setInputToken(oldOutputToken);
-  };
 
   const verifyToken = (
     token: FungibleTokenContract,
@@ -297,7 +290,7 @@ export default function Swap() {
           setValue={handleInputChange}
           balance={balances[inputToken?.contractId ?? '']}
         />
-        <ChangeTokenContainer onClick={changeToken}>
+        <ChangeTokenContainer onClick={swapTokens}>
           <ChangeTokenLogo />
           <span>Change Direction</span>
         </ChangeTokenContainer>
