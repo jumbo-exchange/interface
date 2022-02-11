@@ -142,6 +142,10 @@ const MobileRow = styled.div`
   margin: 1rem 0;
 `;
 
+const RefreshBlock = styled.div`
+  margin-left: 1.5rem;
+`;
+
 enum APRFiletEnum {
   '24H',
   '7D',
@@ -189,7 +193,9 @@ export default function PoolSettings({
               placeholder="Search"
             />
           </SearchInputBlock>
-          <Refresh />
+          <RefreshBlock>
+            <Refresh />
+          </RefreshBlock>
         </MobileRow>
         <MobileRow>
           {currentFilterPools === FilterPoolsEnum['All Pools']

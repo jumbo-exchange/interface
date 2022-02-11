@@ -13,7 +13,6 @@ const Container = styled.div`
   font-size: .75rem;
   line-height: 1.188rem;
   color: ${({ theme }) => theme.globalGrey};
-  margin-right: 1.25rem;
   :hover {
     cursor: pointer;
   }
