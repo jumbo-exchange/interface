@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { colors } from 'theme';
 
 export const REFRESH_TIMER = 5;
 
@@ -25,7 +26,7 @@ const Path = styled.path<{currentTime?: number}>`
   animation: ${(props) => props.currentTime}s ease-in-out infinite both circle-animation;
   display: block;
   fill: transparent;
-  stroke: #84DA18;
+  stroke: ${({ theme }) => theme.globalGreen};
   stroke-linecap: round;
   stroke-dasharray: 283;
   stroke-dashoffset: 280;
@@ -62,7 +63,7 @@ const Loader = ({ time }: {time: number}) => {
         d={pathDescription}
         strokeWidth={strokeWidth}
         fillOpacity={0}
-        style={{ stroke: '#454D5C' }}
+        style={{ stroke: colors.tooltip }}
       />
       <Path
         currentTime={time}
@@ -70,7 +71,7 @@ const Loader = ({ time }: {time: number}) => {
         strokeWidth={strokeWidth}
         fillOpacity={0}
         style={{
-          stroke: '#84DA18',
+          stroke: colors.globalGreen,
           strokeLinecap: 'round',
           strokeDasharray: `${diameter}px ${diameter}px`,
         }}
