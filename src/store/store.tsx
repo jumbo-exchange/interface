@@ -1,7 +1,7 @@
 import React, {
   createContext, useContext, useEffect, useState,
 } from 'react';
-import { wallet as nearWallet } from 'services/near';
+import { getUserWalletTokens, wallet as nearWallet } from 'services/near';
 import {
   contractMethods, IPool, StoreContextType, TokenType,
 } from 'store';
@@ -42,6 +42,7 @@ const initialState: StoreContextType = {
   setOutputToken: () => {},
   setCurrentToken: () => {},
   updatePools: () => {},
+  swapTokens: () => {},
 };
 
 const StoreContextHOC = createContext<StoreContextType>(initialState);
@@ -84,6 +85,17 @@ export const StoreContextProvider = (
       setCurrentPools(availablePools);
     }
   };
+  const swapTokens = () => {
+    const poolArray = toArray(pools);
+    if (!inputToken || !outputToken || inputToken === outputToken) return;
+    setInputToken(outputToken);
+    setOutputToken(inputToken);
+
+    const availablePools = getPoolsPath(
+      outputToken.contractId, inputToken.contractId, poolArray, tokens,
+    );
+    setCurrentPools(availablePools);
+  };
 
   const initialLoading = async () => {
     try {
@@ -98,12 +110,14 @@ export const StoreContextProvider = (
             { from_index: i * DEFAULT_PAGE_LIMIT, limit: DEFAULT_PAGE_LIMIT },
           )),
       )).flat();
+      const userTokens = await getUserWalletTokens();
 
       const tokenAddresses = [
         ...poolsResult
           .flatMap((pool: any) => pool.token_account_ids),
         config.nearAddress,
         NEAR_TOKEN_ID,
+        ...userTokens,
       ];
 
       const poolArray = poolsResult
@@ -120,16 +134,18 @@ export const StoreContextProvider = (
             { wallet: nearWallet, contractId: address },
           );
           const metadata = await ftTokenContract.getMetadata();
+          if (!metadata) return null;
           return { metadata, contractId: address, contract: ftTokenContract };
         }),
       );
+      const tokensMetadataFiltered = tokensMetadata.filter((el) => !!el);
 
       if (isSignedIn) {
         setWallet(nearWallet);
         const accountId = nearWallet.getAccountId();
         try {
           const balancesArray = await Promise.all(
-            tokensMetadata.map(async (token) => {
+            tokensMetadataFiltered.map(async (token) => {
               const balance = await token.contract.getBalanceOf({ accountId });
               return { contractId: token.contractId, balance };
             }),
@@ -152,7 +168,9 @@ export const StoreContextProvider = (
           console.warn(e, 'while initial loading user specific data');
         }
       }
-      setTokens(tokensMetadata.reduce((acc, curr) => ({ ...acc, [curr.contractId]: curr }), {}));
+      setTokens(tokensMetadataFiltered.reduce(
+        (acc, curr) => ({ ...acc, [curr.contractId]: curr }), {},
+      ));
       setPools(toMap(newPoolArray));
     } catch (e) {
       console.warn(e);
@@ -211,6 +229,7 @@ export const StoreContextProvider = (
       outputToken,
       setOutputToken,
       setCurrentToken,
+      swapTokens,
     }}
     >
       {children}

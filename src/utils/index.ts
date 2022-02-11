@@ -76,23 +76,22 @@ export function getPoolsPath(
     && pool.tokenAccountIds.includes(tokenAddressOutput),
   );
   if (directSwap) return [directSwap];
+
   const inputTokenPools = sortedPools
     .filter((pool) => pool.tokenAccountIds.includes(tokenAddressInput));
   const outputTokenPools = sortedPools
     .filter((pool) => pool.tokenAccountIds.includes(tokenAddressOutput));
   const outputTokens = outputTokenPools.map((el) => el.tokenAccountIds).flat();
-  const intersectionPairs = inputTokenPools
+  const intersectionPairToken = inputTokenPools
     .map((el) => el.tokenAccountIds)
     .flat()
     .find((el) => outputTokens.includes(el));
-  if (intersectionPairs?.length) {
-    const FIRST_TOKEN = 1;
-    const intersectionToken = intersectionPairs[FIRST_TOKEN];
+  if (intersectionPairToken) {
     const firstSwap = inputTokenPools.find(
-      (el) => el.tokenAccountIds.includes(intersectionToken),
+      (el) => el.tokenAccountIds.includes(intersectionPairToken),
     );
     const secondSwap = outputTokenPools.find(
-      (el) => el.tokenAccountIds.includes(intersectionToken),
+      (el) => el.tokenAccountIds.includes(intersectionPairToken),
     );
     if (!firstSwap || !secondSwap) return [];
     return [firstSwap, secondSwap];

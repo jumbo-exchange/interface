@@ -5,9 +5,11 @@ import GifLoading from 'assets/gif/loading.gif';
 import { ReactComponent as JumboLogo } from 'assets/images/jumbo-logo.svg';
 
 import {
-  Route, Routes, useMatch, useResolvedPath, Link,
+  Route, Routes, useMatch, useResolvedPath, Link, useLocation,
 } from 'react-router-dom';
 import type { LinkProps } from 'react-router-dom';
+import useTransactionHash from 'services/receiptsService';
+import { wallet } from 'services/near';
 import {
   Container,
   Header,
@@ -43,6 +45,9 @@ function CustomLink({
 }
 
 export default function App() {
+  const { search } = useLocation();
+  useTransactionHash(search, wallet);
+
   return (
     <Container>
       <Header>

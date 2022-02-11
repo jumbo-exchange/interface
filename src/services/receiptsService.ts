@@ -23,11 +23,15 @@ export default function useTransactionHash(
         const provider = new providers.JsonRpcProvider(
           config.nodeUrl,
         );
-        Promise.all(transactions.split(',').map(
-          (txHash) => provider.txStatus(txHash, wallet.getAccountId()),
-        )).then(
-          (res) => console.log('Result: ', res),
-        );
+        try {
+          Promise.all(transactions.split(',').map(
+            (txHash) => provider.txStatus(txHash, wallet.getAccountId()),
+          )).then(
+            (res) => console.log('Result: ', res),
+          );
+        } catch (e) {
+          console.warn(e, ' error while loading tx');
+        }
       }
     }
   }, [query, wallet]);

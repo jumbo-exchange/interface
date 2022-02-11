@@ -82,9 +82,8 @@ const RenderButton = ({
 export default function Swap() {
   const {
     inputToken,
-    setInputToken,
     outputToken,
-    setOutputToken,
+    swapTokens,
     balances,
     loading,
     currentPools,
@@ -123,12 +122,6 @@ export default function Swap() {
 
   useUpdatePoolsService(wallet, currentPools, updatePools);
 
-  const changeToken = () => {
-    const oldOutputToken = outputToken;
-    setOutputToken(inputToken);
-    setInputToken(oldOutputToken);
-  };
-
   const verifyToken = (
     token: FungibleTokenContract,
   ) => {
@@ -144,22 +137,26 @@ export default function Swap() {
       const formattedValue = parseTokenAmount(debouncedInputValue, inputToken.metadata.decimals);
       const verifiedInputToken = verifyToken(inputToken);
       const verifiedOutputToken = verifyToken(outputToken);
-      const minOutput = SwapContract.getReturnForPools(
-        currentPools,
-        formattedValue,
-        verifiedInputToken,
-        verifiedOutputToken,
-        tokens,
-      );
-      const lastIndex = minOutput.length - 1;
-      setOutputTokenValue(
-        removeTrailingZeros(
-          formatTokenAmount(
-            minOutput[lastIndex],
-            verifiedOutputToken.metadata.decimals,
+      try {
+        const minOutput = SwapContract.getReturnForPools(
+          currentPools,
+          formattedValue,
+          verifiedInputToken,
+          verifiedOutputToken,
+          tokens,
+        );
+        const lastIndex = minOutput.length - 1;
+        setOutputTokenValue(
+          removeTrailingZeros(
+            formatTokenAmount(
+              minOutput[lastIndex],
+              verifiedOutputToken.metadata.decimals,
+            ),
           ),
-        ),
-      );
+        );
+      } catch (e) {
+        setOutputTokenValue('0');
+      }
     }
   }, [debouncedInputValue, inputToken, outputToken]);
 
@@ -169,22 +166,26 @@ export default function Swap() {
       const formattedValue = parseTokenAmount(debouncedOutputValue, outputToken.metadata.decimals);
       const verifiedInputToken = verifyToken(inputToken);
       const verifiedOutputToken = verifyToken(outputToken);
-      const minOutput = SwapContract.getReturnForPools(
-        currentPools,
-        formattedValue,
-        verifiedOutputToken,
-        verifiedInputToken,
-        tokens,
-      );
-      const lastIndex = minOutput.length - 1;
-      setInputTokenValue(
-        removeTrailingZeros(
-          formatTokenAmount(
-            minOutput[lastIndex],
-            verifiedInputToken.metadata.decimals,
+      try {
+        const minOutput = SwapContract.getReturnForPools(
+          currentPools,
+          formattedValue,
+          verifiedOutputToken,
+          verifiedInputToken,
+          tokens,
+        );
+        const lastIndex = minOutput.length - 1;
+        setInputTokenValue(
+          removeTrailingZeros(
+            formatTokenAmount(
+              minOutput[lastIndex],
+              verifiedInputToken.metadata.decimals,
+            ),
           ),
-        ),
-      );
+        );
+      } catch (e) {
+        setOutputTokenValue('0');
+      }
     }
   }, [debouncedOutputValue, inputToken, outputToken]);
 
@@ -261,21 +262,26 @@ export default function Swap() {
     const formattedValue = parseTokenAmount('1', outputToken.metadata.decimals);
     const verifiedInputToken = verifyToken(inputToken);
     const verifiedOutputToken = verifyToken(outputToken);
-    const minOutput = SwapContract.getReturnForPools(
-      currentPools,
-      formattedValue,
-      verifiedOutputToken,
-      verifiedInputToken,
-      tokens,
-    );
-    const lastIndex = minOutput.length - 1;
-    setExchangeAmount(
-      formatTokenAmount(
-        minOutput[lastIndex],
-        verifiedInputToken.metadata.decimals,
-        5,
-      ),
-    );
+    try {
+      const minOutput = SwapContract.getReturnForPools(
+        currentPools,
+        formattedValue,
+        verifiedInputToken,
+        verifiedOutputToken,
+        tokens,
+      );
+      const lastIndex = minOutput.length - 1;
+
+      setExchangeAmount(
+        formatTokenAmount(
+          minOutput[lastIndex],
+          verifiedInputToken.metadata.decimals,
+          5,
+        ),
+      );
+    } catch (e) {
+      console.warn(e);
+    }
   }, [inputToken, outputToken]);
 
   const exchangeLabel = `
@@ -294,7 +300,7 @@ export default function Swap() {
           setValue={handleInputChange}
           balance={balances[inputToken?.contractId ?? '']}
         />
-        <ChangeTokenContainer onClick={changeToken}>
+        <ChangeTokenContainer onClick={swapTokens}>
           <ChangeTokenLogo />
           <span>Change Direction</span>
         </ChangeTokenContainer>

@@ -34,7 +34,7 @@ export default function CreatePoolModal() {
     if (!inputToken || !outputToken) return;
     const poolContract = new PoolContract();
     await poolContract.createPool(
-      { tokens: [inputToken.contractId, outputToken.contractId], fee },
+      { tokens: [inputToken, outputToken], fee },
     );
   };
 
