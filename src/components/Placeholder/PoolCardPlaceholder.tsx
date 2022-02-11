@@ -143,7 +143,9 @@ const Button = styled.div`
     max-width: 100%;
   `}
 `;
-const numberVolume = Array.from(Array(3).keys());
+
+const PLACEHOLDERS_NUMBER = 3;
+const numberVolume = Array.from(Array(PLACEHOLDERS_NUMBER).keys());
 
 export default function PoolCardPlaceholder() {
   return (
