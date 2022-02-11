@@ -5,7 +5,7 @@ import { getUpperCase } from 'utils';
 import {
   useStore, useModalsStore, TokenType, NEAR_TOKEN_ID,
 } from 'store';
-import { FEE_DIVISOR, SLIPPAGE_TOLERANCE_DEFAULT } from 'utils/constants';
+import { BAD_PRICE_IMPACT, FEE_DIVISOR, SLIPPAGE_TOLERANCE_DEFAULT } from 'utils/constants';
 import SwapContract from 'services/SwapContract';
 import useDebounce from 'hooks/useDebounce';
 import {
@@ -18,6 +18,7 @@ import Big from 'big.js';
 
 import { calculatePriceImpact } from 'services/swap';
 import { useUpdatePoolsService } from 'services/updatePoolService';
+import Refresh from 'components/Refresh';
 import Input from './SwapInput';
 import SwapSettings from './SwapSettings';
 import RenderWarning from './SwapWarning';
@@ -28,8 +29,6 @@ import {
   ChangeTokenContainer,
   ChangeTokenLogo,
   ExchangeBlock,
-  RefreshBlock,
-  PlaceHolderGif,
   SettingsHeader,
   ExchangeLabel,
   SettingsBlock,
@@ -298,10 +297,7 @@ export default function Swap() {
         />
       </ActionContainer>
       <ExchangeBlock>
-        <RefreshBlock>
-          <PlaceHolderGif />
-          Refresh
-        </RefreshBlock>
+        <Refresh />
         <ExchangeLabel>
           {loading ? 'Loading...' : <div>{exchangeLabel}</div>}
         </ExchangeLabel>
@@ -364,7 +360,7 @@ export default function Swap() {
               <RowInfo>
                 <TitleInfo>Price Impact<LogoInfo /></TitleInfo>
                 {
-                  Number(formatBalance(priceImpact)) > 2
+                  Number(formatBalance(priceImpact)) > BAD_PRICE_IMPACT
                     ? <LabelError>{formatBalance(priceImpact)}%</LabelError>
                     : <LabelInfo isColor>{formatBalance(priceImpact)}%</LabelInfo>
                 }

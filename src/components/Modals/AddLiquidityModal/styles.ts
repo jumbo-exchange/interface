@@ -24,8 +24,10 @@ export const LogoContainerAdd = styled(AddIcon)`
 export const RefreshBlock = styled.div`
   display: flex;
   justify-content: flex-start;
-  white-space: nowrap;
   margin: 2.063rem .75rem;
+  & > div {
+    font-size: 1rem;
+  }
 `;
 
 export const PlaceHolderGif = styled(PlaceHolderLoader)`

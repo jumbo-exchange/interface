@@ -5,7 +5,6 @@ import { SpecialContainer } from 'components/SpecialContainer';
 import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
 import { ReactComponent as Exchange } from 'assets/images-app/exchange.svg';
-import { ReactComponent as PlaceHolderLoader } from 'assets/images-app/placeholder-loader.svg';
 import { ReactComponent as Info } from 'assets/images-app/info.svg';
 import { ReactComponent as RouteArrow } from 'assets/images-app/route-arrow.svg';
 import { ReactComponent as SwapIcon } from 'assets/images-app/swap-icon.svg';
@@ -66,20 +65,6 @@ export const ExchangeBlock = styled.div`
   font-size: .75rem;
   line-height: .875rem;
   color: ${({ theme }) => theme.globalGrey};
-`;
-
-export const RefreshBlock = styled.div`
-  display: flex;
-  justify-content: space-between;
-  white-space: nowrap;
-  margin-right: 1.25rem;
-  :hover {
-    cursor: pointer;
-  }
-`;
-
-export const PlaceHolderGif = styled(PlaceHolderLoader)`
-  margin-right: .438rem;
 `;
 
 export const ExchangeLabel = styled.div`

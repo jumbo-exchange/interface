@@ -13,6 +13,7 @@ import {
 import { wallet } from 'services/near';
 import { POOL_SHARES_DECIMALS } from 'utils/constants';
 import Big from 'big.js';
+import Refresh from 'components/Refresh';
 import {
   Layout, ModalBlock, ModalIcon, ModalTitle,
 } from '../styles';
@@ -165,8 +166,7 @@ export default function AddLiquidityModal() {
               <span>{shareDisplay()}</span>
             </YourSharesBlock>
             <RefreshBlock>
-              <PlaceHolderGif />
-              Refresh
+              <Refresh />
             </RefreshBlock>
             <ButtonPrimary
               disabled={!canAddLiquidity}
