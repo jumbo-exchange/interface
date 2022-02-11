@@ -49,9 +49,7 @@ export default function AddLiquidityModal() {
   const tokenOutput = tokens[tokenOutputName] ?? null;
   if (!tokenInput || !tokenOutput) return null;
 
-  const [inputTokenSupplies, outputTokenSupplies] = Object.values(pool.supplies).map(
-    (el) => el,
-  );
+  const [inputTokenSupplies, outputTokenSupplies] = Object.values(pool.supplies);
 
   const handleInputChange = (value: string) => {
     if (Object.values(pool.supplies).every((s) => s === '0')) {
@@ -106,10 +104,10 @@ export default function AddLiquidityModal() {
   };
 
   const canAddLiquidity = isConnected
-  && !!inputTokenValue
-  && !!outputTokenValue
-  && !checkInvalidAmount(balances, tokenInput, inputTokenValue)
-  && !checkInvalidAmount(balances, tokenOutput, outputTokenValue);
+    && !!inputTokenValue
+    && !!outputTokenValue
+    && !checkInvalidAmount(balances, tokenInput, inputTokenValue)
+    && !checkInvalidAmount(balances, tokenOutput, outputTokenValue);
 
   const shareDisplay = () => {
     let result = '';

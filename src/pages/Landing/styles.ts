@@ -265,7 +265,7 @@ export const MiddleRightBlock = styled(Block)`
   border: 2px dashed ${({ theme }) => theme.greyBorder};
   line-height: 34px;
   max-height: 96px;
-  min-width: ${isTablet ? '260px' : '300px'};
+  min-width: ${isTablet ? '240px' : '300px'};
 `;
 
 export const LowerBlock = styled(Block)`

@@ -8,6 +8,8 @@ import { ReactComponent as RouteArrow } from 'assets/images-app/route-arrow.svg'
 import { ReactComponent as Wallet } from 'assets/images-app/wallet.svg';
 import { ButtonSecondary } from 'components/Button';
 import { getPoolsPath, toArray } from 'utils';
+import { useNavigate } from 'react-router-dom';
+import Big from 'big.js';
 
 const config = getConfig();
 
@@ -74,6 +76,7 @@ export default function RenderWarning() {
     outputToken,
     setOutputToken,
   } = useStore();
+  const navigate = useNavigate();
 
   const near = tokens[NEAR_TOKEN_ID] ?? null;
   const wNear = tokens[config.nearAddress] ?? null;
@@ -99,6 +102,9 @@ export default function RenderWarning() {
   const havePoolPathInputToken = poolPathInputToken.length > 0;
   const havePoolPathOutputToken = poolPathOutputToken.length > 0;
   const havePoolPathToken = poolPathToken.length > 0;
+
+  const isMissingShares = poolPathToken.every((el) => new Big(el.sharesTotalSupply).eq(0));
+  const poolWithoutLiquidity = poolPathToken.shift();
 
   if (!loading
     && (
@@ -186,14 +192,48 @@ export default function RenderWarning() {
     );
   }
 
-  if (!loading
-    && !havePoolPathToken) {
+  if (!loading && !havePoolPathToken) {
     return (
       <WarningBlock>
         <Warning
           title={warning.doesNotExist}
         />
 
+      </WarningBlock>
+    );
+  }
+
+  if (!loading && isMissingShares) {
+    return (
+      <WarningBlock>
+        <Warning
+          title={warning.zeroPoolLiquidity}
+          description={warning.zeroPoolLiquidityDesc}
+        >
+          <RouteBlock>
+            <div>
+              <TokenImg
+                src={inputToken?.metadata.icon}
+                alt={inputToken?.metadata.symbol}
+              />
+              {inputToken?.metadata.symbol}
+              <RouteArrowLogo />
+              <TokenImg
+                src={outputToken?.metadata.icon}
+                alt={outputToken?.metadata.symbol}
+              />
+              {outputToken?.metadata.symbol}
+            </div>
+            <ButtonSecondary
+              onClick={() => {
+                navigate(`/app/pool/add-liquidity/${poolWithoutLiquidity?.id}`);
+              }}
+            >
+              <LogoWallet />
+              Go to Pair
+            </ButtonSecondary>
+          </RouteBlock>
+        </Warning>
       </WarningBlock>
     );
   }

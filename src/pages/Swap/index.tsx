@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { ButtonPrimary, ButtonSecondary } from 'components/Button';
 import { wallet } from 'services/near';
-import { getUpperCase } from 'utils';
+import { getPoolsPath, getUpperCase, toArray } from 'utils';
 import {
   useStore, useModalsStore, TokenType, NEAR_TOKEN_ID,
 } from 'store';
@@ -90,6 +90,7 @@ export default function Swap() {
     currentPools,
     tokens,
     updatePools,
+    pools,
   } = useStore();
   const config = getConfig();
 
@@ -234,9 +235,19 @@ export default function Swap() {
 
   const intersectionToken = tokens[intersectionTokenId ?? ''] ?? null;
 
+  const poolPathToken = getPoolsPath(
+    inputToken?.contractId ?? '',
+    outputToken?.contractId ?? '',
+    toArray(pools),
+    tokens,
+  );
+  const isMissingShares = poolPathToken.every((el) => new Big(el.sharesTotalSupply).eq(0));
+
   const canSwap = !!slippageTolerance
     && (!!inputTokenValue && !!outputTokenValue)
-    && currentPools.length > 0;
+    && currentPools.length > 0
+    && !isMissingShares;
+
   const isWrap = inputToken && outputToken
     && (inputToken.contractId === config.nearAddress && outputToken.contractId === NEAR_TOKEN_ID);
   const isUnwrap = inputToken && outputToken
