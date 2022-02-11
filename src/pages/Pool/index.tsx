@@ -15,6 +15,7 @@ import {
 } from './styles';
 import PoolSettings from './PoolSettings';
 import PoolResult from './PoolResult';
+import Slider from './Slider';
 
 export enum FilterPoolsEnum {
   'All Pools',
@@ -52,10 +53,9 @@ const filters: IFilters[] = [
   },
 ];
 
-interface IMainInfo {
+export interface IMainInfo {
   title: string,
   label: string,
-  show: boolean,
 }
 
 export default function Pool() {
@@ -81,27 +81,24 @@ export default function Pool() {
     {
       title: 'Total Value Locked',
       label: '-',
-      show: true,
     },
     {
       title: 'Total 24h Volume',
       label: '-',
-      show: true,
     },
     {
       title: 'JUMBO Price',
       label: '-',
-      show: !isMobile,
     },
     {
       title: 'Weekly Emissions',
       label: '-',
-      show: !isMobile,
     },
   ];
 
   return (
     <Container>
+
       <FilterBlock>
         {filters.map((el) => (
           <FilterButton
@@ -115,25 +112,27 @@ export default function Pool() {
           </FilterButton>
         ))}
       </FilterBlock>
-      <InformationBlock>
-        <WrapperInfoBlock>
-          {mainInfo.map((el) => {
-            if (!el.show) return null;
-            return (
-              <InfoBLock
-                key={el.title}
-              >
-                <TitleInfo>
-                  {el.title}
-                </TitleInfo>
-                <LabelInfo>
-                  {el.label}
-                </LabelInfo>
-              </InfoBLock>
-            );
-          })}
-        </WrapperInfoBlock>
-      </InformationBlock>
+      {isMobile
+        ? <Slider mainInfo={mainInfo} />
+        : (
+          <InformationBlock>
+            <WrapperInfoBlock>
+              {mainInfo.map((el) => (
+                <InfoBLock
+                  key={el.title}
+                >
+                  <TitleInfo>
+                    {el.title}
+                  </TitleInfo>
+                  <LabelInfo>
+                    {el.label}
+                  </LabelInfo>
+                </InfoBLock>
+              ))}
+            </WrapperInfoBlock>
+          </InformationBlock>
+        )}
+
       <PoolSettings currentFilterPools={currentFilterPools} />
       <PoolResult currentFilterPools={currentFilterPools} />
     </Container>
