@@ -12,7 +12,6 @@ export const calculateMarketPrice = (
   if (pool.type === PoolType.STABLE_SWAP) {
     return '1';
   }
-  // if (!pool.supplies[tokenIn.contractId] || pool.supplies[tokenOut.contractId]) return '0';
 
   const tokenInBalance = formatTokenAmount(
     pool.supplies[tokenIn.contractId],
