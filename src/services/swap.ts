@@ -99,9 +99,10 @@ export const calculatePriceImpact = (
       tokenIn,
       tokenMid,
     );
+
     tokenOutReceived = calculateAmountReceived(
       secondPool,
-      tokenMidReceived.toFixed(0),
+      tokenMidReceived.toFixed(),
       tokenMid,
       tokenOut,
     );

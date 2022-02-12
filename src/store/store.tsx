@@ -112,13 +112,16 @@ export const StoreContextProvider = (
       )).flat();
       const userTokens = await getUserWalletTokens();
 
-      const tokenAddresses = [
-        ...poolsResult
-          .flatMap((pool: any) => pool.token_account_ids),
-        config.nearAddress,
-        NEAR_TOKEN_ID,
-        ...userTokens,
-      ];
+      const tokenAddresses = Array.from(
+        new Set(
+          [...poolsResult
+            .flatMap((pool: any) => pool.token_account_ids),
+          config.nearAddress,
+          NEAR_TOKEN_ID,
+          ...userTokens,
+          ],
+        ),
+      );
 
       const poolArray = poolsResult
         .map((pool: any, index: number) => formatPool(pool, index))

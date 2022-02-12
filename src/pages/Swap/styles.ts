@@ -82,12 +82,13 @@ export const SettingsHeader = styled.div`
   display: flex;
   align-items: center;
   margin-right: .453rem;
-::before {
-    content: '';
-    background: ${({ theme }) => theme.globalGreyOp02};
-    height: 1px;
-    width: 100%;
-  }
+  z-index: 10;
+  ::before {
+      content: '';
+      background: ${({ theme }) => theme.globalGreyOp02};
+      height: 1px;
+      width: 100%;
+    }
 `;
 
 export const SettingsLabel = styled.div<PropsWithChildren<ICurrent>>`
@@ -135,6 +136,8 @@ export const SwapInformation = styled.div`
   display: flex;
   flex-direction: column;
   margin-bottom: 1rem;
+  background-color: ${({ theme }) => theme.backgroundCard};
+  z-index: 10;
 `;
 
 export const LogoInfo = styled(Info)`
