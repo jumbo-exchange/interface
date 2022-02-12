@@ -157,6 +157,20 @@ export default function RenderWarning() {
   if (!loading
     && (inputToken === near || outputToken === near)
     && (havePoolPathInputToken || havePoolPathOutputToken)) {
+    const nearIsInput = (havePoolPathInputToken || havePoolPathOutputToken) && inputToken === near;
+
+    const onClick = () => {
+      if (nearIsInput) {
+        setInputToken(wNear);
+        setOutputToken(outputToken);
+        return;
+      }
+      if (!nearIsInput) {
+        setInputToken(inputToken);
+        setOutputToken(wNear);
+      }
+    };
+
     return (
       <WarningBlock>
         <Warning
@@ -165,23 +179,40 @@ export default function RenderWarning() {
         >
           <RouteBlock>
             <div>
-              <TokenImg
-                src={near?.metadata.icon}
-                alt={near?.metadata.symbol}
-              />
-              {near?.metadata.symbol}
-              <RouteArrowLogo />
-              <TokenImg
-                src={wNear?.metadata.icon}
-                alt={wNear?.metadata.symbol}
-              />
-              {wNear?.metadata.symbol}
+              {nearIsInput
+                ? (
+                  <>
+                    <TokenImg
+                      src={wNear?.metadata.icon}
+                      alt={wNear?.metadata.symbol}
+                    />
+                    {wNear?.metadata.symbol}
+                    <RouteArrowLogo />
+                    <TokenImg
+                      src={outputToken?.metadata.icon}
+                      alt={outputToken?.metadata.symbol}
+                    />
+                    {outputToken?.metadata.symbol}
+                  </>
+                )
+                : (
+                  <>
+                    <TokenImg
+                      src={inputToken?.metadata.icon}
+                      alt={inputToken?.metadata.symbol}
+                    />
+                    {inputToken?.metadata.symbol}
+                    <RouteArrowLogo />
+                    <TokenImg
+                      src={wNear?.metadata.icon}
+                      alt={wNear?.metadata.symbol}
+                    />
+                    {wNear?.metadata.symbol}
+                  </>
+                )}
             </div>
             <ButtonSecondary
-              onClick={() => {
-                setInputToken(near);
-                setOutputToken(wNear);
-              }}
+              onClick={onClick}
             >
               <LogoWallet />
               Go to Pair
