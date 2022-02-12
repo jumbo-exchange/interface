@@ -87,9 +87,19 @@ export default class SwapContract {
       );
       return [minOutput];
     } if (pools.length === SWAP_ENUM.INDIRECT_SWAP) {
-      const [firstPool, secondPool] = pools;
+      let [firstPool, secondPool] = pools;
+
+      if (
+        firstPool.tokenAccountIds.includes(tokenOut.contractId)
+       && secondPool.tokenAccountIds.includes(tokenIn.contractId)
+      ) {
+        // Swap tokens in case calculations should be done for output token direction
+        [secondPool, firstPool] = pools;
+      }
+
       const firstPoolTokens = firstPool.tokenAccountIds;
       const secondPoolTokens = secondPool.tokenAccountIds;
+
       if (
         !firstPoolTokens.includes(tokenIn.contractId)
         && !secondPoolTokens.includes(tokenOut.contractId)
