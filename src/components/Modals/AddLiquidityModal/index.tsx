@@ -87,9 +87,9 @@ export default function AddLiquidityModal() {
         toNonDivisibleNumber(tokenOutput.metadata.decimals, value),
         outputTokenSupplies,
       );
-      const inputValue = '';
+      let inputValue = '';
       if (value) {
-        formatTokenAmount(
+        inputValue = formatTokenAmount(
           calculateFairShare(
             inputTokenSupplies,
             fairShares,
@@ -98,6 +98,8 @@ export default function AddLiquidityModal() {
           tokenInput.metadata.decimals,
         );
       }
+      console.log('value: ', value);
+      console.log('inputValue: ', inputValue);
       setOutputTokenValue(value);
       setInputTokenValue(inputValue);
       setPreShare(formatTokenAmount(fairShares, POOL_SHARES_DECIMALS));
@@ -161,7 +163,7 @@ export default function AddLiquidityModal() {
               balance={balances[tokenOutput.contractId ?? '']}
             />
             <YourSharesBlock>
-              Your Pool Shares: &nbsp;
+              You will get shares: &nbsp;
               <span>{shareDisplay()}</span>
             </YourSharesBlock>
             <RefreshBlock>

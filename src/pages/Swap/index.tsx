@@ -107,7 +107,7 @@ export default function Swap() {
   const isConnected = wallet.isSignedIn();
 
   const minAmountOut = outputTokenValue
-    ? percentLess(slippageTolerance, outputTokenValue, 0)
+    ? removeTrailingZeros(percentLess(slippageTolerance, outputTokenValue, 5))
     : '';
   const priceImpact = calculatePriceImpact(
     currentPools, inputToken, outputToken, inputTokenValue, tokens,
@@ -146,6 +146,7 @@ export default function Swap() {
           tokens,
         );
         const lastIndex = minOutput.length - 1;
+
         setOutputTokenValue(
           removeTrailingZeros(
             formatTokenAmount(
@@ -154,9 +155,13 @@ export default function Swap() {
             ),
           ),
         );
+        return;
       } catch (e) {
         setOutputTokenValue('0');
       }
+    }
+    if (outputTokenValue === '') {
+      setInputTokenValue('');
     }
   }, [debouncedInputValue, inputToken, outputToken]);
 
@@ -175,6 +180,7 @@ export default function Swap() {
           tokens,
         );
         const lastIndex = minOutput.length - 1;
+
         setInputTokenValue(
           removeTrailingZeros(
             formatTokenAmount(
@@ -183,9 +189,13 @@ export default function Swap() {
             ),
           ),
         );
+        return;
       } catch (e) {
         setOutputTokenValue('0');
       }
+    }
+    if (inputTokenValue === '') {
+      setOutputTokenValue('');
     }
   }, [debouncedOutputValue, inputToken, outputToken]);
 
@@ -259,7 +269,7 @@ export default function Swap() {
 
   useEffect(() => {
     if (!inputToken || !outputToken) return;
-    const formattedValue = parseTokenAmount('1', outputToken.metadata.decimals);
+    const formattedValue = parseTokenAmount('1', inputToken.metadata.decimals);
     const verifiedInputToken = verifyToken(inputToken);
     const verifiedOutputToken = verifyToken(outputToken);
     try {
@@ -273,10 +283,12 @@ export default function Swap() {
       const lastIndex = minOutput.length - 1;
 
       setExchangeAmount(
-        formatTokenAmount(
-          minOutput[lastIndex],
-          verifiedInputToken.metadata.decimals,
-          5,
+        removeTrailingZeros(
+          formatTokenAmount(
+            minOutput[lastIndex],
+            verifiedOutputToken.metadata.decimals,
+            5,
+          ),
         ),
       );
     } catch (e) {
@@ -286,7 +298,7 @@ export default function Swap() {
 
   const exchangeLabel = `
   1 ${getUpperCase(inputToken?.metadata.symbol ?? '')} 
-  ≈ ${removeTrailingZeros(exchangeAmount)} ${getUpperCase(outputToken?.metadata.symbol ?? '')}
+  ≈ ${exchangeAmount} ${getUpperCase(outputToken?.metadata.symbol ?? '')}
   `;
 
   return (
