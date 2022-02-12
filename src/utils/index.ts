@@ -68,6 +68,7 @@ export function getPoolsPath(
   tokensMap: {[key:string]: FungibleTokenContract},
 ) :IPool[] {
   const tokens = pools.map((pool) => pool.tokenAccountIds).flat();
+  if (!tokenAddressInput || !tokenAddressOutput) return [];
   if (!tokens.includes(tokenAddressInput) || !tokens.includes(tokenAddressOutput)) return [];
   if (tokenAddressInput === tokenAddressOutput) return [];
   const sortedPools = sortPoolsByLiquidity(pools, tokensMap);

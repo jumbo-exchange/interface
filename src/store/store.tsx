@@ -28,6 +28,7 @@ const initialState: StoreContextType = {
   setWallet: () => {},
   balances: {},
   setBalances: () => {},
+  getTokenBalance: () => '0',
 
   pools: {},
   setPools: () => {},
@@ -35,6 +36,7 @@ const initialState: StoreContextType = {
   setCurrentPools: () => {},
   tokens: {},
   setTokens: () => {},
+  getToken: () => null,
 
   inputToken: null,
   setInputToken: () => {},
@@ -208,6 +210,9 @@ export const StoreContextProvider = (
     setPools(newPoolSet);
   };
 
+  const getTokenBalance = (tokenId: string | undefined) => (tokenId ? balances[tokenId] ?? '0' : '0');
+  const getToken = (tokenId: string | undefined) => (tokenId ? tokens[tokenId] ?? null : null);
+
   return (
     <StoreContextHOC.Provider value={{
       loading,
@@ -218,6 +223,7 @@ export const StoreContextProvider = (
       setWallet,
       balances,
       setBalances,
+      getTokenBalance,
 
       pools,
       setPools,
@@ -226,6 +232,7 @@ export const StoreContextProvider = (
       setCurrentPools,
       tokens,
       setTokens,
+      getToken,
 
       inputToken,
       setInputToken,

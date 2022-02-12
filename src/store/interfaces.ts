@@ -44,6 +44,7 @@ export type StoreContextType = {
   setWallet: Dispatch<SetStateAction<SpecialWallet | null>>;
   balances: {[key: string]: string};
   setBalances: Dispatch<SetStateAction<{[key: string]: string}>>;
+  getTokenBalance: (tokenId: string | undefined) => string;
 
   pools: {[key:string]: IPool};
   setPools: Dispatch<SetStateAction<{[key:string]: IPool}>>;
@@ -52,6 +53,7 @@ export type StoreContextType = {
   tokens: {[key: string]: FungibleTokenContract};
   setTokens: Dispatch<SetStateAction<{[key: string]: FungibleTokenContract}>>;
   setCurrentToken: (tokenAddress: string, tokenType: TokenType) => void;
+  getToken: (tokenAddress: string) => FungibleTokenContract | null;
 
   inputToken: FungibleTokenContract | null;
   setInputToken: Dispatch<SetStateAction<FungibleTokenContract | null>>;
@@ -63,20 +65,6 @@ export type StoreContextType = {
 
 export const contractMethods = [
   'get_pools', // from_index: u64, limit: u64
-
-  'get_guardians',
   'get_number_of_pools',
-
   'get_pool', // pool_id: u64
-  'get_pool_fee', // pool_id: u64
-  'get_pool_volumes', // pool_id: u64
-  'get_pool_share_price', // pool_id: u64
-  'get_pool_shares', // pool_id: u64, account_id: ValidAccountId
-  'get_pool_total_shares', // pool_id: u64
-
-  // Returns balances of the deposits for given user outside of any pools.
-  /// Returns empty list if no tokens deposited.
-  'get_deposits', // account_id: ValidAccountId
-  // Returns balance of the deposit for given user outside of any pools.
-  'get_deposit', // account_id: ValidAccountId, token_id: ValidAccountId
 ];

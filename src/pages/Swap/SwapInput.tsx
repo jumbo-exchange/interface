@@ -7,7 +7,7 @@ import Big from 'big.js';
 import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
 import { getUpperCase } from 'utils';
-import { TokenType } from 'store';
+import { TokenType, useStore } from 'store';
 import FungibleTokenContract from 'services/FungibleToken';
 import { formatTokenAmount } from 'utils/calculations';
 
@@ -193,6 +193,7 @@ export default function Input({
   balance:string,
   disabled?: boolean
 }) {
+  const { loading } = useStore();
   const currentBalance = new Big(balance ?? 0);
   const setHalfAmount = () => {
     if (!balance) return;
@@ -234,7 +235,11 @@ export default function Input({
           setValue={setValue}
           disabled={disabled}
         />
-        <TokenContainer onClick={() => openModal(tokenType)}>
+        <TokenContainer onClick={() => {
+          if (loading) return;
+          openModal(tokenType);
+        }}
+        >
           {getUpperCase(token?.metadata.symbol ?? '')}
           <ArrowDown />
         </TokenContainer>
