@@ -34,7 +34,7 @@ export const warning = {
   doesNotExist: 'The given pair doesn\'t exist',
 
   noSuchPairExists: 'No such pair exists',
-  noSuchPairExistsDesc: 'In order to trade wNEAR is needed. Click “Go to Pair” to Swap NEAR to wNEAR',
+  noSuchPairExistsDesc: 'There is additional pair with wNEAR',
 
   zeroPoolLiquidity: 'Zero liquidity pool',
   zeroPoolLiquidityDesc: 'Zero liquidity pool, you can add liquidity to the pool',
