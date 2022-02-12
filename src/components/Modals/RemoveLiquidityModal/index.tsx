@@ -28,6 +28,7 @@ import {
   parseTokenAmount,
 } from 'utils/calculations';
 import { wallet } from 'services/near';
+import { POOL } from 'utils/routes';
 import Input from './Input';
 import {
   Layout, ModalBlock, ModalIcon, ModalTitle,
@@ -139,7 +140,7 @@ export default function RemoveLiquidityModal() {
     <>
       {removeLiquidityModalOpenState.isOpen && (
       <Layout onClick={() => {
-        navigate('/app/pool');
+        navigate(POOL);
         setRemoveLiquidityModalOpenState({ isOpen: false, pool: null });
       }}
       >
@@ -149,7 +150,7 @@ export default function RemoveLiquidityModal() {
               Withdraw
             </ModalTitle>
             <ModalIcon onClick={() => {
-              navigate('/app/pool');
+              navigate(POOL);
               setRemoveLiquidityModalOpenState({ isOpen: false, pool: null });
             }}
             >

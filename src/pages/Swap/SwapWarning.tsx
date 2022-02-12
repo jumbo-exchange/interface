@@ -10,6 +10,7 @@ import { ButtonSecondary } from 'components/Button';
 import { getPoolsPath, toArray } from 'utils';
 import { useNavigate } from 'react-router-dom';
 import Big from 'big.js';
+import { toAddLiquidityPage } from 'utils/routes';
 
 const config = getConfig();
 
@@ -226,7 +227,7 @@ export default function RenderWarning() {
             </div>
             <ButtonSecondary
               onClick={() => {
-                navigate(`/app/pool/add-liquidity/${poolWithoutLiquidity?.id}`);
+                navigate(toAddLiquidityPage(poolWithoutLiquidity?.id));
               }}
             >
               <LogoWallet />

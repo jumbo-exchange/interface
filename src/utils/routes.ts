@@ -2,5 +2,5 @@ export const LANDING = '/';
 export const SWAP = 'swap';
 export const POOL = 'pool';
 export const ALL_MATCH = '/*';
-export const ADD_LIQUIDITY = 'pool/add-liquidity/:id';
-export const REMOVE_LIQUIDITY = 'pool/remove-liquidity/:id';
+export const toAddLiquidityPage = (id : string|number = ':id') => `/pool/add-liquidity/${id}`;
+export const toRemoveLiquidityPage = (id : string|number = ':id') => `/pool/remove-liquidity/${id}`;

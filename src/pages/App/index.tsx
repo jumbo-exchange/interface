@@ -12,12 +12,12 @@ import useTransactionHash from 'services/receiptsService';
 import { wallet } from 'services/near';
 import Error from 'pages/Error';
 import {
-  ADD_LIQUIDITY,
   ALL_MATCH,
   LANDING,
   POOL,
-  REMOVE_LIQUIDITY,
   SWAP,
+  toAddLiquidityPage,
+  toRemoveLiquidityPage,
 } from 'utils/routes';
 import {
   Container,
@@ -92,8 +92,8 @@ export default function App() {
           <Routes>
             <Route path={POOL} element={<Pool />} />
             <Route path={SWAP} element={<Swap />} />
-            <Route path={ADD_LIQUIDITY} element={<Pool />} />
-            <Route path={REMOVE_LIQUIDITY} element={<Pool />} />
+            <Route path={toAddLiquidityPage()} element={<Pool />} />
+            <Route path={toRemoveLiquidityPage()} element={<Pool />} />
             <Route path={ALL_MATCH} element={<Error />} />
           </Routes>
         </Suspense>

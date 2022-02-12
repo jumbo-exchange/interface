@@ -14,6 +14,7 @@ import { wallet } from 'services/near';
 import { POOL_SHARES_DECIMALS } from 'utils/constants';
 import Big from 'big.js';
 import Refresh from 'components/Refresh';
+import { POOL } from 'utils/routes';
 import {
   Layout, ModalBlock, ModalIcon, ModalTitle,
 } from '../styles';
@@ -128,7 +129,7 @@ export default function AddLiquidityModal() {
     <>
       {addLiquidityModalOpenState.isOpen && (
       <Layout onClick={() => {
-        navigate('/app/pool');
+        navigate(POOL);
         setAddLiquidityModalOpenState({ isOpen: false, pool: null });
       }}
       >
@@ -138,7 +139,7 @@ export default function AddLiquidityModal() {
               Add Liquidity
             </ModalTitle>
             <ModalIcon onClick={() => {
-              navigate('/app/pool');
+              navigate(POOL);
               setAddLiquidityModalOpenState({ isOpen: false, pool: null });
             }}
             >

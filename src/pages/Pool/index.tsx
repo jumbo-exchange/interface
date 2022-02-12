@@ -3,6 +3,7 @@ import { FilterButton } from 'components/Button';
 import { isMobile } from 'utils/userAgent';
 import { useModalsStore, useStore } from 'store';
 import { useLocation, useParams } from 'react-router-dom';
+import { toAddLiquidityPage, toRemoveLiquidityPage } from 'utils/routes';
 import {
   Container,
   FilterBlock,
@@ -68,9 +69,9 @@ export default function Pool() {
   useEffect(() => {
     if (id && pools[Number(id)]) {
       const pool = pools[Number(id)];
-      if (location.pathname === `/app/pool/remove-liquidity/${pool.id}`) {
+      if (location.pathname === toRemoveLiquidityPage(pool.id)) {
         setRemoveLiquidityModalOpenState({ isOpen: true, pool });
-      } else if (location.pathname === `/app/pool/add-liquidity/${pool.id}`) {
+      } else if (location.pathname === toAddLiquidityPage(pool.id)) {
         setAddLiquidityModalOpenState({ isOpen: true, pool });
       }
     }

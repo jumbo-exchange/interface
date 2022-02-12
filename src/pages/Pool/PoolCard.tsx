@@ -7,6 +7,7 @@ import { IPool, useStore } from 'store';
 import { SpecialContainer } from 'components/SpecialContainer';
 import { useNavigate } from 'react-router-dom';
 import { ReactComponent as AddIcon } from 'assets/images-app/icon-add.svg';
+import { toAddLiquidityPage, toRemoveLiquidityPage } from 'utils/routes';
 
 interface IColor {
   isColor?: boolean
@@ -256,7 +257,7 @@ export default function PoolCard({ pool } : { pool:IPool }) {
           {!canWithdraw && (
           <BtnSecondary
             onClick={() => {
-              navigate(`/app/pool/remove-liquidity/${pool.id}`);
+              navigate(toRemoveLiquidityPage(pool.id));
             }}
           >
             Withdraw
@@ -265,7 +266,7 @@ export default function PoolCard({ pool } : { pool:IPool }) {
 
           <BtnPrimary
             onClick={() => {
-              navigate(`/app/pool/add-liquidity/${pool.id}`);
+              navigate(toAddLiquidityPage(pool.id));
             }}
           >
             <LogoButton />Add Liquidity
