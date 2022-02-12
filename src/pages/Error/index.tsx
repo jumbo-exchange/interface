@@ -4,6 +4,7 @@ import gif from 'assets/gif/400.gif';
 import { ButtonSecondary } from 'components/Button';
 import { ReactComponent as Back } from 'assets/images-app/icon-back.svg';
 import { useNavigate } from 'react-router-dom';
+import { SWAP } from 'utils/routes';
 
 const ContainerError = styled.div`
   display: flex;
@@ -74,7 +75,7 @@ export default function Error() {
         <LabelError>{labelError}</LabelError>
         <ButtonBack
           onClick={() => {
-            navigate('/');
+            navigate(SWAP);
           }}
         >
           <IconBack />Back Home

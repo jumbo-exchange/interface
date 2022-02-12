@@ -10,6 +10,15 @@ import {
 import type { LinkProps } from 'react-router-dom';
 import useTransactionHash from 'services/receiptsService';
 import { wallet } from 'services/near';
+import Error from 'pages/Error';
+import {
+  ADD_LIQUIDITY,
+  ALL_MATCH,
+  LANDING,
+  POOL,
+  REMOVE_LIQUIDITY,
+  SWAP,
+} from 'utils/routes';
 import {
   Container,
   Header,
@@ -52,7 +61,7 @@ export default function App() {
     <Container>
       <Header>
         <LinkContainer>
-          <Link to="/">
+          <Link to={LANDING}>
             <LogoContainer>
               <JumboLogo />
               {isMobile ? null : (<LogoTitle>jumbo</LogoTitle>)}
@@ -60,10 +69,10 @@ export default function App() {
           </Link>
         </LinkContainer>
         <NavBar>
-          <CustomLink to="swap">
+          <CustomLink to={SWAP}>
             Swap
           </CustomLink>
-          <CustomLink to="pool">
+          <CustomLink to={POOL}>
             Pool
           </CustomLink>
           <NavButton disabled>Staking</NavButton>
@@ -74,12 +83,18 @@ export default function App() {
         </BlockButton>
       </Header>
       <Body>
-        <Suspense fallback={<LoadingBlock><img src={GifLoading} alt="loading" /></LoadingBlock>}>
+        <Suspense fallback={(
+          <LoadingBlock>
+            <img src={GifLoading} alt="loading" />
+          </LoadingBlock>
+        )}
+        >
           <Routes>
-            <Route path="pool" element={<Pool />} />
-            <Route path="swap" element={<Swap />} />
-            <Route path="pool/add-liquidity/:id" element={<Pool />} />
-            <Route path="pool/remove-liquidity/:id" element={<Pool />} />
+            <Route path={POOL} element={<Pool />} />
+            <Route path={SWAP} element={<Swap />} />
+            <Route path={ADD_LIQUIDITY} element={<Pool />} />
+            <Route path={REMOVE_LIQUIDITY} element={<Pool />} />
+            <Route path={ALL_MATCH} element={<Error />} />
           </Routes>
         </Suspense>
       </Body>

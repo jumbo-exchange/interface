@@ -13,7 +13,7 @@ import theme from 'theme';
 import useFullHeightHook from 'hooks/useFullHeightHook';
 
 import App from 'pages/App';
-import Error from 'pages/Error';
+import { ALL_MATCH, LANDING } from 'utils/routes';
 
 const AppWrapper = () => {
   useFullHeightHook();
@@ -24,9 +24,8 @@ const AppWrapper = () => {
         <Router>
           <ModalsContextProvider>
             <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/app/*" element={<App />} />
-              <Route path="/*" element={<Error />} />
+              <Route path={LANDING} element={<Landing />} />
+              <Route path={ALL_MATCH} element={<App />} />
             </Routes>
           </ModalsContextProvider>
         </Router>
