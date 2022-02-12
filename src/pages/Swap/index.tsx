@@ -160,9 +160,6 @@ export default function Swap() {
         setOutputTokenValue('0');
       }
     }
-    if (outputTokenValue === '') {
-      setInputTokenValue('');
-    }
   }, [debouncedInputValue, inputToken, outputToken]);
 
   useEffect(() => {
@@ -194,9 +191,6 @@ export default function Swap() {
         setOutputTokenValue('0');
       }
     }
-    if (inputTokenValue === '') {
-      setOutputTokenValue('');
-    }
   }, [debouncedOutputValue, inputToken, outputToken]);
 
   useEffect(() => {
@@ -216,6 +210,9 @@ export default function Swap() {
 
   const handleInputChange = useCallback(
     (value: string) => {
+      if (value === '') {
+        setOutputTokenValue('');
+      }
       setIndependentField(TokenType.Input);
       handleAmountChange(TokenType.Input, value);
     }, [],
@@ -223,6 +220,9 @@ export default function Swap() {
 
   const handleOutputChange = useCallback(
     (value: string) => {
+      if (value === '') {
+        setInputTokenValue('');
+      }
       setIndependentField(TokenType.Output);
       handleAmountChange(TokenType.Output, value);
     }, [],

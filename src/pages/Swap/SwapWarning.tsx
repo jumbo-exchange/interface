@@ -68,7 +68,6 @@ const LogoWallet = styled(Wallet)`
 
 export default function RenderWarning() {
   const {
-    balances,
     loading,
     tokens,
     pools,
@@ -76,20 +75,22 @@ export default function RenderWarning() {
     setInputToken,
     outputToken,
     setOutputToken,
+    getTokenBalance,
+    getToken,
   } = useStore();
   const navigate = useNavigate();
 
-  const near = tokens[NEAR_TOKEN_ID] ?? null;
-  const wNear = tokens[config.nearAddress] ?? null;
+  const near = getToken(NEAR_TOKEN_ID);
+  const wNear = getToken(config.nearAddress);
 
   const poolPathInputToken = getPoolsPath(
     inputToken?.contractId ?? '',
-    wNear?.contractId,
+    wNear?.contractId ?? '',
     toArray(pools),
     tokens,
   );
   const poolPathOutputToken = getPoolsPath(
-    wNear?.contractId,
+    wNear?.contractId ?? '',
     outputToken?.contractId ?? '',
     toArray(pools),
     tokens,
@@ -107,6 +108,11 @@ export default function RenderWarning() {
   const isMissingShares = poolPathToken.every((el) => new Big(el.sharesTotalSupply).eq(0));
   const poolWithoutLiquidity = poolPathToken.shift();
 
+  const firstTokenBalance = getTokenBalance(inputToken?.contractId);
+  const secondTokenBalance = getTokenBalance(outputToken?.contractId);
+
+  const isBalancesEmpty = Big(firstTokenBalance).lte('0') || Big(secondTokenBalance).lte('0');
+
   if (!loading
     && (
       (inputToken === near && outputToken === wNear)
@@ -116,7 +122,7 @@ export default function RenderWarning() {
     return null;
   }
 
-  if (!loading && balances[wNear.contractId] === '0'
+  if (!loading && getTokenBalance(wNear?.contractId) === '0'
   && (inputToken === wNear || outputToken === wNear)
   ) {
     return (
@@ -225,14 +231,16 @@ export default function RenderWarning() {
               />
               {outputToken?.metadata.symbol}
             </div>
-            <ButtonSecondary
-              onClick={() => {
-                navigate(toAddLiquidityPage(poolWithoutLiquidity?.id));
-              }}
-            >
-              <LogoWallet />
-              Go to Pair
-            </ButtonSecondary>
+            {!isBalancesEmpty ? (
+              <ButtonSecondary
+                onClick={() => {
+                  navigate(toAddLiquidityPage(poolWithoutLiquidity?.id));
+                }}
+              >
+                <LogoWallet />
+                Add liquidity
+              </ButtonSecondary>
+            ) : null }
           </RouteBlock>
         </Warning>
       </WarningBlock>

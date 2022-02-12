@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useModalsStore, useStore } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
 import { ButtonPrimary } from 'components/Button';
@@ -24,10 +24,11 @@ import {
   ModalBody,
   LogoContainerAdd,
   RefreshBlock,
-  PlaceHolderGif,
   LogoButton,
   YourSharesBlock,
 } from './styles';
+
+const INITIAL_INPUT_PLACEHOLDER = '';
 
 export default function AddLiquidityModal() {
   const isConnected = wallet.isSignedIn();
@@ -36,12 +37,20 @@ export default function AddLiquidityModal() {
     balances,
   } = useStore();
   const navigate = useNavigate();
-  const [inputTokenValue, setInputTokenValue] = useState<string>('');
-  const [outputTokenValue, setOutputTokenValue] = useState<string>('');
-  const [preShare, setPreShare] = useState<string>('');
+  const [inputTokenValue, setInputTokenValue] = useState<string>(INITIAL_INPUT_PLACEHOLDER);
+  const [outputTokenValue, setOutputTokenValue] = useState<string>(INITIAL_INPUT_PLACEHOLDER);
+  const [preShare, setPreShare] = useState<string>(INITIAL_INPUT_PLACEHOLDER);
 
   const { addLiquidityModalOpenState, setAddLiquidityModalOpenState } = useModalsStore();
   const { pool } = addLiquidityModalOpenState;
+
+  useEffect(() => {
+    if (inputTokenValue !== INITIAL_INPUT_PLACEHOLDER
+      || outputTokenValue !== INITIAL_INPUT_PLACEHOLDER) {
+      setInputTokenValue(INITIAL_INPUT_PLACEHOLDER);
+      setOutputTokenValue(INITIAL_INPUT_PLACEHOLDER);
+    }
+  }, [pool?.id]);
 
   if (!pool) return null;
   const [tokenInputName, tokenOutputName] = pool.tokenAccountIds;
@@ -98,8 +107,6 @@ export default function AddLiquidityModal() {
           tokenInput.metadata.decimals,
         );
       }
-      console.log('value: ', value);
-      console.log('inputValue: ', inputValue);
       setOutputTokenValue(value);
       setInputTokenValue(inputValue);
       setPreShare(formatTokenAmount(fairShares, POOL_SHARES_DECIMALS));
