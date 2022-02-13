@@ -80,22 +80,6 @@ export default class FungibleTokenContract {
 
   metadata: ITokenMetadata = defaultMetadata;
 
-  static getParsedTokenAmount(amount: string, symbol: string, decimals: number) {
-    const parsedTokenAmount = symbol === 'NEAR'
-      ? parseNearAmount(amount)
-      : parseTokenAmount(amount, decimals);
-
-    return parsedTokenAmount;
-  }
-
-  static getFormattedTokenAmount(amount: string, symbol: string, decimals: number) {
-    const formattedTokenAmount = symbol === 'NEAR'
-      ? formatNearAmount(amount, 5)
-      : removeTrailingZeros(formatTokenAmount(amount, decimals, 5));
-
-    return formattedTokenAmount;
-  }
-
   async getStorageBalance({ accountId } : { accountId: string }) {
     return this.contract.storage_balance_of({ account_id: accountId });
   }
@@ -134,24 +118,29 @@ export default class FungibleTokenContract {
 
   async checkSwapStorageBalance({ accountId }: { accountId: string }) {
     const transactions: Transaction[] = [];
-    const storageAvailable = await this.getStorageBalance({ accountId });
+    try {
+      if (this.contractId === NEAR_TOKEN_ID) return [];
+      const storageAvailable = await this.getStorageBalance({ accountId });
 
-    if (storageAvailable === null || storageAvailable.total === '0') {
-      transactions.push(
-        {
-          receiverId: this.contractId,
-          functionCalls: [{
-            methodName: 'storage_deposit',
-            args: {
-              registration_only: true,
-              account_id: accountId,
-            },
-            amount: STORAGE_TO_REGISTER_FT,
-          }],
-        },
-      );
+      if (storageAvailable === null || storageAvailable.total === '0') {
+        transactions.push(
+          {
+            receiverId: this.contractId,
+            functionCalls: [{
+              methodName: 'storage_deposit',
+              args: {
+                registration_only: true,
+                account_id: accountId,
+              },
+              amount: STORAGE_TO_REGISTER_FT,
+            }],
+          },
+        );
+      }
+      return transactions;
+    } catch (e) {
+      return [];
     }
-    return transactions;
   }
 
   async transfer({
