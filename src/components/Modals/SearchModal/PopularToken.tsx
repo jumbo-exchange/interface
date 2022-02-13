@@ -85,11 +85,9 @@ const TokenTitle = styled.div`
 export default function PopularToken() {
   const {
     tokens,
-    loading,
     setCurrentToken,
   } = useStore();
   const { isSearchModalOpen, setSearchModalOpen } = useModalsStore();
-  if (loading) return <h1>Loading</h1>;
 
   const near = tokens[NEAR_TOKEN_ID] ?? null;
   const wNear = tokens[config.nearAddress] ?? null;
