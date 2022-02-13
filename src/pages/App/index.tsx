@@ -20,7 +20,7 @@ import {
   toRemoveLiquidityPage,
 } from 'utils/routes';
 import { RefreshContextProvider } from 'services/refreshService';
-import { useStore } from 'store';
+import { ModalsContextProvider, useStore } from 'store';
 import {
   Container,
   Header,
@@ -65,48 +65,50 @@ export default function App() {
       updatePools={updatePools}
       updateTokensBalances={updateTokensBalances}
     >
-      <Container>
-        <Header>
-          <LinkContainer>
-            <Link to={LANDING}>
-              <LogoContainer>
-                <JumboLogo />
-                {isMobile ? null : (<LogoTitle>jumbo</LogoTitle>)}
-              </LogoContainer>
-            </Link>
-          </LinkContainer>
-          <NavBar>
-            <CustomLink to={SWAP}>
-              Swap
-            </CustomLink>
-            <CustomLink to={POOL}>
-              Pool
-            </CustomLink>
-            <NavButton disabled>Staking</NavButton>
-            <NavButton disabled>...</NavButton>
-          </NavBar>
-          <BlockButton>
-            <ConnectionButton />
-          </BlockButton>
-        </Header>
-        <Body>
-          <Suspense fallback={(
-            <LoadingBlock>
-              <img src={GifLoading} alt="loading" />
-            </LoadingBlock>
+      <ModalsContextProvider>
+        <Container>
+          <Header>
+            <LinkContainer>
+              <Link to={LANDING}>
+                <LogoContainer>
+                  <JumboLogo />
+                  {isMobile ? null : (<LogoTitle>jumbo</LogoTitle>)}
+                </LogoContainer>
+              </Link>
+            </LinkContainer>
+            <NavBar>
+              <CustomLink to={SWAP}>
+                Swap
+              </CustomLink>
+              <CustomLink to={POOL}>
+                Pool
+              </CustomLink>
+              <NavButton disabled>Staking</NavButton>
+              <NavButton disabled>...</NavButton>
+            </NavBar>
+            <BlockButton>
+              <ConnectionButton />
+            </BlockButton>
+          </Header>
+          <Body>
+            <Suspense fallback={(
+              <LoadingBlock>
+                <img src={GifLoading} alt="loading" />
+              </LoadingBlock>
         )}
-          >
-            <Routes>
-              <Route path={POOL} element={<Pool />} />
-              <Route path={SWAP} element={<Swap />} />
-              <Route path={toAddLiquidityPage()} element={<Pool />} />
-              <Route path={toRemoveLiquidityPage()} element={<Pool />} />
-              <Route path={ALL_MATCH} element={<Error />} />
-            </Routes>
-          </Suspense>
-        </Body>
-        <Footer />
-      </Container>
+            >
+              <Routes>
+                <Route path={POOL} element={<Pool />} />
+                <Route path={SWAP} element={<Swap />} />
+                <Route path={toAddLiquidityPage()} element={<Pool />} />
+                <Route path={toRemoveLiquidityPage()} element={<Pool />} />
+                <Route path={ALL_MATCH} element={<Error />} />
+              </Routes>
+            </Suspense>
+          </Body>
+          <Footer />
+        </Container>
+      </ModalsContextProvider>
     </RefreshContextProvider>
   );
 }

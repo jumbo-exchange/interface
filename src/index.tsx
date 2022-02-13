@@ -6,7 +6,7 @@ import {
   Route, BrowserRouter as Router, Routes,
 } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
-import { StoreContextProvider, ModalsContextProvider } from 'store';
+import { StoreContextProvider } from 'store';
 
 import Landing from 'pages/Landing';
 import theme from 'theme';
@@ -22,12 +22,10 @@ const AppWrapper = () => {
     <ThemeProvider theme={theme}>
       <StoreContextProvider>
         <Router>
-          <ModalsContextProvider>
-            <Routes>
-              <Route path={LANDING} element={<Landing />} />
-              <Route path={ALL_MATCH} element={<App />} />
-            </Routes>
-          </ModalsContextProvider>
+          <Routes>
+            <Route path={LANDING} element={<Landing />} />
+            <Route path={ALL_MATCH} element={<App />} />
+          </Routes>
         </Router>
       </StoreContextProvider>
     </ThemeProvider>
