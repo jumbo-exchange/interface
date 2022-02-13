@@ -6,7 +6,7 @@ import {
 } from 'store';
 
 import FungibleTokenContract from 'services/FungibleToken';
-import { getCurrentBalance, getCurrentPrice, isCurrentToken } from './constants';
+import { getCurrentBalance, getCurrentPrice } from './constants';
 
 interface ICurrentToken {
   isActive?: boolean
@@ -154,47 +154,42 @@ export default function SearchRow({ tokensArray }:{tokensArray: FungibleTokenCon
   const {
     loading,
     balances,
-    inputToken,
-    outputToken,
-    setCurrentToken,
   } = useStore();
   const { isSearchModalOpen, setSearchModalOpen } = useModalsStore();
 
+  const { activeToken, setActiveToken } = isSearchModalOpen;
   if (loading) return null;
 
   return (
     <>
-      {tokensArray.length ? tokensArray.map((token) => {
-        isCurrentToken(inputToken, outputToken, token, isSearchModalOpen.tokenType);
-        return (
-          <Container
-            key={token.contractId}
-            isActive={isCurrentToken(inputToken, outputToken, token, isSearchModalOpen.tokenType)}
+      {tokensArray.length ? tokensArray.map((token) => (
+        <Container
+          key={token.contractId}
+          isActive={token === activeToken}
+        >
+          <SearchRowContainer
+            onClick={() => {
+              if (token === activeToken) {
+                return;
+              }
+              setActiveToken(token);
+              setSearchModalOpen(initialModalsState.isSearchModalOpen);
+            }}
           >
-            <SearchRowContainer
-              onClick={() => {
-                if (isCurrentToken(inputToken, outputToken, token, isSearchModalOpen.tokenType)) {
-                  return;
-                }
-                setCurrentToken(token.contractId, isSearchModalOpen.tokenType);
-                setSearchModalOpen(initialModalsState.isSearchModalOpen);
-              }}
-            >
-              <img src={token.metadata.icon} alt={token.metadata.symbol} />
-              <SearchDescriptionBlock>
-                <SearchTitle>
-                  <div>{token.metadata.symbol}</div>
-                  {isConnected && <div>{getCurrentBalance(balances, token)}</div>}
-                </SearchTitle>
-                <SearchSubtitle>
-                  <div>{token.metadata.name}</div>
-                  {isConnected && <div>{getCurrentPrice(balances, token)}</div>}
-                </SearchSubtitle>
-              </SearchDescriptionBlock>
-            </SearchRowContainer>
-          </Container>
-        );
-      }) : (
+            <img src={token.metadata.icon} alt={token.metadata.symbol} />
+            <SearchDescriptionBlock>
+              <SearchTitle>
+                <div>{token.metadata.symbol}</div>
+                {isConnected && <div>{getCurrentBalance(balances, token)}</div>}
+              </SearchTitle>
+              <SearchSubtitle>
+                <div>{token.metadata.name}</div>
+                {isConnected && <div>{getCurrentPrice(balances, token)}</div>}
+              </SearchSubtitle>
+            </SearchDescriptionBlock>
+          </SearchRowContainer>
+        </Container>
+      )) : (
         <NoResultContainer>
           <p>No results found</p>
         </NoResultContainer>

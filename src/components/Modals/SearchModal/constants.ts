@@ -1,6 +1,5 @@
 import Big from 'big.js';
 import FungibleTokenContract from 'services/FungibleToken';
-import { TokenType } from 'store';
 import { formatTokenAmount } from 'utils/calculations';
 
 export const getCurrentBalance = (
@@ -23,18 +22,4 @@ export const getCurrentPrice = (
     return 'Price Unavailable';
   }
   return '-';
-};
-
-export const isCurrentToken = (
-  inputToken: FungibleTokenContract | null,
-  outputToken: FungibleTokenContract | null,
-  token: FungibleTokenContract | null,
-  tokenType: TokenType,
-) => {
-  if (inputToken === token && tokenType === TokenType.Input) {
-    return true;
-  } if (outputToken === token && tokenType === TokenType.Output) {
-    return true;
-  }
-  return false;
 };

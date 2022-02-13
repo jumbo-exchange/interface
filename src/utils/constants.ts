@@ -22,6 +22,9 @@ export const MIN_TOTAL_FEE = 0;
 export const COEFFICIENT_SLIPPAGE = 0.5;
 export const COEFFICIENT_TOTAL_FEE = 0.5;
 
+export const MIN_FEE_CREATE_POOL = '0.01';
+export const MAX_FEE_CREATE_POOL = '20';
+
 export const tooltipTitle = {
   back: 'Back',
   slippageTolerance: 'Slippage means the difference between what  you expect to get and what you actually get due to other executing first',
@@ -69,4 +72,3 @@ export const POOL_SHARES_DECIMALS = 24;
 export const BAD_PRICE_IMPACT = 2;
 
 export const NEAR_TOKEN_ID = 'NEAR';
-export const JUMBO_TOKEN_ID = 'JUMBO';

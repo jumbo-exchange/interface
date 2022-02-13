@@ -84,7 +84,9 @@ const RenderButton = ({
 export default function Swap() {
   const {
     inputToken,
+    setInputToken,
     outputToken,
+    setOutputToken,
     swapTokens,
     balances,
     loading,
@@ -115,8 +117,15 @@ export default function Swap() {
     currentPools, inputToken, outputToken, inputTokenValue, tokens,
   );
   const openModal = useCallback(
-    (tokenType: TokenType) => {
-      setSearchModalOpen({ isOpen: true, tokenType });
+    (
+      activeToken: FungibleTokenContract | null,
+      setActiveToken: () => {},
+    ) => {
+      setSearchModalOpen({
+        isOpen: true,
+        activeToken,
+        setActiveToken,
+      });
       setIsSettingsOpen(false);
     },
     [],
@@ -309,6 +318,7 @@ export default function Swap() {
         <Input
           openModal={openModal}
           token={inputToken}
+          setToken={setInputToken}
           tokenType={TokenType.Input}
           value={inputTokenValue}
           setValue={handleInputChange}
@@ -321,6 +331,7 @@ export default function Swap() {
         <Input
           openModal={openModal}
           token={outputToken}
+          setToken={setOutputToken}
           tokenType={TokenType.Output}
           value={outputTokenValue}
           setValue={handleOutputChange}

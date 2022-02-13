@@ -85,13 +85,14 @@ const TokenTitle = styled.div`
 
 export default function PopularToken() {
   const {
-    tokens,
-    setCurrentToken,
+    getToken,
   } = useStore();
   const { isSearchModalOpen, setSearchModalOpen } = useModalsStore();
 
-  const near = tokens[NEAR_TOKEN_ID] ?? null;
-  const wNear = tokens[config.nearAddress] ?? null;
+  const { setActiveToken } = isSearchModalOpen;
+
+  const near = getToken(NEAR_TOKEN_ID);
+  const wNear = getToken(config.nearAddress);
 
   const popularTokensArray = [near, wNear];
   return (
@@ -100,14 +101,14 @@ export default function PopularToken() {
       <TokensContainer>
         {popularTokensArray.map((token) => (
           <TokenBlock
-            key={token.contractId}
+            key={token?.contractId}
             onClick={() => {
-              setCurrentToken(token.contractId, isSearchModalOpen.tokenType);
+              setActiveToken(token);
               setSearchModalOpen(initialModalsState.isSearchModalOpen);
             }}
           >
-            <img src={token.metadata.icon} alt={token.metadata.symbol} />
-            <TokenTitle>{token.metadata.symbol}</TokenTitle>
+            <img src={token?.metadata.icon} alt={token?.metadata.symbol} />
+            <TokenTitle>{token?.metadata.symbol}</TokenTitle>
           </TokenBlock>
         ))}
       </TokensContainer>

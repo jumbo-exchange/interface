@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import { getUserWalletTokens, wallet as nearWallet } from 'services/near';
 import {
-  contractMethods, IPool, StoreContextType, TokenType,
+  contractMethods, IPool, StoreContextType,
 } from 'store';
 import {
   formatPool, getPoolsPath, toArray, toMap,
@@ -42,7 +42,6 @@ const initialState: StoreContextType = {
   setInputToken: () => {},
   outputToken: null,
   setOutputToken: () => {},
-  setCurrentToken: () => {},
   updatePools: () => {},
   swapTokens: () => {},
 };
@@ -71,22 +70,6 @@ export const StoreContextProvider = (
     initialState.outputToken,
   );
 
-  const setCurrentToken = (tokenAddress: string, tokenType: TokenType) => {
-    const poolArray = toArray(pools);
-    if (tokenType === TokenType.Output) {
-      if (!inputToken) return;
-      const outputTokenData = tokens[tokenAddress] ?? null;
-      setOutputToken(outputTokenData);
-      const availablePools = getPoolsPath(inputToken.contractId, tokenAddress, poolArray, tokens);
-      setCurrentPools(availablePools);
-    } else {
-      if (!outputToken) return;
-      const inputTokenData = tokens[tokenAddress] ?? null;
-      setInputToken(inputTokenData);
-      const availablePools = getPoolsPath(tokenAddress, outputToken.contractId, poolArray, tokens);
-      setCurrentPools(availablePools);
-    }
-  };
   const swapTokens = () => {
     const poolArray = toArray(pools);
     if (!inputToken || !outputToken || inputToken === outputToken) return;
@@ -238,7 +221,6 @@ export const StoreContextProvider = (
       setInputToken,
       outputToken,
       setOutputToken,
-      setCurrentToken,
       swapTokens,
     }}
     >
