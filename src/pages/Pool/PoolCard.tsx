@@ -8,6 +8,7 @@ import { SpecialContainer } from 'components/SpecialContainer';
 import { useNavigate } from 'react-router-dom';
 import { ReactComponent as AddIcon } from 'assets/images-app/icon-add.svg';
 import { toAddLiquidityPage, toRemoveLiquidityPage } from 'utils/routes';
+import { tooltipTitle } from 'utils/constants';
 
 interface IColor {
   isColor?: boolean
@@ -193,6 +194,7 @@ interface IVolume {
   title: string;
   label: string;
   color?: boolean;
+  tooltip: string;
 }
 
 export default function PoolCard({ pool } : { pool:IPool }) {
@@ -209,15 +211,18 @@ export default function PoolCard({ pool } : { pool:IPool }) {
     {
       title: 'Total Liquidity',
       label: '-',
+      tooltip: tooltipTitle.totalLiquidity,
     },
     {
       title: '24h Volume',
       label: '-',
+      tooltip: tooltipTitle.dayVolume,
     },
     {
       title: 'APR',
       label: '-',
       color: true,
+      tooltip: tooltipTitle.APR,
     },
   ];
 
@@ -247,7 +252,7 @@ export default function PoolCard({ pool } : { pool:IPool }) {
             <Column key={el.title}>
               <TitleVolume>
                 {el.title}
-                <Tooltip title="YES" />
+                <Tooltip title={el.tooltip} />
               </TitleVolume>
               <LabelVolume isColor={el.color}>{el.label}</LabelVolume>
             </Column>
