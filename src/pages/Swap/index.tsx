@@ -5,7 +5,9 @@ import { getPoolsPath, getUpperCase, toArray } from 'utils';
 import {
   useStore, useModalsStore, TokenType, NEAR_TOKEN_ID,
 } from 'store';
-import { BAD_PRICE_IMPACT, FEE_DIVISOR, SLIPPAGE_TOLERANCE_DEFAULT } from 'utils/constants';
+import {
+  BAD_PRICE_IMPACT, FEE_DIVISOR, SLIPPAGE_TOLERANCE_DEFAULT, tooltipTitle,
+} from 'utils/constants';
 import SwapContract from 'services/SwapContract';
 import useDebounce from 'hooks/useDebounce';
 import {
@@ -20,6 +22,7 @@ import { calculatePriceImpact } from 'services/swap';
 
 import Refresh from 'components/Refresh';
 import { useRefresh } from 'services/refreshService';
+import Tooltip from 'components/Tooltip';
 import Input from './SwapInput';
 import SwapSettings from './SwapSettings';
 import RenderWarning from './SwapWarning';
@@ -354,7 +357,10 @@ export default function Swap() {
           ? (
             <SwapInformation>
               <RouteBlock>
-                <TitleInfo>Route <LogoInfo /></TitleInfo>
+                <TitleInfo>
+                  Route
+                  <Tooltip title={tooltipTitle.routes} />
+                </TitleInfo>
                 <div>
                   <TokenImg
                     src={inputToken?.metadata.icon}
@@ -382,11 +388,17 @@ export default function Swap() {
                 </div>
               </RouteBlock>
               <RowInfo>
-                <TitleInfo>Minimum Received<LogoInfo /></TitleInfo>
+                <TitleInfo>
+                  Minimum Received
+                  <Tooltip title={tooltipTitle.minimumReceived} />
+                </TitleInfo>
                 <LabelInfo>{minAmountOut} {outputToken?.metadata.symbol}</LabelInfo>
               </RowInfo>
               <RowInfo>
-                <TitleInfo>Price Impact<LogoInfo /></TitleInfo>
+                <TitleInfo>
+                  Price Impact
+                  <Tooltip title={tooltipTitle.priceImpact} />
+                </TitleInfo>
                 {
                   Number(formatBalance(priceImpact)) > BAD_PRICE_IMPACT
                     ? <LabelError>{formatBalance(priceImpact)}%</LabelError>
@@ -394,11 +406,17 @@ export default function Swap() {
                 }
               </RowInfo>
               <RowInfo>
-                <TitleInfo>Liquidity Provider Fee<LogoInfo /></TitleInfo>
+                <TitleInfo>
+                  Liquidity Provider Fee
+                  <Tooltip title={tooltipTitle.liquidityProviderFee} />
+                </TitleInfo>
                 <LabelInfo>{averageFee}%</LabelInfo>
               </RowInfo>
               <RowInfo>
-                <TitleInfo>Slippage Tolerance<LogoInfo /></TitleInfo>
+                <TitleInfo>
+                  Slippage Tolerance
+                  <Tooltip title={tooltipTitle.slippageTolerance} />
+                </TitleInfo>
                 <LabelInfo>{slippageTolerance}%</LabelInfo>
               </RowInfo>
             </SwapInformation>

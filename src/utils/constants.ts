@@ -23,8 +23,24 @@ export const COEFFICIENT_SLIPPAGE = 0.5;
 export const COEFFICIENT_TOTAL_FEE = 0.5;
 
 export const tooltipTitle = {
-  back: 'Back',
+  // Swap
   slippageTolerance: 'Slippage means the difference between what  you expect to get and what you actually get due to other executing first',
+  routes: 'routes',
+  minimumReceived: 'minimumReceived',
+  priceImpact: 'priceImpact',
+  liquidityProviderFee: 'liquidityProviderFee',
+
+  // Pool
+  APRBasis: 'APRBasis',
+  totalLiquidity: 'totalLiquidity',
+  dayVolume: '24hVolume',
+  APR: 'APR',
+
+  // Create Pool
+  totalFee: 'totalFee',
+  lPFee: 'lPFee',
+  protocolFee: 'protocolFee',
+  referralFee: 'referralFee',
 };
 
 export const warning = {

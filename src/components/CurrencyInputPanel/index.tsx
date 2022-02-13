@@ -9,7 +9,7 @@ interface IInputPanel {
 }
 
 export const Input = styled.input`
-  width: 60%;
+  width: 100%;
   outline: none;
   border: none;
   background: none;
