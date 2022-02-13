@@ -8,6 +8,7 @@ import {
 import {
   formatPool, getPoolsPath, toArray, toMap,
 } from 'utils';
+import { NEAR_TOKEN_ID } from 'utils/constants';
 
 import getConfig from 'services/config';
 import SpecialWallet, { createContract } from 'services/wallet';
@@ -18,7 +19,6 @@ import { PoolType } from './interfaces';
 const config = getConfig();
 const DEFAULT_PAGE_LIMIT = 100;
 
-export const NEAR_TOKEN_ID = 'NEAR';
 const initialState: StoreContextType = {
   loading: false,
   setLoading: () => {},

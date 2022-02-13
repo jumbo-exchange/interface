@@ -1,9 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import {
-  initialModalsState, NEAR_TOKEN_ID, useModalsStore, useStore,
-} from 'store';
 import getConfig from 'services/config';
+import {
+  initialModalsState, useModalsStore, useStore,
+} from 'store';
+import { NEAR_TOKEN_ID } from 'utils/constants';
 
 const config = getConfig();
 
