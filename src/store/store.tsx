@@ -29,6 +29,7 @@ const initialState: StoreContextType = {
   balances: {},
   setBalances: () => {},
   getTokenBalance: () => '0',
+  updateTokensBalances: () => {},
 
   pools: {},
   setPools: () => {},
@@ -210,6 +211,13 @@ export const StoreContextProvider = (
     setPools(newPoolSet);
   };
 
+  const updateTokensBalances = (newBalances: {[key: string]: string}) => {
+    const newBalancesSet = Object.entries(newBalances).reduce((acc, [key, value]) => (
+      { ...acc, [key]: value }
+    ), balances);
+    setBalances(newBalancesSet);
+  };
+
   const getTokenBalance = (tokenId: string | undefined) => (tokenId ? balances[tokenId] ?? '0' : '0');
   const getToken = (tokenId: string | undefined) => (tokenId ? tokens[tokenId] ?? null : null);
 
@@ -224,6 +232,7 @@ export const StoreContextProvider = (
       balances,
       setBalances,
       getTokenBalance,
+      updateTokensBalances,
 
       pools,
       setPools,

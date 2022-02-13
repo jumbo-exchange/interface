@@ -17,8 +17,9 @@ import getConfig from 'services/config';
 import Big from 'big.js';
 
 import { calculatePriceImpact } from 'services/swap';
-import { useUpdatePoolsService } from 'services/updatePoolService';
+
 import Refresh from 'components/Refresh';
+import { useRefresh } from 'services/refreshService';
 import Input from './SwapInput';
 import SwapSettings from './SwapSettings';
 import RenderWarning from './SwapWarning';
@@ -88,11 +89,10 @@ export default function Swap() {
     loading,
     currentPools,
     tokens,
-    updatePools,
     pools,
   } = useStore();
   const config = getConfig();
-
+  const { setTrackedPools } = useRefresh();
   const { setAccountModalOpen, setSearchModalOpen } = useModalsStore();
   const [independentField, setIndependentField] = useState(TokenType.Input);
   const [inputTokenValue, setInputTokenValue] = useState<string>('');
@@ -119,8 +119,6 @@ export default function Swap() {
     },
     [],
   );
-
-  useUpdatePoolsService(wallet, currentPools, updatePools);
 
   const verifyToken = (
     token: FungibleTokenContract,
@@ -198,6 +196,7 @@ export default function Swap() {
       .div(FEE_DIVISOR).toFixed(4);
 
     if (newAverageFee !== averageFee) setAverageFee(removeTrailingZeros(newAverageFee));
+    setTrackedPools(currentPools);
   }, [currentPools]);
 
   const handleAmountChange = async (tokenType: TokenType, value: string) => {

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRefresh } from 'services/refreshService';
 import styled from 'styled-components';
 import { colors } from 'theme';
 
@@ -43,7 +44,8 @@ const Path = styled.path<{currentTime?: number}>`
   }
 `;
 
-const Loader = ({ time }: {time: number}) => {
+export default function Loader({ time = REFRESH_TIMER }: {time?: number}) {
+  const { refreshEnabled, setRefreshEnabled } = useRefresh();
   const strokeWidth = 8;
   const radius = (50 - strokeWidth / 2);
   const pathDescription = `
@@ -54,36 +56,30 @@ const Loader = ({ time }: {time: number}) => {
   const diameter = Math.PI * 2 * radius;
 
   return (
-    <svg
-      viewBox="0 0 100 100"
-      width={14}
-      height={14}
-    >
-      <path
-        d={pathDescription}
-        strokeWidth={strokeWidth}
-        fillOpacity={0}
-        style={{ stroke: colors.tooltip }}
-      />
-      <Path
-        currentTime={time}
-        d={pathDescription}
-        strokeWidth={strokeWidth}
-        fillOpacity={0}
-        style={{
-          stroke: colors.globalGreen,
-          strokeLinecap: 'round',
-          strokeDasharray: `${diameter}px ${diameter}px`,
-        }}
-      />
-    </svg>
-  );
-};
-
-export default function Refresh() {
-  return (
-    <Container>
-      <Loader time={REFRESH_TIMER} />Refresh
+    <Container onClick={() => setRefreshEnabled(!refreshEnabled)}>
+      <svg
+        viewBox="0 0 100 100"
+        width={14}
+        height={14}
+      >
+        <path
+          d={pathDescription}
+          strokeWidth={strokeWidth}
+          fillOpacity={0}
+          style={{ stroke: colors.tooltip }}
+        />
+        <Path
+          currentTime={refreshEnabled ? time : 0}
+          d={pathDescription}
+          strokeWidth={strokeWidth}
+          fillOpacity={0}
+          style={{
+            stroke: colors.globalGreen,
+            strokeLinecap: 'round',
+            strokeDasharray: `${diameter}px ${diameter}px`,
+          }}
+        />
+      </svg> Refresh
     </Container>
   );
 }
