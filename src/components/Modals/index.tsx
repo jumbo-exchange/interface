@@ -12,9 +12,9 @@ export default function Modals({ children }: {children: JSX.Element}) {
       <AccountModal />
       <AddLiquidityModal />
       <CreatePoolModal />
+      <RemoveLiquidityModal />
       <SearchModal />
       <TooltipModal />
-      <RemoveLiquidityModal />
       {children}
     </>
   );

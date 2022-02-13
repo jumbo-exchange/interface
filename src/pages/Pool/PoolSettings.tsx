@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Tooltip from 'components/Tooltip';
+import Refresh from 'components/Refresh';
 import { ButtonSecondary, FilterButton } from 'components/Button';
 import { ReactComponent as SearchIcon } from 'assets/images-app/search-icon.svg';
 import { ReactComponent as ArrowDownIcon } from 'assets/images-app/icon-arrow-down.svg';
@@ -8,7 +9,7 @@ import { ReactComponent as Plus } from 'assets/images-app/plus.svg';
 import { ReactComponent as PlaceHolderLoader } from 'assets/images-app/placeholder-loader.svg';
 import { isMobile } from 'utils/userAgent';
 import { useModalsStore } from 'store';
-import Refresh from 'components/Refresh';
+import { tooltipTitle } from 'utils/constants';
 import { FilterPoolsEnum } from '.';
 
 const Container = styled.div`
@@ -209,7 +210,7 @@ export default function PoolSettings({
           </Wrapper>
           )}
           <APRWrapper>
-            <Title>APR Basis <Tooltip title="APR Basis" /></Title>
+            <Title>APR Basis <Tooltip title={tooltipTitle.APRBasis} /></Title>
             <FilterBlock>
               {aprFilters.map((el) => (
                 <FilterButton
