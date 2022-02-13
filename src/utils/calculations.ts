@@ -29,7 +29,8 @@ export const formatTokenAmount = (value: string, decimals = 18, precision?: numb
   && Big(value).div(Big(BASE).pow(decimals)).toFixed(precision && precision);
 
 export const parseTokenAmount = (value:string, decimals = 18) => value
-  && Big(value).times(Big(BASE).pow(decimals)).toFixed();
+  && Big(value).times(Big(BASE).pow(decimals)).toFixed(0);
+
 export const removeTrailingZeros = (amount: string) => {
   if (amount.includes('.') || amount.includes(',')) {
     return amount.replace(/\.?0*$/, '');
