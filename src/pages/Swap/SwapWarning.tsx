@@ -2,6 +2,7 @@ import React from 'react';
 import getConfig from 'services/config';
 import Warning from 'components/Warning';
 import styled from 'styled-components';
+import Big from 'big.js';
 import { warning } from 'utils/constants';
 import { NEAR_TOKEN_ID, useStore } from 'store';
 import { ReactComponent as RouteArrow } from 'assets/images-app/route-arrow.svg';
@@ -9,7 +10,7 @@ import { ReactComponent as Wallet } from 'assets/images-app/wallet.svg';
 import { ButtonSecondary } from 'components/Button';
 import { getPoolsPath, toArray } from 'utils';
 import { useNavigate } from 'react-router-dom';
-import Big from 'big.js';
+import { wallet } from 'services/near';
 import { toAddLiquidityPage } from 'utils/routes';
 
 const config = getConfig();
@@ -79,6 +80,7 @@ export default function RenderWarning() {
     getToken,
   } = useStore();
   const navigate = useNavigate();
+  const isConnected = wallet.isSignedIn();
 
   const near = getToken(NEAR_TOKEN_ID);
   const wNear = getToken(config.nearAddress);
@@ -122,8 +124,9 @@ export default function RenderWarning() {
     return null;
   }
 
-  if (!loading && getTokenBalance(wNear?.contractId) === '0'
-  && (inputToken === wNear || outputToken === wNear)
+  if (!loading && isConnected
+    && getTokenBalance(wNear?.contractId) === '0'
+    && (inputToken === wNear || outputToken === wNear)
   ) {
     return (
       <WarningBlock>
