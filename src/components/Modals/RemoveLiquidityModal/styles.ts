@@ -84,7 +84,7 @@ export const SlippageBlock = styled.div`
   flex-direction: column;
 `;
 
-export const Error = styled.div`
+export const Warning = styled.div`
   text-align: left;
   margin: 1rem .875rem 0;
   font-style: normal;

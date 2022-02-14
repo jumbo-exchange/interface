@@ -38,7 +38,7 @@ const SlippageBlock = styled.div`
   margin-bottom: 1.25rem;
 `;
 
-const Error = styled.div`
+const Warning = styled.div`
   text-align: left;
   margin-top: 1rem;
   font-style: normal;
@@ -98,9 +98,9 @@ export default function SwapSettings(
           onChange={onChange}
         />
         {warning && (
-          <Error>
+          <Warning>
             Your transaction may be frontrun
-          </Error>
+          </Warning>
         )}
       </SlippageBlock>
     </Container>

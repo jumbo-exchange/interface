@@ -42,7 +42,7 @@ import {
   TokenBlock,
   TokenValueBlock,
   SlippageBlock,
-  Error,
+  Warning,
 } from './styles';
 
 export default function RemoveLiquidityModal() {
@@ -178,9 +178,9 @@ export default function RemoveLiquidityModal() {
                 onChange={onChangeSlippage}
               />
               {warning && (
-                <Error>
+                <Warning>
                   Your transaction may be frontrun
-                </Error>
+                </Warning>
               )}
             </SlippageBlock>
             <TitleAction>
