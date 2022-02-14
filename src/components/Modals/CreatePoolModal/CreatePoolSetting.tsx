@@ -8,6 +8,7 @@ import {
   MAX_TOTAL_FEE,
   MIN_TOTAL_FEE,
   COEFFICIENT_TOTAL_FEE,
+  tooltipTitle,
 } from 'utils/constants';
 
 const Container = styled.div`
@@ -90,14 +91,17 @@ export default function CreatePoolSettings(
     {
       title: 'LP Fee',
       percent: 80,
+      tooltip: tooltipTitle.lPFee,
     },
     {
       title: 'Protocol Fee',
       percent: 16,
+      tooltip: tooltipTitle.protocolFee,
     },
     {
       title: 'Referral Fee',
       percent: 4,
+      tooltip: tooltipTitle.referralFee,
     },
   ];
 
@@ -143,7 +147,7 @@ export default function CreatePoolSettings(
 
   return (
     <Container>
-      <Title>Total Fee <Tooltip title="Total Fee" /> </Title>
+      <Title>Total Fee <Tooltip title={tooltipTitle.totalFee} /> </Title>
       <TotalFeeBlock>
         <Toggle
           value={fee}
@@ -158,9 +162,9 @@ export default function CreatePoolSettings(
         )}
       </TotalFeeBlock>
       <Column>
-        {feeList.map(({ title, percent }) => (
+        {feeList.map(({ title, percent, tooltip }) => (
           <Row key={title}>
-            <RowTitle>{title} <Tooltip title={title} /> </RowTitle>
+            <RowTitle>{title} <Tooltip title={tooltip} /> </RowTitle>
             <LabelTitle>{getCurFee(percent)}</LabelTitle>
           </Row>
         ))}

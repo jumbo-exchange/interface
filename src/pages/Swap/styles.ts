@@ -163,7 +163,7 @@ export const RowInfo = styled.div`
   margin-bottom: 1rem;
 `;
 
-export const TitleInfo = styled.p`
+export const TitleInfo = styled.div`
   display: flex;
   align-items: center;
   font-style: normal;

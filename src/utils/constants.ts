@@ -26,8 +26,24 @@ export const MIN_FEE_CREATE_POOL = '0.01';
 export const MAX_FEE_CREATE_POOL = '20';
 
 export const tooltipTitle = {
-  back: 'Back',
+  // Swap
   slippageTolerance: 'Slippage means the difference between what  you expect to get and what you actually get due to other executing first',
+  routes: 'routes',
+  minimumReceived: 'minimumReceived',
+  priceImpact: 'priceImpact',
+  liquidityProviderFee: 'liquidityProviderFee',
+
+  // Pool
+  APRBasis: 'APRBasis',
+  totalLiquidity: 'totalLiquidity',
+  dayVolume: '24hVolume',
+  APR: 'APR',
+
+  // Create Pool
+  totalFee: 'totalFee',
+  lPFee: 'lPFee',
+  protocolFee: 'protocolFee',
+  referralFee: 'referralFee',
 };
 
 export const warning = {
