@@ -6,7 +6,6 @@ import { ButtonSecondary, FilterButton } from 'components/Button';
 import { ReactComponent as SearchIcon } from 'assets/images-app/search-icon.svg';
 import { ReactComponent as ArrowDownIcon } from 'assets/images-app/icon-arrow-down.svg';
 import { ReactComponent as Plus } from 'assets/images-app/plus.svg';
-import { ReactComponent as PlaceHolderLoader } from 'assets/images-app/placeholder-loader.svg';
 import { isMobile } from 'utils/userAgent';
 import { useModalsStore } from 'store';
 import { tooltipTitle } from 'utils/constants';
