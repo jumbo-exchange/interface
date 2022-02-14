@@ -2,11 +2,10 @@ import * as nearApiJs from 'near-api-js';
 import nearIcon from 'assets/images-app/near.svg';
 import wrapNearIcon from 'assets/images-app/wNEAR.svg';
 import defaultToken from 'assets/images-app/defaultToken.svg';
-import { ITokenMetadata } from 'store';
+import { ITokenMetadata, NEAR_TOKEN_ID } from 'store';
 import {
   FT_TRANSFER_GAS,
   ONE_YOCTO_NEAR,
-  NEAR_TOKEN_ID,
 } from 'utils/constants';
 import { formatTokenAmount, parseTokenAmount, removeTrailingZeros } from 'utils/calculations';
 import Big from 'big.js';

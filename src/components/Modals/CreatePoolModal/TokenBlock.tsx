@@ -1,7 +1,7 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React from 'react';
 import tokenLogo from 'assets/images-app/placeholder-token.svg';
 import styled from 'styled-components';
-import { useModalsStore } from 'store';
+import { TokenType, useModalsStore } from 'store';
 import { getUpperCase } from 'utils';
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
 import FungibleTokenContract from 'services/FungibleToken';
@@ -62,24 +62,11 @@ const ArrowDown = styled(IconArrowDown)`
 `;
 
 export default function TokenBlock(
-  {
-    token,
-    setToken,
-  }:{
-    token: FungibleTokenContract | null,
-    setToken: Dispatch<SetStateAction<FungibleTokenContract | null>>;
-  },
+  { token, tokenType }:{ token: FungibleTokenContract | null, tokenType: TokenType},
 ) {
   const { setSearchModalOpen } = useModalsStore();
   return (
-    <Container onClick={() => setSearchModalOpen(
-      {
-        isOpen: true,
-        activeToken: token,
-        setActiveToken: setToken,
-      },
-    )}
-    >
+    <Container onClick={() => setSearchModalOpen({ isOpen: true, tokenType })}>
       <LogoToken>
         <img src={token?.metadata?.icon ?? tokenLogo} alt={token?.metadata.symbol} />
       </LogoToken>

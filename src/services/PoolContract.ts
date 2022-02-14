@@ -7,10 +7,9 @@ import {
   LP_STORAGE_AMOUNT,
   STORAGE_PER_TOKEN,
   ONE_YOCTO_NEAR,
-  NEAR_TOKEN_ID,
 } from 'utils/constants';
 import { toNonDivisibleNumber } from 'utils/calculations';
-import { IPool } from 'store';
+import { IPool, NEAR_TOKEN_ID } from 'store';
 import sendTransactions, { wallet } from './near';
 import { createContract, Transaction } from './wallet';
 import getConfig from './config';

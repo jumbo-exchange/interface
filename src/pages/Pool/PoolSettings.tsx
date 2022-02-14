@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Tooltip from 'components/Tooltip';
 import Refresh from 'components/Refresh';
@@ -6,7 +6,7 @@ import { ButtonSecondary, FilterButton } from 'components/Button';
 import { ReactComponent as SearchIcon } from 'assets/images-app/search-icon.svg';
 import { ReactComponent as ArrowDownIcon } from 'assets/images-app/icon-arrow-down.svg';
 import { ReactComponent as Plus } from 'assets/images-app/plus.svg';
-
+import { ReactComponent as PlaceHolderLoader } from 'assets/images-app/placeholder-loader.svg';
 import { isMobile } from 'utils/userAgent';
 import { useModalsStore } from 'store';
 import { tooltipTitle } from 'utils/constants';
@@ -101,12 +101,9 @@ const SortBlock = styled.div`
   font-weight: 500;
   font-size: .75rem;
   line-height: .875rem;
-  color: ${({ theme }) => theme.globalGreyOp02};
-  user-select: none;
-  & > svg {
-    path { 
-      fill: ${({ theme }) => theme.globalGreyOp02};
-    }
+  color: ${({ theme }) => theme.globalWhite};
+  :hover {
+    cursor: pointer;
   }
 `;
 
@@ -114,6 +111,12 @@ const ArrowDown = styled(ArrowDownIcon)`
   width: 9.5px;
   height: 5.5px;
   margin-left: .453rem;
+`;
+
+const Loading = styled(PlaceHolderLoader)`
+  width: 14px;
+  height: 14px;
+  margin-right: .5rem;
 `;
 
 const LogoPlus = styled(Plus)`
@@ -160,8 +163,6 @@ const aprFilters: IAPRFilters[] = [
   {
     title: '24H',
     isActive: APRFiletEnum['24H'],
-    disabled: true,
-
   },
   {
     title: '7D',
@@ -181,6 +182,7 @@ export default function PoolSettings({
   currentFilterPools: FilterPoolsEnum
 }) {
   const { setCreatePoolModalOpen } = useModalsStore();
+  const [currentAPRFilter, setCurrentAPRFilter] = useState(APRFiletEnum['24H']);
 
   if (isMobile) {
     return (
@@ -213,6 +215,8 @@ export default function PoolSettings({
               {aprFilters.map((el) => (
                 <FilterButton
                   key={el.title}
+                  isActive={currentAPRFilter === el.isActive}
+                  onClick={() => setCurrentAPRFilter(el.isActive)}
                   disabled={el.disabled}
                 >
                   {el.title}
@@ -251,6 +255,8 @@ export default function PoolSettings({
           {aprFilters.map((el) => (
             <FilterButton
               key={el.title}
+              isActive={currentAPRFilter === el.isActive}
+              onClick={() => setCurrentAPRFilter(el.isActive)}
               disabled={el.disabled}
             >
               {el.title}
