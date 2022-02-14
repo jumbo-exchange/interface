@@ -40,7 +40,6 @@ docker-build-stage:
   script:
     - docker build -f Dockerfile.stage --pull -t "$CI_REGISTRY_IMAGE:stage" .
     - docker push "$CI_REGISTRY_IMAGE:stage"
-    - curl -X POST "$DEPLOY_TRIGGER_URL_STAGE"
   only:
       - stage
 
