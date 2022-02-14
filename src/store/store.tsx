@@ -190,12 +190,16 @@ export const StoreContextProvider = (
   }, []);
 
   useEffect(() => {
+    const outputTokenData = tokens[config.nearAddress] ?? null;
+    const inputTokenData = tokens[NEAR_TOKEN_ID] ?? null;
+    setOutputToken(outputTokenData);
+    setInputToken(inputTokenData);
+  }, [toArray(tokens).length]);
+
+  useEffect(() => {
     if (toArray(pools).length) {
       const outputTokenData = tokens[config.nearAddress] ?? null;
-      setOutputToken(outputTokenData);
       const inputTokenData = tokens[NEAR_TOKEN_ID] ?? null;
-      setInputToken(inputTokenData);
-
       const availablePools = getPoolsPath(
         inputTokenData.contractId,
         outputTokenData.contractId,
