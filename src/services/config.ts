@@ -23,7 +23,7 @@ export default function getConfig(
         helperUrl: 'https://helper.mainnet.near.org',
         explorerUrl: 'https://explorer.mainnet.near.org',
         indexerUrl: 'https://indexer.ref-finance.net',
-        contractId: 'contracts.jumbo_exchange.near',
+        contractId: 'v1.jumbo_exchange.near',
         nearAddress: 'wrap.near',
         stablePoolId: 0,
       };
