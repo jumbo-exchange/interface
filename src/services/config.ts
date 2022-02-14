@@ -13,7 +13,6 @@ export default function getConfig(
         indexerUrl: 'https://testnet-indexer.ref-finance.com',
         contractId: 'ref-contract.solniechniy.testnet',
         nearAddress: 'wrap.testnet',
-        jumboAddress: 'token.solniechniy.testnet',
         stablePoolId: 0,
       };
     default:
@@ -26,7 +25,6 @@ export default function getConfig(
         indexerUrl: 'https://indexer.ref-finance.net',
         contractId: 'ref-contract.solniechniy.testnet',
         nearAddress: 'wrap.near',
-        jumboAddress: '',
         stablePoolId: 0,
       };
   }

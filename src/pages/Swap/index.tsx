@@ -6,11 +6,7 @@ import {
   useStore, useModalsStore, TokenType,
 } from 'store';
 import {
-  BAD_PRICE_IMPACT,
-  FEE_DIVISOR,
-  SLIPPAGE_TOLERANCE_DEFAULT,
-  NEAR_TOKEN_ID,
-  tooltipTitle,
+  BAD_PRICE_IMPACT, FEE_DIVISOR, NEAR_TOKEN_ID, SLIPPAGE_TOLERANCE_DEFAULT, tooltipTitle,
 } from 'utils/constants';
 import SwapContract from 'services/SwapContract';
 import useDebounce from 'hooks/useDebounce';
@@ -90,9 +86,7 @@ const RenderButton = ({
 export default function Swap() {
   const {
     inputToken,
-    setInputToken,
     outputToken,
-    setOutputToken,
     swapTokens,
     balances,
     loading,
@@ -122,15 +116,8 @@ export default function Swap() {
     currentPools, inputToken, outputToken, inputTokenValue, tokens,
   );
   const openModal = useCallback(
-    (
-      activeToken: FungibleTokenContract | null,
-      setActiveToken: () => {},
-    ) => {
-      setSearchModalOpen({
-        isOpen: true,
-        activeToken,
-        setActiveToken,
-      });
+    (tokenType: TokenType) => {
+      setSearchModalOpen({ isOpen: true, tokenType });
       setIsSettingsOpen(false);
     },
     [],
@@ -322,7 +309,6 @@ export default function Swap() {
         <Input
           openModal={openModal}
           token={inputToken}
-          setToken={setInputToken}
           tokenType={TokenType.Input}
           value={inputTokenValue}
           setValue={handleInputChange}
@@ -335,7 +321,6 @@ export default function Swap() {
         <Input
           openModal={openModal}
           token={outputToken}
-          setToken={setOutputToken}
           tokenType={TokenType.Output}
           value={outputTokenValue}
           setValue={handleOutputChange}

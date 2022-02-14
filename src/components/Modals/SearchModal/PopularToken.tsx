@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-import getConfig from 'services/config';
 import {
   initialModalsState, useModalsStore, useStore,
 } from 'store';
+import getConfig from 'services/config';
 import { NEAR_TOKEN_ID } from 'utils/constants';
 
 const config = getConfig();
@@ -86,29 +86,29 @@ const TokenTitle = styled.div`
 export default function PopularToken() {
   const {
     getToken,
+    setCurrentToken,
   } = useStore();
   const { isSearchModalOpen, setSearchModalOpen } = useModalsStore();
 
-  const { setActiveToken } = isSearchModalOpen;
-
-  const near = getToken(NEAR_TOKEN_ID);
-  const wNear = getToken(config.nearAddress);
-
+  const near = getToken(NEAR_TOKEN_ID) ?? null;
+  const wNear = getToken(config.nearAddress) ?? null;
+  if (!near || !wNear) return null;
   const popularTokensArray = [near, wNear];
+
   return (
     <Container>
       <Title>Popular</Title>
       <TokensContainer>
         {popularTokensArray.map((token) => (
           <TokenBlock
-            key={token?.contractId}
+            key={token.contractId}
             onClick={() => {
-              setActiveToken(token);
+              setCurrentToken(token.contractId, isSearchModalOpen.tokenType);
               setSearchModalOpen(initialModalsState.isSearchModalOpen);
             }}
           >
-            <img src={token?.metadata.icon} alt={token?.metadata.symbol} />
-            <TokenTitle>{token?.metadata.symbol}</TokenTitle>
+            <img src={token.metadata.icon} alt={token.metadata.symbol} />
+            <TokenTitle>{token.metadata.symbol}</TokenTitle>
           </TokenBlock>
         ))}
       </TokensContainer>

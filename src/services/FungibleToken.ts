@@ -4,11 +4,11 @@ import wrapNearIcon from 'assets/images-app/wNEAR.svg';
 import defaultToken from 'assets/images-app/defaultToken.svg';
 import { ITokenMetadata } from 'store';
 import {
+  NEAR_TOKEN_ID,
   FT_TRANSFER_GAS,
   ONE_YOCTO_NEAR,
-  NEAR_TOKEN_ID,
 } from 'utils/constants';
-import { formatTokenAmount, parseTokenAmount, removeTrailingZeros } from 'utils/calculations';
+
 import Big from 'big.js';
 import { wallet } from './near';
 import SpecialWallet, { createContract, Transaction } from './wallet';
@@ -17,7 +17,6 @@ import getConfig from './config';
 const {
   utils: {
     format: {
-      parseNearAmount,
       formatNearAmount,
     },
   },
