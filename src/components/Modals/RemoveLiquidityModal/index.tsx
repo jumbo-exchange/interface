@@ -42,6 +42,7 @@ import {
   TokenBlock,
   TokenValueBlock,
   SlippageBlock,
+  Warning,
 } from './styles';
 
 export default function RemoveLiquidityModal() {
@@ -110,8 +111,10 @@ export default function RemoveLiquidityModal() {
   };
   const formattedPoolShares = formatTokenAmount(pool?.shares ?? '0', POOL_SHARES_DECIMALS);
 
-  const buttonDisabled = isConnected && withdrawValue && Big(slippageTolerance).gt(0)
-    ? (new Big(withdrawValue).lte(0) || new Big(withdrawValue).gt(formattedPoolShares))
+  const buttonDisabled = isConnected
+    && withdrawValue
+    ? (new Big(withdrawValue).lte(0)
+    || new Big(withdrawValue).gt(formattedPoolShares))
     : true;
 
   const onChangeSlippage = (value:string) => {
@@ -174,6 +177,11 @@ export default function RemoveLiquidityModal() {
                 options={slippageToleranceOptions}
                 onChange={onChangeSlippage}
               />
+              {warning && (
+                <Warning>
+                  Your transaction may be frontrun
+                </Warning>
+              )}
             </SlippageBlock>
             <TitleAction>
               Withdrawal Amount

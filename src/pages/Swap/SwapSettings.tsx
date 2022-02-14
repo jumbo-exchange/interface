@@ -38,7 +38,7 @@ const SlippageBlock = styled.div`
   margin-bottom: 1.25rem;
 `;
 
-const Error = styled.div`
+const Warning = styled.div`
   text-align: left;
   margin-top: 1rem;
   font-style: normal;
@@ -59,29 +59,29 @@ export default function SwapSettings(
     isSettingsOpen: boolean,
   },
 ) {
-  const [error, setError] = useState(false);
+  const [warning, setWarning] = useState(false);
 
   const onChange = (value:string) => {
     if (!value || Number(value) <= 0) {
       setSlippageTolerance(MIN_SLIPPAGE_TOLERANCE.toString());
-      setError(true);
+      setWarning(true);
       return;
     }
     const bigValue = new Big(value);
     if (!bigValue.gt(MIN_SLIPPAGE_TOLERANCE)) {
       setSlippageTolerance(MIN_SLIPPAGE_TOLERANCE.toString());
-      setError(true);
+      setWarning(true);
       return;
     }
     if (!bigValue.lt(MAX_SLIPPAGE_TOLERANCE + 1)) {
       setSlippageTolerance(MAX_SLIPPAGE_TOLERANCE.toString());
-      setError(true);
+      setWarning(true);
       return;
     }
 
     setSlippageTolerance(bigValue.toString());
 
-    setError(false);
+    setWarning(false);
   };
 
   return (
@@ -97,10 +97,10 @@ export default function SwapSettings(
           options={slippageToleranceOptions}
           onChange={onChange}
         />
-        {error && (
-          <Error>
+        {warning && (
+          <Warning>
             Your transaction may be frontrun
-          </Error>
+          </Warning>
         )}
       </SlippageBlock>
     </Container>
