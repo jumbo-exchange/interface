@@ -3,11 +3,11 @@ import styled from 'styled-components';
 import CurrencyInputPanel from 'components/CurrencyInputPanel';
 import tokenLogo from 'assets/images-app/placeholder-token.svg';
 import Big from 'big.js';
+import FungibleTokenContract from 'services/FungibleToken';
 
 import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
-import { formatAmount, getUpperCase } from 'utils';
-import { TokenType } from 'store';
-import FungibleTokenContract from 'services/FungibleToken';
+import { getUpperCase } from 'utils';
+import { formatTokenAmount } from 'utils/calculations';
 
 const Block = styled.div`
   display: flex;
@@ -46,8 +46,8 @@ const ButtonHalfWallet = styled.button`
     text-align: right;
     font-style: normal;
     font-weight: 500;
-    font-size: 18px;
-    line-height: 21px;
+    font-size: 1rem;
+    line-height: 1.313rem;
     color: ${({ theme }) => theme.globalGrey};
   }
   :hover {
@@ -56,6 +56,17 @@ const ButtonHalfWallet = styled.button`
       color: ${({ theme }) => theme.globalWhite};
     }
   }
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    & > span {
+      font-size: 1.125rem;
+    }
+  `}
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    & > span {
+      font-size: .75rem;
+      line-height: .875rem;
+    }
+  `}
 `;
 
 const ButtonMaxWallet = styled(ButtonHalfWallet)`
@@ -125,7 +136,7 @@ const getCurrentBalance = (
   currentBalance: Big,
   token: FungibleTokenContract | null,
 ) => {
-  const newBalance = formatAmount(currentBalance.toFixed() ?? 0, token?.metadata.decimals);
+  const newBalance = formatTokenAmount(currentBalance.toFixed() ?? 0, token?.metadata.decimals);
   if (newBalance !== '0') {
     return new Big(newBalance).toFixed(3);
   }
@@ -134,28 +145,28 @@ const getCurrentBalance = (
 
 export default function Input({
   token,
-  tokenType,
   value,
   setValue,
   balance,
 }:
 {
   token: FungibleTokenContract | null,
-  tokenType: TokenType,
   value: string,
-  setValue: any,
-  balance:string,
+  setValue: (value: string)=> void,
+  balance: string,
 }) {
   const currentBalance = new Big(balance ?? 0);
   const setHalfAmount = () => {
     if (!balance) return;
-    const newBalance = currentBalance.div(2);
-    setValue(formatAmount(newBalance.toFixed(), token?.metadata.decimals));
+    const newBalance = currentBalance.div(2).toFixed();
+    setValue(formatTokenAmount(newBalance, token?.metadata.decimals));
   };
 
   const setMaxAmount = () => {
     if (!balance) return;
-    const newBalance = formatAmount(currentBalance.toFixed() ?? 0, token?.metadata.decimals);
+    const newBalance = formatTokenAmount(
+      currentBalance.toFixed() ?? 0, token?.metadata.decimals,
+    );
     setValue(newBalance);
   };
 
@@ -166,17 +177,12 @@ export default function Input({
           <LogoWallet />
           {getCurrentBalance(currentBalance, token)}
         </WalletInformation>
-        {(tokenType === TokenType.Input) && (
-          <>
-            <ButtonHalfWallet onClick={setHalfAmount}>
-              <span>HALF</span>
-            </ButtonHalfWallet>
-            <ButtonMaxWallet onClick={setMaxAmount}>
-              <span>MAX</span>
-            </ButtonMaxWallet>
-          </>
-        )}
-
+        <ButtonHalfWallet onClick={setHalfAmount}>
+          <span>HALF</span>
+        </ButtonHalfWallet>
+        <ButtonMaxWallet onClick={setMaxAmount}>
+          <span>MAX</span>
+        </ButtonMaxWallet>
       </InputLabel>
       <InputContainer>
         <LogoContainer>

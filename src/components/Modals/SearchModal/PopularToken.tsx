@@ -3,22 +3,17 @@ import styled from 'styled-components';
 import {
   initialModalsState, useModalsStore, useStore,
 } from 'store';
-import FungibleTokenContract from 'services/FungibleToken';
+import getConfig from 'services/config';
+import { NEAR_TOKEN_ID } from 'utils/constants';
+
+const config = getConfig();
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0 .5rem .5rem .5rem;
   position: relative;
-  ::after {
-    content: '';
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 1px;
-    background-color: ${({ theme }) => theme.globalGreyOp04};
-  }
+  width: 100%;
 `;
 
 const Title = styled.div`
@@ -48,6 +43,8 @@ const TokenBlock = styled.div`
   align-items: center;
   margin-right: 1.5rem;
   margin-top: 1.5rem;
+  padding: 5px;
+  border-radius: 12px;
   & > img {
     width: 1.5rem;
     height: 1.5rem;
@@ -73,9 +70,9 @@ const TokenBlock = styled.div`
       margin-right: .5rem;
     }
   `}
-  transition: all 1s ease;
   :hover {
     cursor: pointer;
+    background-color: ${({ theme }) => theme.globalGreyOp01};
   }
 `;
 
@@ -86,19 +83,23 @@ const TokenTitle = styled.div`
   line-height: 1.188rem;
 `;
 
-export default function PopularToken({ tokensArray } : {tokensArray: FungibleTokenContract[]}) {
+export default function PopularToken() {
   const {
-    loading,
+    getToken,
     setCurrentToken,
   } = useStore();
   const { isSearchModalOpen, setSearchModalOpen } = useModalsStore();
-  if (loading) return <h1>Loading</h1>;
+
+  const near = getToken(NEAR_TOKEN_ID) ?? null;
+  const wNear = getToken(config.nearAddress) ?? null;
+  if (!near || !wNear) return null;
+  const popularTokensArray = [near, wNear];
 
   return (
     <Container>
       <Title>Popular</Title>
       <TokensContainer>
-        {tokensArray.map((token) => (
+        {popularTokensArray.map((token) => (
           <TokenBlock
             key={token.contractId}
             onClick={() => {

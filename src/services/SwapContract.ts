@@ -1,16 +1,18 @@
-import { functionCall } from 'near-api-js/lib/transaction';
 import { IPool } from 'store/interfaces';
 import { SWAP_FAILED, SWAP_TOKENS_NOT_IN_SWAP_POOL } from 'utils/errors';
-import { ONE_YOCTO_NEAR } from 'utils/constants';
+import { ONE_YOCTO_NEAR, NEAR_TOKEN_ID } from 'utils/constants';
+import { percentLess } from 'utils/calculations';
+import Big from 'big.js';
 import FungibleTokenContract from './FungibleToken';
-import sendTransactions, { getAmount, getGas, wallet } from './near';
+import sendTransactions, { wallet } from './near';
 import { createContract, Transaction } from './wallet';
 import getConfig from './config';
 
-enum SWAP_ENUM { DIRECT_SWAP = 1, INDIRECT_SWAP = 2 }
+export enum SWAP_ENUM { DIRECT_SWAP = 1, INDIRECT_SWAP = 2 }
 const basicViewMethods = ['get_return'];
 const basicChangeMethods = ['swap'];
 const config = getConfig();
+const FEE_DIVISOR = 10000;
 
 const CONTRACT_ID = config.contractId;
 
@@ -38,67 +40,107 @@ export default class SwapContract {
     );
   }
 
-  async getReturnForPools(
+  static getLocalReturn(
+    tokenIn: FungibleTokenContract,
+    tokenOut: FungibleTokenContract,
+    pool: IPool,
+    tokenInAmount: string,
+  ) {
+    const allocation = tokenInAmount;
+
+    const amountWithFee = Number(allocation) * (FEE_DIVISOR - pool.totalFee);
+    const inBalance = pool.supplies[tokenIn.contractId];
+
+    const outBalance = pool.supplies[tokenOut.contractId];
+
+    return new Big(
+      (
+        (amountWithFee * Number(outBalance))
+        / (FEE_DIVISOR * Number(inBalance) + amountWithFee)
+      ).toString(),
+    ).toFixed();
+  }
+
+  static getReturnForPools(
     pools: IPool[],
     amount: string,
     tokenIn: FungibleTokenContract,
     tokenOut: FungibleTokenContract,
+    tokens: {[key: string]: FungibleTokenContract},
   ) {
+    if (tokenIn.contractId === config.nearAddress && tokenOut.contractId === config.nearAddress) {
+      return [amount, amount];
+    }
+
     if (pools.length === SWAP_ENUM.DIRECT_SWAP) {
       const [currentPool] = pools;
-      const tokens = currentPool.tokenAccountIds;
-      if (!tokens.includes(tokenIn.contractId) || !tokens.includes(tokenOut.contractId)) {
-        throw Error(SWAP_TOKENS_NOT_IN_SWAP_POOL);
+      const tokensIds = currentPool.tokenAccountIds;
+      if (!tokensIds.includes(tokenIn.contractId) || !tokensIds.includes(tokenOut.contractId)) {
+        throw Error(`1 ${SWAP_TOKENS_NOT_IN_SWAP_POOL} ${tokenIn.contractId} ${tokenOut.contractId}`);
       }
-      const minOutput = await this.getReturn(
-        currentPool.id,
-        tokenIn.contractId,
+      const minOutput = SwapContract.getLocalReturn(
+        tokenIn,
+        tokenOut,
+        currentPool,
         amount,
-        tokenOut.contractId,
       );
       return [minOutput];
-    }
-    const [firstPool, secondPool] = pools;
-    const firstPoolTokens = firstPool.tokenAccountIds;
-    const secondPoolTokens = secondPool.tokenAccountIds;
-    if (
-      !firstPoolTokens.includes(tokenIn.contractId)
+    } if (pools.length === SWAP_ENUM.INDIRECT_SWAP) {
+      let [firstPool, secondPool] = pools;
+
+      if (
+        firstPool.tokenAccountIds.includes(tokenOut.contractId)
+       && secondPool.tokenAccountIds.includes(tokenIn.contractId)
+      ) {
+        // Swap tokens in case calculations should be done for output token direction
+        [secondPool, firstPool] = pools;
+      }
+
+      const firstPoolTokens = firstPool.tokenAccountIds;
+      const secondPoolTokens = secondPool.tokenAccountIds;
+
+      if (
+        !firstPoolTokens.includes(tokenIn.contractId)
         && !secondPoolTokens.includes(tokenOut.contractId)
-    ) {
-      throw Error(SWAP_TOKENS_NOT_IN_SWAP_POOL);
+      ) {
+        throw Error(`2 ${SWAP_TOKENS_NOT_IN_SWAP_POOL} ${tokenIn.contractId} ${tokenOut.contractId}`);
+      }
+      const swapToken = firstPoolTokens.find((tokenName) => tokenName !== tokenIn.contractId);
+      if (!swapToken || !tokens[swapToken]) throw Error(SWAP_FAILED);
+
+      const minAmountOutFirst = SwapContract.getLocalReturn(
+        tokenIn,
+        tokens[swapToken],
+        firstPool,
+        amount,
+      );
+
+      const minAmountOutSecond = SwapContract.getLocalReturn(
+        tokens[swapToken],
+        tokenOut,
+        secondPool,
+        minAmountOutFirst,
+      );
+
+      return [
+        minAmountOutFirst,
+        minAmountOutSecond,
+      ];
     }
-    const swapToken = firstPoolTokens.find((tokenName) => tokenName !== tokenIn.contractId);
-    if (!swapToken) throw Error(SWAP_FAILED);
-
-    const minAmountOutFirst = await this.getReturn(
-      firstPool.id,
-      tokenIn.contractId,
-      amount,
-      swapToken,
-    );
-
-    const minAmountOutSecond = await this.getReturn(
-      secondPool.id,
-      swapToken,
-      minAmountOutFirst,
-      tokenOut.contractId,
-    );
-
-    return [
-      minAmountOutFirst,
-      minAmountOutSecond,
-    ];
+    return ['0', '0'];
   }
 
   // TODO: REFACTOR
-  async generateTransferMessage(
+  static generateTransferMessage(
     pools: IPool[],
     amount: string,
     inputToken: FungibleTokenContract,
     outputToken:FungibleTokenContract,
+    tokens: {[key: string]: FungibleTokenContract},
+    slippage: string = '0',
   ) {
-    const [firstMinOutput, secondMinOutput] = await this.getReturnForPools(
-      pools, amount, inputToken, outputToken,
+    const [firstMinOutput, secondMinOutput] = SwapContract.getReturnForPools(
+      pools, amount, inputToken, outputToken, tokens,
     );
 
     if (pools.length === SWAP_ENUM.DIRECT_SWAP) {
@@ -108,7 +150,7 @@ export default class SwapContract {
         pool_id: currentPool.id,
         token_in: inputToken.contractId,
         token_out: outputToken.contractId,
-        min_amount_out: firstMinOutput,
+        min_amount_out: percentLess(slippage, firstMinOutput, 0),
       }];
     }
     if (pools.length === SWAP_ENUM.INDIRECT_SWAP) {
@@ -119,7 +161,7 @@ export default class SwapContract {
         !firstPoolTokens.includes(inputToken.contractId)
         && !secondPoolTokens.includes(outputToken.contractId)
       ) {
-        throw Error(SWAP_TOKENS_NOT_IN_SWAP_POOL);
+        throw Error(`3 ${SWAP_TOKENS_NOT_IN_SWAP_POOL} ${inputToken.contractId} ${outputToken.contractId}`);
       }
       const swapToken = firstPoolTokens.find((tokenName) => tokenName !== inputToken.contractId);
       if (!swapToken) throw Error(SWAP_FAILED);
@@ -129,12 +171,12 @@ export default class SwapContract {
           pool_id: firstPool.id,
           token_in: inputToken.contractId,
           token_out: swapToken,
-          min_amount_out: firstMinOutput,
+          min_amount_out: '0',
         }, {
           pool_id: secondPool.id,
           token_in: swapToken,
           token_out: outputToken.contractId,
-          min_amount_out: secondMinOutput,
+          min_amount_out: percentLess(slippage, secondMinOutput, 0),
         },
       ];
     }
@@ -146,35 +188,49 @@ export default class SwapContract {
     outputToken,
     amount,
     pools,
+    tokens,
+    slippageAmount,
   }: {
     inputToken: FungibleTokenContract,
     outputToken: FungibleTokenContract,
     amount: string,
     pools: IPool[],
+    tokens: {[key: string]: FungibleTokenContract},
+    slippageAmount: string
   }) {
+    const tokensIds = [inputToken.contractId, outputToken.contractId];
+
     const transactions: Transaction[] = [];
     const accountId = this.walletInstance.getAccountId();
-    const outputTokenStorage = await outputToken.contract.checkStorageBalance({ accountId });
+    const outputTokenStorage = await outputToken.contract.checkSwapStorageBalance({ accountId });
     transactions.push(...outputTokenStorage);
-    const swapAction = await this.generateTransferMessage(
-      pools, amount, inputToken, outputToken,
-    );
 
-    transactions.push({
-      receiverId: inputToken.contractId,
-      functionCalls: [{
-        methodName: 'ft_transfer_call',
-        args: {
-          receiver_id: CONTRACT_ID,
-          msg: JSON.stringify({
-            force: 0,
-            actions: [...swapAction],
-          }),
-          amount,
-        },
-        amount: ONE_YOCTO_NEAR,
-      }],
-    });
+    if (tokensIds.includes(NEAR_TOKEN_ID) && tokensIds.includes(config.nearAddress)) {
+      if (inputToken.contractId === NEAR_TOKEN_ID) {
+        transactions.push(...outputToken.contract.wrap({ amount }));
+      } else {
+        transactions.push(...inputToken.contract.unwrap({ amount }));
+      }
+    } else {
+      const swapAction = SwapContract.generateTransferMessage(
+        pools, amount, inputToken, outputToken, tokens, slippageAmount,
+      );
+      transactions.push({
+        receiverId: inputToken.contractId,
+        functionCalls: [{
+          methodName: 'ft_transfer_call',
+          args: {
+            receiver_id: CONTRACT_ID,
+            msg: JSON.stringify({
+              force: 0,
+              actions: [...swapAction],
+            }),
+            amount,
+          },
+          amount: ONE_YOCTO_NEAR,
+        }],
+      });
+    }
 
     sendTransactions(transactions, this.walletInstance);
   }

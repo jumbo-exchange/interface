@@ -9,7 +9,7 @@ interface IInputPanel {
 }
 
 export const Input = styled.input`
-  width: 60%;
+  width: 100%;
   outline: none;
   border: none;
   background: none;
@@ -27,9 +27,13 @@ export const Input = styled.input`
 
 export default function CurrencyInputPanel({ value, setValue, disabled = false }: IInputPanel) {
   const enforcer = (nextUserInput: string) => {
+    if (nextUserInput[0] === '.' || nextUserInput[0] === ',') {
+      return setValue(`0${nextUserInput}`);
+    }
     if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {
       setValue(nextUserInput);
     }
+    return null;
   };
   return (
     <Input

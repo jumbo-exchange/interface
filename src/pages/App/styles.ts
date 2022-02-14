@@ -8,7 +8,7 @@ interface ICurrentTab {
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100%;
 `;
 
 export const Header = styled.div`
@@ -21,6 +21,9 @@ export const Header = styled.div`
   white-space: nowrap;
   color: ${({ theme }) => theme.globalWhite};
   padding: 1.5rem 4.5rem 2.563rem 4.5rem;
+  & > a{
+    text-decoration: none;
+  }
   ${({ theme }) => theme.mediaWidth.upToMedium`
     padding: 1.5rem 2rem 2.563rem 2rem;
   `}
@@ -33,6 +36,7 @@ export const Header = styled.div`
 `;
 
 export const LogoContainer = styled.div`
+  flex: 1;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -51,14 +55,18 @@ export const LogoTitle = styled.h1`
 `;
 
 export const NavBar = styled.div`
+  flex: 1;
   display: flex;
+  justify-content: center;
   color: white;
   & > a {
     text-decoration: none;
   }
 `;
 
-export const NavButton = styled.div<PropsWithChildren<ICurrentTab>>`
+export const NavButton = styled.button<PropsWithChildren<ICurrentTab>>`
+  background-color: transparent;
+  border: none;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -70,6 +78,7 @@ export const NavButton = styled.div<PropsWithChildren<ICurrentTab>>`
   line-height: 1.438rem;
   color: ${({ theme, isActive }) => (isActive ? theme.pink : theme.globalGrey)};
   margin: 0 12px;
+  padding: 0;
   position: relative;
   transition: all .3s ease;
   :after {
@@ -91,11 +100,21 @@ export const NavButton = styled.div<PropsWithChildren<ICurrentTab>>`
     cursor: pointer;
     color: ${({ theme }) => theme.pink}
   }
+  :disabled {
+    color: ${({ theme }) => theme.globalGreyOp02};
+    cursor: default;
+  }
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: 1rem;
     line-height: 1.188rem;
     margin: 0 8px;
   `}
+`;
+
+export const BlockButton = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
 `;
 
 export const Body = styled.div`
@@ -104,4 +123,17 @@ export const Body = styled.div`
   color: white;
   display: flex;
   justify-content: center;
+`;
+
+export const LinkContainer = styled.div`
+  flex: 1;
+  & > a {
+    text-decoration:none;
+  }
+`;
+
+export const LoadingBlock = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

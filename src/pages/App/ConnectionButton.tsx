@@ -8,6 +8,7 @@ import { ButtonPrimary, ButtonThird } from 'components/Button';
 import { ReactComponent as LogoWallet } from 'assets/images-app/wallet.svg';
 import { ReactComponent as LogoNear } from 'assets/images-app/near.svg';
 import { ReactComponent as ArrowDown } from 'assets/images-app/icon-arrow-down.svg';
+import { trimAccountId } from 'utils';
 
 const Wallet = styled(LogoWallet)`
   margin-right: 0.625rem;
@@ -15,7 +16,10 @@ const Wallet = styled(LogoWallet)`
 
 const Near = styled(LogoNear)`
   margin-right: 0.5rem;
+  width: 24px;
+  height: 24px;
 `;
+
 const MobileNear = styled(LogoNear)`
   width: 1.5rem;
   height: 1.5rem;
@@ -24,6 +28,8 @@ const MobileNear = styled(LogoNear)`
 
 const Arrow = styled(ArrowDown)`
   margin-left: .453rem;
+  width: 12px;
+  height: 8px;
 `;
 
 const MobileArrow = styled(ArrowDown)`
@@ -37,18 +43,23 @@ const PinkButtonThird = styled(ButtonThird)`
   border-color: ${({ theme }) => theme.pink};
 `;
 
+const NewButtonThird = styled(ButtonThird)`
+  padding: .25rem;
+`;
+
 export default function ConnectionButton() {
   const isConnected = wallet.isSignedIn();
   const { setAccountModalOpen } = useModalsStore();
+  const accountId = wallet.getAccountId();
 
-  const title = 'Connect wallet';
+  const title = isConnected ? trimAccountId(accountId) : 'Connect wallet';
 
   if (isConnected) {
     return (
-      <ButtonThird onClick={() => setAccountModalOpen(true)}>
-        {isMobile ? <><MobileNear /><MobileArrow /></> : <><Near /><Arrow /></>}
+      <NewButtonThird onClick={() => setAccountModalOpen(true)}>
+        {isMobile ? <><MobileNear /><MobileArrow /></> : <><Near />{title}<Arrow /></>}
 
-      </ButtonThird>
+      </NewButtonThird>
     );
   }
   return (

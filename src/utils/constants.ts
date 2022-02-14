@@ -22,9 +22,41 @@ export const MIN_TOTAL_FEE = 0;
 export const COEFFICIENT_SLIPPAGE = 0.5;
 export const COEFFICIENT_TOTAL_FEE = 0.5;
 
+export const MIN_FEE_CREATE_POOL = '0.01';
+export const MAX_FEE_CREATE_POOL = '20';
+
 export const tooltipTitle = {
-  back: 'Back',
+  // Swap
   slippageTolerance: 'Slippage means the difference between what  you expect to get and what you actually get due to other executing first',
+  routes: 'routes',
+  minimumReceived: 'minimumReceived',
+  priceImpact: 'priceImpact',
+  liquidityProviderFee: 'liquidityProviderFee',
+
+  // Pool
+  APRBasis: 'APRBasis',
+  totalLiquidity: 'totalLiquidity',
+  dayVolume: '24hVolume',
+  APR: 'APR',
+
+  // Create Pool
+  totalFee: 'totalFee',
+  lPFee: 'lPFee',
+  protocolFee: 'protocolFee',
+  referralFee: 'referralFee',
+};
+
+export const warning = {
+  zeroBalance: 'Zero balance',
+  zeroBalanceDesc: 'Insufficient balance of wNEAR. Swap NEAR to wNEAR in order to proceed by clicking “Go to Pair”',
+
+  doesNotExist: 'The given pair doesn\'t exist',
+
+  noSuchPairExists: 'No such pair exists',
+  noSuchPairExistsDesc: 'There is additional pair with wNEAR',
+
+  zeroPoolLiquidity: 'Zero liquidity pool',
+  zeroPoolLiquidityDesc: 'Zero liquidity pool, you can add liquidity to the pool',
 };
 
 export const poolFeeOptions = [
@@ -48,3 +80,11 @@ export const ACCOUNT_MIN_STORAGE_AMOUNT = '0.005';
 export const MIN_DEPOSIT_PER_TOKEN = new Big('5000000000000000000000');
 export const STORAGE_PER_TOKEN = '0.005';
 export const LP_STORAGE_AMOUNT = '0.01';
+export const YOCTO_IN_NEAR_DECIMALS = 24;
+export const FEE_DIVISOR = 100;
+
+export const POOL_SHARES_DECIMALS = 24;
+
+export const BAD_PRICE_IMPACT = 2;
+
+export const NEAR_TOKEN_ID = 'NEAR';

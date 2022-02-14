@@ -1,11 +1,14 @@
 import React, { PropsWithChildren } from 'react';
-import { ButtonPrimary, ButtonSecondary, ButtonClaim } from 'components/Button';
-import { IPool, useStore } from 'store';
 import styled from 'styled-components';
-import { SpecialContainer } from 'components/SpecialContainer';
 import Tooltip from 'components/Tooltip';
-import { isMobile } from 'utils/userAgent';
+import Big from 'big.js';
+import { ButtonPrimary, ButtonSecondary } from 'components/Button';
+import { IPool, useStore } from 'store';
+import { SpecialContainer } from 'components/SpecialContainer';
 import { useNavigate } from 'react-router-dom';
+import { ReactComponent as AddIcon } from 'assets/images-app/icon-add.svg';
+import { toAddLiquidityPage, toRemoveLiquidityPage } from 'utils/routes';
+import { tooltipTitle } from 'utils/constants';
 
 interface IColor {
   isColor?: boolean
@@ -98,7 +101,7 @@ const LabelPool = styled.div`
   }
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     width: 100%;
-    justify-content: space-between;
+    justify-content: flex-end;
     p {
       flex: 1;
       text-align: left;
@@ -116,19 +119,6 @@ const JumboBlock = styled.div`
   line-height: .875rem;
   background-color: ${({ theme }) => theme.jumboLabel};
   border-radius: 4px;
-`;
-
-const MiceBlock = styled(JumboBlock)`
-  background-color: ${({ theme }) => theme.miceLabel};
-`;
-
-const BtnClaim = styled(ButtonClaim)`
-  margin-left: 1.5rem;
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    height: 48px;
-    margin: 0;
-    width: 100%;
-  `}
 `;
 
 const BlockVolume = styled.div`
@@ -186,37 +176,26 @@ const BtnPrimary = styled(ButtonPrimary)`
     margin: .75rem 0;
   `}
 `;
+
 const BtnSecondary = styled(ButtonSecondary)`
   margin-right: .75rem;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     margin: 0;
   `}
 `;
+
+const LogoButton = styled(AddIcon)`
+  width: 12px;
+  height: 12px;
+  margin-right: .625rem;
+`;
+
 interface IVolume {
   title: string;
   label: string;
   color?: boolean;
+  tooltip: string;
 }
-
-const RenderClaimButton = (
-  {
-    show,
-    getClaim,
-  }:{
-    show:boolean,
-    getClaim:() => void
-  },
-) => {
-  if (show) {
-    return (
-      <BtnClaim onClick={getClaim}>
-        <span>50.5004648 DAI</span>
-        <span>Claim</span>
-      </BtnClaim>
-    );
-  }
-  return null;
-};
 
 export default function PoolCard({ pool } : { pool:IPool }) {
   const { tokens } = useStore();
@@ -231,26 +210,23 @@ export default function PoolCard({ pool } : { pool:IPool }) {
   const volume: IVolume[] = [
     {
       title: 'Total Liquidity',
-      label: '$34550.53',
+      label: '-',
+      tooltip: tooltipTitle.totalLiquidity,
     },
     {
       title: '24h Volume',
-      label: '$5321.03',
+      label: '-',
+      tooltip: tooltipTitle.dayVolume,
     },
     {
       title: 'APR',
-      label: '12%',
+      label: '-',
       color: true,
+      tooltip: tooltipTitle.APR,
     },
   ];
 
-  const getWithdraw = () => {
-    console.log('Withdraw');
-  };
-
-  const getClaim = () => {
-    console.log('Claim');
-  };
+  const canWithdraw = pool.shares === '0' || pool.shares === undefined || Big(pool.shares) === Big('0');
 
   return (
     <Wrapper>
@@ -267,10 +243,7 @@ export default function PoolCard({ pool } : { pool:IPool }) {
           </TitlePool>
         </BlockTitle>
         <LabelPool>
-          <p><strong>0.2 NEAR</strong> / day / $1K</p>
           <JumboBlock>Jumbo</JumboBlock>
-          <MiceBlock>Mice</MiceBlock>
-          <RenderClaimButton show={!isMobile} getClaim={getClaim} />
         </LabelPool>
       </UpperRow>
       <LowerRow>
@@ -279,25 +252,29 @@ export default function PoolCard({ pool } : { pool:IPool }) {
             <Column key={el.title}>
               <TitleVolume>
                 {el.title}
-                <Tooltip title="YES" />
+                <Tooltip title={el.tooltip} />
               </TitleVolume>
               <LabelVolume isColor={el.color}>{el.label}</LabelVolume>
             </Column>
           ))}
         </BlockVolume>
-        <RenderClaimButton show={isMobile} getClaim={getClaim} />
         <BlockButton>
+          {!canWithdraw && (
           <BtnSecondary
-            onClick={() => getWithdraw()}
+            onClick={() => {
+              navigate(toRemoveLiquidityPage(pool.id));
+            }}
           >
             Withdraw
           </BtnSecondary>
+          )}
+
           <BtnPrimary
             onClick={() => {
-              navigate(`/app/pool/${pool.id}`);
+              navigate(toAddLiquidityPage(pool.id));
             }}
           >
-            Add Liquidity
+            <LogoButton />Add Liquidity
           </BtnPrimary>
         </BlockButton>
       </LowerRow>

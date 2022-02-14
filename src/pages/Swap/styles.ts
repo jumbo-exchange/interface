@@ -5,8 +5,9 @@ import { SpecialContainer } from 'components/SpecialContainer';
 import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
 import { ReactComponent as Exchange } from 'assets/images-app/exchange.svg';
-import { ReactComponent as PlaceHolderLoader } from 'assets/images-app/placeholder-loader.svg';
 import { ReactComponent as Info } from 'assets/images-app/info.svg';
+import { ReactComponent as RouteArrow } from 'assets/images-app/route-arrow.svg';
+import { ReactComponent as SwapIcon } from 'assets/images-app/swap-icon.svg';
 
 interface ICurrent {
   isActive?: boolean
@@ -66,20 +67,6 @@ export const ExchangeBlock = styled.div`
   color: ${({ theme }) => theme.globalGrey};
 `;
 
-export const RefreshBlock = styled.div`
-  display: flex;
-  justify-content: space-between;
-  white-space: nowrap;
-  margin-right: 1.25rem;
-  :hover {
-    cursor: pointer;
-  }
-`;
-
-export const PlaceHolderGif = styled(PlaceHolderLoader)`
-  margin-right: .438rem;
-`;
-
 export const ExchangeLabel = styled.div`
   display: flex;
   white-space: nowrap;
@@ -89,19 +76,19 @@ export const ExchangeLabel = styled.div`
 export const SettingsBlock = styled.div`
   display: flex;
   flex-direction: column;
-  margin-bottom: 1.625rem;
 `;
 
 export const SettingsHeader = styled.div`
   display: flex;
   align-items: center;
   margin-right: .453rem;
-::before {
-    content: '';
-    background: ${({ theme }) => theme.globalGreyOp02};
-    height: 1px;
-    width: 100%;
-  }
+  z-index: 10;
+  ::before {
+      content: '';
+      background: ${({ theme }) => theme.globalGreyOp02};
+      height: 1px;
+      width: 100%;
+    }
 `;
 
 export const SettingsLabel = styled.div<PropsWithChildren<ICurrent>>`
@@ -149,6 +136,8 @@ export const SwapInformation = styled.div`
   display: flex;
   flex-direction: column;
   margin-bottom: 1rem;
+  background-color: ${({ theme }) => theme.backgroundCard};
+  z-index: 10;
 `;
 
 export const LogoInfo = styled(Info)`
@@ -162,6 +151,8 @@ export const RouteBlock = styled.div`
   margin-bottom: 2rem;
   & > div {
     margin-top: 1rem;
+    display: flex;
+    align-items: center;
   }
 `;
 
@@ -172,7 +163,7 @@ export const RowInfo = styled.div`
   margin-bottom: 1rem;
 `;
 
-export const TitleInfo = styled.p`
+export const TitleInfo = styled.div`
   display: flex;
   align-items: center;
   font-style: normal;
@@ -186,8 +177,35 @@ export const TitleInfo = styled.p`
 export const LabelInfo = styled.p<PropsWithChildren<IColor>>`
   font-style: normal;
   font-weight: 300;
-  font-size: 12px;
-  line-height: 14px;
-  color: ${({ theme, isColor }) => (isColor ? theme.globalGreen : theme.globalWhite)};
+  font-size: .75rem;
+  line-height: .875rem;
+  color: ${({ theme, isColor = false }) => (isColor ? theme.globalGreen : theme.globalWhite)};
   margin: 0;
+`;
+
+export const LabelError = styled(LabelInfo)`
+  color: ${({ theme }) => theme.error};
+`;
+
+export const TokenImg = styled.img`
+  margin-right: .5rem;
+  width: 24px;
+  height: 24px;
+`;
+
+export const RouteArrowLogo = styled(RouteArrow)`
+  margin: 0 1rem;
+`;
+
+export const BlockButton = styled.div`
+  z-index: 4;
+  background-color: ${({ theme }) => theme.backgroundCard};
+  padding-top: 1.625rem;
+  & > button {
+    width: 100%;
+  }
+`;
+
+export const IconSwap = styled(SwapIcon)`
+  margin-left: .75rem;
 `;

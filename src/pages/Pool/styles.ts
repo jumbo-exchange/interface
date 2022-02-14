@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { SpecialContainer } from 'components/SpecialContainer';
-import { ButtonClaim } from 'components/Button';
+import { ReactComponent as Soon } from 'assets/images-app/logo-soon.svg';
 
 export const Container = styled.div`
   display: flex;
@@ -11,7 +11,6 @@ export const Container = styled.div`
   max-width: 736px;
   white-space: nowrap;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    margin: 0 1rem;
     max-width: 328px;
   `}
 `;
@@ -19,6 +18,7 @@ export const Container = styled.div`
 export const FilterBlock = styled.div`
   display: flex;
   margin-bottom: 2.375rem;
+  align-content: center;
   & > button {
     margin: 0 .625rem;
   }
@@ -56,7 +56,7 @@ export const WrapperInfoBlock = styled.div`
 export const InfoBLock = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 0 1.375rem;
+  padding: 0 1.5rem;
 `;
 
 export const TitleInfo = styled.div`
@@ -75,6 +75,6 @@ export const LabelInfo = styled.div`
   line-height: 1.188rem;
 `;
 
-export const BtnClaim = styled(ButtonClaim)`
-  margin-left: 1rem;
+export const LogoSoon = styled(Soon)`
+  margin-left: .25rem;
 `;

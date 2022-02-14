@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { FilterButton } from 'components/Button';
 import { isMobile } from 'utils/userAgent';
 import { useModalsStore, useStore } from 'store';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
+import { toAddLiquidityPage, toRemoveLiquidityPage } from 'utils/routes';
 import {
   Container,
   FilterBlock,
@@ -11,10 +12,11 @@ import {
   InfoBLock,
   TitleInfo,
   LabelInfo,
-  BtnClaim,
+  LogoSoon,
 } from './styles';
 import PoolSettings from './PoolSettings';
 import PoolResult from './PoolResult';
+import Slider from './Slider';
 
 export enum FilterPoolsEnum {
   'All Pools',
@@ -27,6 +29,7 @@ interface IFilters {
   title: string
   isActive: FilterPoolsEnum,
   disabled?: boolean,
+  logoSoon?: boolean,
 }
 
 const filters: IFilters[] = [
@@ -41,29 +44,36 @@ const filters: IFilters[] = [
   {
     title: 'Farming',
     isActive: FilterPoolsEnum.Farming,
+    disabled: true,
   },
   {
     title: 'Smart Pools',
     isActive: FilterPoolsEnum['Smart Pools'],
     disabled: true,
+    logoSoon: !isMobile,
   },
 ];
 
-interface IMainInfo {
+export interface IMainInfo {
   title: string,
   label: string,
-  show: boolean,
 }
 
 export default function Pool() {
   const { pools } = useStore();
-  const { setAddLiquidityModalOpenState } = useModalsStore();
+  const { setAddLiquidityModalOpenState, setRemoveLiquidityModalOpenState } = useModalsStore();
   const { id } = useParams<'id'>();
+
+  const location = useLocation();
 
   useEffect(() => {
     if (id && pools[Number(id)]) {
       const pool = pools[Number(id)];
-      setAddLiquidityModalOpenState({ isOpen: true, pool });
+      if (location.pathname === toRemoveLiquidityPage(pool.id)) {
+        setRemoveLiquidityModalOpenState({ isOpen: true, pool });
+      } else if (location.pathname === toAddLiquidityPage(pool.id)) {
+        setAddLiquidityModalOpenState({ isOpen: true, pool });
+      }
     }
   }, [id, pools]);
   const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum['All Pools']);
@@ -71,28 +81,25 @@ export default function Pool() {
   const mainInfo: IMainInfo[] = [
     {
       title: 'Total Value Locked',
-      label: '$935,059,293',
-      show: true,
+      label: '-',
     },
     {
       title: 'Total 24h Volume',
-      label: '$88,890,241',
-      show: true,
+      label: '-',
     },
     {
       title: 'JUMBO Price',
-      label: '$9.26',
-      show: true,
+      label: '-',
     },
     {
       title: 'Weekly Emissions',
-      label: '300k NEAR',
-      show: !!isMobile, // TODO: checking if some brand is available
+      label: '-',
     },
   ];
 
   return (
     <Container>
+
       <FilterBlock>
         {filters.map((el) => (
           <FilterButton
@@ -102,33 +109,32 @@ export default function Pool() {
             disabled={el.disabled}
           >
             {el.title}
+            {el.logoSoon && <LogoSoon />}
           </FilterButton>
         ))}
       </FilterBlock>
-      <InformationBlock>
-        <WrapperInfoBlock>
-          {mainInfo.map((el) => {
-            if (!el.show) return null;
-            return (
-              <InfoBLock
-                key={el.title}
-              >
-                <TitleInfo>
-                  {el.title}
-                </TitleInfo>
-                <LabelInfo>
-                  {el.label}
-                </LabelInfo>
-              </InfoBLock>
-            );
-          })}
-        </WrapperInfoBlock>
-        <BtnClaim>
-          <span>50.5004648 DAI</span>
-          <span>Claim</span>
-        </BtnClaim>
-      </InformationBlock>
-      <PoolSettings />
+      {isMobile
+        ? <Slider mainInfo={mainInfo} />
+        : (
+          <InformationBlock>
+            <WrapperInfoBlock>
+              {mainInfo.map((el) => (
+                <InfoBLock
+                  key={el.title}
+                >
+                  <TitleInfo>
+                    {el.title}
+                  </TitleInfo>
+                  <LabelInfo>
+                    {el.label}
+                  </LabelInfo>
+                </InfoBLock>
+              ))}
+            </WrapperInfoBlock>
+          </InformationBlock>
+        )}
+
+      <PoolSettings currentFilterPools={currentFilterPools} />
       <PoolResult currentFilterPools={currentFilterPools} />
     </Container>
   );

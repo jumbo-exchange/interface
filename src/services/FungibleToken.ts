@@ -1,11 +1,15 @@
-import BN from 'bn.js';
 import * as nearApiJs from 'near-api-js';
-
+import nearIcon from 'assets/images-app/near.svg';
+import wrapNearIcon from 'assets/images-app/wNEAR.svg';
+import defaultToken from 'assets/images-app/defaultToken.svg';
 import { ITokenMetadata } from 'store';
 import {
-  FT_MINIMUM_STORAGE_BALANCE, FT_STORAGE_DEPOSIT_GAS, FT_TRANSFER_GAS, ONE_YOCTO_NEAR,
+  NEAR_TOKEN_ID,
+  FT_TRANSFER_GAS,
+  ONE_YOCTO_NEAR,
 } from 'utils/constants';
-import { formatTokenAmount, parseTokenAmount, removeTrailingZeros } from 'utils/calculations';
+
+import Big from 'big.js';
 import { wallet } from './near';
 import SpecialWallet, { createContract, Transaction } from './wallet';
 import getConfig from './config';
@@ -13,18 +17,31 @@ import getConfig from './config';
 const {
   utils: {
     format: {
-      parseNearAmount,
       formatNearAmount,
     },
   },
 } = nearApiJs;
 
 const basicViewMethods: string[] = ['ft_metadata', 'ft_balance_of', 'storage_balance_of'];
-const basicChangeMethods: string[] = [];
+const basicChangeMethods: string[] = ['near_deposit', 'near_withdraw'];
 const config = getConfig();
 const DECIMALS_DEFAULT_VALUE = 0;
 const ICON_DEFAULT_VALUE = '';
 const CONTRACT_ID = config.contractId;
+export const ACCOUNT_MIN_STORAGE_AMOUNT = '0.005';
+export const MIN_DEPOSIT_PER_TOKEN = new Big('5000000000000000000000');
+export const STORAGE_PER_TOKEN = '0.005';
+export const STORAGE_TO_REGISTER_FT = '0.00125';
+export const ONE_MORE_DEPOSIT_AMOUNT = '0.01';
+
+const NEAR_TOKEN = {
+  decimals: 24,
+  icon: nearIcon,
+  name: 'Near token',
+  version: '0',
+  symbol: 'NEAR',
+  reference: '',
+};
 
 interface FungibleTokenContractInterface {
   wallet: SpecialWallet;
@@ -38,6 +55,8 @@ const defaultMetadata = {
   symbol: 'TKN',
   reference: '',
 };
+
+export enum StorageType {'Swap' = 'Swap', 'Liquidity' = 'Liquidity'}
 
 export default class FungibleTokenContract {
   constructor(props: FungibleTokenContractInterface) {
@@ -61,104 +80,83 @@ export default class FungibleTokenContract {
 
   metadata: ITokenMetadata = defaultMetadata;
 
-  static getParsedTokenAmount(amount:string, symbol:string, decimals:number) {
-    const parsedTokenAmount = symbol === 'NEAR'
-      ? parseNearAmount(amount)
-      : parseTokenAmount(amount, decimals);
-
-    return parsedTokenAmount;
-  }
-
-  static getFormattedTokenAmount(amount:string, symbol:string, decimals:number) {
-    const formattedTokenAmount = symbol === 'NEAR'
-      ? formatNearAmount(amount, 5)
-      : removeTrailingZeros(formatTokenAmount(amount, decimals, 5));
-
-    return formattedTokenAmount;
-  }
-
   async getStorageBalance({ accountId } : { accountId: string }) {
     return this.contract.storage_balance_of({ account_id: accountId });
   }
 
   async getMetadata() {
-    if (
-      this.metadata.decimals !== DECIMALS_DEFAULT_VALUE
+    try {
+      if (this.contractId === NEAR_TOKEN_ID) {
+        this.metadata = { ...defaultMetadata, ...NEAR_TOKEN };
+        return NEAR_TOKEN;
+      }
+
+      if (
+        this.metadata.decimals !== DECIMALS_DEFAULT_VALUE
       && this.metadata.icon !== ICON_DEFAULT_VALUE
-    ) return this.metadata;
-    const metadata = await this.contract.ft_metadata();
-    this.metadata = { ...defaultMetadata, ...metadata };
-    return metadata;
+      ) return this.metadata;
+
+      const metadata = await this.contract.ft_metadata();
+      if (this.contractId === config.nearAddress) metadata.icon = wrapNearIcon;
+      if (!metadata.icon) metadata.icon = defaultToken;
+
+      this.metadata = { ...defaultMetadata, ...metadata };
+      return metadata;
+    } catch (e) {
+      console.warn(e, 'while loading', this.contractId);
+    }
+    return null;
   }
 
   async getBalanceOf({ accountId }: { accountId: string }) {
+    if (this.contractId === NEAR_TOKEN_ID) {
+      return wallet.account().getAccountBalance()
+        .then((balances) => balances.available);
+    }
     return this.contract.ft_balance_of({ account_id: accountId });
   }
 
-  async getEstimatedTotalFees({ accountId = '', contractName = '' } = {}) {
-    if (contractName
-        && accountId
-        && !await this.isStorageBalanceAvailable({ accountId })) {
-      return new BN(FT_TRANSFER_GAS as string)
-        .add(new BN(FT_MINIMUM_STORAGE_BALANCE as string))
-        .add(new BN(FT_STORAGE_DEPOSIT_GAS as string))
-        .toString();
-    }
-    return FT_TRANSFER_GAS as string;
-  }
-
-  async getEstimatedTotalNearAmount({ amount }:{ amount: string }) {
-    return new BN(amount)
-      .add(new BN(await this.getEstimatedTotalFees()))
-      .toString();
-  }
-
-  async isStorageBalanceAvailable({ accountId }:{ accountId: string }) {
-    const storageBalance = await this.getStorageBalance({ accountId });
-    return storageBalance?.total !== undefined;
-  }
-
-  async checkStorageBalance({
-    accountId,
-  }:
-  {
-    accountId: string,
-  }) {
+  async checkSwapStorageBalance({ accountId }: { accountId: string }) {
     const transactions: Transaction[] = [];
-    const storageAvailable = await this.isStorageBalanceAvailable(
-      { accountId },
-    );
+    try {
+      if (this.contractId === NEAR_TOKEN_ID) return [];
+      const storageAvailable = await this.getStorageBalance({ accountId });
 
-    if (!storageAvailable) {
-      transactions.push({
-        receiverId: this.contractId,
-        functionCalls: [{
-          methodName: 'storage_deposit',
-          args: {
-            account_id: accountId,
-            registration_only: true,
+      if (storageAvailable === null || storageAvailable.total === '0') {
+        transactions.push(
+          {
+            receiverId: this.contractId,
+            functionCalls: [{
+              methodName: 'storage_deposit',
+              args: {
+                registration_only: true,
+                account_id: accountId,
+              },
+              amount: STORAGE_TO_REGISTER_FT,
+            }],
           },
-          amount: FT_MINIMUM_STORAGE_BALANCE,
-        }],
-      });
+        );
+      }
+      return transactions;
+    } catch (e) {
+      return [];
     }
-    return transactions;
   }
 
   async transfer({
     accountId,
     inputToken,
     amount,
-    message,
+    message = '',
   }:
   {
     accountId: string,
     inputToken: string,
     amount: string,
-    message: string,
+    message?: string,
   }): Promise<Transaction[]> {
     const transactions: Transaction[] = [];
-    const checkStorage = await this.checkStorageBalance({ accountId });
+    const checkStorage = await this.checkSwapStorageBalance({ accountId });
     transactions.push(...checkStorage);
     transactions.push({
       receiverId: inputToken,
@@ -172,6 +170,39 @@ export default class FungibleTokenContract {
         amount: ONE_YOCTO_NEAR,
       }],
     });
+    return transactions;
+  }
+
+  wrap({ amount }:{ amount: string, }) {
+    if (this.contractId === NEAR_TOKEN_ID) throw Error('Can\'t wrap from NEAR token');
+    const transactions: Transaction[] = [];
+
+    transactions.push({
+      receiverId: this.contractId,
+      functionCalls: [{
+        methodName: 'near_deposit',
+        amount: formatNearAmount(amount) as string,
+        args: {},
+        gas: FT_TRANSFER_GAS as string,
+      }],
+    });
+    return transactions;
+  }
+
+  unwrap({ amount }:{ amount: string}) {
+    if (this.contractId === NEAR_TOKEN_ID) throw Error('Can\'t wrap from NEAR token');
+    const transactions: Transaction[] = [];
+
+    transactions.push({
+      receiverId: this.contractId,
+      functionCalls: [{
+        methodName: 'near_withdraw',
+        args: { amount },
+        gas: FT_TRANSFER_GAS as string,
+        amount: ONE_YOCTO_NEAR,
+      }],
+    });
+
     return transactions;
   }
 }
