@@ -45,6 +45,7 @@ export type StoreContextType = {
   balances: {[key: string]: string};
   setBalances: Dispatch<SetStateAction<{[key: string]: string}>>;
   getTokenBalance: (tokenId: string | undefined) => string;
+  updateTokensBalances: (newBalances: { [key: string]: string; }) => void;
 
   pools: {[key:string]: IPool};
   setPools: Dispatch<SetStateAction<{[key:string]: IPool}>>;
