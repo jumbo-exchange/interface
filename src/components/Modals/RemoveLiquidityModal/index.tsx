@@ -113,6 +113,7 @@ export default function RemoveLiquidityModal() {
 
   const buttonDisabled = isConnected
     && withdrawValue
+    && Big(slippageTolerance).gt(0)
     ? (new Big(withdrawValue).lte(0)
     || new Big(withdrawValue).gt(formattedPoolShares))
     : true;

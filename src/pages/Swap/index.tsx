@@ -44,7 +44,6 @@ import {
   RowInfo,
   LabelInfo,
   LabelError,
-  LogoInfo,
   TokenImg,
   RouteArrowLogo,
   BlockButton,
