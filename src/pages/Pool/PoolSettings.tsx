@@ -101,9 +101,12 @@ const SortBlock = styled.div`
   font-weight: 500;
   font-size: .75rem;
   line-height: .875rem;
-  color: ${({ theme }) => theme.globalWhite};
-  :hover {
-    cursor: pointer;
+  color: ${({ theme }) => theme.globalGreyOp02};
+  user-select: none;
+  & > svg {
+    path { 
+      fill: ${({ theme }) => theme.globalGreyOp02};
+    }
   }
 `;
 
@@ -111,12 +114,6 @@ const ArrowDown = styled(ArrowDownIcon)`
   width: 9.5px;
   height: 5.5px;
   margin-left: .453rem;
-`;
-
-const Loading = styled(PlaceHolderLoader)`
-  width: 14px;
-  height: 14px;
-  margin-right: .5rem;
 `;
 
 const LogoPlus = styled(Plus)`

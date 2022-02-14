@@ -1,9 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import {
-  initialModalsState, NEAR_TOKEN_ID, useModalsStore, useStore,
+  initialModalsState, useModalsStore, useStore,
 } from 'store';
 import getConfig from 'services/config';
+import { NEAR_TOKEN_ID } from 'utils/constants';
 
 const config = getConfig();
 
@@ -84,15 +85,16 @@ const TokenTitle = styled.div`
 
 export default function PopularToken() {
   const {
-    tokens,
+    getToken,
     setCurrentToken,
   } = useStore();
   const { isSearchModalOpen, setSearchModalOpen } = useModalsStore();
 
-  const near = tokens[NEAR_TOKEN_ID] ?? null;
-  const wNear = tokens[config.nearAddress] ?? null;
-
+  const near = getToken(NEAR_TOKEN_ID) ?? null;
+  const wNear = getToken(config.nearAddress) ?? null;
+  if (!near || !wNear) return null;
   const popularTokensArray = [near, wNear];
+
   return (
     <Container>
       <Title>Popular</Title>

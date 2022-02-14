@@ -3,10 +3,10 @@ import { ButtonPrimary, ButtonSecondary } from 'components/Button';
 import { wallet } from 'services/near';
 import { getPoolsPath, getUpperCase, toArray } from 'utils';
 import {
-  useStore, useModalsStore, TokenType, NEAR_TOKEN_ID,
+  useStore, useModalsStore, TokenType,
 } from 'store';
 import {
-  BAD_PRICE_IMPACT, FEE_DIVISOR, SLIPPAGE_TOLERANCE_DEFAULT, tooltipTitle,
+  BAD_PRICE_IMPACT, FEE_DIVISOR, NEAR_TOKEN_ID, SLIPPAGE_TOLERANCE_DEFAULT, tooltipTitle,
 } from 'utils/constants';
 import SwapContract from 'services/SwapContract';
 import useDebounce from 'hooks/useDebounce';

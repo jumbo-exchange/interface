@@ -1,7 +1,6 @@
 import { IPool } from 'store/interfaces';
 import { SWAP_FAILED, SWAP_TOKENS_NOT_IN_SWAP_POOL } from 'utils/errors';
-import { ONE_YOCTO_NEAR } from 'utils/constants';
-import { NEAR_TOKEN_ID } from 'store';
+import { ONE_YOCTO_NEAR, NEAR_TOKEN_ID } from 'utils/constants';
 import { percentLess } from 'utils/calculations';
 import Big from 'big.js';
 import FungibleTokenContract from './FungibleToken';

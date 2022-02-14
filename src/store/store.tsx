@@ -13,12 +13,12 @@ import getConfig from 'services/config';
 import SpecialWallet, { createContract } from 'services/wallet';
 import FungibleTokenContract from 'services/FungibleToken';
 import PoolContract from 'services/PoolContract';
+import { NEAR_TOKEN_ID } from 'utils/constants';
 import { PoolType } from './interfaces';
 
 const config = getConfig();
 const DEFAULT_PAGE_LIMIT = 100;
 
-export const NEAR_TOKEN_ID = 'NEAR';
 const initialState: StoreContextType = {
   loading: false,
   setLoading: () => {},
