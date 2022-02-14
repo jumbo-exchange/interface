@@ -4,6 +4,7 @@ import { toArray } from 'utils';
 
 const BASE = 10;
 Big.RM = Big.roundDown;
+Big.DP = 30;
 
 export const round = (decimals: number, minAmountOut: string) => (
   Number.isInteger(Number(minAmountOut))

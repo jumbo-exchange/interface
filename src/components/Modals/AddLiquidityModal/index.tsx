@@ -49,6 +49,7 @@ export default function AddLiquidityModal() {
       || outputTokenValue !== INITIAL_INPUT_PLACEHOLDER) {
       setInputTokenValue(INITIAL_INPUT_PLACEHOLDER);
       setOutputTokenValue(INITIAL_INPUT_PLACEHOLDER);
+      setPreShare(INITIAL_INPUT_PLACEHOLDER);
     }
   }, [pool?.id]);
 
