@@ -3,7 +3,10 @@ import { Modal } from '../styles';
 
 export const LiquidityModalContainer = styled(Modal)`
   max-width: 500px;
-  min-width: 328px;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    max-width: 350px;
+    min-width: 330px;
+  `}
 `;
 
 export const ModalBody = styled.div`
