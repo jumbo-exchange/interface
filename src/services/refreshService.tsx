@@ -2,9 +2,9 @@ import React, {
   createContext, Dispatch, SetStateAction, useContext, useState,
 } from 'react';
 import { wallet as nearWallet } from 'services/near';
-import {
-  contractMethods, IPool, NEAR_TOKEN_ID,
-} from 'store';
+import { contractMethods, IPool } from 'store';
+
+import { NEAR_TOKEN_ID } from 'utils/constants';
 
 import getConfig from 'services/config';
 

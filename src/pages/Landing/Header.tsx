@@ -130,9 +130,9 @@ export default function Header() {
           <DocsLogo />
           <span>Read</span> Docs
         </DocsButton>
-        <ButtonOpenApp to={SWAP}>
+        {/* <ButtonOpenApp to={SWAP}>
           Open App
-        </ButtonOpenApp>
+        </ButtonOpenApp> */}
       </InformationContainer>
     </HeaderContainer>
   );
