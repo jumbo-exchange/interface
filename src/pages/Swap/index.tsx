@@ -254,7 +254,7 @@ export default function Swap() {
     toArray(pools),
     tokens,
   );
-  const isMissingShares = poolPathToken.every((el) => new Big(el.sharesTotalSupply).eq(0));
+  const isMissingShares = poolPathToken.some((el) => new Big(el.sharesTotalSupply).eq(0));
 
   const canSwap = !!slippageTolerance
     && (!!inputTokenValue && !!outputTokenValue)

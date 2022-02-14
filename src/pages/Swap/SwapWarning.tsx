@@ -107,7 +107,7 @@ export default function RenderWarning() {
   const havePoolPathOutputToken = poolPathOutputToken.length > 0;
   const havePoolPathToken = poolPathToken.length > 0;
 
-  const isMissingShares = poolPathToken.every((el) => new Big(el.sharesTotalSupply).eq(0));
+  const isMissingShares = poolPathToken.some((el) => new Big(el.sharesTotalSupply).eq(0));
   const poolWithoutLiquidity = poolPathToken.shift();
 
   const firstTokenBalance = getTokenBalance(inputToken?.contractId);
