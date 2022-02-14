@@ -83,3 +83,13 @@ export const SlippageBlock = styled.div`
   display: flex;
   flex-direction: column;
 `;
+
+export const Error = styled.div`
+  text-align: left;
+  margin: 1rem .875rem 0;
+  font-style: normal;
+  font-weight: 300;
+  font-size: .75rem;
+  line-height: .875rem;
+  color: ${({ theme }) => theme.error};
+`;
