@@ -11,7 +11,7 @@ export default function getConfig(
         helperUrl: 'https://helper.testnet.near.org',
         explorerUrl: 'https://explorer.testnet.near.org',
         indexerUrl: 'https://testnet-indexer.ref-finance.com',
-        contractId: 'jumbo-testnet-v2.solniechniy.testnet',
+        contractId: 'jumbo-testnet-v3.solniechniy.testnet',
         nearAddress: 'wrap.testnet',
         stablePoolId: 0,
       };
