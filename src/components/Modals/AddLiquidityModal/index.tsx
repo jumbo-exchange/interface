@@ -118,7 +118,9 @@ export default function AddLiquidityModal() {
     && !!inputTokenValue
     && !!outputTokenValue
     && !checkInvalidAmount(balances, tokenInput, inputTokenValue)
-    && !checkInvalidAmount(balances, tokenOutput, outputTokenValue);
+    && !checkInvalidAmount(balances, tokenOutput, outputTokenValue)
+    && Big(inputTokenValue).gt('0')
+    && Big(outputTokenValue).gt('0');
 
   const shareDisplay = () => {
     let result = '';
