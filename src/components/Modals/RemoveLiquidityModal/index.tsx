@@ -91,6 +91,11 @@ export default function RemoveLiquidityModal() {
   ];
 
   const onChange = () => {
+    const withdrawValueBN = new Big(withdrawValue);
+    const shareBN = new Big(formatTokenAmount(pool?.shares ?? '', POOL_SHARES_DECIMALS));
+    if (Number(withdrawValue) === 0) return;
+    if (withdrawValueBN.gt(shareBN)) return;
+
     const contract = new PoolContract();
     if (!tokenInput || !tokenOutput || !removeLiquidityModalOpenState.pool) return;
     contract.removeLiquidity({
