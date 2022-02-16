@@ -29,6 +29,8 @@ import {
 } from './styles';
 
 const INITIAL_INPUT_PLACEHOLDER = '';
+const ZERO_STR = '0';
+const SMALL_SHARE = '0.001';
 
 export default function AddLiquidityModal() {
   const isConnected = wallet.isSignedIn();
@@ -119,20 +121,20 @@ export default function AddLiquidityModal() {
     && !!outputTokenValue
     && !checkInvalidAmount(balances, tokenInput, inputTokenValue)
     && !checkInvalidAmount(balances, tokenOutput, outputTokenValue)
-    && Big(inputTokenValue).gt('0')
-    && Big(outputTokenValue).gt('0');
+    && Big(inputTokenValue).gt(ZERO_STR)
+    && Big(outputTokenValue).gt(ZERO_STR);
 
   const shareDisplay = () => {
     let result = '';
-    if (preShare && new Big('0').lt(preShare)) {
+    if (preShare && new Big(ZERO_STR).lt(preShare)) {
       const yourShareBig = new Big(preShare);
-      if (yourShareBig.lt('0.001')) {
+      if (yourShareBig.lt(SMALL_SHARE)) {
         result = '<0.001';
       } else {
         result = `≈ ${yourShareBig.toFixed(3)}`;
       }
     } else {
-      result = '0';
+      result = ZERO_STR;
     }
     return result;
   };
