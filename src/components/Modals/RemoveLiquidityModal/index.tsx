@@ -90,7 +90,7 @@ export default function RemoveLiquidityModal() {
     },
   ];
 
-  const onChange = () => {
+  const onSubmit = () => {
     const withdrawValueBN = new Big(withdrawValue);
     const shareBN = new Big(formatTokenAmount(pool?.shares ?? '', POOL_SHARES_DECIMALS));
     if (Number(withdrawValue) === 0) return;
@@ -197,7 +197,7 @@ export default function RemoveLiquidityModal() {
               ))}
             </WithdrawTokenBlock>
             <ButtonPrimary
-              onClick={onChange}
+              onClick={onSubmit}
               disabled={buttonDisabled}
             >
               Withdraw
