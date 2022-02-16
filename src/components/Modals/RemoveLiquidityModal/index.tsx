@@ -90,25 +90,21 @@ export default function RemoveLiquidityModal() {
     },
   ];
 
-  const onChange = () => {
+  const onSubmit = () => {
     const withdrawValueBN = new Big(withdrawValue);
     const shareBN = new Big(formatTokenAmount(pool?.shares ?? '', POOL_SHARES_DECIMALS));
-    if (Number(withdrawValue) === 0) {
-      setWarning(true);
-    }
-    if (withdrawValueBN.gt(shareBN)) {
-      setWarning(true);
-    }
-    if (!warning) {
-      const contract = new PoolContract();
-      if (!tokenInput || !tokenOutput || !removeLiquidityModalOpenState.pool) return;
-      contract.removeLiquidity({
-        pool,
-        shares: parseTokenAmount(withdrawValue, POOL_SHARES_DECIMALS),
-        minAmounts,
-      });
-    }
+    if (Number(withdrawValue) === 0) return;
+    if (withdrawValueBN.gt(shareBN)) return;
+
+    const contract = new PoolContract();
+    if (!tokenInput || !tokenOutput || !removeLiquidityModalOpenState.pool) return;
+    contract.removeLiquidity({
+      pool,
+      shares: parseTokenAmount(withdrawValue, POOL_SHARES_DECIMALS),
+      minAmounts,
+    });
   };
+
   const formattedPoolShares = formatTokenAmount(pool?.shares ?? '0', POOL_SHARES_DECIMALS);
 
   const buttonDisabled = isConnected
@@ -201,7 +197,7 @@ export default function RemoveLiquidityModal() {
               ))}
             </WithdrawTokenBlock>
             <ButtonPrimary
-              onClick={onChange}
+              onClick={onSubmit}
               disabled={buttonDisabled}
             >
               Withdraw
