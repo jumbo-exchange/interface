@@ -7,8 +7,8 @@ export const twitterLink = 'https://twitter.com/jumbo_exchange';
 export const mediumLink = 'https://medium.com/jumbo-dex';
 export const hapiLink = 'https://hapi.one/';
 
-export const SLIPPAGE_TOLERANCE_DEFAULT = '3.33';
-export const TOTAL_FEE_DEFAULT = '0.33';
+export const SLIPPAGE_TOLERANCE_DEFAULT = '1';
+export const TOTAL_FEE_DEFAULT = '0.3';
 
 export const MAX_TOGGLE_AMOUNT = 100;
 export const MIN_TOGGLE_AMOUNT = 0;
@@ -19,8 +19,8 @@ export const MIN_SLIPPAGE_TOLERANCE = 0;
 export const MAX_TOTAL_FEE = 20;
 export const MIN_TOTAL_FEE = 0;
 
-export const COEFFICIENT_SLIPPAGE = 0.5;
-export const COEFFICIENT_TOTAL_FEE = 0.5;
+export const COEFFICIENT_SLIPPAGE = 0.3;
+export const COEFFICIENT_TOTAL_FEE = 0.3;
 
 export const MIN_FEE_CREATE_POOL = '0.01';
 export const MAX_FEE_CREATE_POOL = '20';
@@ -60,9 +60,9 @@ export const warning = {
 };
 
 export const poolFeeOptions = [
-  { label: '0.20%', value: '0.20' },
-  { label: '0.30%', value: '0.30' },
-  { label: '0.60%', value: '0.60' },
+  { label: '0.2%', value: '0.2' },
+  { label: '0.3%', value: '0.3' },
+  { label: '0.6%', value: '0.6' },
 ];
 
 export const slippageToleranceOptions = [
