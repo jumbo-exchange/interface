@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Big from 'big.js';
 import PoolContract from 'services/PoolContract';
 import { useModalsStore, TokenType, useStore } from 'store';
@@ -10,6 +10,8 @@ import {
 } from 'utils/constants';
 import { ButtonPrimary } from 'components/Button';
 import { wallet } from 'services/near';
+import FungibleTokenContract from 'services/FungibleToken';
+import getConfig from 'services/config';
 import {
   Layout, ModalBlock, ModalIcon, ModalTitle,
 } from '../styles';
@@ -21,11 +23,24 @@ import {
 import TokenBlock from './TokenBlock';
 import CreatePoolSettings from './CreatePoolSetting';
 
+const config = getConfig();
+
 export default function CreatePoolModal() {
   const isConnected = wallet.isSignedIn();
-  const { inputToken, outputToken } = useStore();
+  const { getToken, tokens } = useStore();
   const { isCreatePoolModalOpen, setCreatePoolModalOpen } = useModalsStore();
   const [fee, setFee] = useState(TOTAL_FEE_DEFAULT);
+
+  const [inputToken, setInputToken] = useState<FungibleTokenContract | null>(null);
+  const [outputToken, setOutputToken] = useState<FungibleTokenContract | null>(null);
+
+  useEffect(() => {
+    const jumbo = getToken(config.nearAddress);
+    const wNear = getToken(config.nearAddress);
+    if (!jumbo || !wNear) return;
+    setInputToken(jumbo);
+    setOutputToken(wNear);
+  }, [tokens]);
 
   const canCreatePool = isConnected
   && !!fee
@@ -59,10 +74,12 @@ export default function CreatePoolModal() {
             <TokenBlock
               token={inputToken}
               tokenType={TokenType.Input}
+              setToken={setInputToken}
             />
             <TokenBlock
               token={outputToken}
               tokenType={TokenType.Output}
+              setToken={setOutputToken}
             />
             <CreatePoolSettings
               fee={fee}
