@@ -91,24 +91,15 @@ export default function RemoveLiquidityModal() {
   ];
 
   const onChange = () => {
-    const withdrawValueBN = new Big(withdrawValue);
-    const shareBN = new Big(formatTokenAmount(pool?.shares ?? '', POOL_SHARES_DECIMALS));
-    if (Number(withdrawValue) === 0) {
-      setWarning(true);
-    }
-    if (withdrawValueBN.gt(shareBN)) {
-      setWarning(true);
-    }
-    if (!warning) {
-      const contract = new PoolContract();
-      if (!tokenInput || !tokenOutput || !removeLiquidityModalOpenState.pool) return;
-      contract.removeLiquidity({
-        pool,
-        shares: parseTokenAmount(withdrawValue, POOL_SHARES_DECIMALS),
-        minAmounts,
-      });
-    }
+    const contract = new PoolContract();
+    if (!tokenInput || !tokenOutput || !removeLiquidityModalOpenState.pool) return;
+    contract.removeLiquidity({
+      pool,
+      shares: parseTokenAmount(withdrawValue, POOL_SHARES_DECIMALS),
+      minAmounts,
+    });
   };
+
   const formattedPoolShares = formatTokenAmount(pool?.shares ?? '0', POOL_SHARES_DECIMALS);
 
   const buttonDisabled = isConnected
