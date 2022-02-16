@@ -113,7 +113,6 @@ export default function RemoveLiquidityModal() {
 
   const buttonDisabled = isConnected
     && withdrawValue
-    && Big(slippageTolerance).gt(0)
     ? (new Big(withdrawValue).lte(0)
     || new Big(withdrawValue).gt(formattedPoolShares))
     : true;
@@ -124,20 +123,17 @@ export default function RemoveLiquidityModal() {
       setWarning(true);
       return;
     }
-    const bigValue = new Big(value);
-    if (!bigValue.gt(MIN_SLIPPAGE_TOLERANCE)) {
-      setSlippageTolerance(MIN_SLIPPAGE_TOLERANCE.toString());
+    if (Number(value) < MIN_SLIPPAGE_TOLERANCE) {
+      setSlippageTolerance(value);
       setWarning(true);
       return;
     }
-    if (!bigValue.lt(MAX_SLIPPAGE_TOLERANCE + 1)) {
+    if (Number(value) >= (MAX_SLIPPAGE_TOLERANCE)) {
       setSlippageTolerance(MAX_SLIPPAGE_TOLERANCE.toString());
-      setWarning(true);
       return;
     }
 
-    setSlippageTolerance(bigValue.toString());
-
+    setSlippageTolerance(value);
     setWarning(false);
   };
   return (
