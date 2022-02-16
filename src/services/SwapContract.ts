@@ -16,6 +16,8 @@ const FEE_DIVISOR = 10000;
 
 const CONTRACT_ID = config.contractId;
 
+const SWAP_GAS = '140000000000000';
+
 export default class SwapContract {
   contract = createContract(
     wallet,
@@ -228,6 +230,7 @@ export default class SwapContract {
             amount,
           },
           amount: ONE_YOCTO_NEAR,
+          gas: SWAP_GAS,
         }],
       });
     }
