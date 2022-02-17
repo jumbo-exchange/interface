@@ -8,6 +8,7 @@ import {
   MIN_SLIPPAGE_TOLERANCE,
   MAX_SLIPPAGE_TOLERANCE,
   COEFFICIENT_SLIPPAGE,
+  warningMessage,
 } from 'utils/constants';
 
 const Container = styled.div<{isSettingsOpen?: boolean}>`
@@ -96,7 +97,7 @@ export default function SwapSettings(
         />
         {warning && (
           <Warning>
-            Your transaction may be frontrun
+            {warningMessage.transactionMayFail}
           </Warning>
         )}
       </SlippageBlock>

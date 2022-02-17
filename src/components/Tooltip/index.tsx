@@ -84,8 +84,14 @@ export default function Tooltip(
   };
   return (
     <Container
-      onMouseOver={() => setShow(true)}
-      onMouseOut={() => setShow(false)}
+      onMouseOver={() => {
+        if (isMobile || isTablet) return;
+        setShow(true);
+      }}
+      onMouseOut={() => {
+        if (isMobile || isTablet) return;
+        setShow(false);
+      }}
       onClick={handleClick}
     >
       {children || <Info />}
