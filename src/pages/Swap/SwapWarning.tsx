@@ -3,7 +3,7 @@ import getConfig from 'services/config';
 import Warning from 'components/Warning';
 import styled from 'styled-components';
 import Big from 'big.js';
-import { warning, NEAR_TOKEN_ID } from 'utils/constants';
+import { warningMessage, NEAR_TOKEN_ID } from 'utils/constants';
 import { useStore } from 'store';
 import { ReactComponent as RouteArrow } from 'assets/images-app/route-arrow.svg';
 import { ReactComponent as Wallet } from 'assets/images-app/wallet.svg';
@@ -131,8 +131,8 @@ export default function RenderWarning() {
     return (
       <WarningBlock>
         <Warning
-          title={warning.zeroBalance}
-          description={warning.zeroBalanceDesc}
+          title={warningMessage.zeroBalance}
+          description={warningMessage.zeroBalanceDesc}
         >
           <RouteBlock>
             <div>
@@ -184,8 +184,8 @@ export default function RenderWarning() {
     return (
       <WarningBlock>
         <Warning
-          title={warning.noSuchPairExists}
-          description={warning.noSuchPairExistsDesc}
+          title={warningMessage.noSuchPairExists}
+          description={warningMessage.noSuchPairExistsDesc}
         >
           <RouteBlock>
             <div>
@@ -237,7 +237,7 @@ export default function RenderWarning() {
     return (
       <WarningBlock>
         <Warning
-          title={warning.doesNotExist}
+          title={warningMessage.doesNotExist}
         />
 
       </WarningBlock>
@@ -248,8 +248,8 @@ export default function RenderWarning() {
     return (
       <WarningBlock>
         <Warning
-          title={warning.zeroPoolLiquidity}
-          description={warning.zeroPoolLiquidityDesc}
+          title={warningMessage.zeroPoolLiquidity}
+          description={warningMessage.zeroPoolLiquidityDesc}
         >
           <RouteBlock>
             <div>
