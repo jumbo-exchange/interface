@@ -39,8 +39,7 @@ const initialState: StoreContextType = {
   setTokens: () => {},
   getToken: () => null,
 
-  activeModalToken: null,
-  serActiveModalToken: () => {},
+  setCurrentToken: () => {},
 
   inputToken: null,
   setInputToken: () => {},
@@ -67,10 +66,6 @@ export const StoreContextProvider = (
   const [currentPools, setCurrentPools] = useState<IPool[]>(initialState.currentPools);
   const [tokens, setTokens] = useState<{[key: string]: FungibleTokenContract}>(initialState.tokens);
 
-  const [activeModalToken, serActiveModalToken] = useState<FungibleTokenContract | null>(
-    initialState.activeModalToken,
-  );
-
   const [inputToken, setInputToken] = useState<FungibleTokenContract | null>(
     initialState.inputToken,
   );
@@ -82,6 +77,9 @@ export const StoreContextProvider = (
     const poolArray = toArray(pools);
     if (tokenType === TokenType.Output) {
       if (!inputToken) return;
+      if (activeToken === inputToken) {
+        setInputToken(outputToken);
+      }
       setOutputToken(activeToken);
       const availablePools = getPoolsPath(
         inputToken.contractId, activeToken?.contractId ?? '', poolArray, tokens,
@@ -89,6 +87,9 @@ export const StoreContextProvider = (
       setCurrentPools(availablePools);
     } else {
       if (!outputToken) return;
+      if (activeToken === outputToken) {
+        setOutputToken(inputToken);
+      }
       setInputToken(activeToken);
       const availablePools = getPoolsPath(
         activeToken?.contractId ?? '', outputToken.contractId, poolArray, tokens,
@@ -256,8 +257,7 @@ export const StoreContextProvider = (
       setTokens,
       getToken,
 
-      activeModalToken,
-      serActiveModalToken,
+      setCurrentToken,
 
       inputToken,
       setInputToken,

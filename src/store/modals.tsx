@@ -2,7 +2,7 @@ import React, {
   createContext, useContext, useState,
   Dispatch, SetStateAction,
 } from 'react';
-import { IPool, TokenType } from 'store';
+import { IPool } from 'store';
 import Modals from 'components/Modals';
 import FungibleTokenContract from 'services/FungibleToken';
 
@@ -15,15 +15,13 @@ type ModalsStoreContextType = {
   setCreatePoolModalOpen: Dispatch<SetStateAction<boolean>>;
   isSearchModalOpen: {
     isOpen: boolean,
-    tokenType: TokenType,
     activeToken: FungibleTokenContract | null,
-    setActiveToken: Dispatch<SetStateAction<FungibleTokenContract | null>>
+    setActiveToken: (token: FungibleTokenContract) => void
   };
   setSearchModalOpen: Dispatch<SetStateAction<{
     isOpen: boolean,
-    tokenType: TokenType,
     activeToken: FungibleTokenContract | null,
-    setActiveToken: Dispatch<SetStateAction<FungibleTokenContract | null>>
+    setActiveToken: (token: FungibleTokenContract) => void
   }>>;
   isTooltipModalOpen: boolean;
   setTooltipModalOpen: Dispatch<SetStateAction<boolean>>;
@@ -42,7 +40,6 @@ export const initialModalsState: ModalsStoreContextType = {
   setCreatePoolModalOpen: () => {},
   isSearchModalOpen: {
     isOpen: false,
-    tokenType: TokenType.Output,
     activeToken: null,
     setActiveToken: () => {},
   },
@@ -74,12 +71,10 @@ export const ModalsContextProvider = (
   );
   const [isSearchModalOpen, setSearchModalOpen] = useState<{
     isOpen: boolean,
-    tokenType: TokenType,
     activeToken: FungibleTokenContract | null,
-    setActiveToken: Dispatch<SetStateAction<FungibleTokenContract | null>>
-  }>(
-    initialModalsState.isSearchModalOpen,
-  );
+    setActiveToken:(token: FungibleTokenContract) => void
+      }>(
+      initialModalsState.isSearchModalOpen);
   const [isTooltipModalOpen, setTooltipModalOpen] = useState<boolean>(
     initialModalsState.isTooltipModalOpen,
   );

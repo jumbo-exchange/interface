@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Big from 'big.js';
 import PoolContract from 'services/PoolContract';
-import { useModalsStore, TokenType, useStore } from 'store';
+import { useModalsStore, useStore } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
 import {
   MIN_FEE_CREATE_POOL,
@@ -89,12 +89,10 @@ export default function CreatePoolModal() {
           <ModalBody>
             <TokenBlock
               token={inputToken}
-              tokenType={TokenType.Input}
               setToken={setInputToken}
             />
             <TokenBlock
               token={outputToken}
-              tokenType={TokenType.Output}
               setToken={setOutputToken}
             />
             <CreatePoolSettings

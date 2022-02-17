@@ -7,7 +7,7 @@ import Big from 'big.js';
 import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
 import { getUpperCase } from 'utils';
-import { TokenType, useStore } from 'store';
+import { TokenType, useModalsStore, useStore } from 'store';
 import FungibleTokenContract from 'services/FungibleToken';
 import { formatTokenAmount } from 'utils/calculations';
 
@@ -176,9 +176,7 @@ const getCurrentBalance = (
 };
 
 export default function Input({
-  openModal,
   token,
-  setToken,
   tokenType,
   value,
   setValue,
@@ -186,20 +184,16 @@ export default function Input({
   disabled = false,
 }:
 {
-  openModal: (
-    tokenType: TokenType,
-    activeToken: FungibleTokenContract | null,
-    setActiveToken: () => {}
-    ) => void,
   token: FungibleTokenContract | null,
-  setToken: any, // TODO any ?????
   tokenType: TokenType,
   value: string,
-  setValue: any, // TODO any ?????
+  setValue: (value: string) => void,
   balance: string,
   disabled?: boolean
 }) {
-  const { loading } = useStore();
+  const { loading, setCurrentToken } = useStore();
+  const { setSearchModalOpen } = useModalsStore();
+
   const currentBalance = new Big(balance ?? 0);
   const setHalfAmount = () => {
     if (!balance) return;
@@ -211,6 +205,17 @@ export default function Input({
     if (!balance) return;
     const newBalance = formatTokenAmount(currentBalance.toFixed() ?? 0, token?.metadata.decimals);
     setValue(newBalance);
+  };
+
+  const openModal = (currentToken: FungibleTokenContract | null) => {
+    if (!token) return;
+    setSearchModalOpen({
+      isOpen: true,
+      activeToken: currentToken,
+      setActiveToken: (activeToken: FungibleTokenContract) => {
+        setCurrentToken(activeToken, tokenType);
+      },
+    });
   };
 
   return (
@@ -243,7 +248,7 @@ export default function Input({
         />
         <TokenContainer onClick={() => {
           if (loading) return;
-          openModal(tokenType, token, setToken);
+          openModal(token);
         }}
         >
           {getUpperCase(token?.metadata.symbol ?? '')}

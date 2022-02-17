@@ -85,9 +85,7 @@ const RenderButton = ({
 export default function Swap() {
   const {
     inputToken,
-    setInputToken,
     outputToken,
-    setOutputToken,
     swapTokens,
     balances,
     loading,
@@ -97,7 +95,7 @@ export default function Swap() {
   } = useStore();
   const config = getConfig();
   const { setTrackedPools } = useRefresh();
-  const { setAccountModalOpen, setSearchModalOpen } = useModalsStore();
+  const { setAccountModalOpen } = useModalsStore();
   const [independentField, setIndependentField] = useState(TokenType.Input);
   const [inputTokenValue, setInputTokenValue] = useState<string>('');
   const debouncedInputValue = useDebounce(inputTokenValue, DEBOUNCE_VALUE);
@@ -115,22 +113,6 @@ export default function Swap() {
     : '';
   const priceImpact = calculatePriceImpact(
     currentPools, inputToken, outputToken, inputTokenValue, tokens,
-  );
-  const openModal = useCallback(
-    (
-      tokenType: TokenType,
-      activeToken: FungibleTokenContract | null,
-      setActiveToken: () => {},
-    ) => {
-      setSearchModalOpen({
-        isOpen: true,
-        tokenType,
-        activeToken,
-        setActiveToken,
-      });
-      setIsSettingsOpen(false);
-    },
-    [],
   );
 
   const verifyToken = (
@@ -317,9 +299,7 @@ export default function Swap() {
     <Container>
       <ActionContainer>
         <Input
-          openModal={openModal}
           token={inputToken}
-          setToken={setInputToken}
           tokenType={TokenType.Input}
           value={inputTokenValue}
           setValue={handleInputChange}
@@ -330,9 +310,7 @@ export default function Swap() {
           <span>Change Direction</span>
         </ChangeTokenContainer>
         <Input
-          openModal={openModal}
           token={outputToken}
-          setToken={setOutputToken}
           tokenType={TokenType.Output}
           value={outputTokenValue}
           setValue={handleOutputChange}
@@ -391,7 +369,7 @@ export default function Swap() {
                         />
                         {intersectionToken?.metadata.symbol}
                       </>
-                    ) // TODO: check correct display
+                    )
                     : null}
                   <RouteArrowLogo />
                   <TokenImg

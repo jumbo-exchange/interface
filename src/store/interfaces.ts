@@ -55,8 +55,7 @@ export type StoreContextType = {
   setTokens: Dispatch<SetStateAction<{[key: string]: FungibleTokenContract}>>;
   getToken: (tokenAddress: string) => FungibleTokenContract | null;
 
-  activeModalToken: FungibleTokenContract | null;
-  serActiveModalToken: Dispatch<SetStateAction<FungibleTokenContract | null>>;
+  setCurrentToken: (activeToken: FungibleTokenContract | null, tokenType: TokenType) => void;
 
   inputToken: FungibleTokenContract | null;
   setInputToken: Dispatch<SetStateAction<FungibleTokenContract | null>>;

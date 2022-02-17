@@ -64,11 +64,9 @@ const ArrowDown = styled(IconArrowDown)`
 export default function TokenBlock(
   {
     token,
-    tokenType,
     setToken,
   }:{
     token: FungibleTokenContract | null,
-    tokenType: TokenType,
     setToken: Dispatch<SetStateAction<FungibleTokenContract | null>>;
   },
 
@@ -77,7 +75,6 @@ export default function TokenBlock(
   return (
     <Container onClick={() => setSearchModalOpen({
       isOpen: true,
-      tokenType,
       activeToken: token,
       setActiveToken: setToken,
     })}
