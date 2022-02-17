@@ -5,7 +5,6 @@ import { SpecialContainer } from 'components/SpecialContainer';
 import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
 import { ReactComponent as Exchange } from 'assets/images-app/exchange.svg';
-import { ReactComponent as Info } from 'assets/images-app/info.svg';
 import { ReactComponent as RouteArrow } from 'assets/images-app/route-arrow.svg';
 import { ReactComponent as SwapIcon } from 'assets/images-app/swap-icon.svg';
 
@@ -138,10 +137,6 @@ export const SwapInformation = styled.div`
   margin-bottom: 1rem;
   background-color: ${({ theme }) => theme.backgroundCard};
   z-index: 10;
-`;
-
-export const LogoInfo = styled(Info)`
-  margin-left: .397rem;
 `;
 
 export const RouteBlock = styled.div`

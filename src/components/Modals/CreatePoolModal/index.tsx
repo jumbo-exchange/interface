@@ -3,7 +3,11 @@ import Big from 'big.js';
 import PoolContract from 'services/PoolContract';
 import { useModalsStore, TokenType, useStore } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
-import { TOTAL_FEE_DEFAULT } from 'utils/constants';
+import {
+  MIN_FEE_CREATE_POOL,
+  MAX_FEE_CREATE_POOL,
+  TOTAL_FEE_DEFAULT,
+} from 'utils/constants';
 import { ButtonPrimary } from 'components/Button';
 import { wallet } from 'services/near';
 import {
@@ -25,8 +29,8 @@ export default function CreatePoolModal() {
 
   const canCreatePool = isConnected
   && !!fee
-  && new Big(fee).gt('0.01')
-  && new Big(fee).lt('20')
+  && new Big(fee).gt(MIN_FEE_CREATE_POOL)
+  && new Big(fee).lt(MAX_FEE_CREATE_POOL)
   && !!inputToken
   && !!outputToken;
 

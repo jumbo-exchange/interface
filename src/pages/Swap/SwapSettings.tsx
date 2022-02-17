@@ -67,19 +67,17 @@ export default function SwapSettings(
       setWarning(true);
       return;
     }
-    const bigValue = new Big(value);
-    if (!bigValue.gt(MIN_SLIPPAGE_TOLERANCE)) {
+    if (Number(value) < MIN_SLIPPAGE_TOLERANCE) {
       setSlippageTolerance(MIN_SLIPPAGE_TOLERANCE.toString());
       setWarning(true);
       return;
     }
-    if (!bigValue.lt(MAX_SLIPPAGE_TOLERANCE + 1)) {
+    if (Number(value) >= (MAX_SLIPPAGE_TOLERANCE)) {
       setSlippageTolerance(MAX_SLIPPAGE_TOLERANCE.toString());
-      setWarning(true);
       return;
     }
 
-    setSlippageTolerance(bigValue.toString());
+    setSlippageTolerance(value);
 
     setWarning(false);
   };

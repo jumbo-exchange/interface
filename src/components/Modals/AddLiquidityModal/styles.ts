@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { ReactComponent as PlaceHolderLoader } from 'assets/images-app/placeholder-loader.svg';
 import { ReactComponent as AddIcon } from 'assets/images-app/icon-add.svg';
 import { Modal } from '../styles';
 
@@ -32,10 +31,6 @@ export const RefreshBlock = styled.div`
   & > div {
     font-size: 1rem;
   }
-`;
-
-export const PlaceHolderGif = styled(PlaceHolderLoader)`
-  margin-right: .438rem;
 `;
 
 export const LogoButton = styled(AddIcon)`

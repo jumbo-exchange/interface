@@ -90,17 +90,17 @@ export default function CreatePoolSettings(
   const feeList = [
     {
       title: 'LP Fee',
-      percent: 80,
+      percent: 83,
       tooltip: tooltipTitle.lPFee,
     },
     {
       title: 'Protocol Fee',
-      percent: 16,
+      percent: 14,
       tooltip: tooltipTitle.protocolFee,
     },
     {
       title: 'Referral Fee',
-      percent: 4,
+      percent: 3,
       tooltip: tooltipTitle.referralFee,
     },
   ];

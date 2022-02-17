@@ -17,7 +17,7 @@ const InputBlock = styled.div`
   display: flex;
   align-items: center;
 `;
-// TODO: when the warm stroke worked red
+
 const WrapperInput = styled.div`
   display: flex;
   align-items: center;
