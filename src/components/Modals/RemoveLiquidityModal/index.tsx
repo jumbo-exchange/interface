@@ -14,6 +14,7 @@ import {
   SLIPPAGE_TOLERANCE_DEFAULT,
   tooltipTitle,
   POOL_SHARES_DECIMALS,
+  warningMessage,
 } from 'utils/constants';
 import { useModalsStore, useStore, CurrentButton } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
@@ -173,7 +174,7 @@ export default function RemoveLiquidityModal() {
               />
               {warning && (
                 <Warning>
-                  Your transaction may be frontrun
+                  {warningMessage.transactionMayFail}
                 </Warning>
               )}
             </SlippageBlock>
