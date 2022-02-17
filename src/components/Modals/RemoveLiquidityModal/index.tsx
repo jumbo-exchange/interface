@@ -4,6 +4,8 @@ import PoolContract from 'services/PoolContract';
 import Big from 'big.js';
 import Toggle from 'components/Toggle';
 import Tooltip from 'components/Tooltip';
+import RenderButton from 'components/Button/RenderButton';
+
 import {
   COEFFICIENT_SLIPPAGE,
   MAX_SLIPPAGE_TOLERANCE,
@@ -13,9 +15,8 @@ import {
   tooltipTitle,
   POOL_SHARES_DECIMALS,
 } from 'utils/constants';
-import { useModalsStore, useStore } from 'store';
+import { useModalsStore, useStore, CurrentButton } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
-import { ButtonPrimary } from 'components/Button';
 import { useNavigate } from 'react-router-dom';
 import { getUpperCase } from 'utils';
 import {
@@ -196,12 +197,11 @@ export default function RemoveLiquidityModal() {
                 </TokenBlock>
               ))}
             </WithdrawTokenBlock>
-            <ButtonPrimary
-              onClick={onSubmit}
+            <RenderButton
+              typeButton={CurrentButton.Withdraw}
+              onSubmit={onSubmit}
               disabled={buttonDisabled}
-            >
-              Withdraw
-            </ButtonPrimary>
+            />
           </ModalBody>
         </LiquidityModalContainer>
       </Layout>

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Toggle from 'components/Toggle';
 import Tooltip from 'components/Tooltip';
-import Big from 'big.js';
 import {
   slippageToleranceOptions,
   tooltipTitle,
