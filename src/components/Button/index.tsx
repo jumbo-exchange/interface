@@ -33,6 +33,7 @@ export const ButtonPrimary = styled.button`
     background: ${({ theme }) => theme.pinkActive};
   }
   :disabled{
+    cursor: default;
     background: ${({ theme }) => theme.globalGreyOp01};
     border: 1px solid ${({ theme }) => theme.globalGreyOp01};
     color: ${({ theme }) => theme.globalGrey};
@@ -57,6 +58,7 @@ export const ButtonSecondary = styled(ButtonPrimary)`
     border-color: ${({ theme }) => theme.pinkActive};
   }
   :disabled{
+    cursor: default;
     background: transparent;
     border: 1px solid ${({ theme }) => theme.globalGreyOp01};
     color: ${({ theme }) => theme.globalGrey};
