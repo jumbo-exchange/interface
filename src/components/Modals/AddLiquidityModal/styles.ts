@@ -33,12 +33,6 @@ export const RefreshBlock = styled.div`
   }
 `;
 
-export const LogoButton = styled(AddIcon)`
-  width: 12px;
-  height: 12px;
-  margin-right: .625rem;
-`;
-
 export const YourSharesBlock = styled.div`
   flex: 1;
   display: flex;

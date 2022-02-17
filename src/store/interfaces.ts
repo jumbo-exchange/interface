@@ -6,6 +6,7 @@ import SpecialWallet from 'services/wallet';
 export enum StatusLink { Swap = 'swap', Pool ='pool', Farm = 'farm' }
 export enum TokenType { 'Input', 'Output'}
 export enum PoolType {'SIMPLE_POOL' = 'SIMPLE_POOL', 'STABLE_SWAP' = 'STABLE_SWAP'}
+export enum CurrentButton { 'Swap', 'AddLiquidity', 'CreatePool', 'Withdraw' }
 
 export interface IPool {
   id: number;

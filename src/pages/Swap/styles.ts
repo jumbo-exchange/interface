@@ -2,11 +2,9 @@ import { PropsWithChildren } from 'react';
 import styled from 'styled-components';
 import { SpecialContainer } from 'components/SpecialContainer';
 
-import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
 import { ReactComponent as Exchange } from 'assets/images-app/exchange.svg';
 import { ReactComponent as RouteArrow } from 'assets/images-app/route-arrow.svg';
-import { ReactComponent as SwapIcon } from 'assets/images-app/swap-icon.svg';
 
 interface ICurrent {
   isActive?: boolean
@@ -122,15 +120,6 @@ export const SettingsLabel = styled.div<PropsWithChildren<ICurrent>>`
   }
 `;
 
-export const Wallet = styled(WalletImage)`
-  margin-right: .625rem;
-  width: 16px;
-  height: 12px;
-  path {
-    fill: ${({ theme }) => theme.globalWhite};
-  }
-`;
-
 export const SwapInformation = styled.div`
   display: flex;
   flex-direction: column;
@@ -199,8 +188,4 @@ export const BlockButton = styled.div`
   & > button {
     width: 100%;
   }
-`;
-
-export const IconSwap = styled(SwapIcon)`
-  margin-left: .75rem;
 `;
