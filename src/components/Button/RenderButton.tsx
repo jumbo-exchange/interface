@@ -60,11 +60,9 @@ export default function RenderButton({
       case CurrentButton.AddLiquidity:
         return <AddIconLogo />;
       case CurrentButton.CreatePool:
-        return <div />;
+        return <AddIconLogo />;
       case CurrentButton.Swap:
         return <IconSwap />;
-      case CurrentButton.Withdraw:
-        return <div />;
       default:
         return null;
     }
