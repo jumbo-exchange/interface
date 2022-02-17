@@ -9,7 +9,6 @@ export const Container = styled.div`
   align-items: center;
   width: 100%;
   max-width: 736px;
-  white-space: nowrap;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     max-width: 328px;
   `}
