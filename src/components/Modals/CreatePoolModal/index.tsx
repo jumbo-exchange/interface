@@ -36,7 +36,9 @@ export default function CreatePoolModal() {
   && new Big(fee).gt(MIN_FEE_CREATE_POOL)
   && new Big(fee).lt(MAX_FEE_CREATE_POOL)
   && !!inputToken
-  && !!outputToken;
+  && !!outputToken
+  && inputToken !== near
+  && outputToken !== near;
 
   const createPool = async () => {
     if (!inputToken || !outputToken) return;
@@ -76,7 +78,7 @@ export default function CreatePoolModal() {
               onSubmit={() => {
                 if (canCreatePool) createPool();
               }}
-              disabled={(inputToken || outputToken) === near}
+              disabled={!canCreatePool}
             />
           </ModalBody>
         </LiquidityModalContainer>
