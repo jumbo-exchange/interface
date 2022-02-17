@@ -47,6 +47,11 @@ export default function CreatePoolModal() {
       { tokens: [inputToken, outputToken], fee },
     );
   };
+
+  const onSubmit = () => {
+    if (canCreatePool) createPool();
+  };
+
   return (
     <>
       {isCreatePoolModalOpen && (
@@ -75,9 +80,7 @@ export default function CreatePoolModal() {
             />
             <RenderButton
               typeButton={CurrentButton.CreatePool}
-              onSubmit={() => {
-                if (canCreatePool) createPool();
-              }}
+              onSubmit={onSubmit}
               disabled={!canCreatePool}
             />
           </ModalBody>
