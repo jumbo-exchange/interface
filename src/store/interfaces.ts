@@ -53,8 +53,10 @@ export type StoreContextType = {
   setCurrentPools: (pools: IPool[]) => void;
   tokens: {[key: string]: FungibleTokenContract};
   setTokens: Dispatch<SetStateAction<{[key: string]: FungibleTokenContract}>>;
-  setCurrentToken: (tokenAddress: string, tokenType: TokenType) => void;
   getToken: (tokenAddress: string) => FungibleTokenContract | null;
+
+  activeModalToken: FungibleTokenContract | null;
+  serActiveModalToken: Dispatch<SetStateAction<FungibleTokenContract | null>>;
 
   inputToken: FungibleTokenContract | null;
   setInputToken: Dispatch<SetStateAction<FungibleTokenContract | null>>;

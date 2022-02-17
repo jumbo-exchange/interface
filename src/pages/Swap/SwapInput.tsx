@@ -178,6 +178,7 @@ const getCurrentBalance = (
 export default function Input({
   openModal,
   token,
+  setToken,
   tokenType,
   value,
   setValue,
@@ -185,12 +186,17 @@ export default function Input({
   disabled = false,
 }:
 {
-  openModal: (tokenType: TokenType) => void,
+  openModal: (
+    tokenType: TokenType,
+    activeToken: FungibleTokenContract | null,
+    setActiveToken: () => {}
+    ) => void,
   token: FungibleTokenContract | null,
+  setToken: any, // TODO any ?????
   tokenType: TokenType,
   value: string,
-  setValue: any,
-  balance:string,
+  setValue: any, // TODO any ?????
+  balance: string,
   disabled?: boolean
 }) {
   const { loading } = useStore();
@@ -237,7 +243,7 @@ export default function Input({
         />
         <TokenContainer onClick={() => {
           if (loading) return;
-          openModal(tokenType);
+          openModal(tokenType, token, setToken);
         }}
         >
           {getUpperCase(token?.metadata.symbol ?? '')}

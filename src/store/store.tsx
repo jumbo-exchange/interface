@@ -39,11 +39,13 @@ const initialState: StoreContextType = {
   setTokens: () => {},
   getToken: () => null,
 
+  activeModalToken: null,
+  serActiveModalToken: () => {},
+
   inputToken: null,
   setInputToken: () => {},
   outputToken: null,
   setOutputToken: () => {},
-  setCurrentToken: () => {},
   updatePools: () => {},
   swapTokens: () => {},
 };
@@ -65,6 +67,10 @@ export const StoreContextProvider = (
   const [currentPools, setCurrentPools] = useState<IPool[]>(initialState.currentPools);
   const [tokens, setTokens] = useState<{[key: string]: FungibleTokenContract}>(initialState.tokens);
 
+  const [activeModalToken, serActiveModalToken] = useState<FungibleTokenContract | null>(
+    initialState.activeModalToken,
+  );
+
   const [inputToken, setInputToken] = useState<FungibleTokenContract | null>(
     initialState.inputToken,
   );
@@ -72,22 +78,25 @@ export const StoreContextProvider = (
     initialState.outputToken,
   );
 
-  const setCurrentToken = (tokenAddress: string, tokenType: TokenType) => {
+  const setCurrentToken = (activeToken: FungibleTokenContract | null, tokenType: TokenType) => {
     const poolArray = toArray(pools);
     if (tokenType === TokenType.Output) {
       if (!inputToken) return;
-      const outputTokenData = tokens[tokenAddress] ?? null;
-      setOutputToken(outputTokenData);
-      const availablePools = getPoolsPath(inputToken.contractId, tokenAddress, poolArray, tokens);
+      setOutputToken(activeToken);
+      const availablePools = getPoolsPath(
+        inputToken.contractId, activeToken?.contractId ?? '', poolArray, tokens,
+      );
       setCurrentPools(availablePools);
     } else {
       if (!outputToken) return;
-      const inputTokenData = tokens[tokenAddress] ?? null;
-      setInputToken(inputTokenData);
-      const availablePools = getPoolsPath(tokenAddress, outputToken.contractId, poolArray, tokens);
+      setInputToken(activeToken);
+      const availablePools = getPoolsPath(
+        activeToken?.contractId ?? '', outputToken.contractId, poolArray, tokens,
+      );
       setCurrentPools(availablePools);
     }
   };
+
   const swapTokens = () => {
     const poolArray = toArray(pools);
     if (!inputToken || !outputToken || inputToken === outputToken) return;
@@ -247,11 +256,13 @@ export const StoreContextProvider = (
       setTokens,
       getToken,
 
+      activeModalToken,
+      serActiveModalToken,
+
       inputToken,
       setInputToken,
       outputToken,
       setOutputToken,
-      setCurrentToken,
       swapTokens,
     }}
     >

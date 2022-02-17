@@ -86,9 +86,11 @@ const TokenTitle = styled.div`
 export default function PopularToken() {
   const {
     getToken,
-    setCurrentToken,
+    // setCurrentToken,
   } = useStore();
   const { isSearchModalOpen, setSearchModalOpen } = useModalsStore();
+
+  const { activeToken, setActiveToken } = isSearchModalOpen;
 
   const near = getToken(NEAR_TOKEN_ID) ?? null;
   const wNear = getToken(config.nearAddress) ?? null;
@@ -103,7 +105,11 @@ export default function PopularToken() {
           <TokenBlock
             key={token.contractId}
             onClick={() => {
-              setCurrentToken(token.contractId, isSearchModalOpen.tokenType);
+              if (token === activeToken) {
+                return;
+              }
+              setActiveToken(token);
+              // setCurrentToken(token.contractId, isSearchModalOpen.tokenType);
               setSearchModalOpen(initialModalsState.isSearchModalOpen);
             }}
           >

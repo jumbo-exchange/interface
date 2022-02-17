@@ -85,7 +85,9 @@ const RenderButton = ({
 export default function Swap() {
   const {
     inputToken,
+    setInputToken,
     outputToken,
+    setOutputToken,
     swapTokens,
     balances,
     loading,
@@ -115,8 +117,17 @@ export default function Swap() {
     currentPools, inputToken, outputToken, inputTokenValue, tokens,
   );
   const openModal = useCallback(
-    (tokenType: TokenType) => {
-      setSearchModalOpen({ isOpen: true, tokenType });
+    (
+      tokenType: TokenType,
+      activeToken: FungibleTokenContract | null,
+      setActiveToken: () => {},
+    ) => {
+      setSearchModalOpen({
+        isOpen: true,
+        tokenType,
+        activeToken,
+        setActiveToken,
+      });
       setIsSettingsOpen(false);
     },
     [],
@@ -297,7 +308,7 @@ export default function Swap() {
     }
   }, [inputToken, outputToken]);
 
-  const exchangeLabel = `
+  const exchangeLabel = (inputToken && outputToken) && `
   1 ${getUpperCase(inputToken?.metadata.symbol ?? '')} 
   ≈ ${exchangeAmount} ${getUpperCase(outputToken?.metadata.symbol ?? '')}
   `;
@@ -308,6 +319,7 @@ export default function Swap() {
         <Input
           openModal={openModal}
           token={inputToken}
+          setToken={setInputToken}
           tokenType={TokenType.Input}
           value={inputTokenValue}
           setValue={handleInputChange}
@@ -320,6 +332,7 @@ export default function Swap() {
         <Input
           openModal={openModal}
           token={outputToken}
+          setToken={setOutputToken}
           tokenType={TokenType.Output}
           value={outputTokenValue}
           setValue={handleOutputChange}
@@ -329,7 +342,9 @@ export default function Swap() {
       <ExchangeBlock>
         <Refresh />
         <ExchangeLabel>
-          {loading ? 'Loading...' : <div>{exchangeLabel}</div>}
+          {loading
+            ? 'Loading...'
+            : <div>{exchangeLabel}</div>}
         </ExchangeLabel>
       </ExchangeBlock>
       <RenderWarning />

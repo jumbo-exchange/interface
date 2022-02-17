@@ -27,20 +27,36 @@ const config = getConfig();
 
 export default function CreatePoolModal() {
   const isConnected = wallet.isSignedIn();
-  const { getToken, tokens } = useStore();
-  const { isCreatePoolModalOpen, setCreatePoolModalOpen } = useModalsStore();
+  const { getToken, tokens, loading } = useStore();
+  const {
+    isCreatePoolModalOpen,
+    setCreatePoolModalOpen,
+    isSearchModalOpen,
+  } = useModalsStore();
+  const { activeToken } = isSearchModalOpen;
+
   const [fee, setFee] = useState(TOTAL_FEE_DEFAULT);
 
   const [inputToken, setInputToken] = useState<FungibleTokenContract | null>(null);
   const [outputToken, setOutputToken] = useState<FungibleTokenContract | null>(null);
 
   useEffect(() => {
-    const jumbo = getToken(config.nearAddress);
-    const wNear = getToken(config.nearAddress);
-    if (!jumbo || !wNear) return;
-    setInputToken(jumbo);
-    setOutputToken(wNear);
-  }, [tokens]);
+    if (loading) {
+      const jumbo = getToken(config.nearAddress); // TODO: add JUMBO
+      const wNear = getToken(config.nearAddress);
+      if (!jumbo || !wNear) return;
+      setInputToken(jumbo);
+      setOutputToken(wNear);
+      return;
+    }
+    if (activeToken === inputToken) {
+      setOutputToken(inputToken);
+      return;
+    }
+    if (activeToken === outputToken) {
+      setInputToken(outputToken);
+    }
+  }, [tokens, activeToken]);
 
   const canCreatePool = isConnected
   && !!fee
@@ -89,6 +105,7 @@ export default function CreatePoolModal() {
               onClick={() => {
                 if (canCreatePool) createPool();
               }}
+              disabled={!canCreatePool}
             >
               <CreateIconContainer />
               Create Pool
