@@ -13,6 +13,7 @@ import Big from 'big.js';
 import { wallet } from './near';
 import SpecialWallet, { createContract, Transaction } from './wallet';
 import getConfig from './config';
+import { SWAP_GAS } from './SwapContract';
 
 const {
   utils: {
@@ -168,6 +169,7 @@ export default class FungibleTokenContract {
           msg: message,
         },
         amount: ONE_YOCTO_NEAR,
+        gas: SWAP_GAS,
       }],
     });
     return transactions;
