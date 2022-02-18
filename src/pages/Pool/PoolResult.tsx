@@ -1,10 +1,11 @@
 import React from 'react';
-import { IPool, useStore } from 'store';
+import { IPool } from 'store';
 import { FilterPoolsEnum } from 'pages/Pool';
 import { noResult } from 'utils/constants';
 import styled from 'styled-components';
 import Big from 'big.js';
 import PoolCardPlaceholder from 'components/Placeholder/PoolCardPlaceholder';
+import getConfig from 'services/config';
 import PoolCard from './PoolCard';
 
 const numberPlaceholderCard = Array.from(Array(5).keys());
@@ -24,15 +25,36 @@ const NoResult = styled.div`
   margin: 2rem 0;
 `;
 
+const config = getConfig();
+
 export default function PoolResult(
   {
     poolsArray,
     currentFilterPools,
+    loading,
   }:{
     poolsArray: IPool[],
-    currentFilterPools:FilterPoolsEnum},
+    currentFilterPools:FilterPoolsEnum,
+    loading:boolean,
+  },
 ) {
-  const { loading } = useStore();
+  const poolsArraySorted = poolsArray.sort(
+    (a, b) => {
+      if (a.tokenAccountIds.includes(config.nearAddress)
+      && b.tokenAccountIds.includes(config.nearAddress)) {
+        return Big(b.supplies[config.nearAddress])
+          .minus(a.supplies[config.nearAddress]).toNumber();
+      }
+      if (a.tokenAccountIds.includes(config.nearAddress)) {
+        return 1;
+      }
+      if (a.tokenAccountIds.includes(config.nearAddress)) {
+        return 0;
+      }
+      return 0;
+    },
+  );
+
   if (loading) {
     return (
       <Wrapper>
@@ -46,7 +68,7 @@ export default function PoolResult(
   }
 
   if (currentFilterPools === FilterPoolsEnum['Your Liquidity']) {
-    const filteredPools = poolsArray.filter((pool) => pool.shares && Big(pool.shares).gt(0));
+    const filteredPools = poolsArraySorted.filter((pool) => pool.shares && Big(pool.shares).gt(0));
     return (
       <Wrapper>
         {filteredPools.map((pool) => (
@@ -67,13 +89,13 @@ export default function PoolResult(
 
   return (
     <Wrapper>
-      {poolsArray.map((pool) => (
+      {poolsArraySorted.map((pool) => (
         <PoolCard
           key={pool.id}
           pool={pool}
         />
       ))}
-      {poolsArray.length === 0
+      {poolsArraySorted.length === 0
         && (
         <NoResult>
           {noResult.noResultFound}

@@ -182,6 +182,7 @@ export default function Pool() {
       <PoolResult
         poolsArray={poolsArray}
         currentFilterPools={currentFilterPools}
+        loading={loading}
       />
     </Container>
   );

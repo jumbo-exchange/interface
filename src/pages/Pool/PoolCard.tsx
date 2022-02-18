@@ -248,7 +248,7 @@ export default function PoolCard({ pool } : { pool: IPool }) {
   const volume: IVolume[] = [
     {
       title: 'Total Liquidity',
-      label: Big(totalLiquidity.length).gt(0) ? `$${totalLiquidity}` : '-',
+      label: totalLiquidity && Big(totalLiquidity).gt(0) ? `$${totalLiquidity}` : '-',
       tooltip: tooltipTitle.totalLiquidity,
     },
     {
