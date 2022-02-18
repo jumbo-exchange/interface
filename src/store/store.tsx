@@ -19,6 +19,15 @@ import { ITokenPrice, PoolType } from './interfaces';
 const config = getConfig();
 const DEFAULT_PAGE_LIMIT = 100;
 
+const pricesInitialState = {
+  [config.nearAddress]: {
+    id: config.nearAddress,
+    decimal: 24,
+    symbol: 'near',
+    price: '10.56',
+  },
+};
+
 const initialState: StoreContextType = {
   loading: false,
   priceLoading: false,
@@ -41,7 +50,7 @@ const initialState: StoreContextType = {
   setTokens: () => {},
   getToken: () => null,
 
-  prices: {},
+  prices: pricesInitialState,
   setPrices: () => {},
 
   inputToken: null,
