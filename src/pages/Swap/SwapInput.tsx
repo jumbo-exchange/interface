@@ -115,7 +115,7 @@ const LogoContainer = styled.div<{loading: boolean}>`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${({ theme, loading }) => (loading ? theme.globalGrey : theme.globalWhite)};
+  background-color: ${({ theme, loading }) => (loading ? theme.globalGrey : theme.bgToken)};
   border-radius: 12px;
   transition: all 1s ease-out;
   height: 2.375rem;

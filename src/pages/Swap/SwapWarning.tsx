@@ -53,7 +53,7 @@ const LogoContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${({ theme }) => theme.globalWhite};
+  background-color: ${({ theme }) => theme.bgToken};
   border-radius: 8px;
   transition: all 1s ease-out;
   height: 1.625rem;
