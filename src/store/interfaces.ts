@@ -69,8 +69,8 @@ export type StoreContextType = {
   setCurrentToken: (tokenAddress: string, tokenType: TokenType) => void;
   getToken: (tokenAddress: string) => FungibleTokenContract | null;
 
-  prices: {[key: string]:ITokenPrice},
-  setPrices: Dispatch<SetStateAction<{[key: string]:ITokenPrice}>>;
+  prices: {[key: string]: ITokenPrice},
+  setPrices: Dispatch<SetStateAction<{[key: string]: ITokenPrice}>>;
 
   inputToken: FungibleTokenContract | null;
   setInputToken: Dispatch<SetStateAction<FungibleTokenContract | null>>;
