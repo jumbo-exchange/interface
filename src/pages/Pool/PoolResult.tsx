@@ -49,7 +49,7 @@ export default function PoolResult(
         return 1;
       }
       if (a.tokenAccountIds.includes(config.nearAddress)) {
-        return 0;
+        return -1;
       }
       return 0;
     },
