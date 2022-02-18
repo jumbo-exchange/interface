@@ -7,7 +7,7 @@ import { ReactComponent as SearchIcon } from 'assets/images-app/search-icon.svg'
 import { ReactComponent as ArrowDownIcon } from 'assets/images-app/icon-arrow-down.svg';
 import { ReactComponent as Plus } from 'assets/images-app/plus.svg';
 import { isMobile } from 'utils/userAgent';
-import { IPool, useModalsStore, useStore } from 'store';
+import { useModalsStore, useStore } from 'store';
 import { tooltipTitle } from 'utils/constants';
 import { toArray } from 'utils';
 import { FilterPoolsEnum } from '.';
