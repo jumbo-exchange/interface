@@ -95,7 +95,7 @@ export default function Pool() {
     if (pools[JUMBO_POOL_ID] || !priceLoading) {
       const jumboPool = pools[JUMBO_POOL_ID];
       const [firstToken, secondToken] = jumboPool.tokenAccountIds;
-      const secondPrice = prices[secondToken]?.price;
+      const secondPrice = prices[secondToken]?.price ?? 0;
       const firstDecimals = getToken(firstToken)?.metadata.decimals;
       const secondDecimals = getToken(secondToken)?.metadata.decimals;
 
