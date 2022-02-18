@@ -47,20 +47,24 @@ export interface IVertex {
 }
 
 export const sortPoolsByLiquidity = (
-  pools:IPool[], tokens: {[key:string]: FungibleTokenContract},
-) => (
-  pools.sort((first, second) => {
-    const firstPoolLiquidity = Object.entries(first.supplies)
-      .reduce((acc, [key, value]) => acc.add(
-        formatTokenAmount(value, tokens[key as string].metadata.decimals),
-      ), Big(0));
-    const secondPoolLiquidity = Object.entries(second.supplies)
-      .reduce((acc, [key, value]) => acc.add(
-        formatTokenAmount(value, tokens[key as string].metadata.decimals),
-      ), Big(0));
-    return secondPoolLiquidity.minus(firstPoolLiquidity).toNumber();
-  })
-);
+  pools: IPool[], tokens: {[key:string]: FungibleTokenContract},
+) => {
+  try {
+    return pools.sort((first, second) => {
+      const firstPoolLiquidity = Object.entries(first.supplies)
+        .reduce((acc, [key, value]) => acc.add(
+          formatTokenAmount(value, tokens[key as string].metadata.decimals),
+        ), Big(0));
+      const secondPoolLiquidity = Object.entries(second.supplies)
+        .reduce((acc, [key, value]) => acc.add(
+          formatTokenAmount(value, tokens[key as string].metadata.decimals),
+        ), Big(0));
+      return secondPoolLiquidity.minus(firstPoolLiquidity).toNumber();
+    });
+  } catch (e) {
+    return [];
+  }
+};
 
 export function getPoolsPath(
   tokenAddressInput: string,
