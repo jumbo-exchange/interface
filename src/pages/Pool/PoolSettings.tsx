@@ -62,7 +62,7 @@ const Wrapper = styled.div`
   }
 `;
 
-const APRWrapper = styled.div`
+const APYWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -103,6 +103,7 @@ const SortBlock = styled.div`
   line-height: .875rem;
   color: ${({ theme }) => theme.globalGreyOp02};
   user-select: none;
+  white-space: nowrap;
   & > svg {
     path { 
       fill: ${({ theme }) => theme.globalGreyOp02};
@@ -232,8 +233,8 @@ export default function PoolSettings({
             </SortBlock>
           </Wrapper>
           )}
-          <APRWrapper>
-            <Title>APR Basis <Tooltip title={tooltipTitle.APRBasis} /></Title>
+          <APYWrapper>
+            <Title>APY Basis <Tooltip title={tooltipTitle.APYBasis} /></Title>
             <FilterBlock>
               {aprFilters.map((el) => (
                 <FilterButton
@@ -246,7 +247,7 @@ export default function PoolSettings({
                 </FilterButton>
               ))}
             </FilterBlock>
-          </APRWrapper>
+          </APYWrapper>
         </MobileRow>
         <ButtonSecondary
           onClick={() => setCreatePoolModalOpen(true)}
@@ -274,8 +275,8 @@ export default function PoolSettings({
           <ArrowDown />
         </SortBlock>
       </Wrapper>
-      <APRWrapper>
-        <Title>APR Basis <Tooltip title="APR Basis" /></Title>
+      <APYWrapper>
+        <Title>APY Basis <Tooltip title={tooltipTitle.APYBasis} /></Title>
         <FilterBlock>
           {aprFilters.map((el) => (
             <FilterButton
@@ -288,7 +289,7 @@ export default function PoolSettings({
             </FilterButton>
           ))}
         </FilterBlock>
-      </APRWrapper>
+      </APYWrapper>
       <Title><Refresh /></Title>
       <ButtonSecondary
         onClick={() => setCreatePoolModalOpen(true)}

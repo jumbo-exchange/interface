@@ -18,6 +18,7 @@ export const FilterBlock = styled.div`
   display: flex;
   margin-bottom: 2.375rem;
   align-content: center;
+  white-space: nowrap;
   & > button {
     margin: 0 .625rem;
   }

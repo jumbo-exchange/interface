@@ -34,10 +34,10 @@ export const tooltipTitle = {
   liquidityProviderFee: 'A small sum paid to liquidity providers',
 
   // Pool
-  APRBasis: 'Annual Percentage Yield accrued. Includes your interest rate and the frequency of compounding interest',
+  APYBasis: 'Annual Percentage Yield accrued. Includes your interest rate and the frequency of compounding interest',
   totalLiquidity: 'Amount of liquidity currently available in the given pool',
   dayVolume: 'Daily volume of trading activity',
-  APR: 'Annual Percentage Yield',
+  APY: 'Annual Percentage Yield',
 
   // Create Pool
   totalFee: 'A sum paid for creating a pool',
@@ -60,6 +60,11 @@ export const warningMessage = {
 
   transactionMayFail: 'Your transaction may be frontrun',
   zeroFee: 'Total Fee cannot be zero',
+};
+
+export const noResult = {
+  yourLiquidity: 'Your active liquidity positions will appear here.',
+  noResultFound: 'No results found',
 };
 
 export const poolFeeOptions = [

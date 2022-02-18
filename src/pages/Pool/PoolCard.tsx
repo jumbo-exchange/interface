@@ -222,10 +222,10 @@ export default function PoolCard({ pool } : { pool:IPool }) {
       tooltip: tooltipTitle.dayVolume,
     },
     {
-      title: 'APR',
+      title: 'APY',
       label: '-',
       color: true,
-      tooltip: tooltipTitle.APR,
+      tooltip: tooltipTitle.APY,
     },
   ];
 
