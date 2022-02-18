@@ -35,11 +35,18 @@ const Container = styled.div`
   }
 `;
 
-const LogoToken = styled.div`
+const LogoContainer = styled.div`
   margin-right: 1rem;
   display: flex;
   align-items: center;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.globalWhite};
+  border-radius: 12px;
+  transition: all 1s ease-out;
+  height: 2.375rem;
+  min-width: 2.375rem;
   & > img {
+    border-radius: 12px;
     height: 2.25rem;
     width: 2.25rem;
     transition: all 1s ease-out;
@@ -67,9 +74,9 @@ export default function TokenBlock(
   const { setSearchModalOpen } = useModalsStore();
   return (
     <Container onClick={() => setSearchModalOpen({ isOpen: true, tokenType })}>
-      <LogoToken>
+      <LogoContainer>
         <img src={token?.metadata?.icon ?? tokenLogo} alt={token?.metadata.symbol} />
-      </LogoToken>
+      </LogoContainer>
       <TitleToken>
         {getUpperCase(token?.metadata.symbol ?? '')}
       </TitleToken>

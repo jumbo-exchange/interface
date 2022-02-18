@@ -58,11 +58,7 @@ const BlockTitle = styled.div`
 const LogoPool = styled.div`
   position: relative;
   margin-right: 1.75rem;
-  & > img {
-    width: 24px;
-    height: 24px;
-  }
-  & > img:last-child {
+  & > div:last-child {
     position: absolute;
     left: 19px;
     top: -5px;
@@ -193,6 +189,35 @@ const LogoButton = styled(AddIcon)`
   margin-right: .625rem;
 `;
 
+const LogoContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.globalWhite};
+  border-radius: 8px;
+  transition: all 1s ease-out;
+  height: 1.625rem;
+  min-width: 1.625rem;
+  & > img {
+    border-radius: 8px;
+    height: 1.5rem;
+    width: 1.5rem;
+    transition: all 1s ease-out;
+  }
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    border-radius: 10px;
+    height: 2.125rem;
+    min-width: 2.125rem;
+    & > img {
+      border-radius: 10px;
+      height: 2rem;
+      width: 2rem;
+      transition: all 1s ease-out;
+    }
+  `}
+`;
+
 interface IVolume {
   title: string;
   label: string;
@@ -236,8 +261,12 @@ export default function PoolCard({ pool } : { pool:IPool }) {
       <UpperRow>
         <BlockTitle>
           <LogoPool>
-            <img src={tokenInput.metadata.icon} alt="logo token" />
-            <img src={tokenOutput.metadata.icon} alt="logo token" />
+            <LogoContainer>
+              <img src={tokenInput.metadata.icon} alt="logo token" />
+            </LogoContainer>
+            <LogoContainer>
+              <img src={tokenOutput.metadata.icon} alt="logo token" />
+            </LogoContainer>
           </LogoPool>
           <TitlePool>
             <p>{tokenInput.metadata.symbol}</p>

@@ -42,7 +42,7 @@ import {
   RowInfo,
   LabelInfo,
   LabelError,
-  TokenImg,
+  LogoContainer,
   RouteArrowLogo,
   BlockButton,
 } from './styles';
@@ -327,28 +327,34 @@ export default function Swap() {
                   <Tooltip title={tooltipTitle.routes} />
                 </TitleInfo>
                 <div>
-                  <TokenImg
-                    src={inputToken?.metadata.icon}
-                    alt={inputToken?.metadata.symbol}
-                  />
+                  <LogoContainer>
+                    <img
+                      src={inputToken?.metadata.icon}
+                      alt={inputToken?.metadata.symbol}
+                    />
+                  </LogoContainer>
                   {inputToken?.metadata.symbol}
                   {intersectionTokenId
                     ? (
                       <>
                         <RouteArrowLogo />
-                        <TokenImg
-                          src={intersectionToken?.metadata.icon}
-                          alt={intersectionToken?.metadata.symbol}
-                        />
+                        <LogoContainer>
+                          <img
+                            src={intersectionToken?.metadata.icon}
+                            alt={intersectionToken?.metadata.symbol}
+                          />
+                        </LogoContainer>
                         {intersectionToken?.metadata.symbol}
                       </>
                     ) // TODO: check correct display
                     : null}
                   <RouteArrowLogo />
-                  <TokenImg
-                    src={outputToken?.metadata.icon}
-                    alt={outputToken?.metadata.symbol}
-                  />
+                  <LogoContainer>
+                    <img
+                      src={outputToken?.metadata.icon}
+                      alt={outputToken?.metadata.symbol}
+                    />
+                  </LogoContainer>
                   {outputToken?.metadata.symbol}
                 </div>
               </RouteBlock>
