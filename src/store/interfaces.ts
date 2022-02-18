@@ -25,6 +25,9 @@ export interface IPool {
 
   shares?: string;
   volumes?: IPoolVolumes ;
+
+  // Views
+  totalLiquidity?: string | null;
 }
 
 export interface ITokenMetadata {
@@ -36,7 +39,7 @@ export interface ITokenMetadata {
   icon: string;
 }
 
-export interface ITokenPrice { decimal: number, price:'string', symbol: string}
+export interface ITokenPrice { decimal: number, price: string, symbol: string}
 
 export type StoreContextType = {
   loading: boolean;
