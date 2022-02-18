@@ -68,8 +68,8 @@ const calculatePriceForToken = (
   firstAmount: string,
   secondAmount: string,
   price: string,
-) => (Big(firstAmount).gt(0) ? (new Big(secondAmount)
-  .mul(price).div(firstAmount).toFixed(2)) : '0');
+) => (Big(firstAmount).gt(0) ? (new Big(firstAmount)
+  .mul(price).div(secondAmount).toFixed(2)) : '0');
 
 export default function Pool() {
   const {
@@ -95,7 +95,7 @@ export default function Pool() {
     if (pools[JUMBO_POOL_ID] || !priceLoading) {
       const jumboPool = pools[JUMBO_POOL_ID];
       const [firstToken, secondToken] = jumboPool.tokenAccountIds;
-      const secondPrice = prices[secondToken]?.price ?? 0;
+      const secondPrice = prices[firstToken]?.price ?? 0;
       const firstDecimals = getToken(firstToken)?.metadata.decimals;
       const secondDecimals = getToken(secondToken)?.metadata.decimals;
 
@@ -105,7 +105,6 @@ export default function Pool() {
       const secondAmount = formatTokenAmount(
         jumboPool.supplies[secondToken], secondDecimals,
       );
-
       const newJumboPrice = calculatePriceForToken(firstAmount, secondAmount, secondPrice);
       setJumboPrice(newJumboPrice);
     }
