@@ -21,6 +21,7 @@ import {
 } from 'utils/routes';
 import { RefreshContextProvider } from 'services/refreshService';
 import { ModalsContextProvider, useStore } from 'store';
+import { ToastContainer } from 'react-toastify';
 import {
   Container,
   Header,
@@ -107,6 +108,7 @@ export default function App() {
             </Suspense>
           </Body>
           <Footer />
+          <ToastContainer />
         </Container>
       </ModalsContextProvider>
     </RefreshContextProvider>
