@@ -62,10 +62,9 @@ export const priceLoadingRequest = async (
   setPriceLoading(true);
   try {
     const pricesData = await fetch(config.indexerUrl);
-    const prices = await pricesData.json();
-    setPrices(prices);
+    setPrices(pricesData as any);
     setPriceLoading(false);
-    console.log(prices);
+    console.log(pricesData as any);
   } catch (e) {
     console.warn(e);
   } finally {
