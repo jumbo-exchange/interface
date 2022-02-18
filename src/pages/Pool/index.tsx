@@ -130,7 +130,7 @@ export default function Pool() {
     },
     {
       title: 'JUMBO Price',
-      label: jumboPrice || '-',
+      label: `$${jumboPrice}` || '-',
     },
     {
       title: 'Weekly Emissions',

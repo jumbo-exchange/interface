@@ -167,8 +167,13 @@ const BlockButton = styled.div`
   display: flex;
   justify-content: flex-end;
   width: 100%;
+  height: 40px;
+  & > button {
+    padding: 9px 15px;
+  }
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     flex-direction: column-reverse;
+    height: 48px;
   `}
 `;
 
@@ -243,7 +248,7 @@ export default function PoolCard({ pool } : { pool: IPool }) {
   const volume: IVolume[] = [
     {
       title: 'Total Liquidity',
-      label: totalLiquidity || '-',
+      label: Big(totalLiquidity.length).gt(0) ? `$${totalLiquidity}` : '-',
       tooltip: tooltipTitle.totalLiquidity,
     },
     {
