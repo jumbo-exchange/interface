@@ -171,10 +171,34 @@ export const LabelError = styled(LabelInfo)`
   color: ${({ theme }) => theme.error};
 `;
 
-export const TokenImg = styled.img`
+export const LogoContainer = styled.div`
   margin-right: .5rem;
-  width: 24px;
-  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.bgToken};
+  border-radius: 8px;
+  transition: all 1s ease-out;
+  height: 1.625rem;
+  min-width: 1.625rem;
+  & > img {
+    border-radius: 8px;
+    height: 1.5rem;
+    width: 1.5rem;
+    transition: all 1s ease-out;
+  }
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    border-radius: 6px;
+    height: 1.125rem;
+    min-width: 1.125rem;
+    & > img {
+      border-radius: 6px;
+      height: 1rem;
+      width: 1rem;
+      transition: all 1s ease-out;
+    }
+  `}
 `;
 
 export const RouteArrowLogo = styled(RouteArrow)`

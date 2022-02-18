@@ -46,11 +46,18 @@ export const WithdrawTokenBlock = styled.div`
   `}
 `;
 
-export const TokenLogo = styled.div`
+export const LogoContainer = styled.div`
+  margin-right: .5rem;
   display: flex;
   align-items: center;
-  margin-right: .5rem;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.bgToken};
+  border-radius: 12px;
+  transition: all 1s ease-out;
+  height: 2.375rem;
+  min-width: 2.375rem;
   & > img {
+    border-radius: 12px;
     height: 2.25rem;
     width: 2.25rem;
     transition: all 1s ease-out;
