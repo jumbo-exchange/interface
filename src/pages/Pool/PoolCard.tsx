@@ -265,8 +265,8 @@ export default function PoolCard({ pool } : { pool: IPool }) {
     const config = getConfig();
     if (priceLoading || totalLiquidity) return;
     const [firstToken, secondToken] = pool.tokenAccountIds;
-    let firstPrice = prices[firstToken]?.price;
-    let secondPrice = prices[secondToken]?.price;
+    let firstPrice = prices[firstToken]?.price ?? 0;
+    let secondPrice = prices[secondToken]?.price ?? 0;
     let firstDecimals = getToken(firstToken)?.metadata.decimals;
     let secondDecimals = getToken(secondToken)?.metadata.decimals;
 

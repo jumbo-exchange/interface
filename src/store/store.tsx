@@ -61,14 +61,21 @@ export const priceLoadingRequest = async (
 ) => {
   setPriceLoading(true);
   try {
-    const pricesData = await fetch(`${config.indexerUrl}/list-token-price`, {
+    const pricesData = await fetch(`${config.indexerUrl}/token-prices`, {
       method: 'GET',
       headers: { 'Content-type': 'application/json; charset=UTF-8' },
     })
       .then((res) => res.json())
       .then((list) => list);
-    setPrices(pricesData);
-    setPriceLoading(false);
+    if (pricesData.length) {
+      const priceMap = pricesData.reduce(
+        (acc:{[key: string]:ITokenPrice}, item:ITokenPrice) => ({
+          ...acc, [item.id]: item,
+        }), {},
+      );
+      setPrices(priceMap);
+      setPriceLoading(false);
+    }
   } catch (e) {
     console.warn(e);
   } finally {

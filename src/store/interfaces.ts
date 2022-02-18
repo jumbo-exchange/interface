@@ -39,7 +39,12 @@ export interface ITokenMetadata {
   icon: string;
 }
 
-export interface ITokenPrice { decimal: number, price: string, symbol: string}
+export interface ITokenPrice {
+    id: string,
+    decimal: number,
+    price: string,
+    symbol: string
+}
 
 export type StoreContextType = {
   loading: boolean;
