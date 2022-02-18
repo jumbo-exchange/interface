@@ -27,7 +27,7 @@ export interface IPool {
   volumes?: IPoolVolumes ;
 
   // Views
-  totalLiquidity?: string | null;
+  totalLiquidity: string;
 }
 
 export interface ITokenMetadata {

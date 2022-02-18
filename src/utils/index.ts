@@ -36,7 +36,7 @@ export function formatPool(pool: any, id: number): IPool {
     totalFee: pool.total_fee,
     sharesTotalSupply: pool.shares_total_supply,
     amp: pool.amp,
-    totalLiquidity: null,
+    totalLiquidity: '0',
   };
 }
 

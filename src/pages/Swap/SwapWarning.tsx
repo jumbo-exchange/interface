@@ -146,7 +146,7 @@ export default function RenderWarning() {
 
   if (!loading && isConnected
     && getTokenBalance(wNear?.contractId) === '0'
-    && (inputToken === wNear || outputToken === wNear)
+    && (inputToken === wNear)
   ) {
     return (
       <WarningBlock>

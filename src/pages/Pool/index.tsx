@@ -130,7 +130,7 @@ export default function Pool() {
     },
     {
       title: 'JUMBO Price',
-      label: jumboPrice || '-',
+      label: `$${jumboPrice}` || '-',
     },
     {
       title: 'Weekly Emissions',
@@ -182,6 +182,7 @@ export default function Pool() {
       <PoolResult
         poolsArray={poolsArray}
         currentFilterPools={currentFilterPools}
+        loading={loading}
       />
     </Container>
   );
