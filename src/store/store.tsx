@@ -1,5 +1,5 @@
 import React, {
-  createContext, useContext, useEffect, useState,
+  createContext, Dispatch, SetStateAction, useContext, useEffect, useState,
 } from 'react';
 import { getUserWalletTokens, wallet as nearWallet } from 'services/near';
 import {
@@ -14,14 +14,16 @@ import SpecialWallet, { createContract } from 'services/wallet';
 import FungibleTokenContract from 'services/FungibleToken';
 import PoolContract from 'services/PoolContract';
 import { NEAR_TOKEN_ID } from 'utils/constants';
-import { PoolType } from './interfaces';
+import { ITokenPrice, PoolType } from './interfaces';
 
 const config = getConfig();
 const DEFAULT_PAGE_LIMIT = 100;
 
 const initialState: StoreContextType = {
   loading: false,
+  priceLoading: false,
   setLoading: () => {},
+  setPriceLoading: () => {},
 
   contract: null,
   wallet: null,
@@ -39,6 +41,9 @@ const initialState: StoreContextType = {
   setTokens: () => {},
   getToken: () => null,
 
+  prices: {},
+  setPrices: () => {},
+
   inputToken: null,
   setInputToken: () => {},
   outputToken: null,
@@ -50,6 +55,24 @@ const initialState: StoreContextType = {
 
 const StoreContextHOC = createContext<StoreContextType>(initialState);
 
+export const priceLoadingRequest = async (
+  setPriceLoading: Dispatch<SetStateAction<boolean>>,
+  setPrices: Dispatch<SetStateAction<{[key: string]:ITokenPrice}>>,
+) => {
+  setPriceLoading(true);
+  try {
+    const pricesData = await fetch(config.indexerUrl);
+    const prices = await pricesData.json();
+    setPrices(prices);
+    setPriceLoading(false);
+    console.log(prices);
+  } catch (e) {
+    console.warn(e);
+  } finally {
+    setPriceLoading(false);
+  }
+};
+
 export const StoreContextProvider = (
   { children }:{ children: JSX.Element },
 ) => {
@@ -57,6 +80,7 @@ export const StoreContextProvider = (
   const poolContract = new PoolContract();
 
   const [loading, setLoading] = useState<boolean>(initialState.loading);
+  const [priceLoading, setPriceLoading] = useState<boolean>(initialState.loading);
 
   const [wallet, setWallet] = useState<SpecialWallet| null>(initialState.wallet);
   const [balances, setBalances] = useState<{[key:string]: string}>(initialState.balances);
@@ -64,6 +88,7 @@ export const StoreContextProvider = (
   const [pools, setPools] = useState<{[key:string]: IPool}>(initialState.pools);
   const [currentPools, setCurrentPools] = useState<IPool[]>(initialState.currentPools);
   const [tokens, setTokens] = useState<{[key: string]: FungibleTokenContract}>(initialState.tokens);
+  const [prices, setPrices] = useState<{[key: string]: ITokenPrice}>(initialState.prices);
 
   const [inputToken, setInputToken] = useState<FungibleTokenContract | null>(
     initialState.inputToken,
@@ -187,6 +212,7 @@ export const StoreContextProvider = (
 
   useEffect(() => {
     initialLoading();
+    priceLoadingRequest(setPriceLoading, setPrices);
   }, []);
 
   useEffect(() => {
@@ -229,6 +255,8 @@ export const StoreContextProvider = (
     <StoreContextHOC.Provider value={{
       loading,
       setLoading,
+      priceLoading,
+      setPriceLoading,
 
       contract,
       wallet,
@@ -246,6 +274,8 @@ export const StoreContextProvider = (
       tokens,
       setTokens,
       getToken,
+      prices,
+      setPrices,
 
       inputToken,
       setInputToken,

@@ -36,9 +36,13 @@ export interface ITokenMetadata {
   icon: string;
 }
 
+export interface ITokenPrice { decimal: number, price:'string', symbol: string}
+
 export type StoreContextType = {
   loading: boolean;
   setLoading: Dispatch<SetStateAction<boolean>>
+  priceLoading: boolean;
+  setPriceLoading: Dispatch<SetStateAction<boolean>>
 
   contract: any;
   wallet: SpecialWallet | null;
@@ -56,6 +60,9 @@ export type StoreContextType = {
   setTokens: Dispatch<SetStateAction<{[key: string]: FungibleTokenContract}>>;
   setCurrentToken: (tokenAddress: string, tokenType: TokenType) => void;
   getToken: (tokenAddress: string) => FungibleTokenContract | null;
+
+  prices: {[key: string]:ITokenPrice},
+  setPrices: Dispatch<SetStateAction<{[key: string]:ITokenPrice}>>;
 
   inputToken: FungibleTokenContract | null;
   setInputToken: Dispatch<SetStateAction<FungibleTokenContract | null>>;
