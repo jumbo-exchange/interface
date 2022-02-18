@@ -61,10 +61,14 @@ export const priceLoadingRequest = async (
 ) => {
   setPriceLoading(true);
   try {
-    const pricesData = await fetch(config.indexerUrl);
-    setPrices(pricesData as any);
+    const pricesData = await fetch(`${config.indexerUrl}/list-token-price`, {
+      method: 'GET',
+      headers: { 'Content-type': 'application/json; charset=UTF-8' },
+    })
+      .then((res) => res.json())
+      .then((list) => list);
+    setPrices(pricesData);
     setPriceLoading(false);
-    console.log(pricesData as any);
   } catch (e) {
     console.warn(e);
   } finally {
