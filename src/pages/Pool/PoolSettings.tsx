@@ -191,8 +191,17 @@ export default function PoolSettings({
     const newPools = newValue !== ''
       ? Object.values(pools)
         .filter((el) => el.tokenAccountIds
-          .filter((item) => getToken(item)?.metadata.symbol.includes(newValue)).length > 0)
+          .some((item) => {
+            const formattedValue = newValue.toLowerCase();
+            const tokenData = getToken(item)?.metadata;
+            if (!tokenData) return false;
+
+            return tokenData.symbol.toLowerCase().includes(formattedValue)
+            || tokenData.name.toLowerCase().includes(formattedValue)
+            || item.includes(formattedValue);
+          }))
       : toArray(pools);
+
     setPoolsArray(newPools);
   };
 
