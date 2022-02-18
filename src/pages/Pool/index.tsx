@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { FilterButton } from 'components/Button';
 import { isMobile } from 'utils/userAgent';
-import { useModalsStore, useStore } from 'store';
+import { IPool, useModalsStore, useStore } from 'store';
 import { useLocation, useParams } from 'react-router-dom';
 import { toAddLiquidityPage, toRemoveLiquidityPage } from 'utils/routes';
+import { toArray } from 'utils';
 import {
   Container,
   FilterBlock,
@@ -60,11 +61,13 @@ export interface IMainInfo {
 }
 
 export default function Pool() {
-  const { pools } = useStore();
+  const { pools, loading } = useStore();
   const { setAddLiquidityModalOpenState, setRemoveLiquidityModalOpenState } = useModalsStore();
   const { id } = useParams<'id'>();
 
   const location = useLocation();
+
+  const [poolsArray, setPoolsArray] = useState<IPool[]>([]);
 
   useEffect(() => {
     if (id && pools[Number(id)]) {
@@ -76,6 +79,14 @@ export default function Pool() {
       }
     }
   }, [id, pools]);
+
+  useEffect(() => {
+    const newPools = toArray(pools);
+    if (newPools.length !== poolsArray.length) {
+      setPoolsArray(newPools);
+    }
+  }, [pools, loading]);
+
   const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum['All Pools']);
 
   const mainInfo: IMainInfo[] = [
@@ -134,8 +145,14 @@ export default function Pool() {
           </InformationBlock>
         )}
 
-      <PoolSettings currentFilterPools={currentFilterPools} />
-      <PoolResult currentFilterPools={currentFilterPools} />
+      <PoolSettings
+        setPoolsArray={setPoolsArray}
+        currentFilterPools={currentFilterPools}
+      />
+      <PoolResult
+        poolsArray={poolsArray}
+        currentFilterPools={currentFilterPools}
+      />
     </Container>
   );
 }

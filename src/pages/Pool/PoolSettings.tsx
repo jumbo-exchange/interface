@@ -7,8 +7,9 @@ import { ReactComponent as SearchIcon } from 'assets/images-app/search-icon.svg'
 import { ReactComponent as ArrowDownIcon } from 'assets/images-app/icon-arrow-down.svg';
 import { ReactComponent as Plus } from 'assets/images-app/plus.svg';
 import { isMobile } from 'utils/userAgent';
-import { useModalsStore } from 'store';
+import { useModalsStore, useStore } from 'store';
 import { tooltipTitle } from 'utils/constants';
+import { toArray } from 'utils';
 import { FilterPoolsEnum } from '.';
 
 const Container = styled.div`
@@ -61,7 +62,7 @@ const Wrapper = styled.div`
   }
 `;
 
-const APRWrapper = styled.div`
+const APYWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -102,6 +103,7 @@ const SortBlock = styled.div`
   line-height: .875rem;
   color: ${({ theme }) => theme.globalGreyOp02};
   user-select: none;
+  white-space: nowrap;
   & > svg {
     path { 
       fill: ${({ theme }) => theme.globalGreyOp02};
@@ -173,12 +175,36 @@ const aprFilters: IAPRFilters[] = [
 ];
 
 export default function PoolSettings({
+  setPoolsArray,
   currentFilterPools,
 }:{
+  setPoolsArray: any,
   currentFilterPools: FilterPoolsEnum
 }) {
   const { setCreatePoolModalOpen } = useModalsStore();
+  const { pools, getToken } = useStore();
   const [currentAPRFilter, setCurrentAPRFilter] = useState(APRFiletEnum['24H']);
+  const [searchValue, setSearchValue] = useState<string>('');
+
+  const onChange = (value: string) => {
+    const newValue = value.trim().toUpperCase();
+    setSearchValue(newValue);
+    const newPools = newValue !== ''
+      ? Object.values(pools)
+        .filter((el) => el.tokenAccountIds
+          .some((item) => {
+            const formattedValue = newValue.toLowerCase();
+            const tokenData = getToken(item)?.metadata;
+            if (!tokenData) return false;
+
+            return tokenData.symbol.toLowerCase().includes(formattedValue)
+            || tokenData.name.toLowerCase().includes(formattedValue)
+            || item.includes(formattedValue);
+          }))
+      : toArray(pools);
+
+    setPoolsArray(newPools);
+  };
 
   if (isMobile) {
     return (
@@ -187,6 +213,8 @@ export default function PoolSettings({
           <SearchInputBlock>
             <SearchIcon />
             <SearchInput
+              value={searchValue}
+              onChange={(value) => onChange(value.target.value)}
               placeholder="Search"
             />
           </SearchInputBlock>
@@ -205,8 +233,8 @@ export default function PoolSettings({
             </SortBlock>
           </Wrapper>
           )}
-          <APRWrapper>
-            <Title>APR Basis <Tooltip title={tooltipTitle.APRBasis} /></Title>
+          <APYWrapper>
+            <Title>APY Basis <Tooltip title={tooltipTitle.APYBasis} /></Title>
             <FilterBlock>
               {aprFilters.map((el) => (
                 <FilterButton
@@ -219,7 +247,7 @@ export default function PoolSettings({
                 </FilterButton>
               ))}
             </FilterBlock>
-          </APRWrapper>
+          </APYWrapper>
         </MobileRow>
         <ButtonSecondary
           onClick={() => setCreatePoolModalOpen(true)}
@@ -235,6 +263,8 @@ export default function PoolSettings({
       <SearchInputBlock>
         <SearchIcon />
         <SearchInput
+          value={searchValue}
+          onChange={(value) => onChange(value.target.value)}
           placeholder="Search"
         />
       </SearchInputBlock>
@@ -245,8 +275,8 @@ export default function PoolSettings({
           <ArrowDown />
         </SortBlock>
       </Wrapper>
-      <APRWrapper>
-        <Title>APR Basis <Tooltip title="APR Basis" /></Title>
+      <APYWrapper>
+        <Title>APY Basis <Tooltip title={tooltipTitle.APYBasis} /></Title>
         <FilterBlock>
           {aprFilters.map((el) => (
             <FilterButton
@@ -259,7 +289,7 @@ export default function PoolSettings({
             </FilterButton>
           ))}
         </FilterBlock>
-      </APRWrapper>
+      </APYWrapper>
       <Title><Refresh /></Title>
       <ButtonSecondary
         onClick={() => setCreatePoolModalOpen(true)}

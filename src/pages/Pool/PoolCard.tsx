@@ -148,6 +148,9 @@ const TitleVolume = styled.div`
   line-height: .875rem;
   color: ${({ theme }) => theme.globalGrey};
   margin-bottom: .75rem;
+  & > span {
+    white-space: nowrap;
+  }
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     margin: 0;
   `}
@@ -219,10 +222,10 @@ export default function PoolCard({ pool } : { pool:IPool }) {
       tooltip: tooltipTitle.dayVolume,
     },
     {
-      title: 'APR',
+      title: 'APY',
       label: '-',
       color: true,
-      tooltip: tooltipTitle.APR,
+      tooltip: tooltipTitle.APY,
     },
   ];
 
@@ -251,7 +254,7 @@ export default function PoolCard({ pool } : { pool:IPool }) {
           {volume.map((el) => (
             <Column key={el.title}>
               <TitleVolume>
-                {el.title}
+                <span>{el.title}</span>
                 <Tooltip title={el.tooltip} />
               </TitleVolume>
               <LabelVolume isColor={el.color}>{el.label}</LabelVolume>

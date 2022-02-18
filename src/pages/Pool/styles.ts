@@ -9,7 +9,6 @@ export const Container = styled.div`
   align-items: center;
   width: 100%;
   max-width: 736px;
-  white-space: nowrap;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     max-width: 328px;
   `}
@@ -19,6 +18,7 @@ export const FilterBlock = styled.div`
   display: flex;
   margin-bottom: 2.375rem;
   align-content: center;
+  white-space: nowrap;
   & > button {
     margin: 0 .625rem;
   }
