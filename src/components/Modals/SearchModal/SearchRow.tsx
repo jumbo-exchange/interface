@@ -57,24 +57,6 @@ const SearchRowContainer = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
-  & > img {
-    width: 3rem;
-    height: 3rem;
-    transition: all 1s ease;
-  }
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    & > img {
-      width: 4.5rem;
-      height: 4.5rem;
-    }
-  `}
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    & > img {
-      width: 3rem;
-      height: 3rem;
-    }
-  `}
-  transition: all 1s ease;
 `;
 
 const SearchDescriptionBlock = styled.div`
@@ -149,6 +131,46 @@ const NoResultContainer = styled.div`
   `}
 `;
 
+const LogoContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.bgToken};
+  border-radius: 16px;
+  transition: all 1s ease-out;
+  height: 3.125rem;
+  min-width: 3.125rem;
+  & > img {
+    border-radius: 16px;
+    width: 3rem;
+    height: 3rem;
+    transition: all 1s ease;
+  }
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    border-radius: 20px;
+    min-width: 4.625rem;
+    height: 4.625rem;
+    & > img {
+      border-radius: 20px;
+      width: 4.5rem;
+      height: 4.5rem;
+    }
+  `}
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    border-radius: 16px;
+    height: 3.125rem;
+    min-width: 3.125rem;
+    & > img {
+      border-radius: 16px;
+      height: 3rem;
+      width: 3rem;
+      transition: all 1s ease-out;
+    }
+  `}
+`;
+
 export default function SearchRow({ tokensArray }:{tokensArray: FungibleTokenContract[]}) {
   const isConnected = wallet.isSignedIn();
   const {
@@ -180,7 +202,9 @@ export default function SearchRow({ tokensArray }:{tokensArray: FungibleTokenCon
                 setSearchModalOpen(initialModalsState.isSearchModalOpen);
               }}
             >
-              <img src={token.metadata.icon} alt={token.metadata.symbol} />
+              <LogoContainer>
+                <img src={token.metadata.icon} alt={token.metadata.symbol} />
+              </LogoContainer>
               <SearchDescriptionBlock>
                 <SearchTitle>
                   <div>{token.metadata.symbol}</div>

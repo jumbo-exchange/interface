@@ -40,7 +40,7 @@ import {
   ModalBody,
   TitleAction,
   WithdrawTokenBlock,
-  TokenLogo,
+  LogoContainer,
   TokenBlock,
   TokenValueBlock,
   SlippageBlock,
@@ -184,12 +184,12 @@ export default function RemoveLiquidityModal() {
             <WithdrawTokenBlock>
               {tokensData.map(({ token, value }) => (
                 <TokenBlock key={token.contractId}>
-                  <TokenLogo>
+                  <LogoContainer>
                     <img
                       src={token?.metadata.icon ?? tokenLogo}
                       alt={token?.metadata.symbol}
                     />
-                  </TokenLogo>
+                  </LogoContainer>
                   <TokenValueBlock>
                     <p>{removeTrailingZeros(formatBalance(value)) }</p>
                     &nbsp;

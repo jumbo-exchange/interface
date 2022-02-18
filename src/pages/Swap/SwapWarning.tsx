@@ -48,14 +48,34 @@ const RouteBlock = styled.div`
   `}
 `;
 
-const TokenImg = styled.img`
+const LogoContainer = styled.div`
   margin-right: .5rem;
-  width: 24px;
-  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.bgToken};
+  border-radius: 8px;
+  transition: all 1s ease-out;
+  height: 1.625rem;
+  min-width: 1.625rem;
+  & > img {
+    border-radius: 8px;
+    height: 1.5rem;
+    width: 1.5rem;
+    transition: all 1s ease-out;
+  }
+
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     margin-right: .25rem;
-    width: 16px;
-    height: 16px;
+    border-radius: 6px;
+    height: 1.125rem;
+    min-width: 1.125rem;
+    & > img {
+      border-radius: 6px;
+      height: 1rem;
+      width: 1rem;
+      transition: all 1s ease-out;
+    }
   `}
 `;
 
@@ -136,16 +156,21 @@ export default function RenderWarning() {
         >
           <RouteBlock>
             <div>
-              <TokenImg
-                src={near?.metadata.icon}
-                alt={near?.metadata.symbol}
-              />
+              <LogoContainer>
+                <img
+                  src={near?.metadata.icon}
+                  alt={near?.metadata.symbol}
+                />
+              </LogoContainer>
+
               {near?.metadata.symbol}
               <RouteArrowLogo />
-              <TokenImg
-                src={wNear?.metadata.icon}
-                alt={wNear?.metadata.symbol}
-              />
+              <LogoContainer>
+                <img
+                  src={wNear?.metadata.icon}
+                  alt={wNear?.metadata.symbol}
+                />
+              </LogoContainer>
               {wNear?.metadata.symbol}
             </div>
             <ButtonSecondary
@@ -192,31 +217,39 @@ export default function RenderWarning() {
               {nearIsInput
                 ? (
                   <>
-                    <TokenImg
-                      src={wNear?.metadata.icon}
-                      alt={wNear?.metadata.symbol}
-                    />
+                    <LogoContainer>
+                      <img
+                        src={wNear?.metadata.icon}
+                        alt={wNear?.metadata.symbol}
+                      />
+                    </LogoContainer>
                     {wNear?.metadata.symbol}
                     <RouteArrowLogo />
-                    <TokenImg
-                      src={outputToken?.metadata.icon}
-                      alt={outputToken?.metadata.symbol}
-                    />
+                    <LogoContainer>
+                      <img
+                        src={outputToken?.metadata.icon}
+                        alt={outputToken?.metadata.symbol}
+                      />
+                    </LogoContainer>
                     {outputToken?.metadata.symbol}
                   </>
                 )
                 : (
                   <>
-                    <TokenImg
-                      src={inputToken?.metadata.icon}
-                      alt={inputToken?.metadata.symbol}
-                    />
+                    <LogoContainer>
+                      <img
+                        src={inputToken?.metadata.icon}
+                        alt={inputToken?.metadata.symbol}
+                      />
+                    </LogoContainer>
                     {inputToken?.metadata.symbol}
                     <RouteArrowLogo />
-                    <TokenImg
-                      src={wNear?.metadata.icon}
-                      alt={wNear?.metadata.symbol}
-                    />
+                    <LogoContainer>
+                      <img
+                        src={wNear?.metadata.icon}
+                        alt={wNear?.metadata.symbol}
+                      />
+                    </LogoContainer>
                     {wNear?.metadata.symbol}
                   </>
                 )}
@@ -253,16 +286,20 @@ export default function RenderWarning() {
         >
           <RouteBlock>
             <div>
-              <TokenImg
-                src={inputToken?.metadata.icon}
-                alt={inputToken?.metadata.symbol}
-              />
+              <LogoContainer>
+                <img
+                  src={inputToken?.metadata.icon}
+                  alt={inputToken?.metadata.symbol}
+                />
+              </LogoContainer>
               {inputToken?.metadata.symbol}
               <RouteArrowLogo />
-              <TokenImg
-                src={outputToken?.metadata.icon}
-                alt={outputToken?.metadata.symbol}
-              />
+              <LogoContainer>
+                <img
+                  src={outputToken?.metadata.icon}
+                  alt={outputToken?.metadata.symbol}
+                />
+              </LogoContainer>
               {outputToken?.metadata.symbol}
             </div>
             {!isBalancesEmpty ? (

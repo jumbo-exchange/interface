@@ -5,6 +5,8 @@ import { IPool, useModalsStore, useStore } from 'store';
 import { useLocation, useParams } from 'react-router-dom';
 import { toAddLiquidityPage, toRemoveLiquidityPage } from 'utils/routes';
 import { toArray } from 'utils';
+import Big from 'big.js';
+import { formatTokenAmount } from 'utils/calculations';
 import {
   Container,
   FilterBlock,
@@ -60,10 +62,22 @@ export interface IMainInfo {
   label: string,
 }
 
+const JUMBO_POOL_ID = 4;
+
+const calculatePriceForToken = (
+  firstAmount: string,
+  secondAmount: string,
+  price: string,
+) => (Big(firstAmount).gt(0) ? (new Big(secondAmount)
+  .mul(price).div(firstAmount).toFixed(2)) : '0');
+
 export default function Pool() {
-  const { pools, loading } = useStore();
+  const {
+    pools, loading, getToken, prices, priceLoading,
+  } = useStore();
   const { setAddLiquidityModalOpenState, setRemoveLiquidityModalOpenState } = useModalsStore();
   const { id } = useParams<'id'>();
+  const [jumboPrice, setJumboPrice] = useState('0');
 
   const location = useLocation();
 
@@ -77,6 +91,23 @@ export default function Pool() {
       } else if (location.pathname === toAddLiquidityPage(pool.id)) {
         setAddLiquidityModalOpenState({ isOpen: true, pool });
       }
+    }
+    if (pools[JUMBO_POOL_ID] || !priceLoading) {
+      const jumboPool = pools[JUMBO_POOL_ID];
+      const [firstToken, secondToken] = jumboPool.tokenAccountIds;
+      const secondPrice = prices[secondToken]?.price;
+      const firstDecimals = getToken(firstToken)?.metadata.decimals;
+      const secondDecimals = getToken(secondToken)?.metadata.decimals;
+
+      const firstAmount = formatTokenAmount(
+        jumboPool.supplies[firstToken], firstDecimals,
+      );
+      const secondAmount = formatTokenAmount(
+        jumboPool.supplies[secondToken], secondDecimals,
+      );
+
+      const newJumboPrice = calculatePriceForToken(firstAmount, secondAmount, secondPrice);
+      setJumboPrice(newJumboPrice);
     }
   }, [id, pools]);
 
@@ -100,7 +131,7 @@ export default function Pool() {
     },
     {
       title: 'JUMBO Price',
-      label: '-',
+      label: jumboPrice || '-',
     },
     {
       title: 'Weekly Emissions',

@@ -83,6 +83,48 @@ const TokenTitle = styled.div`
   line-height: 1.188rem;
 `;
 
+const LogoContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.bgToken};
+  border-radius: 8px;
+  transition: all 1s ease-out;
+  height: 1.625rem;
+  min-width: 1.625rem;
+  margin-right: .5rem;
+  & > img {
+    border-radius: 8px;
+    width: 1.5rem;
+    height: 1.5rem;
+    transition: all 1s ease;
+  }
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    border-radius: 12px;
+    min-width: 2.375rem;
+    height: 2.375rem;
+    margin-right: .75rem;
+    & > img {
+      border-radius: 6px;
+      width: 2.25rem;
+      height: 2.25rem;
+    }
+  `}
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    border-radius: 8px;
+    height: 1.125rem;
+    min-width: 1.125rem;
+    & > img {
+      border-radius: 8px;
+      height: 1rem;
+      width: 1rem;
+      transition: all 1s ease-out;
+    }
+  `}
+`;
+
 export default function PopularToken() {
   const {
     getToken,
@@ -107,7 +149,9 @@ export default function PopularToken() {
               setSearchModalOpen(initialModalsState.isSearchModalOpen);
             }}
           >
-            <img src={token.metadata.icon} alt={token.metadata.symbol} />
+            <LogoContainer>
+              <img src={token.metadata.icon} alt={token.metadata.symbol} />
+            </LogoContainer>
             <TokenTitle>{token.metadata.symbol}</TokenTitle>
           </TokenBlock>
         ))}
