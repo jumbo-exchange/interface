@@ -5,8 +5,9 @@ import { IPool, useModalsStore, useStore } from 'store';
 import { useLocation, useParams } from 'react-router-dom';
 import { toAddLiquidityPage, toRemoveLiquidityPage } from 'utils/routes';
 import { toArray } from 'utils';
+
+import getConfig from 'services/config';
 import Big from 'big.js';
-import { formatTokenAmount } from 'utils/calculations';
 import {
   Container,
   FilterBlock,
@@ -62,25 +63,15 @@ export interface IMainInfo {
   label: string,
 }
 
-const JUMBO_POOL_ID = 4;
-
-const calculatePriceForToken = (
-  firstAmount: string,
-  secondAmount: string,
-  price: string,
-) => (Big(firstAmount).gt(0) ? (new Big(firstAmount)
-  .mul(price).div(secondAmount).toFixed(2)) : '0');
-
 export default function Pool() {
   const {
-    pools, loading, getToken, prices, priceLoading,
+    pools, loading, prices,
   } = useStore();
   const { setAddLiquidityModalOpenState, setRemoveLiquidityModalOpenState } = useModalsStore();
   const { id } = useParams<'id'>();
-  const [jumboPrice, setJumboPrice] = useState('0');
-
+  const config = getConfig();
   const location = useLocation();
-
+  const [totalValueLocked, setTotalValueLocked] = useState('0');
   const [poolsArray, setPoolsArray] = useState<IPool[]>([]);
 
   useEffect(() => {
@@ -92,22 +83,6 @@ export default function Pool() {
         setAddLiquidityModalOpenState({ isOpen: true, pool });
       }
     }
-    if (pools[JUMBO_POOL_ID] || !priceLoading) {
-      const jumboPool = pools[JUMBO_POOL_ID];
-      const [firstToken, secondToken] = jumboPool.tokenAccountIds;
-      const secondPrice = prices[firstToken]?.price ?? 0;
-      const firstDecimals = getToken(firstToken)?.metadata.decimals;
-      const secondDecimals = getToken(secondToken)?.metadata.decimals;
-
-      const firstAmount = formatTokenAmount(
-        jumboPool.supplies[firstToken], firstDecimals,
-      );
-      const secondAmount = formatTokenAmount(
-        jumboPool.supplies[secondToken], secondDecimals,
-      );
-      const newJumboPrice = calculatePriceForToken(firstAmount, secondAmount, secondPrice);
-      setJumboPrice(newJumboPrice);
-    }
   }, [id, pools]);
 
   useEffect(() => {
@@ -115,6 +90,10 @@ export default function Pool() {
     if (newPools.length !== poolsArray.length) {
       setPoolsArray(newPools);
     }
+    const newTotalValueLocked = newPools.reduce(
+      (acc, item:IPool) => acc.add(item.totalLiquidity), Big(0),
+    );
+    setTotalValueLocked(newTotalValueLocked.toFixed(2));
   }, [pools, loading]);
 
   const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum['All Pools']);
@@ -122,7 +101,7 @@ export default function Pool() {
   const mainInfo: IMainInfo[] = [
     {
       title: 'Total Value Locked',
-      label: '-',
+      label: Big(totalValueLocked ?? 0).lte(0) ? '-' : totalValueLocked,
     },
     {
       title: 'Total 24h Volume',
@@ -130,7 +109,7 @@ export default function Pool() {
     },
     {
       title: 'JUMBO Price',
-      label: `$${jumboPrice}` || '-',
+      label: `$${prices[config.jumboAddress].price ?? 0}` || '-',
     },
     {
       title: 'Weekly Emissions',

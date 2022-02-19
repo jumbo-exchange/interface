@@ -5,7 +5,6 @@ import { noResult } from 'utils/constants';
 import styled from 'styled-components';
 import Big from 'big.js';
 import PoolCardPlaceholder from 'components/Placeholder/PoolCardPlaceholder';
-import getConfig from 'services/config';
 import PoolCard from './PoolCard';
 
 const numberPlaceholderCard = Array.from(Array(5).keys());
@@ -25,8 +24,6 @@ const NoResult = styled.div`
   margin: 2rem 0;
 `;
 
-const config = getConfig();
-
 export default function PoolResult(
   {
     poolsArray,
@@ -39,20 +36,8 @@ export default function PoolResult(
   },
 ) {
   const poolsArraySorted = poolsArray.sort(
-    (a, b) => {
-      if (a.tokenAccountIds.includes(config.nearAddress)
-      && b.tokenAccountIds.includes(config.nearAddress)) {
-        return Big(b.supplies[config.nearAddress])
-          .minus(a.supplies[config.nearAddress]).toNumber();
-      }
-      if (a.tokenAccountIds.includes(config.nearAddress)) {
-        return 1;
-      }
-      if (a.tokenAccountIds.includes(config.nearAddress)) {
-        return -1;
-      }
-      return 0;
-    },
+    (a, b) => Big(b.totalLiquidity)
+      .minus(a.totalLiquidity).toNumber(),
   );
 
   if (loading) {
