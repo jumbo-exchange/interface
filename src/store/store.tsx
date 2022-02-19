@@ -1,12 +1,13 @@
 import React, {
-  createContext, Dispatch, SetStateAction, useContext, useEffect, useState,
+  createContext, useContext, useEffect, useState,
 } from 'react';
 import { getUserWalletTokens, wallet as nearWallet } from 'services/near';
 import {
   contractMethods, IPool, StoreContextType, TokenType,
 } from 'store';
 import {
-  formatPool, getPoolsPath, toArray, toMap,
+  calculatePriceForToken,
+  formatPool, getPoolsPath, toArray, toMap, calculateTotalAmount,
 } from 'utils';
 
 import getConfig from 'services/config';
@@ -14,18 +15,26 @@ import SpecialWallet, { createContract } from 'services/wallet';
 import FungibleTokenContract from 'services/FungibleToken';
 import PoolContract from 'services/PoolContract';
 import { NEAR_TOKEN_ID } from 'utils/constants';
+import { formatTokenAmount } from 'utils/calculations';
 import { ITokenPrice, PoolType } from './interfaces';
 
 const config = getConfig();
 const DEFAULT_PAGE_LIMIT = 100;
+const JUMBO_INITIAL_DATA = {
+  id: config.nearAddress,
+  decimal: 18,
+  symbol: 'JUMBO',
+  price: '0',
+};
 
 const pricesInitialState = {
   [config.nearAddress]: {
     id: config.nearAddress,
     decimal: 24,
     symbol: 'near',
-    price: '10.56',
+    price: '10.45',
   },
+  [config.jumboAddress]: JUMBO_INITIAL_DATA,
 };
 
 const initialState: StoreContextType = {
@@ -64,32 +73,18 @@ const initialState: StoreContextType = {
 
 const StoreContextHOC = createContext<StoreContextType>(initialState);
 
-export const priceLoadingRequest = async (
-  setPriceLoading: Dispatch<SetStateAction<boolean>>,
-  setPrices: Dispatch<SetStateAction<{[key: string]:ITokenPrice}>>,
-) => {
-  setPriceLoading(true);
-  try {
-    const pricesData = await fetch(`${config.indexerUrl}/token-prices`, {
-      method: 'GET',
-      headers: { 'Content-type': 'application/json; charset=UTF-8' },
-    })
-      .then((res) => res.json())
-      .then((list) => list);
-    if (pricesData.length) {
-      const priceMap = pricesData.reduce(
-        (acc:{[key: string]:ITokenPrice}, item:ITokenPrice) => ({
-          ...acc, [item.id]: item,
-        }), {},
-      );
-      setPrices(priceMap);
-      setPriceLoading(false);
-    }
-  } catch (e) {
-    console.warn(e);
-  } finally {
-    setPriceLoading(false);
-  }
+export const getPriceData = async () => {
+  const pricesData = await fetch(`${config.indexerUrl}/token-prices`, {
+    method: 'GET',
+    headers: { 'Content-type': 'application/json; charset=UTF-8' },
+  })
+    .then((res) => res.json())
+    .then((list) => list);
+  return pricesData.reduce(
+    (acc: {[key: string]: ITokenPrice}, item: ITokenPrice) => ({
+      ...acc, [item.id]: item,
+    }), {},
+  );
 };
 
 export const StoreContextProvider = (
@@ -157,6 +152,15 @@ export const StoreContextProvider = (
             { from_index: i * DEFAULT_PAGE_LIMIT, limit: DEFAULT_PAGE_LIMIT },
           )),
       )).flat();
+      let pricesData;
+
+      try {
+        pricesData = await getPriceData();
+      } catch (e) {
+        pricesData = initialState.prices;
+        console.warn('Price data loading failed');
+      }
+
       const userTokens = await getUserWalletTokens();
 
       const tokenAddresses = Array.from(
@@ -218,10 +222,46 @@ export const StoreContextProvider = (
           console.warn(e, 'while initial loading user specific data');
         }
       }
-      setTokens(tokensMetadataFiltered.reduce(
+      const metadataMap = tokensMetadataFiltered.reduce(
         (acc, curr) => ({ ...acc, [curr.contractId]: curr }), {},
-      ));
-      setPools(toMap(newPoolArray));
+      );
+      const newPoolMap = toMap(newPoolArray);
+
+      if (
+        newPoolMap[config.jumboPoolId]
+        && pricesData
+        && pricesData[config.nearAddress]
+      ) {
+        const jumboPool = newPoolMap[config.jumboPoolId];
+        const [firstToken, secondToken] = jumboPool.tokenAccountIds;
+        const secondPrice = prices[firstToken]?.price ?? 0;
+        const firstDecimals = metadataMap[firstToken]?.metadata.decimals;
+        const secondDecimals = metadataMap[secondToken]?.metadata.decimals;
+
+        const firstAmount = formatTokenAmount(
+          jumboPool.supplies[firstToken], firstDecimals,
+        );
+        const secondAmount = formatTokenAmount(
+          jumboPool.supplies[secondToken], secondDecimals,
+        );
+        const newJumboPrice = calculatePriceForToken(firstAmount, secondAmount, secondPrice);
+        pricesData = {
+          ...pricesData,
+          [config.jumboAddress]: {
+            ...JUMBO_INITIAL_DATA, price: newJumboPrice,
+          },
+        };
+      }
+
+      const resultedPoolsArray = calculateTotalAmount(
+        pricesData,
+        metadataMap,
+        newPoolMap,
+      );
+
+      setTokens(metadataMap);
+      setPools(resultedPoolsArray);
+      setPrices(pricesData);
     } catch (e) {
       console.warn(e);
     } finally {
@@ -231,7 +271,6 @@ export const StoreContextProvider = (
 
   useEffect(() => {
     initialLoading();
-    priceLoadingRequest(setPriceLoading, setPrices);
   }, []);
 
   useEffect(() => {

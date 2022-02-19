@@ -52,10 +52,10 @@ const SliderLink = styled.div`
 export default function Slider({ mainInfo }: {mainInfo: IMainInfo[]}) {
   const newMainInfo = [
     {
-      array: mainInfo.slice(0, 2),
+      array: [mainInfo[0], mainInfo[2]],
     },
     {
-      array: mainInfo.slice(2, 4),
+      array: [mainInfo[1], mainInfo[3]],
     },
   ];
 

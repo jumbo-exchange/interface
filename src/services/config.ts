@@ -13,6 +13,8 @@ export default function getConfig(
         indexerUrl: 'https://testnet-indexer.ref-finance.com',
         contractId: 'jumbo-testnet-v3.solniechniy.testnet',
         nearAddress: 'wrap.testnet',
+        jumboAddress: 'token.solniechniy.testnet',
+        jumboPoolId: 4,
         stablePoolId: 0,
       };
     default:
@@ -25,6 +27,8 @@ export default function getConfig(
         indexerUrl: 'https://ps.jumbo.exchange',
         contractId: 'v1.jumbo_exchange.near',
         nearAddress: 'wrap.near',
+        jumboAddress: 'token.jumbo_exchange.near',
+        jumboPoolId: 4,
         stablePoolId: 0,
       };
   }

@@ -1,7 +1,8 @@
 import Big from 'big.js';
+import getConfig from 'services/config';
 import FungibleTokenContract from 'services/FungibleToken';
-import { IPool, PoolType } from 'store';
-import { formatTokenAmount } from './calculations';
+import { IPool, ITokenPrice, PoolType } from 'store';
+import { formatTokenAmount, removeTrailingZeros } from './calculations';
 
 const ACCOUNT_TRIM_LENGTH = 10;
 
@@ -109,3 +110,60 @@ export const toArray = (map: {[key: string]: any}) => Object.values(map);
 export const toMap = (array: any[]) => array.reduce(
   (acc, item) => ({ ...acc, [item.id]: item }), {},
 );
+
+export const calculatePriceForToken = (
+  firstAmount: string,
+  secondAmount: string,
+  price: string,
+) => {
+  if (!price) return '0';
+  if (Big(firstAmount).lte(0)) return '0';
+  return new Big(firstAmount)
+    .mul(price).div(secondAmount).toFixed(2);
+};
+
+export const calculateTotalAmount = (
+  pricesData:{[key: string]: ITokenPrice},
+  metadataMap: {[key: string]: FungibleTokenContract},
+  newPoolMap:{[key:string]: IPool},
+):{[key:string]: IPool} => {
+  const calculatedPools = toArray(newPoolMap).map((pool: IPool) => {
+    const config = getConfig();
+
+    const [firstToken, secondToken] = pool.tokenAccountIds;
+    let firstPrice = pricesData[firstToken]?.price ?? 0;
+    let secondPrice = pricesData[secondToken]?.price ?? 0;
+    let firstDecimals = metadataMap[firstToken]?.metadata.decimals;
+    let secondDecimals = metadataMap[secondToken]?.metadata.decimals;
+
+    const firstAmount = formatTokenAmount(
+      pool.supplies[firstToken], firstDecimals,
+    );
+    const secondAmount = formatTokenAmount(
+      pool.supplies[secondToken], secondDecimals,
+    );
+
+    if (firstToken === config.nearAddress || secondToken === config.nearAddress) {
+      if (firstToken === config.nearAddress) {
+        secondPrice = Big(secondAmount).gt(0) ? (new Big(firstAmount)
+          .mul(firstPrice).div(secondAmount).toFixed(2)) : '0';
+        secondDecimals = metadataMap[secondToken]?.metadata.decimals ?? 0;
+      } else {
+        firstPrice = Big(firstAmount).gt(0) ? (new Big(secondAmount)
+          .mul(secondPrice).div(firstAmount).toFixed(2)) : '0';
+        firstDecimals = metadataMap[secondToken]?.metadata.decimals ?? 0;
+      }
+    }
+
+    if (firstPrice && secondPrice) {
+      const firstLiquidity = new Big(firstAmount).mul(firstPrice);
+      const secondLiquidity = new Big(secondAmount).mul(secondPrice);
+      const totalLiquidityAmount = new Big(firstLiquidity).add(secondLiquidity);
+      const totalLiquidityValue = removeTrailingZeros(totalLiquidityAmount.toFixed(2));
+      return { ...pool, totalLiquidity: totalLiquidityValue };
+    }
+    return { ...pool, totalLiquidity: 0 };
+  });
+
+  return toMap(calculatedPools);
+};

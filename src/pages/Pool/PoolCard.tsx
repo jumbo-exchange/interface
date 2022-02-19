@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useState, useEffect } from 'react';
+import React, { PropsWithChildren } from 'react';
 import styled from 'styled-components';
 import Tooltip from 'components/Tooltip';
 import Big from 'big.js';
@@ -9,8 +9,6 @@ import { useNavigate } from 'react-router-dom';
 import { ReactComponent as AddIcon } from 'assets/images-app/icon-add.svg';
 import { toAddLiquidityPage, toRemoveLiquidityPage } from 'utils/routes';
 import { tooltipTitle } from 'utils/constants';
-import { formatTokenAmount, removeTrailingZeros } from 'utils/calculations';
-import getConfig from 'services/config';
 
 interface IColor {
   isColor?: boolean
@@ -234,9 +232,9 @@ interface IVolume {
 
 export default function PoolCard({ pool } : { pool: IPool }) {
   const {
-    tokens, prices, priceLoading, updatePools, getToken,
+    tokens,
   } = useStore();
-  const [totalLiquidity, setTotalLiquidity] = useState<string>('');
+
   const navigate = useNavigate();
 
   const [inputToken, outputToken] = pool.tokenAccountIds;
@@ -248,7 +246,7 @@ export default function PoolCard({ pool } : { pool: IPool }) {
   const volume: IVolume[] = [
     {
       title: 'Total Liquidity',
-      label: totalLiquidity && Big(totalLiquidity).gt(0) ? `$${totalLiquidity}` : '-',
+      label: pool.totalLiquidity && Big(pool.totalLiquidity).gt(0) ? `$${pool.totalLiquidity}` : '-',
       tooltip: tooltipTitle.totalLiquidity,
     },
     {
@@ -265,44 +263,6 @@ export default function PoolCard({ pool } : { pool: IPool }) {
   ];
 
   const canWithdraw = pool.shares === '0' || pool.shares === undefined || Big(pool.shares) === Big('0');
-
-  useEffect(() => {
-    const config = getConfig();
-    if (priceLoading || totalLiquidity) return;
-    const [firstToken, secondToken] = pool.tokenAccountIds;
-    let firstPrice = prices[firstToken]?.price ?? 0;
-    let secondPrice = prices[secondToken]?.price ?? 0;
-    let firstDecimals = getToken(firstToken)?.metadata.decimals;
-    let secondDecimals = getToken(secondToken)?.metadata.decimals;
-
-    const firstAmount = formatTokenAmount(
-      pool.supplies[firstToken], firstDecimals,
-    );
-    const secondAmount = formatTokenAmount(
-      pool.supplies[secondToken], secondDecimals,
-    );
-
-    if (firstToken === config.nearAddress || secondToken === config.nearAddress) {
-      if (firstToken === config.nearAddress) {
-        secondPrice = Big(secondAmount).gt(0) ? (new Big(firstAmount)
-          .mul(firstPrice).div(secondAmount).toFixed(2)) : '0';
-        secondDecimals = getToken(secondToken)?.metadata.decimals ?? 0;
-      } else {
-        firstPrice = Big(firstAmount).gt(0) ? (new Big(secondAmount)
-          .mul(secondPrice).div(firstAmount).toFixed(2)) : '0';
-        firstDecimals = getToken(secondToken)?.metadata.decimals ?? 0;
-      }
-    }
-
-    if (firstPrice && secondPrice) {
-      const firstLiquidity = new Big(firstAmount).mul(firstPrice);
-      const secondLiquidity = new Big(secondAmount).mul(secondPrice);
-      const totalLiquidityAmount = new Big(firstLiquidity).add(secondLiquidity);
-      const totalLiquidityValue = removeTrailingZeros(totalLiquidityAmount.toFixed(2));
-      setTotalLiquidity(totalLiquidityValue);
-      updatePools([{ ...pool, totalLiquidity: totalLiquidityValue }]);
-    }
-  }, [priceLoading]);
 
   return (
     <Wrapper>
