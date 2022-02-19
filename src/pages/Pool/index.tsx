@@ -101,7 +101,7 @@ export default function Pool() {
   const mainInfo: IMainInfo[] = [
     {
       title: 'Total Value Locked',
-      label: Big(totalValueLocked ?? 0).lte(0) ? '-' : totalValueLocked,
+      label: Big(totalValueLocked ?? 0).lte(0) ? '-' : `$${totalValueLocked}`,
     },
     {
       title: 'Total 24h Volume',
