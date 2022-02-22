@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Toggle from 'components/Toggle';
 import Tooltip from 'components/Tooltip';
-import Big from 'big.js';
 import {
   slippageToleranceOptions,
   tooltipTitle,
   MIN_SLIPPAGE_TOLERANCE,
   MAX_SLIPPAGE_TOLERANCE,
   COEFFICIENT_SLIPPAGE,
+  warningMessage,
 } from 'utils/constants';
 
 const Container = styled.div<{isSettingsOpen?: boolean}>`
@@ -97,7 +97,7 @@ export default function SwapSettings(
         />
         {warning && (
           <Warning>
-            Your transaction may be frontrun
+            {warningMessage.transactionMayFail}
           </Warning>
         )}
       </SlippageBlock>

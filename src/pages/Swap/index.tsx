@@ -1,9 +1,8 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { ButtonPrimary, ButtonSecondary } from 'components/Button';
-import { wallet } from 'services/near';
+import RenderButton from 'components/Button/RenderButton';
 import { getPoolsPath, getUpperCase, toArray } from 'utils';
 import {
-  useStore, useModalsStore, TokenType,
+  useStore, TokenType, CurrentButton,
 } from 'store';
 import {
   BAD_PRICE_IMPACT, FEE_DIVISOR, NEAR_TOKEN_ID, SLIPPAGE_TOLERANCE_DEFAULT, tooltipTitle,
@@ -37,50 +36,19 @@ import {
   ExchangeLabel,
   SettingsBlock,
   SettingsLabel,
-  Wallet,
   SwapInformation,
   RouteBlock,
   TitleInfo,
   RowInfo,
   LabelInfo,
   LabelError,
-  TokenImg,
+  LogoContainer,
   RouteArrowLogo,
   BlockButton,
-  IconSwap,
 } from './styles';
 
 const swapContract = new SwapContract();
 const DEBOUNCE_VALUE = 1000;
-
-const RenderButton = ({
-  isConnected,
-  swapToken,
-  setAccountModalOpen,
-  disabled = false,
-}:{
-  isConnected:boolean,
-  swapToken:() => void,
-  setAccountModalOpen: (isOpen: boolean) => void,
-  disabled?: boolean
-}) => {
-  const title = isConnected ? 'Swap' : 'Connect Wallet';
-  if (isConnected) {
-    return (
-      <ButtonPrimary
-        onClick={swapToken}
-        disabled={disabled}
-      >{title} <IconSwap />
-      </ButtonPrimary>
-    );
-  }
-  return (
-    <ButtonSecondary onClick={() => setAccountModalOpen(true)}>
-      <Wallet />
-      {title}
-    </ButtonSecondary>
-  );
-};
 
 export default function Swap() {
   const {
@@ -95,7 +63,6 @@ export default function Swap() {
   } = useStore();
   const config = getConfig();
   const { setTrackedPools } = useRefresh();
-  const { setAccountModalOpen } = useModalsStore();
   const [independentField, setIndependentField] = useState(TokenType.Input);
   const [inputTokenValue, setInputTokenValue] = useState<string>('');
   const debouncedInputValue = useDebounce(inputTokenValue, DEBOUNCE_VALUE);
@@ -105,8 +72,6 @@ export default function Swap() {
   const [slippageTolerance, setSlippageTolerance] = useState<string>(SLIPPAGE_TOLERANCE_DEFAULT);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [averageFee, setAverageFee] = useState<string>('0');
-
-  const isConnected = wallet.isSignedIn();
 
   const minAmountOut = outputTokenValue
     ? removeTrailingZeros(percentLess(slippageTolerance, outputTokenValue, 5))
@@ -354,28 +319,34 @@ export default function Swap() {
                   <Tooltip title={tooltipTitle.routes} />
                 </TitleInfo>
                 <div>
-                  <TokenImg
-                    src={inputToken?.metadata.icon}
-                    alt={inputToken?.metadata.symbol}
-                  />
+                  <LogoContainer>
+                    <img
+                      src={inputToken?.metadata.icon}
+                      alt={inputToken?.metadata.symbol}
+                    />
+                  </LogoContainer>
                   {inputToken?.metadata.symbol}
                   {intersectionTokenId
                     ? (
                       <>
                         <RouteArrowLogo />
-                        <TokenImg
-                          src={intersectionToken?.metadata.icon}
-                          alt={intersectionToken?.metadata.symbol}
-                        />
+                        <LogoContainer>
+                          <img
+                            src={intersectionToken?.metadata.icon}
+                            alt={intersectionToken?.metadata.symbol}
+                          />
+                        </LogoContainer>
                         {intersectionToken?.metadata.symbol}
                       </>
                     )
                     : null}
                   <RouteArrowLogo />
-                  <TokenImg
-                    src={outputToken?.metadata.icon}
-                    alt={outputToken?.metadata.symbol}
-                  />
+                  <LogoContainer>
+                    <img
+                      src={outputToken?.metadata.icon}
+                      alt={outputToken?.metadata.symbol}
+                    />
+                  </LogoContainer>
                   {outputToken?.metadata.symbol}
                 </div>
               </RouteBlock>
@@ -416,9 +387,8 @@ export default function Swap() {
       }
       <BlockButton>
         <RenderButton
-          isConnected={isConnected}
-          swapToken={swapToken}
-          setAccountModalOpen={setAccountModalOpen}
+          typeButton={CurrentButton.Swap}
+          onSubmit={swapToken}
           disabled={(!canSwap && !isWrap && !isUnwrap) || invalidInput}
         />
       </BlockButton>

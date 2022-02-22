@@ -13,6 +13,7 @@ import Big from 'big.js';
 import { wallet } from './near';
 import SpecialWallet, { createContract, Transaction } from './wallet';
 import getConfig from './config';
+import { SWAP_GAS } from './SwapContract';
 
 const {
   utils: {
@@ -31,7 +32,7 @@ const CONTRACT_ID = config.contractId;
 export const ACCOUNT_MIN_STORAGE_AMOUNT = '0.005';
 export const MIN_DEPOSIT_PER_TOKEN = new Big('5000000000000000000000');
 export const STORAGE_PER_TOKEN = '0.005';
-export const STORAGE_TO_REGISTER_FT = '0.00125'; // TODO: for some accs storage deposit should be '0.0125'
+export const STORAGE_TO_REGISTER_FT = '0.1';
 export const ONE_MORE_DEPOSIT_AMOUNT = '0.01';
 
 const NEAR_TOKEN = {
@@ -168,6 +169,7 @@ export default class FungibleTokenContract {
           msg: message,
         },
         amount: ONE_YOCTO_NEAR,
+        gas: SWAP_GAS,
       }],
     });
     return transactions;

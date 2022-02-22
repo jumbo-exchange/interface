@@ -110,11 +110,18 @@ const InputContainer = styled.div`
   }
 `;
 
-const LogoContainer = styled.div`
+const LogoContainer = styled.div<{load: boolean}>`
   margin-right: 1rem;
   display: flex;
   align-items: center;
+  justify-content: center;
+  background-color: ${({ theme, load }) => (load ? theme.globalGrey : theme.bgToken)};
+  border-radius: 12px;
+  transition: all 1s ease-out;
+  height: 2.375rem;
+  min-width: 2.375rem;
   & > img {
+    border-radius: 12px;
     height: 2.25rem;
     width: 2.25rem;
     transition: all 1s ease-out;
@@ -122,7 +129,11 @@ const LogoContainer = styled.div`
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     margin-right: .75rem;
+    border-radius: 8px;
+    height: 1.625rem;
+    min-width: 1.625rem;
     & > img {
+      border-radius: 8px;
       height: 1.5rem;
       width: 1.5rem;
       transition: all 1s ease-out;
@@ -238,7 +249,7 @@ export default function Input({
 
       </InputLabel>
       <InputContainer>
-        <LogoContainer>
+        <LogoContainer load={loading}>
           <img src={token?.metadata?.icon ?? tokenLogo} alt={token?.metadata.symbol} />
         </LogoContainer>
         <CurrencyInputPanel

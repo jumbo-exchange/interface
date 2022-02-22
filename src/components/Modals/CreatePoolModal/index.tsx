@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import Big from 'big.js';
 import PoolContract from 'services/PoolContract';
-import { useModalsStore, useStore } from 'store';
+import RenderButton from 'components/Button/RenderButton';
+import {
+  useModalsStore, TokenType, useStore, CurrentButton,
+} from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
 import {
   MIN_FEE_CREATE_POOL,
   MAX_FEE_CREATE_POOL,
   TOTAL_FEE_DEFAULT,
+  NEAR_TOKEN_ID,
 } from 'utils/constants';
-import { ButtonPrimary } from 'components/Button';
 import { wallet } from 'services/near';
 import FungibleTokenContract from 'services/FungibleToken';
 import getConfig from 'services/config';
@@ -18,7 +21,6 @@ import {
 import {
   LiquidityModalContainer,
   ModalBody,
-  CreateIconContainer,
 } from './styles';
 import TokenBlock from './TokenBlock';
 import CreatePoolSettings from './CreatePoolSetting';
@@ -40,9 +42,11 @@ export default function CreatePoolModal() {
   const [inputToken, setInputToken] = useState<FungibleTokenContract | null>(null);
   const [outputToken, setOutputToken] = useState<FungibleTokenContract | null>(null);
 
+  const near = getToken(NEAR_TOKEN_ID);
+
   useEffect(() => {
     if (loading) {
-      const jumbo = getToken(config.nearAddress); // TODO: add JUMBO
+      const jumbo = getToken(config.jumboAddress); // TODO: add JUMBO
       const wNear = getToken(config.nearAddress);
       if (!jumbo || !wNear) return;
       setInputToken(jumbo);
@@ -63,7 +67,9 @@ export default function CreatePoolModal() {
   && new Big(fee).gt(MIN_FEE_CREATE_POOL)
   && new Big(fee).lt(MAX_FEE_CREATE_POOL)
   && !!inputToken
-  && !!outputToken;
+  && !!outputToken
+  && inputToken !== near
+  && outputToken !== near;
 
   const createPool = async () => {
     if (!inputToken || !outputToken) return;
@@ -99,15 +105,11 @@ export default function CreatePoolModal() {
               fee={fee}
               setFee={setFee}
             />
-            <ButtonPrimary
-              onClick={() => {
-                if (canCreatePool) createPool();
-              }}
+            <RenderButton
+              typeButton={CurrentButton.CreatePool}
+              onSubmit={createPool}
               disabled={!canCreatePool}
-            >
-              <CreateIconContainer />
-              Create Pool
-            </ButtonPrimary>
+            />
           </ModalBody>
         </LiquidityModalContainer>
       </Layout>

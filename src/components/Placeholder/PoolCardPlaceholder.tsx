@@ -137,6 +137,7 @@ const Button = styled.div`
   max-width: 157px;
   width: 100%;
   height: 48px;
+  height: 40px;
   background-color: ${({ theme }) => theme.globalGreyOp02};
   border-radius: 12px;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`

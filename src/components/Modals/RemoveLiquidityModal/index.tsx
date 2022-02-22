@@ -4,6 +4,8 @@ import PoolContract from 'services/PoolContract';
 import Big from 'big.js';
 import Toggle from 'components/Toggle';
 import Tooltip from 'components/Tooltip';
+import RenderButton from 'components/Button/RenderButton';
+
 import {
   COEFFICIENT_SLIPPAGE,
   MAX_SLIPPAGE_TOLERANCE,
@@ -12,10 +14,10 @@ import {
   SLIPPAGE_TOLERANCE_DEFAULT,
   tooltipTitle,
   POOL_SHARES_DECIMALS,
+  warningMessage,
 } from 'utils/constants';
-import { useModalsStore, useStore } from 'store';
+import { useModalsStore, useStore, CurrentButton } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
-import { ButtonPrimary } from 'components/Button';
 import { useNavigate } from 'react-router-dom';
 import { getUpperCase } from 'utils';
 import {
@@ -38,7 +40,7 @@ import {
   ModalBody,
   TitleAction,
   WithdrawTokenBlock,
-  TokenLogo,
+  LogoContainer,
   TokenBlock,
   TokenValueBlock,
   SlippageBlock,
@@ -172,7 +174,7 @@ export default function RemoveLiquidityModal() {
               />
               {warning && (
                 <Warning>
-                  Your transaction may be frontrun
+                  {warningMessage.transactionMayFail}
                 </Warning>
               )}
             </SlippageBlock>
@@ -182,12 +184,12 @@ export default function RemoveLiquidityModal() {
             <WithdrawTokenBlock>
               {tokensData.map(({ token, value }) => (
                 <TokenBlock key={token.contractId}>
-                  <TokenLogo>
+                  <LogoContainer>
                     <img
                       src={token?.metadata.icon ?? tokenLogo}
                       alt={token?.metadata.symbol}
                     />
-                  </TokenLogo>
+                  </LogoContainer>
                   <TokenValueBlock>
                     <p>{removeTrailingZeros(formatBalance(value)) }</p>
                     &nbsp;
@@ -196,12 +198,11 @@ export default function RemoveLiquidityModal() {
                 </TokenBlock>
               ))}
             </WithdrawTokenBlock>
-            <ButtonPrimary
-              onClick={onSubmit}
+            <RenderButton
+              typeButton={CurrentButton.Withdraw}
+              onSubmit={onSubmit}
               disabled={buttonDisabled}
-            >
-              Withdraw
-            </ButtonPrimary>
+            />
           </ModalBody>
         </LiquidityModalContainer>
       </Layout>

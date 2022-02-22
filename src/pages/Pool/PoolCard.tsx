@@ -58,11 +58,7 @@ const BlockTitle = styled.div`
 const LogoPool = styled.div`
   position: relative;
   margin-right: 1.75rem;
-  & > img {
-    width: 24px;
-    height: 24px;
-  }
-  & > img:last-child {
+  & > div:last-child {
     position: absolute;
     left: 19px;
     top: -5px;
@@ -148,6 +144,9 @@ const TitleVolume = styled.div`
   line-height: .875rem;
   color: ${({ theme }) => theme.globalGrey};
   margin-bottom: .75rem;
+  & > span {
+    white-space: nowrap;
+  }
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     margin: 0;
   `}
@@ -166,8 +165,13 @@ const BlockButton = styled.div`
   display: flex;
   justify-content: flex-end;
   width: 100%;
+  height: 40px;
+  & > button {
+    padding: 9px 15px;
+  }
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     flex-direction: column-reverse;
+    height: 48px;
   `}
 `;
 
@@ -190,6 +194,35 @@ const LogoButton = styled(AddIcon)`
   margin-right: .625rem;
 `;
 
+const LogoContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.bgToken};
+  border-radius: 8px;
+  transition: all 1s ease-out;
+  height: 1.625rem;
+  min-width: 1.625rem;
+  & > img {
+    border-radius: 8px;
+    height: 1.5rem;
+    width: 1.5rem;
+    transition: all 1s ease-out;
+  }
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    border-radius: 10px;
+    height: 2.125rem;
+    min-width: 2.125rem;
+    & > img {
+      border-radius: 10px;
+      height: 2rem;
+      width: 2rem;
+      transition: all 1s ease-out;
+    }
+  `}
+`;
+
 interface IVolume {
   title: string;
   label: string;
@@ -197,8 +230,11 @@ interface IVolume {
   tooltip: string;
 }
 
-export default function PoolCard({ pool } : { pool:IPool }) {
-  const { tokens } = useStore();
+export default function PoolCard({ pool } : { pool: IPool }) {
+  const {
+    tokens,
+  } = useStore();
+
   const navigate = useNavigate();
 
   const [inputToken, outputToken] = pool.tokenAccountIds;
@@ -210,7 +246,7 @@ export default function PoolCard({ pool } : { pool:IPool }) {
   const volume: IVolume[] = [
     {
       title: 'Total Liquidity',
-      label: '-',
+      label: pool.totalLiquidity && Big(pool.totalLiquidity).gt(0) ? `$${pool.totalLiquidity}` : '-',
       tooltip: tooltipTitle.totalLiquidity,
     },
     {
@@ -219,10 +255,10 @@ export default function PoolCard({ pool } : { pool:IPool }) {
       tooltip: tooltipTitle.dayVolume,
     },
     {
-      title: 'APR',
+      title: 'APY',
       label: '-',
       color: true,
-      tooltip: tooltipTitle.APR,
+      tooltip: tooltipTitle.APY,
     },
   ];
 
@@ -233,8 +269,12 @@ export default function PoolCard({ pool } : { pool:IPool }) {
       <UpperRow>
         <BlockTitle>
           <LogoPool>
-            <img src={tokenInput.metadata.icon} alt="logo token" />
-            <img src={tokenOutput.metadata.icon} alt="logo token" />
+            <LogoContainer>
+              <img src={tokenInput.metadata.icon} alt="logo token" />
+            </LogoContainer>
+            <LogoContainer>
+              <img src={tokenOutput.metadata.icon} alt="logo token" />
+            </LogoContainer>
           </LogoPool>
           <TitlePool>
             <p>{tokenInput.metadata.symbol}</p>
@@ -251,7 +291,7 @@ export default function PoolCard({ pool } : { pool:IPool }) {
           {volume.map((el) => (
             <Column key={el.title}>
               <TitleVolume>
-                {el.title}
+                <span>{el.title}</span>
                 <Tooltip title={el.tooltip} />
               </TitleVolume>
               <LabelVolume isColor={el.color}>{el.label}</LabelVolume>

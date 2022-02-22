@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useModalsStore, useStore } from 'store';
+import { useModalsStore, useStore, CurrentButton } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
-import { ButtonPrimary } from 'components/Button';
 import PoolContract from 'services/PoolContract';
+import RenderButton from 'components/Button/RenderButton';
+
 import { useNavigate } from 'react-router-dom';
 import {
   calculateFairShare,
@@ -24,7 +25,6 @@ import {
   ModalBody,
   LogoContainerAdd,
   RefreshBlock,
-  LogoButton,
   YourSharesBlock,
 } from './styles';
 
@@ -181,9 +181,9 @@ export default function AddLiquidityModal() {
             <RefreshBlock>
               <Refresh />
             </RefreshBlock>
-            <ButtonPrimary
-              disabled={!canAddLiquidity}
-              onClick={() => {
+            <RenderButton
+              typeButton={CurrentButton.AddLiquidity}
+              onSubmit={() => {
                 const contract = new PoolContract();
                 if (!tokenInput || !tokenOutput || !pool) return;
                 contract.addLiquidity({
@@ -194,10 +194,8 @@ export default function AddLiquidityModal() {
                   pool,
                 });
               }}
-            >
-              <LogoButton />
-              Add Liquidity
-            </ButtonPrimary>
+              disabled={!canAddLiquidity}
+            />
           </ModalBody>
         </LiquidityModalContainer>
       </Layout>

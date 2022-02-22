@@ -27,26 +27,26 @@ export const MAX_FEE_CREATE_POOL = '20';
 
 export const tooltipTitle = {
   // Swap
-  slippageTolerance: 'Slippage means the difference between what  you expect to get and what you actually get due to other executing first',
-  routes: 'routes',
-  minimumReceived: 'minimumReceived',
-  priceImpact: 'priceImpact',
-  liquidityProviderFee: 'liquidityProviderFee',
+  slippageTolerance: 'Permitted margin of disparity between the current price of an asset and the final one after swap',
+  routes: 'Path from one asset to another consisting of zero or more segments between pairs',
+  minimumReceived: 'The lowest amount received after swap initiation',
+  priceImpact: 'The effect on the price the given swap action incurs',
+  liquidityProviderFee: 'A small sum paid to liquidity providers',
 
   // Pool
-  APRBasis: 'APRBasis',
-  totalLiquidity: 'totalLiquidity',
-  dayVolume: '24hVolume',
-  APR: 'APR',
+  APYBasis: 'Annual Percentage Yield accrued. Includes your interest rate and the frequency of compounding interest',
+  totalLiquidity: 'Amount of liquidity currently available in the given pool',
+  dayVolume: 'Daily volume of trading activity',
+  APY: 'Annual Percentage Yield',
 
   // Create Pool
-  totalFee: 'totalFee',
-  lPFee: 'lPFee',
-  protocolFee: 'protocolFee',
-  referralFee: 'referralFee',
+  totalFee: 'A sum paid for creating a pool',
+  lPFee: 'A sum paid for providing liquidity',
+  protocolFee: 'A sum deducted from pool creation that accrues on platform',
+  referralFee: 'A sum you get from referred user as reward',
 };
 
-export const warning = {
+export const warningMessage = {
   zeroBalance: 'Zero balance',
   zeroBalanceDesc: 'Insufficient balance of wNEAR. Swap NEAR to wNEAR in order to proceed by clicking “Go to Pair”',
 
@@ -57,6 +57,14 @@ export const warning = {
 
   zeroPoolLiquidity: 'Zero liquidity pool',
   zeroPoolLiquidityDesc: 'Zero liquidity pool, you can add liquidity to the pool',
+
+  transactionMayFail: 'Your transaction may be frontrun',
+  zeroFee: 'Total Fee cannot be zero',
+};
+
+export const noResult = {
+  yourLiquidity: 'Your active liquidity positions will appear here.',
+  noResultFound: 'No results found',
 };
 
 export const poolFeeOptions = [

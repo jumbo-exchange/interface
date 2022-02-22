@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { FilterButton } from 'components/Button';
 import { isMobile } from 'utils/userAgent';
-import { useModalsStore, useStore } from 'store';
+import { IPool, useModalsStore, useStore } from 'store';
 import { useLocation, useParams } from 'react-router-dom';
 import { toAddLiquidityPage, toRemoveLiquidityPage } from 'utils/routes';
+import { toArray } from 'utils';
+
+import getConfig from 'services/config';
+import Big from 'big.js';
 import {
   Container,
   FilterBlock,
@@ -60,11 +64,15 @@ export interface IMainInfo {
 }
 
 export default function Pool() {
-  const { pools } = useStore();
+  const {
+    pools, loading, prices,
+  } = useStore();
   const { setAddLiquidityModalOpenState, setRemoveLiquidityModalOpenState } = useModalsStore();
   const { id } = useParams<'id'>();
-
+  const config = getConfig();
   const location = useLocation();
+  const [totalValueLocked, setTotalValueLocked] = useState('0');
+  const [poolsArray, setPoolsArray] = useState<IPool[]>([]);
 
   useEffect(() => {
     if (id && pools[Number(id)]) {
@@ -76,12 +84,24 @@ export default function Pool() {
       }
     }
   }, [id, pools]);
+
+  useEffect(() => {
+    const newPools = toArray(pools);
+    if (newPools.length !== poolsArray.length) {
+      setPoolsArray(newPools);
+    }
+    const newTotalValueLocked = newPools.reduce(
+      (acc, item:IPool) => acc.add(item.totalLiquidity), Big(0),
+    );
+    setTotalValueLocked(newTotalValueLocked.toFixed(2));
+  }, [pools, loading]);
+
   const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum['All Pools']);
 
   const mainInfo: IMainInfo[] = [
     {
       title: 'Total Value Locked',
-      label: '-',
+      label: Big(totalValueLocked ?? 0).lte(0) ? '-' : `$${totalValueLocked}`,
     },
     {
       title: 'Total 24h Volume',
@@ -89,7 +109,7 @@ export default function Pool() {
     },
     {
       title: 'JUMBO Price',
-      label: '-',
+      label: `$${prices[config.jumboAddress].price ?? 0}` || '-',
     },
     {
       title: 'Weekly Emissions',
@@ -134,8 +154,15 @@ export default function Pool() {
           </InformationBlock>
         )}
 
-      <PoolSettings currentFilterPools={currentFilterPools} />
-      <PoolResult currentFilterPools={currentFilterPools} />
+      <PoolSettings
+        setPoolsArray={setPoolsArray}
+        currentFilterPools={currentFilterPools}
+      />
+      <PoolResult
+        poolsArray={poolsArray}
+        currentFilterPools={currentFilterPools}
+        loading={loading}
+      />
     </Container>
   );
 }

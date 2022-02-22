@@ -2,11 +2,9 @@ import { PropsWithChildren } from 'react';
 import styled from 'styled-components';
 import { SpecialContainer } from 'components/SpecialContainer';
 
-import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
 import { ReactComponent as Exchange } from 'assets/images-app/exchange.svg';
 import { ReactComponent as RouteArrow } from 'assets/images-app/route-arrow.svg';
-import { ReactComponent as SwapIcon } from 'assets/images-app/swap-icon.svg';
 
 interface ICurrent {
   isActive?: boolean
@@ -122,15 +120,6 @@ export const SettingsLabel = styled.div<PropsWithChildren<ICurrent>>`
   }
 `;
 
-export const Wallet = styled(WalletImage)`
-  margin-right: .625rem;
-  width: 16px;
-  height: 12px;
-  path {
-    fill: ${({ theme }) => theme.globalWhite};
-  }
-`;
-
 export const SwapInformation = styled.div`
   display: flex;
   flex-direction: column;
@@ -182,10 +171,34 @@ export const LabelError = styled(LabelInfo)`
   color: ${({ theme }) => theme.error};
 `;
 
-export const TokenImg = styled.img`
+export const LogoContainer = styled.div`
   margin-right: .5rem;
-  width: 24px;
-  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.bgToken};
+  border-radius: 8px;
+  transition: all 1s ease-out;
+  height: 1.625rem;
+  min-width: 1.625rem;
+  & > img {
+    border-radius: 8px;
+    height: 1.5rem;
+    width: 1.5rem;
+    transition: all 1s ease-out;
+  }
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    border-radius: 6px;
+    height: 1.125rem;
+    min-width: 1.125rem;
+    & > img {
+      border-radius: 6px;
+      height: 1rem;
+      width: 1rem;
+      transition: all 1s ease-out;
+    }
+  `}
 `;
 
 export const RouteArrowLogo = styled(RouteArrow)`
@@ -199,8 +212,4 @@ export const BlockButton = styled.div`
   & > button {
     width: 100%;
   }
-`;
-
-export const IconSwap = styled(SwapIcon)`
-  margin-left: .75rem;
 `;

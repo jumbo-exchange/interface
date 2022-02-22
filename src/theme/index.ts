@@ -68,6 +68,8 @@ export interface ThemeColors {
   miceLabel: string;
 
   warningBg: string;
+
+  bgToken: string;
 }
 
 export const colors: ThemeColors = {
@@ -120,6 +122,7 @@ export const colors: ThemeColors = {
   miceLabel: '#A91BAC',
 
   warningBg: '#4C2739',
+  bgToken: '#dfe2e8',
 };
 
 function theme(): DefaultTheme {

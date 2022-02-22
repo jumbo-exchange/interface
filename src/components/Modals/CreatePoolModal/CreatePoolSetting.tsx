@@ -9,6 +9,7 @@ import {
   MIN_TOTAL_FEE,
   COEFFICIENT_TOTAL_FEE,
   tooltipTitle,
+  warningMessage,
 } from 'utils/constants';
 
 const Container = styled.div`
@@ -157,7 +158,7 @@ export default function CreatePoolSettings(
         />
         {error && (
           <Error>
-            Your transaction may be frontrun
+            {warningMessage.zeroFee}
           </Error>
         )}
       </TotalFeeBlock>

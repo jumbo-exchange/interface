@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { ReactComponent as AddIcon } from 'assets/images-app/icon-add.svg';
 import { Modal } from '../styles';
 
 export const LiquidityModalContainer = styled(Modal)`
@@ -14,10 +13,4 @@ export const ModalBody = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-`;
-
-export const CreateIconContainer = styled(AddIcon)`
-  width: 12px;
-  height: 12px;
-  margin-right: .625rem;
 `;
