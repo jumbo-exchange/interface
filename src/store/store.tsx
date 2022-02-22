@@ -115,9 +115,6 @@ export const StoreContextProvider = (
     const poolArray = toArray(pools);
     if (tokenType === TokenType.Output) {
       if (!inputToken) return;
-      if (activeToken === inputToken) {
-        setInputToken(outputToken);
-      }
       setOutputToken(activeToken);
       const availablePools = getPoolsPath(
         inputToken.contractId, activeToken?.contractId ?? '', poolArray, tokens,
@@ -125,9 +122,6 @@ export const StoreContextProvider = (
       setCurrentPools(availablePools);
     } else {
       if (!outputToken) return;
-      if (activeToken === outputToken) {
-        setOutputToken(inputToken);
-      }
       setInputToken(activeToken);
       const availablePools = getPoolsPath(
         activeToken?.contractId ?? '', outputToken.contractId, poolArray, tokens,
