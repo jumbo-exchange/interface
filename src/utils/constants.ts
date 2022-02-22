@@ -96,3 +96,6 @@ export const POOL_SHARES_DECIMALS = 24;
 export const BAD_PRICE_IMPACT = 2;
 
 export const NEAR_TOKEN_ID = 'NEAR';
+
+export const SWAP_INPUT_KEY = 'JUMBO_SWAP_INPUT_TOKEN';
+export const SWAP_OUTPUT_KEY = 'JUMBO_SWAP_OUTPUT_TOKEN';

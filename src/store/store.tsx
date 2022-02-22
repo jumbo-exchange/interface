@@ -14,7 +14,7 @@ import getConfig from 'services/config';
 import SpecialWallet, { createContract } from 'services/wallet';
 import FungibleTokenContract from 'services/FungibleToken';
 import PoolContract from 'services/PoolContract';
-import { NEAR_TOKEN_ID } from 'utils/constants';
+import { NEAR_TOKEN_ID, SWAP_INPUT_KEY, SWAP_OUTPUT_KEY } from 'utils/constants';
 import { formatTokenAmount } from 'utils/calculations';
 import { ITokenPrice, PoolType } from './interfaces';
 
@@ -36,6 +36,8 @@ const pricesInitialState = {
   },
   [config.jumboAddress]: JUMBO_INITIAL_DATA,
 };
+const inputTokenLocalStorage = localStorage.getItem(SWAP_INPUT_KEY);
+const outputTokenLocalStorage = localStorage.getItem(SWAP_OUTPUT_KEY);
 
 const initialState: StoreContextType = {
   loading: false,
@@ -277,16 +279,39 @@ export const StoreContextProvider = (
   }, []);
 
   useEffect(() => {
-    const outputTokenData = tokens[config.nearAddress] ?? null;
-    const inputTokenData = tokens[NEAR_TOKEN_ID] ?? null;
+    let outputTokenData;
+    let inputTokenData;
+    if (inputTokenLocalStorage || outputTokenLocalStorage) {
+      inputTokenData = tokens[inputTokenLocalStorage ?? ''] ?? null;
+      outputTokenData = tokens[outputTokenLocalStorage ?? ''] ?? null;
+      setOutputToken(inputTokenData);
+      setInputToken(outputTokenData);
+      return;
+    }
+    outputTokenData = tokens[config.nearAddress] ?? null;
+    inputTokenData = tokens[NEAR_TOKEN_ID] ?? null;
     setOutputToken(outputTokenData);
     setInputToken(inputTokenData);
   }, [toArray(tokens).length]);
 
   useEffect(() => {
     if (toArray(pools).length) {
-      const outputTokenData = tokens[config.nearAddress] ?? null;
-      const inputTokenData = tokens[NEAR_TOKEN_ID] ?? null;
+      let outputTokenData;
+      let inputTokenData;
+      if (inputTokenLocalStorage || outputTokenLocalStorage) {
+        inputTokenData = tokens[inputTokenLocalStorage ?? ''] ?? null;
+        outputTokenData = tokens[outputTokenLocalStorage ?? ''] ?? null;
+        const availablePools = getPoolsPath(
+          inputTokenData.contractId,
+          outputTokenData.contractId,
+          toArray(pools),
+          tokens,
+        );
+        setCurrentPools(availablePools);
+        return;
+      }
+      outputTokenData = tokens[config.nearAddress] ?? null;
+      inputTokenData = tokens[NEAR_TOKEN_ID] ?? null;
       const availablePools = getPoolsPath(
         inputTokenData.contractId,
         outputTokenData.contractId,

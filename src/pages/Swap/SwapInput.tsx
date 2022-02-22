@@ -10,6 +10,7 @@ import { getUpperCase } from 'utils';
 import { TokenType, useModalsStore, useStore } from 'store';
 import FungibleTokenContract from 'services/FungibleToken';
 import { formatTokenAmount } from 'utils/calculations';
+import { SWAP_INPUT_KEY, SWAP_OUTPUT_KEY } from 'utils/constants';
 
 const Block = styled.div`
   display: flex;
@@ -205,6 +206,8 @@ export default function Input({
   const { loading, setCurrentToken } = useStore();
   const { setSearchModalOpen } = useModalsStore();
 
+  const SWAP_KEY = tokenType === TokenType.Input ? SWAP_INPUT_KEY : SWAP_OUTPUT_KEY;
+
   const currentBalance = new Big(balance ?? 0);
   const setHalfAmount = () => {
     if (!balance) return;
@@ -224,6 +227,7 @@ export default function Input({
       isOpen: true,
       activeToken: currentToken,
       setActiveToken: (activeToken: FungibleTokenContract) => {
+        localStorage.setItem(SWAP_KEY, activeToken.contractId);
         setCurrentToken(activeToken, tokenType);
       },
     });
