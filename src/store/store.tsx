@@ -279,19 +279,19 @@ export const StoreContextProvider = (
   }, []);
 
   useEffect(() => {
-    let outputTokenData;
     let inputTokenData;
+    let outputTokenData;
     if (inputTokenLocalStorage && outputTokenLocalStorage) {
       inputTokenData = tokens[inputTokenLocalStorage ?? ''] ?? null;
       outputTokenData = tokens[outputTokenLocalStorage ?? ''] ?? null;
-      setOutputToken(inputTokenData);
-      setInputToken(outputTokenData);
+      setInputToken(inputTokenData);
+      setOutputToken(outputTokenData);
       return;
     }
-    outputTokenData = tokens[config.nearAddress] ?? null;
     inputTokenData = tokens[NEAR_TOKEN_ID] ?? null;
-    setOutputToken(outputTokenData);
+    outputTokenData = tokens[config.nearAddress] ?? null;
     setInputToken(inputTokenData);
+    setOutputToken(outputTokenData);
   }, [toArray(tokens).length]);
 
   useEffect(() => {
