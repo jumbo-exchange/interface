@@ -282,8 +282,8 @@ export const StoreContextProvider = (
     let inputTokenData;
     let outputTokenData;
     if (inputTokenLocalStorage && outputTokenLocalStorage) {
-      inputTokenData = tokens[inputTokenLocalStorage ?? ''] ?? null;
-      outputTokenData = tokens[outputTokenLocalStorage ?? ''] ?? null;
+      inputTokenData = tokens[inputTokenLocalStorage];
+      outputTokenData = tokens[outputTokenLocalStorage];
       setInputToken(inputTokenData);
       setOutputToken(outputTokenData);
       return;
@@ -299,19 +299,12 @@ export const StoreContextProvider = (
       let outputTokenData;
       let inputTokenData;
       if (inputTokenLocalStorage && outputTokenLocalStorage) {
-        inputTokenData = tokens[inputTokenLocalStorage ?? ''] ?? null;
-        outputTokenData = tokens[outputTokenLocalStorage ?? ''] ?? null;
-        const availablePools = getPoolsPath(
-          inputTokenData.contractId,
-          outputTokenData.contractId,
-          toArray(pools),
-          tokens,
-        );
-        setCurrentPools(availablePools);
-        return;
+        inputTokenData = tokens[inputTokenLocalStorage];
+        outputTokenData = tokens[outputTokenLocalStorage];
+      } else {
+        outputTokenData = tokens[config.nearAddress] ?? null;
+        inputTokenData = tokens[NEAR_TOKEN_ID] ?? null;
       }
-      outputTokenData = tokens[config.nearAddress] ?? null;
-      inputTokenData = tokens[NEAR_TOKEN_ID] ?? null;
       const availablePools = getPoolsPath(
         inputTokenData.contractId,
         outputTokenData.contractId,

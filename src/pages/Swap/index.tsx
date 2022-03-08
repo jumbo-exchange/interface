@@ -239,8 +239,8 @@ export default function Swap() {
         verifiedOutputToken,
         tokens,
       );
-      const lastIndex = minOutput.length - 1;
 
+      const lastIndex = minOutput.length - 1;
       setExchangeAmount(
         removeTrailingZeros(
           formatTokenAmount(
@@ -253,12 +253,14 @@ export default function Swap() {
     } catch (e) {
       console.warn(e);
     }
-  }, [inputToken, outputToken]);
+  }, [loading, inputToken, outputToken]);
 
-  const exchangeLabel = (inputToken && outputToken) && `
+  const exchangeLabel = (inputToken && outputToken)
+    ? `
   1 ${getUpperCase(inputToken?.metadata.symbol ?? '')} 
   ≈ ${exchangeAmount} ${getUpperCase(outputToken?.metadata.symbol ?? '')}
-  `;
+  `
+    : 'Loading...';
 
   return (
     <Container>

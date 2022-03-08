@@ -29,7 +29,7 @@ const config = getConfig();
 
 export default function CreatePoolModal() {
   const isConnected = wallet.isSignedIn();
-  const { getToken, tokens, loading } = useStore();
+  const { getToken, tokens } = useStore();
   const {
     isCreatePoolModalOpen,
     setCreatePoolModalOpen,
@@ -42,13 +42,11 @@ export default function CreatePoolModal() {
 
   const near = getToken(NEAR_TOKEN_ID);
   useEffect(() => {
-    if (loading) {
-      const jumbo = getToken(config.jumboAddress);
-      const wNear = getToken(config.nearAddress);
-      if (!jumbo || !wNear) return;
-      setInputToken(jumbo);
-      setOutputToken(wNear);
-    }
+    const jumbo = getToken(config.jumboAddress);
+    const wNear = getToken(config.nearAddress);
+    if (!jumbo || !wNear) return;
+    setInputToken(jumbo);
+    setOutputToken(wNear);
   }, [tokens]);
 
   const canCreatePool = isConnected

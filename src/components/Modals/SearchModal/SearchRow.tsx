@@ -190,11 +190,10 @@ export default function SearchRow({ tokensArray }:{tokensArray: FungibleTokenCon
         >
           <SearchRowContainer
             onClick={() => {
-              if (token === activeToken) {
-                return;
+              if (token !== activeToken) {
+                setActiveToken(token);
+                setSearchModalOpen(initialModalsState.isSearchModalOpen);
               }
-              setActiveToken(token);
-              setSearchModalOpen(initialModalsState.isSearchModalOpen);
             }}
           >
             <LogoContainer>

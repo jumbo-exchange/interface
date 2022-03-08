@@ -144,11 +144,10 @@ export default function PopularToken() {
           <TokenBlock
             key={token.contractId}
             onClick={() => {
-              if (token === activeToken) {
-                return;
+              if (token !== activeToken) {
+                setActiveToken(token);
+                setSearchModalOpen(initialModalsState.isSearchModalOpen);
               }
-              setActiveToken(token);
-              setSearchModalOpen(initialModalsState.isSearchModalOpen);
             }}
           >
             <LogoContainer>
