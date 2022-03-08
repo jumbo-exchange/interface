@@ -33,9 +33,7 @@ export default function CreatePoolModal() {
   const {
     isCreatePoolModalOpen,
     setCreatePoolModalOpen,
-    isSearchModalOpen,
   } = useModalsStore();
-  const { activeToken } = isSearchModalOpen;
 
   const [fee, setFee] = useState(TOTAL_FEE_DEFAULT);
 
@@ -43,24 +41,15 @@ export default function CreatePoolModal() {
   const [outputToken, setOutputToken] = useState<FungibleTokenContract | null>(null);
 
   const near = getToken(NEAR_TOKEN_ID);
-
   useEffect(() => {
     if (loading) {
-      const jumbo = getToken(config.jumboAddress); // TODO: add JUMBO
+      const jumbo = getToken(config.jumboAddress);
       const wNear = getToken(config.nearAddress);
       if (!jumbo || !wNear) return;
       setInputToken(jumbo);
       setOutputToken(wNear);
-      return;
     }
-    if (activeToken === inputToken) {
-      setOutputToken(inputToken);
-      return;
-    }
-    if (activeToken === outputToken) {
-      setInputToken(outputToken);
-    }
-  }, [tokens, activeToken]);
+  }, [tokens]);
 
   const canCreatePool = isConnected
   && !!fee
@@ -69,7 +58,8 @@ export default function CreatePoolModal() {
   && !!inputToken
   && !!outputToken
   && inputToken !== near
-  && outputToken !== near;
+  && outputToken !== near
+  && inputToken !== outputToken;
 
   const createPool = async () => {
     if (!inputToken || !outputToken) return;
