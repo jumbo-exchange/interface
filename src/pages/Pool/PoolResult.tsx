@@ -1,10 +1,10 @@
 import React from 'react';
 import { IPool } from 'store';
 import { FilterPoolsEnum } from 'pages/Pool';
-import { noResult } from 'utils/constants';
 import styled from 'styled-components';
 import Big from 'big.js';
 import PoolCardPlaceholder from 'components/Placeholder/PoolCardPlaceholder';
+import { useTranslation } from 'react-i18next';
 import PoolCard from './PoolCard';
 
 const numberPlaceholderCard = Array.from(Array(5).keys());
@@ -35,6 +35,7 @@ export default function PoolResult(
     loading:boolean,
   },
 ) {
+  const { t } = useTranslation();
   const poolsArraySorted = poolsArray.sort(
     (a, b) => Big(b.totalLiquidity)
       .minus(a.totalLiquidity).toNumber(),
@@ -65,7 +66,7 @@ export default function PoolResult(
         {filteredPools.length === 0
           && (
             <NoResult>
-              {noResult.yourLiquidity}
+              {t('noResult.yourLiquidity')}
             </NoResult>
           )}
       </Wrapper>
@@ -83,7 +84,7 @@ export default function PoolResult(
       {poolsArraySorted.length === 0
         && (
         <NoResult>
-          {noResult.noResultFound}
+          {t('noResult.noResultFound')}
         </NoResult>
         )}
     </Wrapper>

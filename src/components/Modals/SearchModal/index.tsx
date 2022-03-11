@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { ReactComponent as CloseIcon } from 'assets/images-app/close.svg';
 import { ReactComponent as SearchIcon } from 'assets/images-app/search-icon.svg';
 import { ReactComponent as ClearSearch } from 'assets/images-app/clear-search.svg';
-
+import { useTranslation } from 'react-i18next';
 import {
   initialModalsState, useModalsStore, useStore,
 } from 'store';
@@ -144,6 +144,7 @@ const ClearSearchIcon = styled(ClearSearch)`
 export default function SearchModal() {
   const { loading, tokens } = useStore();
   const { isSearchModalOpen, setSearchModalOpen } = useModalsStore();
+  const { t } = useTranslation();
 
   const initialTokens = Object.values(tokens);
   const [tokensArray, setTokensArray] = useState<FungibleTokenContract[]>([]);
@@ -177,7 +178,7 @@ export default function SearchModal() {
           <SearchModalContainer onClick={(e) => e.stopPropagation()}>
             <ModalBlock>
               <ModalTitle>
-                Select Token
+                {t('searchModal.selectToken')}
               </ModalTitle>
               <ModalIcon onClick={() => setSearchModalOpen(initialModalsState.isSearchModalOpen)}>
                 <CloseIcon />
@@ -189,7 +190,7 @@ export default function SearchModal() {
                 <SearchInput
                   value={searchValue}
                   onChange={onChange}
-                  placeholder="Search name or paste address"
+                  placeholder={t('searchModal.placeholder')}
                 />
                 {searchValue && (
                 <ClearSearchIcon onClick={() => {

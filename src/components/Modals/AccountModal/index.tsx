@@ -8,6 +8,7 @@ import { ReactComponent as RightArrow } from 'assets/images-app/right-arrow.svg'
 import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { ButtonSecondary, ButtonFourth } from 'components/Button';
 import { wallet as nearWallet } from 'services/near';
+import { useTranslation } from 'react-i18next';
 import {
   Modal, Layout, ModalBlock, ModalTitle, ModalIcon,
 } from '../styles';
@@ -62,8 +63,9 @@ const WalletIcon = styled(WalletImage)`
 export default function AccountModal() {
   const { wallet, setWallet } = useStore();
   const { isAccountModalOpen, setAccountModalOpen } = useModalsStore();
+  const { t } = useTranslation();
 
-  const headerTitle = wallet ? 'Your Wallet' : 'Connect Wallet';
+  const headerTitle = wallet ? t('accountModal.yourWallet') : t('accountModal.connectWallet');
   const config = getConfig();
 
   return (
@@ -107,7 +109,7 @@ export default function AccountModal() {
               setWallet(null);
             }}
             >
-              <WalletIcon /> Disconnect
+              <WalletIcon /> {t('accountModal.disconnect')}
             </ButtonSecondary>
           </ModalFooter>
           )}

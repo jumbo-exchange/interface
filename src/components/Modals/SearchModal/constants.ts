@@ -17,10 +17,11 @@ export const getCurrentBalance = (
 export const getCurrentPrice = (
   balances: {[key: string]: string;},
   token: FungibleTokenContract,
+  title: string,
 ) => {
   const currentBalance = formatTokenAmount(balances[token.contractId], token.metadata.decimals);
   if (currentBalance !== '0') {
-    return 'Price Unavailable';
+    return title;
   }
   return '-';
 };

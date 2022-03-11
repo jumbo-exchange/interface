@@ -3,13 +3,14 @@ import styled from 'styled-components';
 import CurrencyInputPanel from 'components/CurrencyInputPanel';
 import tokenLogo from 'assets/images-app/placeholder-token.svg';
 import Big from 'big.js';
+import FungibleTokenContract from 'services/FungibleToken';
 
 import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
 import { getUpperCase } from 'utils';
 import { TokenType, useStore } from 'store';
-import FungibleTokenContract from 'services/FungibleToken';
 import { formatTokenAmount } from 'utils/calculations';
+import { useTranslation } from 'react-i18next';
 
 const Block = styled.div`
   display: flex;
@@ -205,6 +206,7 @@ export default function Input({
   disabled?: boolean
 }) {
   const { loading } = useStore();
+  const { t } = useTranslation();
   const currentBalance = new Big(balance ?? 0);
   const setHalfAmount = () => {
     if (!balance) return;
@@ -228,10 +230,10 @@ export default function Input({
         {(tokenType === TokenType.Input) && (
           <>
             <ButtonHalfWallet onClick={setHalfAmount}>
-              <span>HALF</span>
+              <span>{t('half')}</span>
             </ButtonHalfWallet>
             <ButtonMaxWallet onClick={setMaxAmount}>
-              <span>MAX</span>
+              <span>{t('max')}</span>
             </ButtonMaxWallet>
           </>
         )}
