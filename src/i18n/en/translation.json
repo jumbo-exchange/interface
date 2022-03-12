@@ -124,6 +124,10 @@
   },
 
   "landing": {
+
+    "read": "Read",
+    "docs": "Docs",
+    "openApp": "Open App",
     "poweredBy": "Powered by",
     "mainTitle": "The Most Intuitive  DeFi Experience You Will Ever Have",
 
