@@ -98,6 +98,7 @@ export default function RenderWarning() {
     setOutputToken,
     getTokenBalance,
     getToken,
+    setCurrentPools,
   } = useStore();
   const navigate = useNavigate();
   const isConnected = wallet.isSignedIn();
@@ -198,11 +199,11 @@ export default function RenderWarning() {
       if (nearIsInput) {
         setInputToken(wNear);
         setOutputToken(outputToken);
-        return;
-      }
-      if (!nearIsInput) {
+        setCurrentPools(poolPathOutputToken);
+      } else {
         setInputToken(inputToken);
         setOutputToken(wNear);
+        setCurrentPools(poolPathInputToken);
       }
     };
 

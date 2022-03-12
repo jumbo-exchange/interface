@@ -159,21 +159,13 @@ export default function Swap() {
     setTrackedPools(currentPools);
   }, [currentPools]);
 
-  const handleAmountChange = async (tokenType: TokenType, value: string) => {
-    if (tokenType === TokenType.Input) {
-      setInputTokenValue(value);
-    } else {
-      setOutputTokenValue(value);
-    }
-  };
-
   const handleInputChange = useCallback(
     (value: string) => {
       if (value === '') {
         setOutputTokenValue('');
       }
       setIndependentField(TokenType.Input);
-      handleAmountChange(TokenType.Input, value);
+      setInputTokenValue(value);
     }, [],
   );
 
@@ -183,7 +175,7 @@ export default function Swap() {
         setInputTokenValue('');
       }
       setIndependentField(TokenType.Output);
-      handleAmountChange(TokenType.Output, value);
+      setOutputTokenValue(value);
     }, [],
   );
 
@@ -250,6 +242,8 @@ export default function Swap() {
           ),
         ),
       );
+      setInputTokenValue('');
+      setOutputTokenValue('');
     } catch (e) {
       console.warn(e);
     }
