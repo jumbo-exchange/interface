@@ -3,29 +3,22 @@ import gif from 'assets/gif/El_4.gif';
 import Footer from 'components/Footer';
 import { ReactComponent as NearLogo } from 'assets/images/near-logo.svg';
 import { isMobile, isTablet } from 'utils/userAgent';
+import { useTranslation, TFunction } from 'react-i18next';
 import { benefitsList, benefitsCards } from './constants';
 import Header from './Header';
 import LandingStyles from './styles';
 
-function MiddleBlock() {
+function MiddleBlock({ t }: {t: TFunction}) {
   if (isMobile) {
     return (
       <LandingStyles.MobileBlockInformation>
-        <LandingStyles.MobileUpperBlock>Smart Pools</LandingStyles.MobileUpperBlock>
-        <LandingStyles.MobileMiddleLeftBlock>Jets</LandingStyles.MobileMiddleLeftBlock>
+        <LandingStyles.MobileUpperBlock>{t('landing.middleBlock.smartPools')}</LandingStyles.MobileUpperBlock>
+        <LandingStyles.MobileMiddleLeftBlock>{t('landing.middleBlock.jets')}</LandingStyles.MobileMiddleLeftBlock>
         <LandingStyles.MobileMiddleRightBlock>
-          On-the-fly
-          <br />
-          Pool Transition
+          <p>{t('landing.middleBlock.onTheFly')}</p>
         </LandingStyles.MobileMiddleRightBlock>
         <LandingStyles.MobileLowerBlock>
-          Lower Slippage
-          <br />
-          Volume & Liquidity
-          <br />
-          Homogenization
-          <br />
-          Liquid Market
+          <p>{t('landing.middleBlock.lowerBlock.mob')}</p>
         </LandingStyles.MobileLowerBlock>
         <LandingStyles.MobileCentralArrowContainer />
         <LandingStyles.MobileUpperLeftArrowContainer />
@@ -37,19 +30,17 @@ function MiddleBlock() {
   }
   return (
     <LandingStyles.BlockInformation>
-      <LandingStyles.UpperBlock>Smart Pools</LandingStyles.UpperBlock>
-      <LandingStyles.MiddleLeftBlock>Jets</LandingStyles.MiddleLeftBlock>
+      <LandingStyles.UpperBlock>{t('landing.middleBlock.smartPools')}</LandingStyles.UpperBlock>
+      <LandingStyles.MiddleLeftBlock>{t('landing.middleBlock.jets')}</LandingStyles.MiddleLeftBlock>
       <LandingStyles.MiddleRightBlock>
-        On-the-fly
-        <br />
-        Pool Transition
+        <p>{t('landing.middleBlock.onTheFly')}</p>
       </LandingStyles.MiddleRightBlock>
       <LandingStyles.LowerBlock>
-        Lower Slippage
+        {t('landing.middleBlock.lowerBlock.f')}
         <br />
-        Volume & Liquidity Homogenization
+        {t('landing.middleBlock.lowerBlock.s')}
         <br />
-        Liquid Market
+        {t('landing.middleBlock.lowerBlock.t')}
 
       </LandingStyles.LowerBlock>
       {isTablet
@@ -62,29 +53,28 @@ function MiddleBlock() {
 }
 
 export default function Landing() {
+  const { t } = useTranslation();
+
   return (
     <LandingStyles.Container>
       <Header />
       <LandingStyles.UpperContainer>
         <LandingStyles.MainInformation>
           <LandingStyles.NearContainer>
-            Powered by
+            {t('landing.poweredBy')}
             <NearLogo />
           </LandingStyles.NearContainer>
           {isTablet ? (
             <LandingStyles.MainTitle>
-              The Most Intuitive  DeFi <br />
-              Experience You Will Ever Have
+              {t('landing.mainTitle')}
             </LandingStyles.MainTitle>
           ) : (
             <LandingStyles.MainTitle>
-              The Most Intuitive <br />
-              DeFi Experience <br />
-              You Will Ever Have
+              {t('landing.mainTitle')}
             </LandingStyles.MainTitle>
           )}
           {benefitsList.map((el) => (
-            <LandingStyles.ListElement key={el}>{el}</LandingStyles.ListElement>
+            <LandingStyles.ListElement key={el}>{t(el)}</LandingStyles.ListElement>
           ))}
         </LandingStyles.MainInformation>
         <LandingStyles.Gif src={gif} alt="gif" />
@@ -94,18 +84,17 @@ export default function Landing() {
           {benefitsCards.map(({ Image, title, subtitle }) => (
             <LandingStyles.GreyCard key={title}>
               <Image />
-              <h2>{title}</h2>
-              <h5>{subtitle}</h5>
+              <h2>{t(title)}</h2>
+              <h5>{t(subtitle)}</h5>
             </LandingStyles.GreyCard>
           ))}
         </LandingStyles.CardWrapper>
         <LandingStyles.BlackCardContainer>
-          <LandingStyles.Title>Ecosystem</LandingStyles.Title>
+          <LandingStyles.Title>{t('landing.ecosystem.title')}</LandingStyles.Title>
           <LandingStyles.Label>
-            Jumbo provides Ecosystem-Wide <br />
-            Liquidity for users and projects
+            {t('landing.ecosystem.label')}
           </LandingStyles.Label>
-          <MiddleBlock />
+          <MiddleBlock t={t} />
           <Footer />
         </LandingStyles.BlackCardContainer>
       </LandingStyles.GreyCardContainer>

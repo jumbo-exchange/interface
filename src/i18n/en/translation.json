@@ -115,5 +115,49 @@
     "lPFee": "A sum paid for providing liquidity",
     "protocolFee": "A sum deducted from pool creation that accrues on platform",
     "referralFee": "A sum you get from referred user as reward"
+  },
+  
+  "footer": {
+    "protectBy": "Protected by",
+    "hapiProtocol": "HAPI Protocol",
+    "copyright": "Copyright 2022"
+  },
+
+  "landing": {
+    "poweredBy": "Powered by",
+    "mainTitle": "The Most Intuitive  DeFi Experience You Will Ever Have",
+
+    "benefitsList": {
+      "first": "Instantaneous Swaps",
+      "second": "Highest Yields and Seamless Pool Transition",
+      "third": "Permissionless Liquidity Pools"
+    },
+
+    "benefitsCards": {
+      "jets": "Jets",
+      "subtitleJets": "Interface-embedded system that helps to find the most promising pools",
+      "lowSlippage": "Low Slippage",
+      "subtitleLowSlippage": "The lowest slippage possible thanks to NEAR and proprietary algorithms",
+      "yieldFinder": "Yield Finder",
+      "subtitleYieldFinder": "Find the best Yields and Transition between pools in ONE Click"
+    },
+
+    "ecosystem": {
+      "title": "Ecosystem",
+      "label": "Jumbo provides Ecosystem-Wide Liquidity for users and projects"
+    },
+
+    "middleBlock": {
+      "smartPools": "Smart Pools",
+      "jets": "Jets",
+      "onTheFly": "On-the-fly Pool Transition",
+      "lowerSlippage": "Lower Slippage Volume & Liquidity Homogenization Liquid Market",
+      "lowerBlock": {
+        "f": "Lower Slippage",
+        "s": "Volume & Liquidity Homogenization",
+        "t": "Liquid Market",
+        "mob": "Lower Slippage Volume & Liquidity Homogenization Liquid Market"
+      }
+    }
   }
 }
