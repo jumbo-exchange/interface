@@ -99,3 +99,6 @@ export const NEAR_TOKEN_ID = 'NEAR';
 
 export const SWAP_INPUT_KEY = 'JUMBO_SWAP_INPUT_TOKEN';
 export const SWAP_OUTPUT_KEY = 'JUMBO_SWAP_OUTPUT_TOKEN';
+
+export const URL_INPUT_TOKEN = 'inputToken';
+export const URL_OUTPUT_TOKEN = 'outputToken';

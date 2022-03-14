@@ -14,7 +14,9 @@ import getConfig from 'services/config';
 import SpecialWallet, { createContract } from 'services/wallet';
 import FungibleTokenContract from 'services/FungibleToken';
 import PoolContract from 'services/PoolContract';
-import { NEAR_TOKEN_ID, SWAP_INPUT_KEY, SWAP_OUTPUT_KEY } from 'utils/constants';
+import {
+  NEAR_TOKEN_ID, SWAP_INPUT_KEY, SWAP_OUTPUT_KEY, URL_INPUT_TOKEN, URL_OUTPUT_TOKEN,
+} from 'utils/constants';
 import { formatTokenAmount } from 'utils/calculations';
 import { ITokenPrice, PoolType } from './interfaces';
 
@@ -38,6 +40,9 @@ const pricesInitialState = {
 };
 const inputTokenLocalStorage = localStorage.getItem(SWAP_INPUT_KEY);
 const outputTokenLocalStorage = localStorage.getItem(SWAP_OUTPUT_KEY);
+const url = new URL(window.location.href);
+const urlInputTokenSymbol = url.searchParams.get(URL_INPUT_TOKEN);
+const urlOutputTokenSymbol = url.searchParams.get(URL_OUTPUT_TOKEN);
 
 const initialState: StoreContextType = {
   loading: false,
@@ -70,7 +75,7 @@ const initialState: StoreContextType = {
   outputToken: null,
   setOutputToken: () => {},
   updatePools: () => {},
-  swapTokens: () => {},
+  findTokenBySymbol: () => {},
 };
 
 const StoreContextHOC = createContext<StoreContextType>(initialState);
@@ -132,16 +137,12 @@ export const StoreContextProvider = (
     }
   };
 
-  const swapTokens = () => {
-    const poolArray = toArray(pools);
-    if (!inputToken || !outputToken || inputToken === outputToken) return;
-    setInputToken(outputToken);
-    setOutputToken(inputToken);
-
-    const availablePools = getPoolsPath(
-      outputToken.contractId, inputToken.contractId, poolArray, tokens,
-    );
-    setCurrentPools(availablePools);
+  const findTokenBySymbol = (
+    symbol: string,
+  ) => {
+    const [token] = toArray(tokens)
+      .filter((el) => el.metadata.symbol.includes(symbol.toUpperCase()));
+    return token;
   };
 
   const initialLoading = async () => {
@@ -281,6 +282,19 @@ export const StoreContextProvider = (
   useEffect(() => {
     let inputTokenData;
     let outputTokenData;
+    if (url.searchParams.has(URL_INPUT_TOKEN) && url.searchParams.has(URL_OUTPUT_TOKEN)
+      && urlInputTokenSymbol && urlOutputTokenSymbol
+      && findTokenBySymbol(urlInputTokenSymbol)
+      && findTokenBySymbol(urlOutputTokenSymbol)
+    ) {
+      inputTokenData = tokens[findTokenBySymbol(urlInputTokenSymbol)?.contractId];
+      outputTokenData = tokens[findTokenBySymbol(urlOutputTokenSymbol)?.contractId];
+      localStorage.setItem(SWAP_INPUT_KEY, inputTokenData.contractId);
+      localStorage.setItem(SWAP_OUTPUT_KEY, outputTokenData.contractId);
+      setInputToken(inputTokenData);
+      setOutputToken(outputTokenData);
+      return;
+    }
     if (inputTokenLocalStorage && outputTokenLocalStorage) {
       inputTokenData = tokens[inputTokenLocalStorage];
       outputTokenData = tokens[outputTokenLocalStorage];
@@ -298,6 +312,24 @@ export const StoreContextProvider = (
     if (toArray(pools).length) {
       let outputTokenData;
       let inputTokenData;
+      if (url.searchParams.has(URL_INPUT_TOKEN) && url.searchParams.has(URL_OUTPUT_TOKEN)
+      && urlInputTokenSymbol && urlOutputTokenSymbol
+      && findTokenBySymbol(urlInputTokenSymbol)
+      && findTokenBySymbol(urlOutputTokenSymbol)
+      ) {
+        inputTokenData = tokens[findTokenBySymbol(urlInputTokenSymbol)?.contractId];
+        outputTokenData = tokens[findTokenBySymbol(urlOutputTokenSymbol)?.contractId];
+        setInputToken(inputTokenData);
+        setOutputToken(outputTokenData);
+        const availablePools = getPoolsPath(
+          inputTokenData.contractId,
+          outputTokenData.contractId,
+          toArray(pools),
+          tokens,
+        );
+        setCurrentPools(availablePools);
+        return;
+      }
       if (inputTokenLocalStorage && outputTokenLocalStorage) {
         inputTokenData = tokens[inputTokenLocalStorage];
         outputTokenData = tokens[outputTokenLocalStorage];
@@ -362,7 +394,7 @@ export const StoreContextProvider = (
       setInputToken,
       outputToken,
       setOutputToken,
-      swapTokens,
+      findTokenBySymbol,
     }}
     >
       {children}

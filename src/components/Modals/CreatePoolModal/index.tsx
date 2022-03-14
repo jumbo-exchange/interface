@@ -3,7 +3,7 @@ import Big from 'big.js';
 import PoolContract from 'services/PoolContract';
 import RenderButton from 'components/Button/RenderButton';
 import {
-  useModalsStore, TokenType, useStore, CurrentButton,
+  useModalsStore, useStore, CurrentButton,
 } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
 import {

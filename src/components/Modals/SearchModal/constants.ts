@@ -1,5 +1,4 @@
 import Big from 'big.js';
-import { l } from 'i18n-js';
 import FungibleTokenContract from 'services/FungibleToken';
 import { ITokenPrice } from 'store';
 import { formatTokenAmount, removeTrailingZeros } from 'utils/calculations';
