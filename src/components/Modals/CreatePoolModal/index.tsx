@@ -6,6 +6,7 @@ import {
   useModalsStore, TokenType, useStore, CurrentButton,
 } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
+import { useTranslation } from 'react-i18next';
 import {
   MIN_FEE_CREATE_POOL,
   MAX_FEE_CREATE_POOL,
@@ -29,11 +30,9 @@ const config = getConfig();
 
 export default function CreatePoolModal() {
   const isConnected = wallet.isSignedIn();
-  const { getToken, tokens } = useStore();
-  const {
-    isCreatePoolModalOpen,
-    setCreatePoolModalOpen,
-  } = useModalsStore();
+  const { inputToken, outputToken, getToken } = useStore();
+  const { isCreatePoolModalOpen, setCreatePoolModalOpen } = useModalsStore();
+  const { t } = useTranslation();
 
   const [fee, setFee] = useState(TOTAL_FEE_DEFAULT);
 
@@ -74,7 +73,7 @@ export default function CreatePoolModal() {
         <LiquidityModalContainer onClick={(e) => e.stopPropagation()}>
           <ModalBlock>
             <ModalTitle>
-              Create Pool
+              {t('createPoolModal.createPool')}
             </ModalTitle>
             <ModalIcon onClick={() => setCreatePoolModalOpen(false)}>
               <Close />

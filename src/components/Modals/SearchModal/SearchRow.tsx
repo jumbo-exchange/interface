@@ -5,6 +5,7 @@ import {
   initialModalsState, useModalsStore, useStore,
 } from 'store';
 
+import { useTranslation } from 'react-i18next';
 import FungibleTokenContract from 'services/FungibleToken';
 import { getCurrentBalance, getCurrentPrice } from './constants';
 
@@ -180,6 +181,8 @@ export default function SearchRow({ tokensArray }:{tokensArray: FungibleTokenCon
   } = useStore();
   const { isSearchModalOpen, setSearchModalOpen } = useModalsStore();
   const { activeToken, setActiveToken } = isSearchModalOpen;
+  const { t } = useTranslation();
+
   if (loading) return null;
   return (
     <>
@@ -213,7 +216,7 @@ export default function SearchRow({ tokensArray }:{tokensArray: FungibleTokenCon
         </Container>
       )) : (
         <NoResultContainer>
-          <p>No results found</p>
+          <p>{t('noResult.noResultFound')}</p>
         </NoResultContainer>
       )}
     </>

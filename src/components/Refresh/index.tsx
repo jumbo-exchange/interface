@@ -2,6 +2,7 @@ import React from 'react';
 import { useRefresh } from 'services/refreshService';
 import styled from 'styled-components';
 import { colors } from 'theme';
+import { useTranslation } from 'react-i18next';
 
 export const REFRESH_TIMER = 5;
 
@@ -46,6 +47,7 @@ const Path = styled.path<{currentTime?: number}>`
 
 export default function Loader({ time = REFRESH_TIMER }: {time?: number}) {
   const { refreshEnabled, setRefreshEnabled } = useRefresh();
+  const { t } = useTranslation();
   const strokeWidth = 8;
   const radius = (50 - strokeWidth / 2);
   const pathDescription = `
@@ -79,7 +81,7 @@ export default function Loader({ time = REFRESH_TIMER }: {time?: number}) {
             strokeDasharray: `${diameter}px ${diameter}px`,
           }}
         />
-      </svg> Refresh
+      </svg> {t('common.refresh')}
     </Container>
   );
 }
