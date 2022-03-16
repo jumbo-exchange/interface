@@ -36,8 +36,6 @@ const pricesInitialState = {
   },
   [config.jumboAddress]: JUMBO_INITIAL_DATA,
 };
-const inputTokenLocalStorage = localStorage.getItem(SWAP_INPUT_KEY);
-const outputTokenLocalStorage = localStorage.getItem(SWAP_OUTPUT_KEY);
 
 const initialState: StoreContextType = {
   loading: false,
@@ -113,20 +111,20 @@ export const StoreContextProvider = (
     initialState.outputToken,
   );
 
-  const setCurrentToken = (activeToken: FungibleTokenContract | null, tokenType: TokenType) => {
+  const setCurrentToken = (activeToken: FungibleTokenContract, tokenType: TokenType) => {
     const poolArray = toArray(pools);
     if (tokenType === TokenType.Output) {
       if (!inputToken) return;
       setOutputToken(activeToken);
       const availablePools = getPoolsPath(
-        inputToken.contractId, activeToken?.contractId ?? '', poolArray, tokens,
+        inputToken.contractId, activeToken?.contractId, poolArray, tokens,
       );
       setCurrentPools(availablePools);
     } else {
       if (!outputToken) return;
       setInputToken(activeToken);
       const availablePools = getPoolsPath(
-        activeToken?.contractId ?? '', outputToken.contractId, poolArray, tokens,
+        activeToken?.contractId, outputToken.contractId, poolArray, tokens,
       );
       setCurrentPools(availablePools);
     }
@@ -278,33 +276,39 @@ export const StoreContextProvider = (
     initialLoading();
   }, []);
 
+  const tryTokenByKey = (
+    tokensMap: { [key: string]: FungibleTokenContract},
+    tokenId: string,
+    localStorageKey: string,
+  ) => {
+    const key = localStorage.getItem(localStorageKey) || '';
+    if (tokensMap[key]) return tokensMap[key];
+    return tokens[tokenId];
+  };
+
   useEffect(() => {
-    let inputTokenData;
-    let outputTokenData;
-    if (inputTokenLocalStorage && outputTokenLocalStorage) {
-      inputTokenData = tokens[inputTokenLocalStorage];
-      outputTokenData = tokens[outputTokenLocalStorage];
-      setInputToken(inputTokenData);
-      setOutputToken(outputTokenData);
+    const inputTokenData = tryTokenByKey(tokens, NEAR_TOKEN_ID, SWAP_INPUT_KEY);
+    const outputTokenData = tryTokenByKey(tokens, config.nearAddress, SWAP_OUTPUT_KEY);
+    if (!inputTokenData || !outputTokenData) {
+      setInputToken(null);
+      setOutputToken(null);
       return;
     }
-    inputTokenData = tokens[NEAR_TOKEN_ID] ?? null;
-    outputTokenData = tokens[config.nearAddress] ?? null;
     setInputToken(inputTokenData);
     setOutputToken(outputTokenData);
   }, [toArray(tokens).length]);
 
   useEffect(() => {
     if (toArray(pools).length) {
-      let outputTokenData;
-      let inputTokenData;
-      if (inputTokenLocalStorage && outputTokenLocalStorage) {
-        inputTokenData = tokens[inputTokenLocalStorage];
-        outputTokenData = tokens[outputTokenLocalStorage];
-      } else {
-        outputTokenData = tokens[config.nearAddress] ?? null;
-        inputTokenData = tokens[NEAR_TOKEN_ID] ?? null;
+      const inputTokenData = tryTokenByKey(tokens, NEAR_TOKEN_ID, SWAP_INPUT_KEY);
+      const outputTokenData = tryTokenByKey(tokens, config.nearAddress, SWAP_OUTPUT_KEY);
+      if (!inputTokenData || !outputTokenData) {
+        setInputToken(null);
+        setOutputToken(null);
+        return;
       }
+      setInputToken(inputTokenData);
+      setOutputToken(outputTokenData);
       const availablePools = getPoolsPath(
         inputTokenData.contractId,
         outputTokenData.contractId,
