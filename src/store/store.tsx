@@ -21,6 +21,8 @@ import { formatTokenAmount } from 'utils/calculations';
 import { ITokenPrice, PoolType } from './interfaces';
 
 const config = getConfig();
+const url = new URL(window.location.href);
+
 const DEFAULT_PAGE_LIMIT = 100;
 const JUMBO_INITIAL_DATA = {
   id: config.nearAddress,
@@ -38,7 +40,6 @@ const pricesInitialState = {
   },
   [config.jumboAddress]: JUMBO_INITIAL_DATA,
 };
-const url = new URL(window.location.href);
 
 const initialState: StoreContextType = {
   loading: false,
@@ -137,7 +138,7 @@ export const StoreContextProvider = (
     symbol: string,
   ) => {
     const [token] = toArray(tokens)
-      .filter((el) => el.metadata.symbol.includes(symbol.toUpperCase()));
+      .filter((el) => el.metadata.symbol.toLowerCase() === symbol.toLowerCase());
     return token;
   };
 
