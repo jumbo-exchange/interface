@@ -64,7 +64,6 @@ export default function Swap() {
   } = useStore();
   const config = getConfig();
   const { setTrackedPools } = useRefresh();
-  const { setSearchModalOpen } = useModalsStore();
   const { t } = useTranslation();
   const [independentField, setIndependentField] = useState(TokenType.Input);
   const [inputTokenValue, setInputTokenValue] = useState<string>('');

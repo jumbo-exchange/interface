@@ -9,7 +9,6 @@ import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
 import { getUpperCase } from 'utils';
 import { TokenType, useModalsStore, useStore } from 'store';
-import FungibleTokenContract from 'services/FungibleToken';
 import { formatTokenAmount } from 'utils/calculations';
 import { SWAP_INPUT_KEY, SWAP_OUTPUT_KEY } from 'utils/constants';
 import { useTranslation } from 'react-i18next';

@@ -3,7 +3,7 @@ import Big from 'big.js';
 import PoolContract from 'services/PoolContract';
 import RenderButton from 'components/Button/RenderButton';
 import {
-  useModalsStore, TokenType, useStore, CurrentButton,
+  useModalsStore, useStore, CurrentButton,
 } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
 import { useTranslation } from 'react-i18next';
@@ -30,7 +30,7 @@ const config = getConfig();
 
 export default function CreatePoolModal() {
   const isConnected = wallet.isSignedIn();
-  const { inputToken, outputToken, getToken } = useStore();
+  const { getToken, tokens } = useStore();
   const { isCreatePoolModalOpen, setCreatePoolModalOpen } = useModalsStore();
   const { t } = useTranslation();
 

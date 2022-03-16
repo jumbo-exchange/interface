@@ -177,7 +177,6 @@ export default function SearchRow({ tokensArray }:{tokensArray: FungibleTokenCon
   const {
     loading,
     balances,
-    prices,
   } = useStore();
   const { isSearchModalOpen, setSearchModalOpen } = useModalsStore();
   const { activeToken, setActiveToken } = isSearchModalOpen;
@@ -209,7 +208,7 @@ export default function SearchRow({ tokensArray }:{tokensArray: FungibleTokenCon
               </SearchTitle>
               <SearchSubtitle>
                 <div>{token.metadata.name}</div>
-                {isConnected && <div>{getCurrentPrice(prices, balances, token)}</div>}
+                {isConnected && <div>{getCurrentPrice(balances, token)}</div>}
               </SearchSubtitle>
             </SearchDescriptionBlock>
           </SearchRowContainer>
