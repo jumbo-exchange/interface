@@ -5,6 +5,7 @@ import {
 } from 'store';
 import getConfig from 'services/config';
 import { NEAR_TOKEN_ID } from 'utils/constants';
+import { useTranslation } from 'react-i18next';
 
 const config = getConfig();
 
@@ -131,6 +132,7 @@ export default function PopularToken() {
     setCurrentToken,
   } = useStore();
   const { isSearchModalOpen, setSearchModalOpen } = useModalsStore();
+  const { t } = useTranslation();
 
   const near = getToken(NEAR_TOKEN_ID) ?? null;
   const wNear = getToken(config.nearAddress) ?? null;
@@ -139,7 +141,7 @@ export default function PopularToken() {
 
   return (
     <Container>
-      <Title>Popular</Title>
+      <Title>{t('searchModal.popular')}</Title>
       <TokensContainer>
         {popularTokensArray.map((token) => (
           <TokenBlock

@@ -5,6 +5,7 @@ import { IPool, useModalsStore, useStore } from 'store';
 import { useLocation, useParams } from 'react-router-dom';
 import { toAddLiquidityPage, toRemoveLiquidityPage } from 'utils/routes';
 import { toArray } from 'utils';
+import { useTranslation } from 'react-i18next';
 
 import getConfig from 'services/config';
 import Big from 'big.js';
@@ -64,6 +65,8 @@ export interface IMainInfo {
 }
 
 export default function Pool() {
+  const { t } = useTranslation();
+
   const {
     pools, loading, prices,
   } = useStore();
@@ -100,19 +103,19 @@ export default function Pool() {
 
   const mainInfo: IMainInfo[] = [
     {
-      title: 'Total Value Locked',
+      title: t('pool.totalValueLocked'),
       label: Big(totalValueLocked ?? 0).lte(0) ? '-' : `$${totalValueLocked}`,
     },
     {
-      title: 'Total 24h Volume',
+      title: t('pool.totalDayLocked'),
       label: '-',
     },
     {
-      title: 'JUMBO Price',
+      title: t('pool.jumboPrice'),
       label: `$${prices[config.jumboAddress].price ?? 0}` || '-',
     },
     {
-      title: 'Weekly Emissions',
+      title: t('pool.weeklyEmissions'),
       label: '-',
     },
   ];

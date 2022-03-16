@@ -1,0 +1,175 @@
+{
+  "common" : {
+    "loading": "Loading",
+    "half": "HALF",
+    "max": "MAX",
+    "refresh": "Refresh" 
+  },
+
+  "general" : {
+    "jumbo": "jumbo",
+    "swap": "Swap",
+    "pool": "Pool",
+    "staking": "Staking"  
+  },
+
+  "action": {
+    "connectWallet": "Connect Wallet",
+    "createPool": "Create Pool",
+    "swap": "Swap",
+    "addLiquidity": "Add Liquidity",
+    "removeLiquidity": "Withdraw"
+  },
+
+  "swap": {
+    "changeDirection": "Change Direction",
+    "settings": "Settings",
+    "route": "Route",
+    "minimumReceived": "Minimum Received",
+    "priceImpact": "Price Impact",
+    "liquidityProviderFee": "Liquidity Provider Fee",
+    "slippageTolerance": "Slippage Tolerance",
+    "goToPair": "Go to Pair"
+  },
+
+  "pool": {
+    "totalValueLocked": "Total Value Locked",
+    "totalDayLocked": "Total 24h Volume",
+    "jumboPrice": "JUMBO Price",
+    "weeklyEmissions": "Weekly Emissions",
+
+    "totalLiquidity": "Total Liquidity",
+    "dayVolume": "24h Volume",
+    "APY": "APY",
+
+    "search": "Search",
+    "sortBy": "Sort by",
+    "APYBasis": "APY Basis"
+  },
+
+  "accountModal": {
+    "yourWallet": "Your Wallet",
+    "connectWallet": "Connect Wallet",
+    "disconnect": "Disconnect"
+  },
+
+  "addLiquidityModal": {
+    "addLiquidity": "Add Liquidity",
+    "yourShares": "You will get shares"
+  },
+
+  "removeLiquidityModal": {
+    "withdraw": "Withdraw",
+    "slippageTolerance": "Slippage Tolerance",
+    "withdrawalAmount": "Withdrawal Amount",
+    "shares": "Shares"
+  },
+
+  "createPoolModal" : {
+    "createPool": "Create Pool",
+    "totalFee": "Total Fee",
+    "lpFee": "LP Fee",
+    "protocolFee": "Protocol Fee",
+    "referralFee": "Referral Fee"
+  },
+
+  "searchModal" : {
+    "selectToken": "Select Token",
+    "placeholder": "Search name or paste address",
+    "popular": "Popular",
+    "priceUnavailable": "Price Unavailable"
+  },
+
+  "noResult": {
+    "yourLiquidity": "Your active liquidity positions will appear here.",
+    "noResultFound": "No results found"
+  },
+
+  "warningMessage": {
+    "zeroBalance": "Zero balance",
+    "zeroBalanceDesc": "Insufficient balance of wNEAR. Swap NEAR to wNEAR in order to proceed by clicking “Go to Pair”",
+  
+    "doesNotExist": "The given pair doesn't exist",
+  
+    "noSuchPairExists": "No such pair exists",
+    "noSuchPairExistsDesc": "There is additional pair with wNEAR",
+  
+    "zeroPoolLiquidity": "Zero liquidity pool",
+    "zeroPoolLiquidityDesc": "Zero liquidity pool, you can add liquidity to the pool",
+  
+    "transactionMayFail": "Your transaction may be frontrun",
+    "zeroFee": "Total Fee cannot be zero"
+  },
+
+  "tooltipTitle": {
+    "slippageTolerance": "Permitted margin of disparity between the current price of an asset and the final one after swap",
+    "routes": "Path from one asset to another consisting of zero or more segments between pairs",
+    "minimumReceived": "The lowest amount received after swap initiation",
+    "priceImpact": "The effect on the price the given swap action incurs",
+    "liquidityProviderFee": "A small sum paid to liquidity providers",
+  
+    "APYBasis": "Annual Percentage Yield accrued. Includes your interest rate and the frequency of compounding interest",
+    "totalLiquidity": "Amount of liquidity currently available in the given pool",
+    "dayVolume": "Daily volume of trading activity",
+    "APY": "Annual Percentage Yield",
+  
+    "totalFee": "A sum paid for creating a pool",
+    "lPFee": "A sum paid for providing liquidity",
+    "protocolFee": "A sum deducted from pool creation that accrues on platform",
+    "referralFee": "A sum you get from referred user as reward"
+  },
+  
+  "footer": {
+    "protectBy": "Protected by",
+    "hapiProtocol": "HAPI Protocol",
+    "copyright": "Copyright 2022"
+  },
+
+  "landing": {
+
+    "read": "Read",
+    "docs": "Docs",
+    "openApp": "Open App",
+    "poweredBy": "Powered by",
+    "mainTitle": "The Most Intuitive  DeFi Experience You Will Ever Have",
+
+    "benefitsList": {
+      "first": "Instantaneous Swaps",
+      "second": "Highest Yields and Seamless Pool Transition",
+      "third": "Permissionless Liquidity Pools"
+    },
+
+    "benefitsCards": {
+      "jets": "Jets",
+      "subtitleJets": "Interface-embedded system that helps to find the most promising pools",
+      "lowSlippage": "Low Slippage",
+      "subtitleLowSlippage": "The lowest slippage possible thanks to NEAR and proprietary algorithms",
+      "yieldFinder": "Yield Finder",
+      "subtitleYieldFinder": "Find the best Yields and Transition between pools in ONE Click"
+    },
+
+    "ecosystem": {
+      "title": "Ecosystem",
+      "label": "Jumbo provides Ecosystem-Wide Liquidity for users and projects"
+    },
+
+    "middleBlock": {
+      "smartPools": "Smart Pools",
+      "jets": "Jets",
+      "onTheFly": "On-the-fly Pool Transition",
+      "lowerSlippage": "Lower Slippage Volume & Liquidity Homogenization Liquid Market",
+      "lowerBlock": {
+        "f": "Lower Slippage",
+        "s": "Volume & Liquidity Homogenization",
+        "t": "Liquid Market",
+        "mob": "Lower Slippage Volume & Liquidity Homogenization Liquid Market"
+      }
+    }
+  },
+
+  "error" : {
+    "notFound": "404 Error",
+    "notFoundLabel": "The page you`re looking for is now beyond our reach",
+    "backHome": "Back Home"
+  }
+}
