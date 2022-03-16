@@ -2,6 +2,7 @@ import Big from 'big.js';
 import FungibleTokenContract from 'services/FungibleToken';
 import { TokenType } from 'store';
 import { formatTokenAmount } from 'utils/calculations';
+import i18n from 'i18n';
 
 export const getCurrentBalance = (
   balances: {[key: string]: string;},
@@ -17,11 +18,10 @@ export const getCurrentBalance = (
 export const getCurrentPrice = (
   balances: {[key: string]: string;},
   token: FungibleTokenContract,
-  title: string,
 ) => {
   const currentBalance = formatTokenAmount(balances[token.contractId], token.metadata.decimals);
   if (currentBalance !== '0') {
-    return title;
+    return i18n.t('searchModal.priceUnavailable');
   }
   return '-';
 };

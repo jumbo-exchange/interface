@@ -214,7 +214,7 @@ export default function SearchRow({ tokensArray }:{tokensArray: FungibleTokenCon
                 </SearchTitle>
                 <SearchSubtitle>
                   <div>{token.metadata.name}</div>
-                  {isConnected && <div>{getCurrentPrice(balances, token, t('searchModal.priceUnavailable'))}</div>}
+                  {isConnected && <div>{getCurrentPrice(balances, token)}</div>}
                 </SearchSubtitle>
               </SearchDescriptionBlock>
             </SearchRowContainer>

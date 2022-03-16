@@ -5,6 +5,7 @@ import { ButtonSecondary } from 'components/Button';
 import { ReactComponent as Back } from 'assets/images-app/icon-back.svg';
 import { useNavigate } from 'react-router-dom';
 import { SWAP } from 'utils/routes';
+import { useTranslation } from 'react-i18next';
 
 const ContainerError = styled.div`
   display: flex;
@@ -63,9 +64,10 @@ const ButtonBack = styled(ButtonSecondary)`
 
 export default function Error() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
-  const titleError = '404 Error';
-  const labelError = 'The page you’re looking for is now beyond our reach';
+  const titleError = t('error.notFound');
+  const labelError = t('error.notFoundLabel');
 
   return (
     <ContainerError>
@@ -78,7 +80,7 @@ export default function Error() {
             navigate(SWAP);
           }}
         >
-          <IconBack />Back Home
+          <IconBack />{t('error.backHome')}
         </ButtonBack>
       </div>
     </ContainerError>

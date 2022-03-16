@@ -192,10 +192,10 @@ export default function Input({
           {getCurrentBalance(currentBalance, token)}
         </WalletInformation>
         <ButtonHalfWallet onClick={setHalfAmount}>
-          <span>{t('half')}</span>
+          <span>{t('common.half')}</span>
         </ButtonHalfWallet>
         <ButtonMaxWallet onClick={setMaxAmount}>
-          <span>{t('max')}</span>
+          <span>{t('common.max')}</span>
         </ButtonMaxWallet>
       </InputLabel>
       <InputContainer>

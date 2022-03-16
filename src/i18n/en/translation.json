@@ -1,4 +1,11 @@
 {
+  "common" : {
+    "loading": "Loading",
+    "half": "HALF",
+    "max": "MAX",
+    "refresh": "Refresh" 
+  },
+
   "general" : {
     "jumbo": "jumbo",
     "swap": "Swap",
@@ -39,11 +46,6 @@
     "sortBy": "Sort by",
     "APYBasis": "APY Basis"
   },
-
-  "loading": "Loading",
-  "half": "HALF",
-  "max": "MAX",
-  "refresh": "Refresh",
 
   "accountModal": {
     "yourWallet": "Your Wallet",
@@ -163,5 +165,11 @@
         "mob": "Lower Slippage Volume & Liquidity Homogenization Liquid Market"
       }
     }
+  },
+
+  "error" : {
+    "notFound": "404 Error",
+    "notFoundLabel": "The page you`re looking for is now beyond our reach",
+    "backHome": "Back Home"
   }
 }

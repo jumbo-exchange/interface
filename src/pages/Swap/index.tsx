@@ -297,7 +297,7 @@ export default function Swap() {
       <ExchangeBlock>
         <Refresh />
         <ExchangeLabel>
-          {loading ? `${t('loading')}...` : <div>{exchangeLabel}</div>}
+          {loading ? `${t('common.loading')}...` : <div>{exchangeLabel}</div>}
         </ExchangeLabel>
       </ExchangeBlock>
       <RenderWarning />

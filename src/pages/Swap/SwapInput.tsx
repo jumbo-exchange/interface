@@ -230,10 +230,10 @@ export default function Input({
         {(tokenType === TokenType.Input) && (
           <>
             <ButtonHalfWallet onClick={setHalfAmount}>
-              <span>{t('half')}</span>
+              <span>{t('common.half')}</span>
             </ButtonHalfWallet>
             <ButtonMaxWallet onClick={setMaxAmount}>
-              <span>{t('max')}</span>
+              <span>{t('common.max')}</span>
             </ButtonMaxWallet>
           </>
         )}

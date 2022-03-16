@@ -81,7 +81,7 @@ export default function Loader({ time = REFRESH_TIMER }: {time?: number}) {
             strokeDasharray: `${diameter}px ${diameter}px`,
           }}
         />
-      </svg> {t('refresh')}
+      </svg> {t('common.refresh')}
     </Container>
   );
 }

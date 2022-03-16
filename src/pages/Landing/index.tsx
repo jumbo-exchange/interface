@@ -74,7 +74,7 @@ export default function Landing() {
             </LandingStyles.MainTitle>
           )}
           {benefitsList.map((el) => (
-            <LandingStyles.ListElement key={el}>{t(el)}</LandingStyles.ListElement>
+            <LandingStyles.ListElement key={el}>{el}</LandingStyles.ListElement>
           ))}
         </LandingStyles.MainInformation>
         <LandingStyles.Gif src={gif} alt="gif" />
@@ -84,8 +84,8 @@ export default function Landing() {
           {benefitsCards.map(({ Image, title, subtitle }) => (
             <LandingStyles.GreyCard key={title}>
               <Image />
-              <h2>{t(title)}</h2>
-              <h5>{t(subtitle)}</h5>
+              <h2>{title}</h2>
+              <h5>{subtitle}</h5>
             </LandingStyles.GreyCard>
           ))}
         </LandingStyles.CardWrapper>

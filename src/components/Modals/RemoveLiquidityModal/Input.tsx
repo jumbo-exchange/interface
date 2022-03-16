@@ -150,10 +150,10 @@ export default function Input({
         </TotalShares>
 
         <ButtonHalfWallet onClick={setHalf}>
-          <span>{t('half')}</span>
+          <span>{t('common.half')}</span>
         </ButtonHalfWallet>
         <ButtonMaxWallet onClick={setMax}>
-          <span>{t('max')}</span>
+          <span>{t('common.max')}</span>
         </ButtonMaxWallet>
 
       </InputLabel>
