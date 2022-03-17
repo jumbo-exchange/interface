@@ -117,7 +117,7 @@ export const StoreContextProvider = (
       if (!inputToken) return;
       setOutputToken(activeToken);
       const availablePools = getPoolsPath(
-        inputToken.contractId, activeToken?.contractId, poolArray, tokens,
+        inputToken.contractId, activeToken.contractId, poolArray, tokens,
       );
       setCurrentPools(availablePools);
     } else {
