@@ -124,7 +124,7 @@ export const StoreContextProvider = (
       if (!outputToken) return;
       setInputToken(activeToken);
       const availablePools = getPoolsPath(
-        activeToken?.contractId, outputToken.contractId, poolArray, tokens,
+        activeToken.contractId, outputToken.contractId, poolArray, tokens,
       );
       setCurrentPools(availablePools);
     }
@@ -282,24 +282,12 @@ export const StoreContextProvider = (
     localStorageKey: string,
   ) => {
     const key = localStorage.getItem(localStorageKey) || '';
-    if (tokensMap[key]) return tokensMap[key];
+    if (key && tokensMap[key]) return tokensMap[key];
     return tokens[tokenId];
   };
 
   useEffect(() => {
-    const inputTokenData = tryTokenByKey(tokens, NEAR_TOKEN_ID, SWAP_INPUT_KEY);
-    const outputTokenData = tryTokenByKey(tokens, config.nearAddress, SWAP_OUTPUT_KEY);
-    if (!inputTokenData || !outputTokenData) {
-      setInputToken(null);
-      setOutputToken(null);
-      return;
-    }
-    setInputToken(inputTokenData);
-    setOutputToken(outputTokenData);
-  }, [toArray(tokens).length]);
-
-  useEffect(() => {
-    if (toArray(pools).length) {
+    if (toArray(pools).length && toArray(tokens).length) {
       const inputTokenData = tryTokenByKey(tokens, NEAR_TOKEN_ID, SWAP_INPUT_KEY);
       const outputTokenData = tryTokenByKey(tokens, config.nearAddress, SWAP_OUTPUT_KEY);
       if (!inputTokenData || !outputTokenData) {
@@ -317,7 +305,7 @@ export const StoreContextProvider = (
       );
       setCurrentPools(availablePools);
     }
-  }, [toArray(pools).length]);
+  }, [toArray(tokens).length, toArray(pools).length]);
 
   const updatePools = (newPools: IPool[]) => {
     const newPoolSet = newPools.reduce((acc, item) => ({ ...acc, [item.id]: item }), pools);
