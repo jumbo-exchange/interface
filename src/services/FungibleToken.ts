@@ -7,7 +7,6 @@ import {
   NEAR_TOKEN_ID,
   FT_TRANSFER_GAS,
   ONE_YOCTO_NEAR,
-  FT_MINIMUM_STORAGE_BALANCE,
 } from 'utils/constants';
 
 import Big from 'big.js';
@@ -34,6 +33,7 @@ export const ACCOUNT_MIN_STORAGE_AMOUNT = '0.005';
 export const MIN_DEPOSIT_PER_TOKEN = new Big('5000000000000000000000');
 export const STORAGE_PER_TOKEN = '0.005';
 export const STORAGE_TO_REGISTER_FT = '0.1';
+export const STORAGE_TO_REGISTER_WNEAR = '0.00125';
 export const ONE_MORE_DEPOSIT_AMOUNT = '0.01';
 
 const NEAR_TOKEN = {
@@ -135,7 +135,7 @@ export default class FungibleTokenContract {
                 account_id: accountId,
               },
               amount: this.contractId === config.nearAddress
-                ? FT_MINIMUM_STORAGE_BALANCE
+                ? STORAGE_TO_REGISTER_WNEAR
                 : STORAGE_TO_REGISTER_FT,
             }],
           },
