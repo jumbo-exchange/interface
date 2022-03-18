@@ -1,9 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import CurrencyInputPanel from 'components/CurrencyInputPanel';
+import Big from 'big.js';
 import { getUpperCase } from 'utils';
 import { formatBalance, removeTrailingZeros } from 'utils/calculations';
-import Big from 'big.js';
+import { useTranslation } from 'react-i18next';
 
 const Block = styled.div`
   display: flex;
@@ -125,6 +126,7 @@ export default function Input({
   withdrawValue: string,
   setWithdrawValue: React.Dispatch<React.SetStateAction<string>>,
 }) {
+  const { t } = useTranslation();
   const setHalf = () => {
     const halfShares = new Big(shares).div(2);
     if (halfShares.gte(0)) {
@@ -143,15 +145,15 @@ export default function Input({
     <Block>
       <InputLabel>
         <TotalShares>
-          Shares: &nbsp;
+          {t('removeLiquidityModal.shares')}: &nbsp;
           <span>{removeTrailingZeros(formatBalance(shares))}</span>
         </TotalShares>
 
         <ButtonHalfWallet onClick={setHalf}>
-          <span>HALF</span>
+          <span>{t('common.half')}</span>
         </ButtonHalfWallet>
         <ButtonMaxWallet onClick={setMax}>
-          <span>MAX</span>
+          <span>{t('common.max')}</span>
         </ButtonMaxWallet>
 
       </InputLabel>
@@ -161,7 +163,7 @@ export default function Input({
           setValue={setWithdrawValue}
         />
         <TokenContainer>
-          {getUpperCase('SHARES')}
+          {getUpperCase(t('removeLiquidityModal.shares'))}
         </TokenContainer>
       </InputContainer>
     </Block>

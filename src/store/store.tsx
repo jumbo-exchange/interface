@@ -121,14 +121,14 @@ export const StoreContextProvider = (
       if (!inputToken) return;
       setOutputToken(activeToken);
       const availablePools = getPoolsPath(
-        inputToken.contractId, activeToken?.contractId, poolArray, tokens,
+        inputToken.contractId, activeToken.contractId, poolArray, tokens,
       );
       setCurrentPools(availablePools);
     } else {
       if (!outputToken) return;
       setInputToken(activeToken);
       const availablePools = getPoolsPath(
-        activeToken?.contractId, outputToken.contractId, poolArray, tokens,
+        activeToken.contractId, outputToken.contractId, poolArray, tokens,
       );
       setCurrentPools(availablePools);
     }
@@ -288,27 +288,15 @@ export const StoreContextProvider = (
     ) return tokensMap[findTokenBySymbol(urlToken)?.contractId];
 
     const key = localStorage.getItem(localStorageKey) || '';
-    if (tokensMap[key]) return tokensMap[key];
+    if (key && tokensMap[key]) return tokensMap[key];
     return tokens[tokenId];
   };
 
   useEffect(() => {
-    const inputTokenData = tryTokenByKey(tokens, NEAR_TOKEN_ID, SWAP_INPUT_KEY, URL_INPUT_TOKEN);
-    const outputTokenData = tryTokenByKey(
-      tokens, config.nearAddress, SWAP_OUTPUT_KEY, URL_OUTPUT_TOKEN,
-    );
-    if (!inputTokenData || !outputTokenData) {
-      setInputToken(null);
-      setOutputToken(null);
-      return;
-    }
-    setInputToken(inputTokenData);
-    setOutputToken(outputTokenData);
-  }, [toArray(tokens).length]);
-
-  useEffect(() => {
-    if (toArray(pools).length) {
-      const inputTokenData = tryTokenByKey(tokens, NEAR_TOKEN_ID, SWAP_INPUT_KEY, URL_INPUT_TOKEN);
+    if (toArray(pools).length && toArray(tokens).length) {
+      const inputTokenData = tryTokenByKey(
+        tokens, NEAR_TOKEN_ID, SWAP_INPUT_KEY, URL_INPUT_TOKEN,
+      );
       const outputTokenData = tryTokenByKey(
         tokens, config.nearAddress, SWAP_OUTPUT_KEY, URL_OUTPUT_TOKEN,
       );
@@ -327,7 +315,7 @@ export const StoreContextProvider = (
       );
       setCurrentPools(availablePools);
     }
-  }, [toArray(pools).length]);
+  }, [toArray(tokens).length, toArray(pools).length]);
 
   const updatePools = (newPools: IPool[]) => {
     const newPoolSet = newPools.reduce((acc, item) => ({ ...acc, [item.id]: item }), pools);

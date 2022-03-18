@@ -8,7 +8,7 @@ import { SpecialContainer } from 'components/SpecialContainer';
 import { useNavigate } from 'react-router-dom';
 import { ReactComponent as AddIcon } from 'assets/images-app/icon-add.svg';
 import { toAddLiquidityPage, toRemoveLiquidityPage } from 'utils/routes';
-import { tooltipTitle } from 'utils/constants';
+import { useTranslation } from 'react-i18next';
 
 interface IColor {
   isColor?: boolean
@@ -234,7 +234,7 @@ export default function PoolCard({ pool } : { pool: IPool }) {
   const {
     tokens,
   } = useStore();
-
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [inputToken, outputToken] = pool.tokenAccountIds;
@@ -245,20 +245,20 @@ export default function PoolCard({ pool } : { pool: IPool }) {
 
   const volume: IVolume[] = [
     {
-      title: 'Total Liquidity',
+      title: t('pool.totalLiquidity'),
       label: pool.totalLiquidity && Big(pool.totalLiquidity).gt(0) ? `$${pool.totalLiquidity}` : '-',
-      tooltip: tooltipTitle.totalLiquidity,
+      tooltip: t('tooltipTitle.totalLiquidity'),
     },
     {
-      title: '24h Volume',
+      title: t('pool.dayVolume'),
       label: '-',
-      tooltip: tooltipTitle.dayVolume,
+      tooltip: t('tooltipTitle.dayVolume'),
     },
     {
-      title: 'APY',
+      title: t('pool.APY'),
       label: '-',
       color: true,
-      tooltip: tooltipTitle.APY,
+      tooltip: t('tooltipTitle.APY'),
     },
   ];
 
@@ -305,7 +305,7 @@ export default function PoolCard({ pool } : { pool: IPool }) {
               navigate(toRemoveLiquidityPage(pool.id));
             }}
           >
-            Withdraw
+            {t('action.removeLiquidity')}
           </BtnSecondary>
           )}
 
@@ -314,7 +314,7 @@ export default function PoolCard({ pool } : { pool: IPool }) {
               navigate(toAddLiquidityPage(pool.id));
             }}
           >
-            <LogoButton />Add Liquidity
+            <LogoButton /> {t('action.addLiquidity')}
           </BtnPrimary>
         </BlockButton>
       </LowerRow>

@@ -8,9 +8,8 @@ import {
   MAX_TOTAL_FEE,
   MIN_TOTAL_FEE,
   COEFFICIENT_TOTAL_FEE,
-  tooltipTitle,
-  warningMessage,
 } from 'utils/constants';
+import { useTranslation } from 'react-i18next';
 
 const Container = styled.div`
   display: flex;
@@ -87,22 +86,23 @@ export default function CreatePoolSettings(
   },
 ) {
   const [error, setError] = useState(false);
+  const { t } = useTranslation();
 
   const feeList = [
     {
-      title: 'LP Fee',
+      title: t('createPoolModal.lpFee'),
       percent: 83,
-      tooltip: tooltipTitle.lPFee,
+      tooltip: t('tooltipTitle.lPFee'),
     },
     {
-      title: 'Protocol Fee',
+      title: t('createPoolModal.protocolFee'),
       percent: 14,
-      tooltip: tooltipTitle.protocolFee,
+      tooltip: t('tooltipTitle.protocolFee'),
     },
     {
-      title: 'Referral Fee',
+      title: t('createPoolModal.referralFee'),
       percent: 3,
-      tooltip: tooltipTitle.referralFee,
+      tooltip: t('tooltipTitle.referralFee'),
     },
   ];
 
@@ -148,7 +148,7 @@ export default function CreatePoolSettings(
 
   return (
     <Container>
-      <Title>Total Fee <Tooltip title={tooltipTitle.totalFee} /> </Title>
+      <Title>{t('createPoolModal.totalFee')} <Tooltip title={t('tooltipTitle.totalFee')} /> </Title>
       <TotalFeeBlock>
         <Toggle
           value={fee}
@@ -158,7 +158,7 @@ export default function CreatePoolSettings(
         />
         {error && (
           <Error>
-            {warningMessage.zeroFee}
+            {t('warningMessage.zeroFee')}
           </Error>
         )}
       </TotalFeeBlock>

@@ -67,13 +67,17 @@ export const NearContainer = styled.div`
 `;
 
 export const MainTitle = styled.h1`
-  white-space: nowrap;
+  max-width: 420px;
   font-style: normal;
   font-weight: 500;
   font-size: 3rem;
   line-height: 3.563rem;
   color: ${({ theme }) => theme.white};
+  ${({ theme }) => theme.mediaWidth.upToLarge`
+    ${isTablet && 'max-width: 80%;'};
+  `}
   ${({ theme }) => theme.mediaWidth.upToSmall`
+    max-width: 400px;
     font-size: 2rem;
     line-height: 2.375rem;
   `}
@@ -185,6 +189,8 @@ export const Title = styled.div`
 `;
 
 export const Label = styled.div`
+  max-width: 400px;
+  align-self: center;
   font-weight: 300;
   font-size: 1.5rem;
   line-height: 2.125rem;
@@ -193,6 +199,7 @@ export const Label = styled.div`
   margin-top: 1.5rem;
   margin-bottom: 4.5rem;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    max-width: 300px;
     font-style: normal;
     font-size: 1rem;
     line-height: 1.375rem;
@@ -266,6 +273,10 @@ export const MiddleRightBlock = styled(Block)`
   line-height: 34px;
   max-height: 96px;
   min-width: ${isTablet ? '240px' : '300px'};
+  & > p {
+    max-width: 175px;
+    margin: 0;
+  }
 `;
 
 export const LowerBlock = styled(Block)`
@@ -335,6 +346,10 @@ export const MobileMiddleLeftBlock = styled(MobileBlock)`
 export const MobileMiddleRightBlock = styled(MobileBlock)`
   grid-area: 5 / 5 / 6 / 8;
   border: 2px dashed ${({ theme }) => theme.greyBorder};
+  & > p {
+    max-width: 115px;
+    margin: 0;
+  }
 `;
 
 export const MobileLowerBlock = styled(MobileBlock)`
@@ -343,6 +358,10 @@ export const MobileLowerBlock = styled(MobileBlock)`
   background: ${({ theme }) => theme.darkGreenBg};
   border-radius: 32px;
   height: 144px;
+  & > p {
+    max-width: 150px;
+    margin: 0;
+  }
 `;
 
 export const MobileCentralArrowContainer = styled(MobileCentralArrow)`

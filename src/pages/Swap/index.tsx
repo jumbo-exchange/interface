@@ -5,7 +5,7 @@ import {
   useStore, TokenType, CurrentButton,
 } from 'store';
 import {
-  BAD_PRICE_IMPACT, FEE_DIVISOR, NEAR_TOKEN_ID, SLIPPAGE_TOLERANCE_DEFAULT, tooltipTitle,
+  BAD_PRICE_IMPACT, FEE_DIVISOR, NEAR_TOKEN_ID, SLIPPAGE_TOLERANCE_DEFAULT,
   SWAP_INPUT_KEY, SWAP_OUTPUT_KEY,
 } from 'utils/constants';
 import SwapContract from 'services/SwapContract';
@@ -19,6 +19,7 @@ import getConfig from 'services/config';
 import Big from 'big.js';
 
 import { calculatePriceImpact } from 'services/swap';
+import { useTranslation } from 'react-i18next';
 
 import Refresh from 'components/Refresh';
 import { useRefresh } from 'services/refreshService';
@@ -68,6 +69,7 @@ export default function Swap() {
   const config = getConfig();
   const navigate = useNavigateSwapParams();
   const { setTrackedPools } = useRefresh();
+  const { t } = useTranslation();
   const [independentField, setIndependentField] = useState(TokenType.Input);
   const [inputTokenValue, setInputTokenValue] = useState<string>('');
   const debouncedInputValue = useDebounce(inputTokenValue, DEBOUNCE_VALUE);
@@ -288,7 +290,7 @@ export default function Swap() {
         />
         <ChangeTokenContainer onClick={swapTokens}>
           <ChangeTokenLogo />
-          <span>Change Direction</span>
+          <span>{t('swap.changeDirection')}</span>
         </ChangeTokenContainer>
         <Input
           token={outputToken}
@@ -301,9 +303,7 @@ export default function Swap() {
       <ExchangeBlock>
         <Refresh />
         <ExchangeLabel>
-          {loading
-            ? 'Loading...'
-            : <div>{exchangeLabel}</div>}
+          {loading ? `${t('common.loading')}...` : <div>{exchangeLabel}</div>}
         </ExchangeLabel>
       </ExchangeBlock>
       <RenderWarning />
@@ -318,7 +318,7 @@ export default function Swap() {
             isActive={isSettingsOpen}
             onClick={() => (setIsSettingsOpen(!isSettingsOpen))}
           >
-            <span>Settings</span>
+            <span>{t('swap.settings')}</span>
             <ArrowDown />
           </SettingsLabel>
         </SettingsHeader>
@@ -331,8 +331,8 @@ export default function Swap() {
             <SwapInformation>
               <RouteBlock>
                 <TitleInfo>
-                  Route
-                  <Tooltip title={tooltipTitle.routes} />
+                  {t('swap.route')}
+                  <Tooltip title={t('tooltipTitle.routes')} />
                 </TitleInfo>
                 <div>
                   <LogoContainer>
@@ -368,15 +368,15 @@ export default function Swap() {
               </RouteBlock>
               <RowInfo>
                 <TitleInfo>
-                  Minimum Received
-                  <Tooltip title={tooltipTitle.minimumReceived} />
+                  {t('swap.minimumReceived')}
+                  <Tooltip title={t('tooltipTitle.minimumReceived')} />
                 </TitleInfo>
                 <LabelInfo>{minAmountOut} {outputToken?.metadata.symbol}</LabelInfo>
               </RowInfo>
               <RowInfo>
                 <TitleInfo>
-                  Price Impact
-                  <Tooltip title={tooltipTitle.priceImpact} />
+                  {t('swap.priceImpact')}
+                  <Tooltip title={t('tooltipTitle.priceImpact')} />
                 </TitleInfo>
                 {
                   Number(formatBalance(priceImpact)) > BAD_PRICE_IMPACT
@@ -386,15 +386,15 @@ export default function Swap() {
               </RowInfo>
               <RowInfo>
                 <TitleInfo>
-                  Liquidity Provider Fee
-                  <Tooltip title={tooltipTitle.liquidityProviderFee} />
+                  {t('swap.liquidityProviderFee')}
+                  <Tooltip title={t('tooltipTitle.liquidityProviderFee')} />
                 </TitleInfo>
                 <LabelInfo>{averageFee}%</LabelInfo>
               </RowInfo>
               <RowInfo>
                 <TitleInfo>
-                  Slippage Tolerance
-                  <Tooltip title={tooltipTitle.slippageTolerance} />
+                  {t('swap.slippageTolerance')}
+                  <Tooltip title={t('tooltipTitle.slippageTolerance')} />
                 </TitleInfo>
                 <LabelInfo>{slippageTolerance}%</LabelInfo>
               </RowInfo>

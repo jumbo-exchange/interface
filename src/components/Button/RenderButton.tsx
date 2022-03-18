@@ -7,6 +7,7 @@ import { ButtonPrimary, ButtonSecondary } from 'components/Button';
 import { ReactComponent as LogoWallet } from 'assets/images-app/wallet.svg';
 import { ReactComponent as SwapIcon } from 'assets/images-app/swap-icon.svg';
 import { ReactComponent as AddIcon } from 'assets/images-app/icon-add.svg';
+import { useTranslation } from 'react-i18next';
 
 const Wallet = styled(LogoWallet)`
   margin-right: .625rem;
@@ -38,22 +39,23 @@ export default function RenderButton({
   }) {
   const isConnected = wallet.isSignedIn();
   const { setAccountModalOpen } = useModalsStore();
+  const { t } = useTranslation();
 
   function CurrentTitle(variant: CurrentButton) {
     switch (variant) {
       case CurrentButton.AddLiquidity:
-        return 'Add Liquidity';
+        return t('action.addLiquidity');
       case CurrentButton.CreatePool:
-        return 'Create Pool';
+        return t('action.createPool');
       case CurrentButton.Swap:
-        return 'Swap';
+        return t('action.swap');
       case CurrentButton.Withdraw:
-        return 'Withdraw';
+        return t('action.removeLiquidity');
       default:
         return null;
     }
   }
-  const title = isConnected ? CurrentTitle(typeButton) : 'Connect Wallet';
+  const title = isConnected ? CurrentTitle(typeButton) : t('action.connectWallet');
 
   function CurrentIcon({ variant }:{variant: CurrentButton}) {
     switch (variant) {

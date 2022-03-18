@@ -3,15 +3,16 @@ import styled from 'styled-components';
 import CurrencyInputPanel from 'components/CurrencyInputPanel';
 import tokenLogo from 'assets/images-app/placeholder-token.svg';
 import Big from 'big.js';
+import FungibleTokenContract from 'services/FungibleToken';
 
 import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
 import { getUpperCase } from 'utils';
 import { TokenType, useModalsStore, useStore } from 'store';
-import FungibleTokenContract from 'services/FungibleToken';
 import { formatTokenAmount } from 'utils/calculations';
 import { SWAP_INPUT_KEY, SWAP_OUTPUT_KEY } from 'utils/constants';
 import useNavigateSwapParams from 'hooks/useNavigateSwapParams';
+import { useTranslation } from 'react-i18next';
 
 const Block = styled.div`
   display: flex;
@@ -209,6 +210,7 @@ export default function Input({
   } = useStore();
   const { setSearchModalOpen } = useModalsStore();
   const navigate = useNavigateSwapParams();
+  const { t } = useTranslation();
 
   const SWAP_KEY = tokenType === TokenType.Input ? SWAP_INPUT_KEY : SWAP_OUTPUT_KEY;
 
@@ -254,10 +256,10 @@ export default function Input({
         {(tokenType === TokenType.Input) && (
           <>
             <ButtonHalfWallet onClick={setHalfAmount}>
-              <span>HALF</span>
+              <span>{t('common.half')}</span>
             </ButtonHalfWallet>
             <ButtonMaxWallet onClick={setMaxAmount}>
-              <span>MAX</span>
+              <span>{t('common.max')}</span>
             </ButtonMaxWallet>
           </>
         )}

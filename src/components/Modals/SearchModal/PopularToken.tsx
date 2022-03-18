@@ -5,6 +5,7 @@ import {
 } from 'store';
 import getConfig from 'services/config';
 import { NEAR_TOKEN_ID } from 'utils/constants';
+import { useTranslation } from 'react-i18next';
 
 const config = getConfig();
 
@@ -128,6 +129,7 @@ const LogoContainer = styled.div`
 export default function PopularToken() {
   const { getToken } = useStore();
   const { isSearchModalOpen, setSearchModalOpen } = useModalsStore();
+  const { t } = useTranslation();
 
   const { activeToken, setActiveToken } = isSearchModalOpen;
 
@@ -138,7 +140,7 @@ export default function PopularToken() {
 
   return (
     <Container>
-      <Title>Popular</Title>
+      <Title>{t('searchModal.popular')}</Title>
       <TokensContainer>
         {popularTokensArray.map((token) => (
           <TokenBlock
