@@ -99,6 +99,7 @@ export default function RenderWarning() {
     setOutputToken,
     getTokenBalance,
     getToken,
+    setCurrentPools,
   } = useStore();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -200,11 +201,11 @@ export default function RenderWarning() {
       if (nearIsInput) {
         setInputToken(wNear);
         setOutputToken(outputToken);
-        return;
-      }
-      if (!nearIsInput) {
+        setCurrentPools(poolPathOutputToken);
+      } else {
         setInputToken(inputToken);
         setOutputToken(wNear);
+        setCurrentPools(poolPathInputToken);
       }
     };
 

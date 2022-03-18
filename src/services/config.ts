@@ -13,7 +13,7 @@ export default function getConfig(
         indexerUrl: 'https://testnet-indexer.ref-finance.com',
         contractId: 'jumbo-testnet-v3.solniechniy.testnet',
         nearAddress: 'wrap.testnet',
-        jumboAddress: 'token.solniechniy.testnet',
+        jumboAddress: 'jumbo_exchange_v2.solniechniy.testnet',
         jumboPoolId: 4,
         stablePoolId: 0,
       };

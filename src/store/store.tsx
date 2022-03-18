@@ -14,7 +14,7 @@ import getConfig from 'services/config';
 import SpecialWallet, { createContract } from 'services/wallet';
 import FungibleTokenContract from 'services/FungibleToken';
 import PoolContract from 'services/PoolContract';
-import { NEAR_TOKEN_ID } from 'utils/constants';
+import { NEAR_TOKEN_ID, SWAP_INPUT_KEY, SWAP_OUTPUT_KEY } from 'utils/constants';
 import { formatTokenAmount } from 'utils/calculations';
 import { ITokenPrice, PoolType } from './interfaces';
 
@@ -59,6 +59,7 @@ const initialState: StoreContextType = {
   setTokens: () => {},
   getToken: () => null,
 
+  setCurrentToken: () => {},
   prices: pricesInitialState,
   setPrices: () => {},
 
@@ -66,7 +67,6 @@ const initialState: StoreContextType = {
   setInputToken: () => {},
   outputToken: null,
   setOutputToken: () => {},
-  setCurrentToken: () => {},
   updatePools: () => {},
   swapTokens: () => {},
 };
@@ -111,22 +111,25 @@ export const StoreContextProvider = (
     initialState.outputToken,
   );
 
-  const setCurrentToken = (tokenAddress: string, tokenType: TokenType) => {
+  const setCurrentToken = (activeToken: FungibleTokenContract, tokenType: TokenType) => {
     const poolArray = toArray(pools);
     if (tokenType === TokenType.Output) {
       if (!inputToken) return;
-      const outputTokenData = tokens[tokenAddress] ?? null;
-      setOutputToken(outputTokenData);
-      const availablePools = getPoolsPath(inputToken.contractId, tokenAddress, poolArray, tokens);
+      setOutputToken(activeToken);
+      const availablePools = getPoolsPath(
+        inputToken.contractId, activeToken.contractId, poolArray, tokens,
+      );
       setCurrentPools(availablePools);
     } else {
       if (!outputToken) return;
-      const inputTokenData = tokens[tokenAddress] ?? null;
-      setInputToken(inputTokenData);
-      const availablePools = getPoolsPath(tokenAddress, outputToken.contractId, poolArray, tokens);
+      setInputToken(activeToken);
+      const availablePools = getPoolsPath(
+        activeToken.contractId, outputToken.contractId, poolArray, tokens,
+      );
       setCurrentPools(availablePools);
     }
   };
+
   const swapTokens = () => {
     const poolArray = toArray(pools);
     if (!inputToken || !outputToken || inputToken === outputToken) return;
@@ -273,17 +276,27 @@ export const StoreContextProvider = (
     initialLoading();
   }, []);
 
-  useEffect(() => {
-    const outputTokenData = tokens[config.nearAddress] ?? null;
-    const inputTokenData = tokens[NEAR_TOKEN_ID] ?? null;
-    setOutputToken(outputTokenData);
-    setInputToken(inputTokenData);
-  }, [toArray(tokens).length]);
+  const tryTokenByKey = (
+    tokensMap: { [key: string]: FungibleTokenContract},
+    tokenId: string,
+    localStorageKey: string,
+  ) => {
+    const key = localStorage.getItem(localStorageKey) || '';
+    if (key && tokensMap[key]) return tokensMap[key];
+    return tokens[tokenId];
+  };
 
   useEffect(() => {
-    if (toArray(pools).length) {
-      const outputTokenData = tokens[config.nearAddress] ?? null;
-      const inputTokenData = tokens[NEAR_TOKEN_ID] ?? null;
+    if (toArray(pools).length && toArray(tokens).length) {
+      const inputTokenData = tryTokenByKey(tokens, NEAR_TOKEN_ID, SWAP_INPUT_KEY);
+      const outputTokenData = tryTokenByKey(tokens, config.nearAddress, SWAP_OUTPUT_KEY);
+      if (!inputTokenData || !outputTokenData) {
+        setInputToken(null);
+        setOutputToken(null);
+        return;
+      }
+      setInputToken(inputTokenData);
+      setOutputToken(outputTokenData);
       const availablePools = getPoolsPath(
         inputTokenData.contractId,
         outputTokenData.contractId,
@@ -292,7 +305,7 @@ export const StoreContextProvider = (
       );
       setCurrentPools(availablePools);
     }
-  }, [toArray(pools).length]);
+  }, [toArray(tokens).length, toArray(pools).length]);
 
   const updatePools = (newPools: IPool[]) => {
     const newPoolSet = newPools.reduce((acc, item) => ({ ...acc, [item.id]: item }), pools);
@@ -335,11 +348,12 @@ export const StoreContextProvider = (
       prices,
       setPrices,
 
+      setCurrentToken,
+
       inputToken,
       setInputToken,
       outputToken,
       setOutputToken,
-      setCurrentToken,
       swapTokens,
     }}
     >

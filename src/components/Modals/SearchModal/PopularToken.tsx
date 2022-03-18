@@ -127,12 +127,11 @@ const LogoContainer = styled.div`
 `;
 
 export default function PopularToken() {
-  const {
-    getToken,
-    setCurrentToken,
-  } = useStore();
+  const { getToken } = useStore();
   const { isSearchModalOpen, setSearchModalOpen } = useModalsStore();
   const { t } = useTranslation();
+
+  const { activeToken, setActiveToken } = isSearchModalOpen;
 
   const near = getToken(NEAR_TOKEN_ID) ?? null;
   const wNear = getToken(config.nearAddress) ?? null;
@@ -147,8 +146,10 @@ export default function PopularToken() {
           <TokenBlock
             key={token.contractId}
             onClick={() => {
-              setCurrentToken(token.contractId, isSearchModalOpen.tokenType);
-              setSearchModalOpen(initialModalsState.isSearchModalOpen);
+              if (token !== activeToken) {
+                setActiveToken(token);
+                setSearchModalOpen(initialModalsState.isSearchModalOpen);
+              }
             }}
           >
             <LogoContainer>

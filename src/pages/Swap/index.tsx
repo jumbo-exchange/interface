@@ -2,7 +2,7 @@ import React, { useCallback, useState, useEffect } from 'react';
 import RenderButton from 'components/Button/RenderButton';
 import { getPoolsPath, getUpperCase, toArray } from 'utils';
 import {
-  useStore, useModalsStore, TokenType, CurrentButton,
+  useStore, TokenType, CurrentButton,
 } from 'store';
 import {
   BAD_PRICE_IMPACT, FEE_DIVISOR, NEAR_TOKEN_ID, SLIPPAGE_TOLERANCE_DEFAULT,
@@ -64,7 +64,6 @@ export default function Swap() {
   } = useStore();
   const config = getConfig();
   const { setTrackedPools } = useRefresh();
-  const { setSearchModalOpen } = useModalsStore();
   const { t } = useTranslation();
   const [independentField, setIndependentField] = useState(TokenType.Input);
   const [inputTokenValue, setInputTokenValue] = useState<string>('');
@@ -81,13 +80,6 @@ export default function Swap() {
     : '';
   const priceImpact = calculatePriceImpact(
     currentPools, inputToken, outputToken, inputTokenValue, tokens,
-  );
-  const openModal = useCallback(
-    (tokenType: TokenType) => {
-      setSearchModalOpen({ isOpen: true, tokenType });
-      setIsSettingsOpen(false);
-    },
-    [],
   );
 
   const verifyToken = (
@@ -169,21 +161,13 @@ export default function Swap() {
     setTrackedPools(currentPools);
   }, [currentPools]);
 
-  const handleAmountChange = async (tokenType: TokenType, value: string) => {
-    if (tokenType === TokenType.Input) {
-      setInputTokenValue(value);
-    } else {
-      setOutputTokenValue(value);
-    }
-  };
-
   const handleInputChange = useCallback(
     (value: string) => {
       if (value === '') {
         setOutputTokenValue('');
       }
       setIndependentField(TokenType.Input);
-      handleAmountChange(TokenType.Input, value);
+      setInputTokenValue(value);
     }, [],
   );
 
@@ -193,7 +177,7 @@ export default function Swap() {
         setInputTokenValue('');
       }
       setIndependentField(TokenType.Output);
-      handleAmountChange(TokenType.Output, value);
+      setOutputTokenValue(value);
     }, [],
   );
 
@@ -249,8 +233,8 @@ export default function Swap() {
         verifiedOutputToken,
         tokens,
       );
-      const lastIndex = minOutput.length - 1;
 
+      const lastIndex = minOutput.length - 1;
       setExchangeAmount(
         removeTrailingZeros(
           formatTokenAmount(
@@ -260,21 +244,24 @@ export default function Swap() {
           ),
         ),
       );
+      setInputTokenValue('');
+      setOutputTokenValue('');
     } catch (e) {
       console.warn(e);
     }
-  }, [inputToken, outputToken]);
+  }, [loading, inputToken, outputToken]);
 
-  const exchangeLabel = `
+  const exchangeLabel = (inputToken && outputToken)
+    ? `
   1 ${getUpperCase(inputToken?.metadata.symbol ?? '')} 
   ≈ ${exchangeAmount} ${getUpperCase(outputToken?.metadata.symbol ?? '')}
-  `;
+  `
+    : 'Loading...';
 
   return (
     <Container>
       <ActionContainer>
         <Input
-          openModal={openModal}
           token={inputToken}
           tokenType={TokenType.Input}
           value={inputTokenValue}
@@ -286,7 +273,6 @@ export default function Swap() {
           <span>{t('swap.changeDirection')}</span>
         </ChangeTokenContainer>
         <Input
-          openModal={openModal}
           token={outputToken}
           tokenType={TokenType.Output}
           value={outputTokenValue}
@@ -348,7 +334,7 @@ export default function Swap() {
                         </LogoContainer>
                         {intersectionToken?.metadata.symbol}
                       </>
-                    ) // TODO: check correct display
+                    )
                     : null}
                   <RouteArrowLogo />
                   <LogoContainer>

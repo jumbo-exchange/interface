@@ -8,8 +8,9 @@ import FungibleTokenContract from 'services/FungibleToken';
 import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
 import { getUpperCase } from 'utils';
-import { TokenType, useStore } from 'store';
+import { TokenType, useModalsStore, useStore } from 'store';
 import { formatTokenAmount } from 'utils/calculations';
+import { SWAP_INPUT_KEY, SWAP_OUTPUT_KEY } from 'utils/constants';
 import { useTranslation } from 'react-i18next';
 
 const Block = styled.div`
@@ -188,7 +189,6 @@ const getCurrentBalance = (
 };
 
 export default function Input({
-  openModal,
   token,
   tokenType,
   value,
@@ -197,16 +197,19 @@ export default function Input({
   disabled = false,
 }:
 {
-  openModal: (tokenType: TokenType) => void,
   token: FungibleTokenContract | null,
   tokenType: TokenType,
   value: string,
-  setValue: any,
-  balance:string,
+  setValue: (value: string) => void,
+  balance: string,
   disabled?: boolean
 }) {
-  const { loading } = useStore();
+  const { loading, setCurrentToken } = useStore();
+  const { setSearchModalOpen } = useModalsStore();
   const { t } = useTranslation();
+
+  const SWAP_KEY = tokenType === TokenType.Input ? SWAP_INPUT_KEY : SWAP_OUTPUT_KEY;
+
   const currentBalance = new Big(balance ?? 0);
   const setHalfAmount = () => {
     if (!balance) return;
@@ -218,6 +221,18 @@ export default function Input({
     if (!balance) return;
     const newBalance = formatTokenAmount(currentBalance.toFixed() ?? 0, token?.metadata.decimals);
     setValue(newBalance);
+  };
+
+  const openModal = (currentToken: FungibleTokenContract | null) => {
+    if (!token) return;
+    setSearchModalOpen({
+      isOpen: true,
+      activeToken: currentToken,
+      setActiveToken: (activeToken: FungibleTokenContract) => {
+        localStorage.setItem(SWAP_KEY, activeToken.contractId);
+        setCurrentToken(activeToken, tokenType);
+      },
+    });
   };
 
   return (
@@ -250,7 +265,7 @@ export default function Input({
         />
         <TokenContainer onClick={() => {
           if (loading) return;
-          openModal(tokenType);
+          openModal(token);
         }}
         >
           {getUpperCase(token?.metadata.symbol ?? '')}
