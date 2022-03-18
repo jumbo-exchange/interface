@@ -53,7 +53,7 @@ const PROPERTY_NAME = 'FunctionCall';
 const getToast = (href: string, title: string, type: ToastType) => {
   const link = (
     <Link href={href} target="_blank" rel="noreferrer">
-      {title}.&nbsp;Click to view
+      {title}
     </Link>
   );
   if (type === ToastType.Success) {
@@ -76,14 +76,6 @@ const getToast = (href: string, title: string, type: ToastType) => {
       borderRadius: '12px',
     },
   });
-};
-
-const getSwapTransaction = (transactions: any, method: string[]) => {
-  const [transaction] = transactions.filter((tx:any) => method.indexOf(tx.transaction.actions[0][PROPERTY_NAME].method_name) !== -1);
-  if (transaction === undefined) return null;
-  return {
-    transaction,
-  };
 };
 
 const detailsTransaction = (transaction: any, type: TransactionType) => {
@@ -110,11 +102,11 @@ const getTransaction = (transactions: any, method: { [key: string]: string }) =>
 
   let type = TransactionType.None;
   if (transactions.length <= 2) {
-    const swap = getSwapTransaction(transactions, swapMethod);
-    if (swap && swap.transaction) {
+    const [swapTransaction] = transactions.filter((tx:any) => swapMethod.indexOf(tx.transaction.actions[0][PROPERTY_NAME].method_name) !== -1);
+    if (swapTransaction) {
       return {
         type: TransactionType.Swap,
-        transaction: swap.transaction,
+        transaction: swapTransaction,
       };
     }
   } else {
