@@ -1,12 +1,20 @@
 /* eslint-disable max-len */
-import { providers } from 'near-api-js';
-import { useEffect } from 'react';
-import { toast } from 'react-toastify';
 import getConfig from 'services/config';
 import SpecialWallet from 'services/wallet';
+import styled from 'styled-components';
+import Big from 'big.js';
+
+import { providers } from 'near-api-js';
+import { useEffect } from 'react';
+import { toast, Slide } from 'react-toastify';
 import { colors } from 'theme';
 
 const config = getConfig();
+
+const Link = styled.a`
+  text-decoration: none;
+  color: ${({ theme }) => theme.globalWhite};
+`;
 
 enum ToastType {
   Success,
@@ -27,111 +35,119 @@ enum StatusType {
   Failed,
 }
 
-const methodName = {
-  swapMethod: [
-    'swap',
-    'ft_transfer_call',
-    'near_deposit',
-    'near_withdraw',
-  ],
+const swapMethod = [
+  'ft_transfer_call',
+  'near_deposit',
+  'near_withdraw',
+];
+
+const methodName: { [key: string]: string } = {
   createPoolMethod: 'add_simple_pool',
   addLiquidityMethod: 'add_liquidity',
   removeLiquidityMethod: 'remove_liquidity',
 };
 
-const propertyName = 'FunctionCall';
-
-const getSwapIntersectTransaction = (transactions: any, method: string[]) => {
-  const transaction = transactions.filter((tx:any) => method.indexOf(tx.transaction.actions[0][propertyName].method_name) !== -1);
-  const hash: string = transaction.map((el:any) => el.transaction.hash);
-  const status: boolean = transaction.some((el:any) => el.status.SuccessValue.length > 0);
-  const actionWithNear: boolean = methodName.swapMethod.some((el) => el === transaction[0].transaction.actions[0][propertyName].method_name);
-  return {
-    transaction,
-    hash,
-    isFindTransaction: transaction.length > 0,
-    status,
-    actionWithNear,
-  };
-};
-
-const getTransaction = (transactions: any, method: string) => {
-  const transaction = transactions.filter((el: any) => el.transaction.actions[0][propertyName].method_name === method);
-  const hash: string = transaction.map((el:any) => el.transaction.hash);
-  const status: boolean = transaction.some((el:any) => el.status.SuccessValue.length > 0);
-  return {
-    transaction,
-    hash,
-    isFindTransaction: transaction.length > 0,
-    status,
-  };
-};
+const PROPERTY_NAME = 'FunctionCall';
 
 const getToast = (href: string, title: string, type: ToastType) => {
   const link = (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-      style={{
-        textDecoration: 'none',
-        color: colors.globalWhite,
-      }}
-    >{title}.&nbsp;
-      <span style={{
-        fontSize: '.9rem',
-      }}
-      >Click to view
-      </span>
-    </a>
+    <Link href={href} target="_blank" rel="noreferrer">
+      {title}.&nbsp;Click to view
+    </Link>
   );
   if (type === ToastType.Success) {
-    return toast.success(link, { theme: 'dark' });
+    return toast.success(link, {
+      theme: 'dark',
+      transition: Slide,
+      style: {
+        background: colors.backgroundCard,
+        boxShadow: '0px 0px 10px 10px rgba(0, 0, 0, 0.15)',
+        borderRadius: '12px',
+      },
+    });
   }
-  return toast.error(link, { theme: 'dark' });
+  return toast.error(link, {
+    theme: 'dark',
+    transition: Slide,
+    style: {
+      background: colors.warningBg,
+      boxShadow: '0px 0px 10px 10px rgba(0, 0, 0, 0.15)',
+      borderRadius: '12px',
+    },
+  });
+};
+
+const getSwapTransaction = (transactions: any, method: string[]) => {
+  const [transaction] = transactions.filter((tx:any) => method.indexOf(tx.transaction.actions[0][PROPERTY_NAME].method_name) !== -1);
+  if (transaction === undefined) return null;
+  return {
+    transaction,
+  };
+};
+
+const detailsTransaction = (transaction: any, type: TransactionType) => {
+  const { hash } = transaction.transaction;
+
+  if (type === TransactionType.Swap) {
+    const successValue = atob(transaction.status.SuccessValue);
+    const status = Big(successValue.replace(/"/g, '') || 0).gt(0);
+    const nearMethod = ['near_deposit', 'near_withdraw'];
+    const actionWithNear = nearMethod.some((el) => el === transaction.transaction.actions[0][PROPERTY_NAME].method_name);
+    return {
+      hash,
+      status: status || actionWithNear ? StatusType.Succeeded : StatusType.Failed,
+    };
+  }
+  return {
+    hash,
+    status: StatusType.Succeeded,
+  };
+};
+
+const getTransaction = (transactions: any, method: { [key: string]: string }) => {
+  const [transaction] = transactions.filter((tx:any) => Object.values(method).indexOf(tx.transaction.actions[0][PROPERTY_NAME].method_name) !== -1);
+
+  let type = TransactionType.None;
+  if (transactions.length <= 2) {
+    const swap = getSwapTransaction(transactions, swapMethod);
+    if (swap && swap.transaction) {
+      return {
+        type: TransactionType.Swap,
+        transaction: swap.transaction,
+      };
+    }
+  } else {
+    switch (transaction.transaction.actions[0][PROPERTY_NAME].method_name) {
+      case method.createPoolMethod: {
+        type = TransactionType.CreatePool;
+        break;
+      }
+      case method.addLiquidityMethod: {
+        type = TransactionType.AddLiquidity;
+        break;
+      }
+      case method.removeLiquidityMethod: {
+        type = TransactionType.RemoveLiquidity;
+        break;
+      }
+      default:
+    }
+  }
+  return {
+    type,
+    transaction,
+  };
 };
 
 export function analyzeTransactions(
   transactions: any,
 ): {type: TransactionType, status: StatusType, hash: string } {
-  if (transactions.length === 1) {
-    const swap = getSwapIntersectTransaction(transactions, methodName.swapMethod);
-    if (swap.isFindTransaction) {
-      return {
-        type: TransactionType.Swap,
-        status: swap.status || swap.actionWithNear ? StatusType.Succeeded : StatusType.Failed,
-        hash: swap.hash,
-      };
-    }
-  }
-  const createPool = getTransaction(transactions, methodName.createPoolMethod);
-  if (createPool.isFindTransaction) {
-    return {
-      type: TransactionType.CreatePool,
-      status: createPool.status ? StatusType.Succeeded : StatusType.Failed,
-      hash: createPool.hash,
-    };
-  }
-  const addLiquidity = getTransaction(transactions, methodName.addLiquidityMethod);
-  if (addLiquidity.isFindTransaction) {
-    return {
-      type: TransactionType.AddLiquidity,
-      status: StatusType.Succeeded,
-      hash: addLiquidity.hash,
-    };
-  }
-  const removeLiquidity = getTransaction(transactions, methodName.removeLiquidityMethod);
-  if (removeLiquidity.isFindTransaction) {
-    return {
-      type: TransactionType.RemoveLiquidity,
-      status: StatusType.Succeeded,
-      hash: removeLiquidity.hash,
-    };
-  }
+  const { type, transaction } = getTransaction(transactions, methodName);
+  const { hash, status } = detailsTransaction(transaction, type);
   return {
-    type: TransactionType.None,
-    status: StatusType.None,
-    hash: '',
+    type,
+    status,
+    hash,
   };
 }
 
@@ -186,7 +202,15 @@ export default function useTransactionHash(
       const errorCode = queryParams?.get('errorCode');
       const errorMessage = queryParams?.get('errorMessage');
       if (errorCode || errorMessage) {
-        toast.error('Transaction failed');
+        toast.error('Transaction failed', {
+          theme: 'dark',
+          transition: Slide,
+          style: {
+            background: colors.warningBg,
+            boxShadow: '0px 0px 10px 10px rgba(0, 0, 0, 0.15)',
+            borderRadius: '12px',
+          },
+        });
       }
 
       if (transactions) {
