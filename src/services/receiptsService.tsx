@@ -3,6 +3,7 @@ import getConfig from 'services/config';
 import SpecialWallet from 'services/wallet';
 import styled from 'styled-components';
 import Big from 'big.js';
+import i18n from 'i18n';
 
 import { providers } from 'near-api-js';
 import { useEffect } from 'react';
@@ -161,30 +162,30 @@ function parseTransactions(txs: any) {
   switch (result.type) {
     case TransactionType.Swap:
       if (result.status === StatusType.Succeeded) {
-        getToast(href, 'Swap', ToastType.Success);
+        getToast(href, i18n.t('toast.swap'), ToastType.Success);
       } else if (result.status === StatusType.Failed) {
-        getToast(href, 'Swap', ToastType.Error);
+        getToast(href, i18n.t('toast.swap'), ToastType.Error);
       }
       break;
     case TransactionType.AddLiquidity:
       if (result.status === StatusType.Succeeded) {
-        getToast(href, 'Add Liquidity', ToastType.Success);
+        getToast(href, i18n.t('toast.addLiquidity'), ToastType.Success);
       } else if (result.status === StatusType.Failed) {
-        getToast(href, 'Add Liquidity', ToastType.Error);
+        getToast(href, i18n.t('toast.addLiquidity'), ToastType.Error);
       }
       break;
     case TransactionType.CreatePool:
       if (result.status === StatusType.Succeeded) {
-        getToast(href, 'Create Pool', ToastType.Success);
+        getToast(href, i18n.t('toast.createPool'), ToastType.Success);
       } else if (result.status === StatusType.Failed) {
-        getToast(href, 'Create Pool', ToastType.Error);
+        getToast(href, i18n.t('toast.createPool'), ToastType.Error);
       }
       break;
     case TransactionType.RemoveLiquidity:
       if (result.status === StatusType.Succeeded) {
-        getToast(href, 'Remove Liquidity', ToastType.Success);
+        getToast(href, i18n.t('toast.removeLiquidity'), ToastType.Success);
       } else if (result.status === StatusType.Failed) {
-        getToast(href, 'Remove Liquidity', ToastType.Error);
+        getToast(href, i18n.t('toast.removeLiquidity'), ToastType.Error);
       }
       break;
     default:
@@ -202,7 +203,7 @@ export default function useTransactionHash(
       const errorCode = queryParams?.get('errorCode');
       const errorMessage = queryParams?.get('errorMessage');
       if (errorCode || errorMessage) {
-        toast.error('Transaction failed', {
+        toast.error(i18n.t('toast.transactionFailed'), {
           theme: 'dark',
           transition: Slide,
           style: {
