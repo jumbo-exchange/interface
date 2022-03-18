@@ -5,6 +5,10 @@ import { IPool, useModalsStore, useStore } from 'store';
 import { useLocation, useParams } from 'react-router-dom';
 import { toAddLiquidityPage, toRemoveLiquidityPage } from 'utils/routes';
 import { toArray } from 'utils';
+import { useTranslation } from 'react-i18next';
+
+import getConfig from 'services/config';
+import Big from 'big.js';
 import {
   Container,
   FilterBlock,
@@ -61,12 +65,16 @@ export interface IMainInfo {
 }
 
 export default function Pool() {
-  const { pools, loading } = useStore();
+  const { t } = useTranslation();
+
+  const {
+    pools, loading, prices,
+  } = useStore();
   const { setAddLiquidityModalOpenState, setRemoveLiquidityModalOpenState } = useModalsStore();
   const { id } = useParams<'id'>();
-
+  const config = getConfig();
   const location = useLocation();
-
+  const [totalValueLocked, setTotalValueLocked] = useState('0');
   const [poolsArray, setPoolsArray] = useState<IPool[]>([]);
 
   useEffect(() => {
@@ -85,25 +93,29 @@ export default function Pool() {
     if (newPools.length !== poolsArray.length) {
       setPoolsArray(newPools);
     }
+    const newTotalValueLocked = newPools.reduce(
+      (acc, item:IPool) => acc.add(item.totalLiquidity), Big(0),
+    );
+    setTotalValueLocked(newTotalValueLocked.toFixed(2));
   }, [pools, loading]);
 
   const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum['All Pools']);
 
   const mainInfo: IMainInfo[] = [
     {
-      title: 'Total Value Locked',
+      title: t('pool.totalValueLocked'),
+      label: Big(totalValueLocked ?? 0).lte(0) ? '-' : `$${totalValueLocked}`,
+    },
+    {
+      title: t('pool.totalDayLocked'),
       label: '-',
     },
     {
-      title: 'Total 24h Volume',
-      label: '-',
+      title: t('pool.jumboPrice'),
+      label: `$${prices[config.jumboAddress].price ?? 0}` || '-',
     },
     {
-      title: 'JUMBO Price',
-      label: '-',
-    },
-    {
-      title: 'Weekly Emissions',
+      title: t('pool.weeklyEmissions'),
       label: '-',
     },
   ];
@@ -152,6 +164,7 @@ export default function Pool() {
       <PoolResult
         poolsArray={poolsArray}
         currentFilterPools={currentFilterPools}
+        loading={loading}
       />
     </Container>
   );

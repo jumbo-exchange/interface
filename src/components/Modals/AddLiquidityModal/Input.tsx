@@ -8,6 +8,7 @@ import FungibleTokenContract from 'services/FungibleToken';
 import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { getUpperCase } from 'utils';
 import { formatTokenAmount } from 'utils/calculations';
+import { useTranslation } from 'react-i18next';
 
 const Block = styled.div`
   display: flex;
@@ -100,7 +101,14 @@ const LogoContainer = styled.div`
   margin-right: 1rem;
   display: flex;
   align-items: center;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.bgToken};
+  border-radius: 12px;
+  transition: all 1s ease-out;
+  height: 2.375rem;
+  min-width: 2.375rem;
   & > img {
+    border-radius: 12px;
     height: 2.25rem;
     width: 2.25rem;
     transition: all 1s ease-out;
@@ -108,7 +116,11 @@ const LogoContainer = styled.div`
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     margin-right: .75rem;
+    border-radius: 8px;
+    height: 1.625rem;
+    min-width: 1.625rem;
     & > img {
+      border-radius: 8px;
       height: 1.5rem;
       width: 1.5rem;
       transition: all 1s ease-out;
@@ -155,6 +167,8 @@ export default function Input({
   setValue: (value: string)=> void,
   balance: string,
 }) {
+  const { t } = useTranslation();
+
   const currentBalance = new Big(balance ?? 0);
   const setHalfAmount = () => {
     if (!balance) return;
@@ -178,10 +192,10 @@ export default function Input({
           {getCurrentBalance(currentBalance, token)}
         </WalletInformation>
         <ButtonHalfWallet onClick={setHalfAmount}>
-          <span>HALF</span>
+          <span>{t('common.half')}</span>
         </ButtonHalfWallet>
         <ButtonMaxWallet onClick={setMaxAmount}>
-          <span>MAX</span>
+          <span>{t('common.max')}</span>
         </ButtonMaxWallet>
       </InputLabel>
       <InputContainer>

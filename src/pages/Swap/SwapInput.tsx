@@ -3,13 +3,15 @@ import styled from 'styled-components';
 import CurrencyInputPanel from 'components/CurrencyInputPanel';
 import tokenLogo from 'assets/images-app/placeholder-token.svg';
 import Big from 'big.js';
+import FungibleTokenContract from 'services/FungibleToken';
 
 import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
 import { getUpperCase } from 'utils';
-import { TokenType, useStore } from 'store';
-import FungibleTokenContract from 'services/FungibleToken';
+import { TokenType, useModalsStore, useStore } from 'store';
 import { formatTokenAmount } from 'utils/calculations';
+import { SWAP_INPUT_KEY, SWAP_OUTPUT_KEY } from 'utils/constants';
+import { useTranslation } from 'react-i18next';
 
 const Block = styled.div`
   display: flex;
@@ -110,11 +112,18 @@ const InputContainer = styled.div`
   }
 `;
 
-const LogoContainer = styled.div`
+const LogoContainer = styled.div<{load: boolean}>`
   margin-right: 1rem;
   display: flex;
   align-items: center;
+  justify-content: center;
+  background-color: ${({ theme, load }) => (load ? theme.globalGrey : theme.bgToken)};
+  border-radius: 12px;
+  transition: all 1s ease-out;
+  height: 2.375rem;
+  min-width: 2.375rem;
   & > img {
+    border-radius: 12px;
     height: 2.25rem;
     width: 2.25rem;
     transition: all 1s ease-out;
@@ -122,7 +131,11 @@ const LogoContainer = styled.div`
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     margin-right: .75rem;
+    border-radius: 8px;
+    height: 1.625rem;
+    min-width: 1.625rem;
     & > img {
+      border-radius: 8px;
       height: 1.5rem;
       width: 1.5rem;
       transition: all 1s ease-out;
@@ -176,7 +189,6 @@ const getCurrentBalance = (
 };
 
 export default function Input({
-  openModal,
   token,
   tokenType,
   value,
@@ -185,15 +197,19 @@ export default function Input({
   disabled = false,
 }:
 {
-  openModal: (tokenType: TokenType) => void,
   token: FungibleTokenContract | null,
   tokenType: TokenType,
   value: string,
-  setValue: any,
-  balance:string,
+  setValue: (value: string) => void,
+  balance: string,
   disabled?: boolean
 }) {
-  const { loading } = useStore();
+  const { loading, setCurrentToken } = useStore();
+  const { setSearchModalOpen } = useModalsStore();
+  const { t } = useTranslation();
+
+  const SWAP_KEY = tokenType === TokenType.Input ? SWAP_INPUT_KEY : SWAP_OUTPUT_KEY;
+
   const currentBalance = new Big(balance ?? 0);
   const setHalfAmount = () => {
     if (!balance) return;
@@ -207,6 +223,18 @@ export default function Input({
     setValue(newBalance);
   };
 
+  const openModal = (currentToken: FungibleTokenContract | null) => {
+    if (!token) return;
+    setSearchModalOpen({
+      isOpen: true,
+      activeToken: currentToken,
+      setActiveToken: (activeToken: FungibleTokenContract) => {
+        localStorage.setItem(SWAP_KEY, activeToken.contractId);
+        setCurrentToken(activeToken, tokenType);
+      },
+    });
+  };
+
   return (
     <Block>
       <InputLabel>
@@ -217,17 +245,17 @@ export default function Input({
         {(tokenType === TokenType.Input) && (
           <>
             <ButtonHalfWallet onClick={setHalfAmount}>
-              <span>HALF</span>
+              <span>{t('common.half')}</span>
             </ButtonHalfWallet>
             <ButtonMaxWallet onClick={setMaxAmount}>
-              <span>MAX</span>
+              <span>{t('common.max')}</span>
             </ButtonMaxWallet>
           </>
         )}
 
       </InputLabel>
       <InputContainer>
-        <LogoContainer>
+        <LogoContainer load={loading}>
           <img src={token?.metadata?.icon ?? tokenLogo} alt={token?.metadata.symbol} />
         </LogoContainer>
         <CurrencyInputPanel
@@ -237,7 +265,7 @@ export default function Input({
         />
         <TokenContainer onClick={() => {
           if (loading) return;
-          openModal(tokenType);
+          openModal(token);
         }}
         >
           {getUpperCase(token?.metadata.symbol ?? '')}

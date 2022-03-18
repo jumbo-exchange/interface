@@ -8,8 +8,8 @@ import { ReactComponent as ArrowDownIcon } from 'assets/images-app/icon-arrow-do
 import { ReactComponent as Plus } from 'assets/images-app/plus.svg';
 import { isMobile } from 'utils/userAgent';
 import { useModalsStore, useStore } from 'store';
-import { tooltipTitle } from 'utils/constants';
 import { toArray } from 'utils';
+import { useTranslation } from 'react-i18next';
 import { FilterPoolsEnum } from '.';
 
 const Container = styled.div`
@@ -62,7 +62,7 @@ const Wrapper = styled.div`
   }
 `;
 
-const APRWrapper = styled.div`
+const APYWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -103,6 +103,7 @@ const SortBlock = styled.div`
   line-height: .875rem;
   color: ${({ theme }) => theme.globalGreyOp02};
   user-select: none;
+  white-space: nowrap;
   & > svg {
     path { 
       fill: ${({ theme }) => theme.globalGreyOp02};
@@ -182,6 +183,8 @@ export default function PoolSettings({
 }) {
   const { setCreatePoolModalOpen } = useModalsStore();
   const { pools, getToken } = useStore();
+  const { t } = useTranslation();
+
   const [currentAPRFilter, setCurrentAPRFilter] = useState(APRFiletEnum['24H']);
   const [searchValue, setSearchValue] = useState<string>('');
 
@@ -214,7 +217,7 @@ export default function PoolSettings({
             <SearchInput
               value={searchValue}
               onChange={(value) => onChange(value.target.value)}
-              placeholder="Search"
+              placeholder={t('pool.search')}
             />
           </SearchInputBlock>
           <RefreshBlock>
@@ -225,15 +228,15 @@ export default function PoolSettings({
           {currentFilterPools === FilterPoolsEnum['All Pools']
           && (
           <Wrapper>
-            <Title>Sort by</Title>
+            <Title>{t('pool.sortBy')}</Title>
             <SortBlock>
               Liquidity (dsc)
               <ArrowDown />
             </SortBlock>
           </Wrapper>
           )}
-          <APRWrapper>
-            <Title>APR Basis <Tooltip title={tooltipTitle.APRBasis} /></Title>
+          <APYWrapper>
+            <Title>{t('pool.APYBasis')} <Tooltip title={t('tooltipTitle.APYBasis')} /></Title>
             <FilterBlock>
               {aprFilters.map((el) => (
                 <FilterButton
@@ -246,12 +249,12 @@ export default function PoolSettings({
                 </FilterButton>
               ))}
             </FilterBlock>
-          </APRWrapper>
+          </APYWrapper>
         </MobileRow>
         <ButtonSecondary
           onClick={() => setCreatePoolModalOpen(true)}
         >
-          <LogoPlus /> Create Pool
+          <LogoPlus /> {t('action.createPool')}
         </ButtonSecondary>
       </MobileContainer>
     );
@@ -264,18 +267,18 @@ export default function PoolSettings({
         <SearchInput
           value={searchValue}
           onChange={(value) => onChange(value.target.value)}
-          placeholder="Search"
+          placeholder={t('pool.search')}
         />
       </SearchInputBlock>
       <Wrapper>
-        <Title>Sort by</Title>
+        <Title>{t('pool.sortBy')}</Title>
         <SortBlock>
           Liquidity (dsc)
           <ArrowDown />
         </SortBlock>
       </Wrapper>
-      <APRWrapper>
-        <Title>APR Basis <Tooltip title="APR Basis" /></Title>
+      <APYWrapper>
+        <Title>{t('pool.APYBasis')} <Tooltip title={t('tooltipTitle.APYBasis')} /></Title>
         <FilterBlock>
           {aprFilters.map((el) => (
             <FilterButton
@@ -288,12 +291,12 @@ export default function PoolSettings({
             </FilterButton>
           ))}
         </FilterBlock>
-      </APRWrapper>
+      </APYWrapper>
       <Title><Refresh /></Title>
       <ButtonSecondary
         onClick={() => setCreatePoolModalOpen(true)}
       >
-        <LogoPlus /> Create Pool
+        <LogoPlus /> {t('action.createPool')}
       </ButtonSecondary>
     </Container>
   );

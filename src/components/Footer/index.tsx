@@ -6,6 +6,7 @@ import { ReactComponent as HapiLogo } from 'assets/images/hapi-logo.svg';
 import {
   hapiLink, mediumLink, twitterLink, telegramLink,
 } from 'utils/constants';
+import { useTranslation } from 'react-i18next';
 import { ISocialNetwork } from './interfaces';
 import {
   Container,
@@ -39,6 +40,8 @@ const socialNetwork: ISocialNetwork[] = [
 ];
 
 export default function Footer() {
+  const { t } = useTranslation();
+
   return isMobile ? (
     <ContainerMobile>
       <SocialNetworkContainer>
@@ -64,11 +67,11 @@ export default function Footer() {
             <HapiLogo />
           </HapiLogoContainer>
           <HapiTitle>
-            Protected by
-            <span>HAPI Protocol</span>
+            {t('footer.protectBy')}
+            <span>{t('footer.hapiProtocol')}</span>
           </HapiTitle>
         </HapiButton>
-        <TextContainer>Copyright 2022</TextContainer>
+        <TextContainer>{t('footer.copyright')}</TextContainer>
       </ChildContainer>
     </ContainerMobile>
   ) : (
@@ -83,8 +86,8 @@ export default function Footer() {
             <HapiLogo />
           </HapiLogoContainer>
           <HapiTitle>
-            Protected by
-            <span>HAPI Protocol</span>
+            {t('footer.protectBy')}
+            <span>{t('footer.hapiProtocol')}</span>
           </HapiTitle>
         </HapiButton>
       </LeftContainer>
@@ -101,7 +104,7 @@ export default function Footer() {
           </ChildSocialNetwork>
         ))}
       </SocialNetworkContainer>
-      <TextContainer>Copyright 2022</TextContainer>
+      <TextContainer>{t('footer.copyright')}</TextContainer>
     </Container>
   );
 }

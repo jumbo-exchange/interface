@@ -1,29 +1,28 @@
 import { ReactComponent as JetLogo } from 'assets/images/jets-icon.svg';
 import { ReactComponent as SlippageLogo } from 'assets/images/slippage-icon.svg';
 import { ReactComponent as FarmingLogo } from 'assets/images/farming-icon.svg';
+import i18n from 'i18n';
 
 export const benefitsList = [
-  'Instantaneous Swaps',
-  'Highest Yields and Seamless Pool Transition',
-  'Permissionless Liquidity Pools',
+  i18n.t('landing.benefitsList.first'),
+  i18n.t('landing.benefitsList.second'),
+  i18n.t('landing.benefitsList.third'),
 ];
 
 export const benefitsCards = [
   {
     Image: JetLogo,
-    title: 'Jets',
-    subtitle:
-      'Interface-embedded system that helps to find the most promising pools',
+    title: i18n.t('landing.benefitsCards.jets'),
+    subtitle: i18n.t('landing.benefitsCards.subtitleJets'),
   },
   {
     Image: SlippageLogo,
-    title: 'Low Slippage',
-    subtitle:
-      'The lowest slippage possible thanks to NEAR and proprietary algorithms',
+    title: i18n.t('landing.benefitsCards.lowSlippage'),
+    subtitle: i18n.t('landing.benefitsCards.subtitleLowSlippage'),
   },
   {
     Image: FarmingLogo,
-    title: 'Yield Finder',
-    subtitle: 'Find the best Yields and Transition between pools in ONE Click',
+    title: i18n.t('landing.benefitsCards.yieldFinder'),
+    subtitle: i18n.t('landing.benefitsCards.subtitleYieldFinder'),
   },
 ];

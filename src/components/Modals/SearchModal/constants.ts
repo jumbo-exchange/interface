@@ -1,7 +1,7 @@
 import Big from 'big.js';
 import FungibleTokenContract from 'services/FungibleToken';
-import { TokenType } from 'store';
-import { formatTokenAmount } from 'utils/calculations';
+import { ITokenPrice } from 'store';
+import { formatTokenAmount, removeTrailingZeros } from 'utils/calculations';
 
 export const getCurrentBalance = (
   balances: {[key: string]: string;},
@@ -15,26 +15,16 @@ export const getCurrentBalance = (
 };
 
 export const getCurrentPrice = (
+  prices: {[key: string]: ITokenPrice;},
   balances: {[key: string]: string;},
   token: FungibleTokenContract,
 ) => {
-  const currentBalance = formatTokenAmount(balances[token.contractId], token.metadata.decimals);
-  if (currentBalance !== '0') {
-    return 'Price Unavailable';
+  const currentBalance = balances[token.contractId];
+  const priceForToken = prices[token.contractId] ?? null;
+  const currentBalanceBig = new Big(currentBalance);
+  if (priceForToken && currentBalanceBig.gt(0)) {
+    const currentBalances = currentBalanceBig.mul(priceForToken.price).toFixed();
+    return removeTrailingZeros(formatTokenAmount(currentBalances, token.metadata.decimals, 5));
   }
   return '-';
-};
-
-export const isCurrentToken = (
-  inputToken: FungibleTokenContract | null,
-  outputToken: FungibleTokenContract | null,
-  token: FungibleTokenContract | null,
-  tokenType: TokenType,
-) => {
-  if (inputToken === token && tokenType === TokenType.Input) {
-    return true;
-  } if (outputToken === token && tokenType === TokenType.Output) {
-    return true;
-  }
-  return false;
 };

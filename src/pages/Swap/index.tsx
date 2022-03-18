@@ -2,10 +2,10 @@ import React, { useCallback, useState, useEffect } from 'react';
 import RenderButton from 'components/Button/RenderButton';
 import { getPoolsPath, getUpperCase, toArray } from 'utils';
 import {
-  useStore, useModalsStore, TokenType, CurrentButton,
+  useStore, TokenType, CurrentButton,
 } from 'store';
 import {
-  BAD_PRICE_IMPACT, FEE_DIVISOR, NEAR_TOKEN_ID, SLIPPAGE_TOLERANCE_DEFAULT, tooltipTitle,
+  BAD_PRICE_IMPACT, FEE_DIVISOR, NEAR_TOKEN_ID, SLIPPAGE_TOLERANCE_DEFAULT,
 } from 'utils/constants';
 import SwapContract from 'services/SwapContract';
 import useDebounce from 'hooks/useDebounce';
@@ -18,6 +18,7 @@ import getConfig from 'services/config';
 import Big from 'big.js';
 
 import { calculatePriceImpact } from 'services/swap';
+import { useTranslation } from 'react-i18next';
 
 import Refresh from 'components/Refresh';
 import { useRefresh } from 'services/refreshService';
@@ -42,7 +43,7 @@ import {
   RowInfo,
   LabelInfo,
   LabelError,
-  TokenImg,
+  LogoContainer,
   RouteArrowLogo,
   BlockButton,
 } from './styles';
@@ -63,7 +64,7 @@ export default function Swap() {
   } = useStore();
   const config = getConfig();
   const { setTrackedPools } = useRefresh();
-  const { setSearchModalOpen } = useModalsStore();
+  const { t } = useTranslation();
   const [independentField, setIndependentField] = useState(TokenType.Input);
   const [inputTokenValue, setInputTokenValue] = useState<string>('');
   const debouncedInputValue = useDebounce(inputTokenValue, DEBOUNCE_VALUE);
@@ -79,13 +80,6 @@ export default function Swap() {
     : '';
   const priceImpact = calculatePriceImpact(
     currentPools, inputToken, outputToken, inputTokenValue, tokens,
-  );
-  const openModal = useCallback(
-    (tokenType: TokenType) => {
-      setSearchModalOpen({ isOpen: true, tokenType });
-      setIsSettingsOpen(false);
-    },
-    [],
   );
 
   const verifyToken = (
@@ -167,21 +161,13 @@ export default function Swap() {
     setTrackedPools(currentPools);
   }, [currentPools]);
 
-  const handleAmountChange = async (tokenType: TokenType, value: string) => {
-    if (tokenType === TokenType.Input) {
-      setInputTokenValue(value);
-    } else {
-      setOutputTokenValue(value);
-    }
-  };
-
   const handleInputChange = useCallback(
     (value: string) => {
       if (value === '') {
         setOutputTokenValue('');
       }
       setIndependentField(TokenType.Input);
-      handleAmountChange(TokenType.Input, value);
+      setInputTokenValue(value);
     }, [],
   );
 
@@ -191,7 +177,7 @@ export default function Swap() {
         setInputTokenValue('');
       }
       setIndependentField(TokenType.Output);
-      handleAmountChange(TokenType.Output, value);
+      setOutputTokenValue(value);
     }, [],
   );
 
@@ -247,8 +233,8 @@ export default function Swap() {
         verifiedOutputToken,
         tokens,
       );
-      const lastIndex = minOutput.length - 1;
 
+      const lastIndex = minOutput.length - 1;
       setExchangeAmount(
         removeTrailingZeros(
           formatTokenAmount(
@@ -258,21 +244,24 @@ export default function Swap() {
           ),
         ),
       );
+      setInputTokenValue('');
+      setOutputTokenValue('');
     } catch (e) {
       console.warn(e);
     }
-  }, [inputToken, outputToken]);
+  }, [loading, inputToken, outputToken]);
 
-  const exchangeLabel = `
+  const exchangeLabel = (inputToken && outputToken)
+    ? `
   1 ${getUpperCase(inputToken?.metadata.symbol ?? '')} 
   ≈ ${exchangeAmount} ${getUpperCase(outputToken?.metadata.symbol ?? '')}
-  `;
+  `
+    : 'Loading...';
 
   return (
     <Container>
       <ActionContainer>
         <Input
-          openModal={openModal}
           token={inputToken}
           tokenType={TokenType.Input}
           value={inputTokenValue}
@@ -281,10 +270,9 @@ export default function Swap() {
         />
         <ChangeTokenContainer onClick={swapTokens}>
           <ChangeTokenLogo />
-          <span>Change Direction</span>
+          <span>{t('swap.changeDirection')}</span>
         </ChangeTokenContainer>
         <Input
-          openModal={openModal}
           token={outputToken}
           tokenType={TokenType.Output}
           value={outputTokenValue}
@@ -295,7 +283,7 @@ export default function Swap() {
       <ExchangeBlock>
         <Refresh />
         <ExchangeLabel>
-          {loading ? 'Loading...' : <div>{exchangeLabel}</div>}
+          {loading ? `${t('common.loading')}...` : <div>{exchangeLabel}</div>}
         </ExchangeLabel>
       </ExchangeBlock>
       <RenderWarning />
@@ -310,7 +298,7 @@ export default function Swap() {
             isActive={isSettingsOpen}
             onClick={() => (setIsSettingsOpen(!isSettingsOpen))}
           >
-            <span>Settings</span>
+            <span>{t('swap.settings')}</span>
             <ArrowDown />
           </SettingsLabel>
         </SettingsHeader>
@@ -323,46 +311,52 @@ export default function Swap() {
             <SwapInformation>
               <RouteBlock>
                 <TitleInfo>
-                  Route
-                  <Tooltip title={tooltipTitle.routes} />
+                  {t('swap.route')}
+                  <Tooltip title={t('tooltipTitle.routes')} />
                 </TitleInfo>
                 <div>
-                  <TokenImg
-                    src={inputToken?.metadata.icon}
-                    alt={inputToken?.metadata.symbol}
-                  />
+                  <LogoContainer>
+                    <img
+                      src={inputToken?.metadata.icon}
+                      alt={inputToken?.metadata.symbol}
+                    />
+                  </LogoContainer>
                   {inputToken?.metadata.symbol}
                   {intersectionTokenId
                     ? (
                       <>
                         <RouteArrowLogo />
-                        <TokenImg
-                          src={intersectionToken?.metadata.icon}
-                          alt={intersectionToken?.metadata.symbol}
-                        />
+                        <LogoContainer>
+                          <img
+                            src={intersectionToken?.metadata.icon}
+                            alt={intersectionToken?.metadata.symbol}
+                          />
+                        </LogoContainer>
                         {intersectionToken?.metadata.symbol}
                       </>
-                    ) // TODO: check correct display
+                    )
                     : null}
                   <RouteArrowLogo />
-                  <TokenImg
-                    src={outputToken?.metadata.icon}
-                    alt={outputToken?.metadata.symbol}
-                  />
+                  <LogoContainer>
+                    <img
+                      src={outputToken?.metadata.icon}
+                      alt={outputToken?.metadata.symbol}
+                    />
+                  </LogoContainer>
                   {outputToken?.metadata.symbol}
                 </div>
               </RouteBlock>
               <RowInfo>
                 <TitleInfo>
-                  Minimum Received
-                  <Tooltip title={tooltipTitle.minimumReceived} />
+                  {t('swap.minimumReceived')}
+                  <Tooltip title={t('tooltipTitle.minimumReceived')} />
                 </TitleInfo>
                 <LabelInfo>{minAmountOut} {outputToken?.metadata.symbol}</LabelInfo>
               </RowInfo>
               <RowInfo>
                 <TitleInfo>
-                  Price Impact
-                  <Tooltip title={tooltipTitle.priceImpact} />
+                  {t('swap.priceImpact')}
+                  <Tooltip title={t('tooltipTitle.priceImpact')} />
                 </TitleInfo>
                 {
                   Number(formatBalance(priceImpact)) > BAD_PRICE_IMPACT
@@ -372,15 +366,15 @@ export default function Swap() {
               </RowInfo>
               <RowInfo>
                 <TitleInfo>
-                  Liquidity Provider Fee
-                  <Tooltip title={tooltipTitle.liquidityProviderFee} />
+                  {t('swap.liquidityProviderFee')}
+                  <Tooltip title={t('tooltipTitle.liquidityProviderFee')} />
                 </TitleInfo>
                 <LabelInfo>{averageFee}%</LabelInfo>
               </RowInfo>
               <RowInfo>
                 <TitleInfo>
-                  Slippage Tolerance
-                  <Tooltip title={tooltipTitle.slippageTolerance} />
+                  {t('swap.slippageTolerance')}
+                  <Tooltip title={t('tooltipTitle.slippageTolerance')} />
                 </TitleInfo>
                 <LabelInfo>{slippageTolerance}%</LabelInfo>
               </RowInfo>

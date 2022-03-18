@@ -25,6 +25,9 @@ export interface IPool {
 
   shares?: string;
   volumes?: IPoolVolumes ;
+
+  // Views
+  totalLiquidity: string;
 }
 
 export interface ITokenMetadata {
@@ -36,9 +39,18 @@ export interface ITokenMetadata {
   icon: string;
 }
 
+export interface ITokenPrice {
+    id: string,
+    decimal: number,
+    price: string,
+    symbol: string
+}
+
 export type StoreContextType = {
   loading: boolean;
   setLoading: Dispatch<SetStateAction<boolean>>
+  priceLoading: boolean;
+  setPriceLoading: Dispatch<SetStateAction<boolean>>
 
   contract: any;
   wallet: SpecialWallet | null;
@@ -54,8 +66,11 @@ export type StoreContextType = {
   setCurrentPools: (pools: IPool[]) => void;
   tokens: {[key: string]: FungibleTokenContract};
   setTokens: Dispatch<SetStateAction<{[key: string]: FungibleTokenContract}>>;
-  setCurrentToken: (tokenAddress: string, tokenType: TokenType) => void;
   getToken: (tokenAddress: string) => FungibleTokenContract | null;
+
+  setCurrentToken: (activeToken: FungibleTokenContract, tokenType: TokenType) => void;
+  prices: {[key: string]: ITokenPrice},
+  setPrices: Dispatch<SetStateAction<{[key: string]: ITokenPrice}>>;
 
   inputToken: FungibleTokenContract | null;
   setInputToken: Dispatch<SetStateAction<FungibleTokenContract | null>>;

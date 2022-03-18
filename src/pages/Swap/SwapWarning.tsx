@@ -3,7 +3,7 @@ import getConfig from 'services/config';
 import Warning from 'components/Warning';
 import styled from 'styled-components';
 import Big from 'big.js';
-import { warningMessage, NEAR_TOKEN_ID } from 'utils/constants';
+import { NEAR_TOKEN_ID } from 'utils/constants';
 import { useStore } from 'store';
 import { ReactComponent as RouteArrow } from 'assets/images-app/route-arrow.svg';
 import { ReactComponent as Wallet } from 'assets/images-app/wallet.svg';
@@ -12,6 +12,7 @@ import { getPoolsPath, toArray } from 'utils';
 import { useNavigate } from 'react-router-dom';
 import { wallet } from 'services/near';
 import { toAddLiquidityPage } from 'utils/routes';
+import { useTranslation } from 'react-i18next';
 
 const config = getConfig();
 
@@ -48,14 +49,34 @@ const RouteBlock = styled.div`
   `}
 `;
 
-const TokenImg = styled.img`
+const LogoContainer = styled.div`
   margin-right: .5rem;
-  width: 24px;
-  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.bgToken};
+  border-radius: 8px;
+  transition: all 1s ease-out;
+  height: 1.625rem;
+  min-width: 1.625rem;
+  & > img {
+    border-radius: 8px;
+    height: 1.5rem;
+    width: 1.5rem;
+    transition: all 1s ease-out;
+  }
+
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     margin-right: .25rem;
-    width: 16px;
-    height: 16px;
+    border-radius: 6px;
+    height: 1.125rem;
+    min-width: 1.125rem;
+    & > img {
+      border-radius: 6px;
+      height: 1rem;
+      width: 1rem;
+      transition: all 1s ease-out;
+    }
   `}
 `;
 
@@ -78,7 +99,9 @@ export default function RenderWarning() {
     setOutputToken,
     getTokenBalance,
     getToken,
+    setCurrentPools,
   } = useStore();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const isConnected = wallet.isSignedIn();
 
@@ -126,26 +149,31 @@ export default function RenderWarning() {
 
   if (!loading && isConnected
     && getTokenBalance(wNear?.contractId) === '0'
-    && (inputToken === wNear || outputToken === wNear)
+    && (inputToken === wNear)
   ) {
     return (
       <WarningBlock>
         <Warning
-          title={warningMessage.zeroBalance}
-          description={warningMessage.zeroBalanceDesc}
+          title={t('warningMessage.zeroBalance')}
+          description={t('warningMessage.zeroBalanceDesc')}
         >
           <RouteBlock>
             <div>
-              <TokenImg
-                src={near?.metadata.icon}
-                alt={near?.metadata.symbol}
-              />
+              <LogoContainer>
+                <img
+                  src={near?.metadata.icon}
+                  alt={near?.metadata.symbol}
+                />
+              </LogoContainer>
+
               {near?.metadata.symbol}
               <RouteArrowLogo />
-              <TokenImg
-                src={wNear?.metadata.icon}
-                alt={wNear?.metadata.symbol}
-              />
+              <LogoContainer>
+                <img
+                  src={wNear?.metadata.icon}
+                  alt={wNear?.metadata.symbol}
+                />
+              </LogoContainer>
               {wNear?.metadata.symbol}
             </div>
             <ButtonSecondary
@@ -155,7 +183,7 @@ export default function RenderWarning() {
               }}
             >
               <LogoWallet />
-              Go to Pair
+              {t('swap.goToPair')}
             </ButtonSecondary>
           </RouteBlock>
         </Warning>
@@ -173,50 +201,58 @@ export default function RenderWarning() {
       if (nearIsInput) {
         setInputToken(wNear);
         setOutputToken(outputToken);
-        return;
-      }
-      if (!nearIsInput) {
+        setCurrentPools(poolPathOutputToken);
+      } else {
         setInputToken(inputToken);
         setOutputToken(wNear);
+        setCurrentPools(poolPathInputToken);
       }
     };
 
     return (
       <WarningBlock>
         <Warning
-          title={warningMessage.noSuchPairExists}
-          description={warningMessage.noSuchPairExistsDesc}
+          title={t('warningMessage.noSuchPairExists')}
+          description={t('warningMessage.noSuchPairExistsDesc')}
         >
           <RouteBlock>
             <div>
               {nearIsInput
                 ? (
                   <>
-                    <TokenImg
-                      src={wNear?.metadata.icon}
-                      alt={wNear?.metadata.symbol}
-                    />
+                    <LogoContainer>
+                      <img
+                        src={wNear?.metadata.icon}
+                        alt={wNear?.metadata.symbol}
+                      />
+                    </LogoContainer>
                     {wNear?.metadata.symbol}
                     <RouteArrowLogo />
-                    <TokenImg
-                      src={outputToken?.metadata.icon}
-                      alt={outputToken?.metadata.symbol}
-                    />
+                    <LogoContainer>
+                      <img
+                        src={outputToken?.metadata.icon}
+                        alt={outputToken?.metadata.symbol}
+                      />
+                    </LogoContainer>
                     {outputToken?.metadata.symbol}
                   </>
                 )
                 : (
                   <>
-                    <TokenImg
-                      src={inputToken?.metadata.icon}
-                      alt={inputToken?.metadata.symbol}
-                    />
+                    <LogoContainer>
+                      <img
+                        src={inputToken?.metadata.icon}
+                        alt={inputToken?.metadata.symbol}
+                      />
+                    </LogoContainer>
                     {inputToken?.metadata.symbol}
                     <RouteArrowLogo />
-                    <TokenImg
-                      src={wNear?.metadata.icon}
-                      alt={wNear?.metadata.symbol}
-                    />
+                    <LogoContainer>
+                      <img
+                        src={wNear?.metadata.icon}
+                        alt={wNear?.metadata.symbol}
+                      />
+                    </LogoContainer>
                     {wNear?.metadata.symbol}
                   </>
                 )}
@@ -225,7 +261,7 @@ export default function RenderWarning() {
               onClick={onClick}
             >
               <LogoWallet />
-              Go to Pair
+              {t('swap.goToPair')}
             </ButtonSecondary>
           </RouteBlock>
         </Warning>
@@ -237,7 +273,7 @@ export default function RenderWarning() {
     return (
       <WarningBlock>
         <Warning
-          title={warningMessage.doesNotExist}
+          title={t('warningMessage.doesNotExist')}
         />
 
       </WarningBlock>
@@ -248,21 +284,25 @@ export default function RenderWarning() {
     return (
       <WarningBlock>
         <Warning
-          title={warningMessage.zeroPoolLiquidity}
-          description={warningMessage.zeroPoolLiquidityDesc}
+          title={t('warningMessage.zeroPoolLiquidity')}
+          description={t('warningMessage.zeroPoolLiquidityDesc')}
         >
           <RouteBlock>
             <div>
-              <TokenImg
-                src={inputToken?.metadata.icon}
-                alt={inputToken?.metadata.symbol}
-              />
+              <LogoContainer>
+                <img
+                  src={inputToken?.metadata.icon}
+                  alt={inputToken?.metadata.symbol}
+                />
+              </LogoContainer>
               {inputToken?.metadata.symbol}
               <RouteArrowLogo />
-              <TokenImg
-                src={outputToken?.metadata.icon}
-                alt={outputToken?.metadata.symbol}
-              />
+              <LogoContainer>
+                <img
+                  src={outputToken?.metadata.icon}
+                  alt={outputToken?.metadata.symbol}
+                />
+              </LogoContainer>
               {outputToken?.metadata.symbol}
             </div>
             {!isBalancesEmpty ? (
@@ -272,7 +312,7 @@ export default function RenderWarning() {
                 }}
               >
                 <LogoWallet />
-                Add liquidity
+                {t('action.addLiquidity')}
               </ButtonSecondary>
             ) : null }
           </RouteBlock>

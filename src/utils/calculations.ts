@@ -125,7 +125,7 @@ export const formatBalance = (value: string): string => {
 
   if (formattedValue.lte('0.00001')) return '>0.00001';
   if (formattedValue.lt('1000')) return formattedValue.toFixed(5);
-  if (formattedValue.gt('100000')) return formattedValue.toPrecision(1);
+  if (formattedValue.gt('100000')) return formattedValue.toPrecision(5);
   return formattedValue.toFixed(0);
 };
 

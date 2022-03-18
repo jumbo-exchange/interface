@@ -5,6 +5,7 @@ import { isMobile } from 'utils/userAgent';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { SWAP } from 'utils/routes';
+import { useTranslation } from 'react-i18next';
 
 const HeaderContainer = styled.header`
   min-height: 5rem;
@@ -61,6 +62,23 @@ const DocsButton = styled.a`
   & > span {
     margin-right: .5rem;
   }
+  :hover {
+    cursor: pointer;
+    color: ${({ theme }) => theme.globalGrey};
+    & > svg {
+      path {
+        fill: ${({ theme }) => theme.globalGrey}
+      }
+    }
+  }
+  :active {
+    color: ${({ theme }) => theme.globalGreyOp04};
+    & > svg {
+      path {
+        fill: ${({ theme }) => theme.globalGreyOp04}
+      }
+    }
+  }
   ${({ theme }) => theme.mediaWidth.upToSmall`
     & > span {
       display: none;
@@ -107,6 +125,10 @@ const ButtonOpenApp = styled(Link)`
   margin-left: 1.5rem;
   :hover {
     cursor: pointer;
+    background: ${({ theme }) => theme.pinkHover};
+  }
+  :active {
+    background: ${({ theme }) => theme.pinkActive};
   }
   display: flex;
   justify-content: center;
@@ -115,6 +137,7 @@ const ButtonOpenApp = styled(Link)`
 `;
 
 export default function Header() {
+  const { t } = useTranslation();
   return (
     <HeaderContainer>
       <LogoContainer>
@@ -128,11 +151,11 @@ export default function Header() {
           rel="noreferrer"
         >
           <DocsLogo />
-          <span>Read</span> Docs
+          <span>{t('landing.read')}</span> {t('landing.docs')}
         </DocsButton>
-        {/* <ButtonOpenApp to={SWAP}>
-          Open App
-        </ButtonOpenApp> */}
+        <ButtonOpenApp to={SWAP}>
+          {t('landing.openApp')}
+        </ButtonOpenApp>
       </InformationContainer>
     </HeaderContainer>
   );

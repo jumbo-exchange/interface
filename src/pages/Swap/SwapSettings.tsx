@@ -4,12 +4,11 @@ import Toggle from 'components/Toggle';
 import Tooltip from 'components/Tooltip';
 import {
   slippageToleranceOptions,
-  tooltipTitle,
   MIN_SLIPPAGE_TOLERANCE,
   MAX_SLIPPAGE_TOLERANCE,
   COEFFICIENT_SLIPPAGE,
-  warningMessage,
 } from 'utils/constants';
+import { useTranslation } from 'react-i18next';
 
 const Container = styled.div<{isSettingsOpen?: boolean}>`
   display: flex;
@@ -60,6 +59,7 @@ export default function SwapSettings(
   },
 ) {
   const [warning, setWarning] = useState(false);
+  const { t } = useTranslation();
 
   const onChange = (value:string) => {
     if (!value || Number(value) <= 0) {
@@ -85,8 +85,8 @@ export default function SwapSettings(
   return (
     <Container isSettingsOpen={isSettingsOpen}>
       <Title>
-        Slippage Tolerance
-        <Tooltip title={tooltipTitle.slippageTolerance} />
+        {t('swap.slippageTolerance')}
+        <Tooltip title={t('tooltipTitle.slippageTolerance')} />
       </Title>
       <SlippageBlock>
         <Toggle
@@ -97,7 +97,7 @@ export default function SwapSettings(
         />
         {warning && (
           <Warning>
-            {warningMessage.transactionMayFail}
+            {t('warningMessage.transactionMayFail')}
           </Warning>
         )}
       </SlippageBlock>

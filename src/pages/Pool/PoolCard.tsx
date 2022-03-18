@@ -8,7 +8,7 @@ import { SpecialContainer } from 'components/SpecialContainer';
 import { useNavigate } from 'react-router-dom';
 import { ReactComponent as AddIcon } from 'assets/images-app/icon-add.svg';
 import { toAddLiquidityPage, toRemoveLiquidityPage } from 'utils/routes';
-import { tooltipTitle } from 'utils/constants';
+import { useTranslation } from 'react-i18next';
 
 interface IColor {
   isColor?: boolean
@@ -58,11 +58,7 @@ const BlockTitle = styled.div`
 const LogoPool = styled.div`
   position: relative;
   margin-right: 1.75rem;
-  & > img {
-    width: 24px;
-    height: 24px;
-  }
-  & > img:last-child {
+  & > div:last-child {
     position: absolute;
     left: 19px;
     top: -5px;
@@ -169,8 +165,13 @@ const BlockButton = styled.div`
   display: flex;
   justify-content: flex-end;
   width: 100%;
+  height: 40px;
+  & > button {
+    padding: 9px 15px;
+  }
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     flex-direction: column-reverse;
+    height: 48px;
   `}
 `;
 
@@ -193,6 +194,35 @@ const LogoButton = styled(AddIcon)`
   margin-right: .625rem;
 `;
 
+const LogoContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.bgToken};
+  border-radius: 8px;
+  transition: all 1s ease-out;
+  height: 1.625rem;
+  min-width: 1.625rem;
+  & > img {
+    border-radius: 8px;
+    height: 1.5rem;
+    width: 1.5rem;
+    transition: all 1s ease-out;
+  }
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    border-radius: 10px;
+    height: 2.125rem;
+    min-width: 2.125rem;
+    & > img {
+      border-radius: 10px;
+      height: 2rem;
+      width: 2rem;
+      transition: all 1s ease-out;
+    }
+  `}
+`;
+
 interface IVolume {
   title: string;
   label: string;
@@ -200,8 +230,11 @@ interface IVolume {
   tooltip: string;
 }
 
-export default function PoolCard({ pool } : { pool:IPool }) {
-  const { tokens } = useStore();
+export default function PoolCard({ pool } : { pool: IPool }) {
+  const {
+    tokens,
+  } = useStore();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [inputToken, outputToken] = pool.tokenAccountIds;
@@ -212,20 +245,20 @@ export default function PoolCard({ pool } : { pool:IPool }) {
 
   const volume: IVolume[] = [
     {
-      title: 'Total Liquidity',
-      label: '-',
-      tooltip: tooltipTitle.totalLiquidity,
+      title: t('pool.totalLiquidity'),
+      label: pool.totalLiquidity && Big(pool.totalLiquidity).gt(0) ? `$${pool.totalLiquidity}` : '-',
+      tooltip: t('tooltipTitle.totalLiquidity'),
     },
     {
-      title: '24h Volume',
+      title: t('pool.dayVolume'),
       label: '-',
-      tooltip: tooltipTitle.dayVolume,
+      tooltip: t('tooltipTitle.dayVolume'),
     },
     {
-      title: 'APR',
+      title: t('pool.APY'),
       label: '-',
       color: true,
-      tooltip: tooltipTitle.APR,
+      tooltip: t('tooltipTitle.APY'),
     },
   ];
 
@@ -236,8 +269,12 @@ export default function PoolCard({ pool } : { pool:IPool }) {
       <UpperRow>
         <BlockTitle>
           <LogoPool>
-            <img src={tokenInput.metadata.icon} alt="logo token" />
-            <img src={tokenOutput.metadata.icon} alt="logo token" />
+            <LogoContainer>
+              <img src={tokenInput.metadata.icon} alt="logo token" />
+            </LogoContainer>
+            <LogoContainer>
+              <img src={tokenOutput.metadata.icon} alt="logo token" />
+            </LogoContainer>
           </LogoPool>
           <TitlePool>
             <p>{tokenInput.metadata.symbol}</p>
@@ -268,7 +305,7 @@ export default function PoolCard({ pool } : { pool:IPool }) {
               navigate(toRemoveLiquidityPage(pool.id));
             }}
           >
-            Withdraw
+            {t('action.removeLiquidity')}
           </BtnSecondary>
           )}
 
@@ -277,7 +314,7 @@ export default function PoolCard({ pool } : { pool:IPool }) {
               navigate(toAddLiquidityPage(pool.id));
             }}
           >
-            <LogoButton />Add Liquidity
+            <LogoButton /> {t('action.addLiquidity')}
           </BtnPrimary>
         </BlockButton>
       </LowerRow>

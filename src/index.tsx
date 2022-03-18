@@ -15,6 +15,8 @@ import useFullHeightHook from 'hooks/useFullHeightHook';
 import App from 'pages/App';
 import { ALL_MATCH, LANDING } from 'utils/routes';
 
+import './i18n';
+
 const AppWrapper = () => {
   useFullHeightHook();
 

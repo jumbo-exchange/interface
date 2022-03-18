@@ -12,14 +12,13 @@ import {
   MIN_SLIPPAGE_TOLERANCE,
   slippageToleranceOptions,
   SLIPPAGE_TOLERANCE_DEFAULT,
-  tooltipTitle,
   POOL_SHARES_DECIMALS,
-  warningMessage,
 } from 'utils/constants';
 import { useModalsStore, useStore, CurrentButton } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
 import { useNavigate } from 'react-router-dom';
 import { getUpperCase } from 'utils';
+import { useTranslation } from 'react-i18next';
 import {
   calculateFairShare,
   toNonDivisibleNumber,
@@ -40,7 +39,7 @@ import {
   ModalBody,
   TitleAction,
   WithdrawTokenBlock,
-  TokenLogo,
+  LogoContainer,
   TokenBlock,
   TokenValueBlock,
   SlippageBlock,
@@ -52,6 +51,7 @@ export default function RemoveLiquidityModal() {
   const {
     tokens,
   } = useStore();
+  const { t } = useTranslation();
 
   const navigate = useNavigate();
   const { removeLiquidityModalOpenState, setRemoveLiquidityModalOpenState } = useModalsStore();
@@ -145,7 +145,7 @@ export default function RemoveLiquidityModal() {
         <LiquidityModalContainer onClick={(e) => e.stopPropagation()}>
           <ModalBlock>
             <ModalTitle>
-              Withdraw
+              {t('removeLiquidityModal.withdraw')}
             </ModalTitle>
             <ModalIcon onClick={() => {
               navigate(POOL);
@@ -163,8 +163,8 @@ export default function RemoveLiquidityModal() {
             />
             <SlippageBlock>
               <TitleAction>
-                Slippage Tolerance
-                <Tooltip title={tooltipTitle.slippageTolerance} />
+                {t('removeLiquidityModal.slippageTolerance')}
+                <Tooltip title={t('tooltipTitle.slippageTolerance')} />
               </TitleAction>
               <Toggle
                 value={slippageTolerance}
@@ -174,22 +174,22 @@ export default function RemoveLiquidityModal() {
               />
               {warning && (
                 <Warning>
-                  {warningMessage.transactionMayFail}
+                  {t('warningMessage.transactionMayFail')}
                 </Warning>
               )}
             </SlippageBlock>
             <TitleAction>
-              Withdrawal Amount
+              {t('removeLiquidityModal.withdrawalAmount')}
             </TitleAction>
             <WithdrawTokenBlock>
               {tokensData.map(({ token, value }) => (
                 <TokenBlock key={token.contractId}>
-                  <TokenLogo>
+                  <LogoContainer>
                     <img
                       src={token?.metadata.icon ?? tokenLogo}
                       alt={token?.metadata.symbol}
                     />
-                  </TokenLogo>
+                  </LogoContainer>
                   <TokenValueBlock>
                     <p>{removeTrailingZeros(formatBalance(value)) }</p>
                     &nbsp;

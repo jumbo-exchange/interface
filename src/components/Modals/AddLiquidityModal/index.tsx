@@ -4,6 +4,7 @@ import { ReactComponent as Close } from 'assets/images-app/close.svg';
 import PoolContract from 'services/PoolContract';
 import RenderButton from 'components/Button/RenderButton';
 
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   calculateFairShare,
@@ -39,6 +40,8 @@ export default function AddLiquidityModal() {
     balances,
   } = useStore();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
   const [inputTokenValue, setInputTokenValue] = useState<string>(INITIAL_INPUT_PLACEHOLDER);
   const [outputTokenValue, setOutputTokenValue] = useState<string>(INITIAL_INPUT_PLACEHOLDER);
   const [preShare, setPreShare] = useState<string>(INITIAL_INPUT_PLACEHOLDER);
@@ -150,7 +153,7 @@ export default function AddLiquidityModal() {
         <LiquidityModalContainer onClick={(e) => e.stopPropagation()}>
           <ModalBlock>
             <ModalTitle>
-              Add Liquidity
+              {t('addLiquidityModal.addLiquidity')}
             </ModalTitle>
             <ModalIcon onClick={() => {
               navigate(POOL);
@@ -175,7 +178,7 @@ export default function AddLiquidityModal() {
               balance={balances[tokenOutput.contractId ?? '']}
             />
             <YourSharesBlock>
-              You will get shares: &nbsp;
+              {t('addLiquidityModal.yourShares')}: &nbsp;
               <span>{shareDisplay()}</span>
             </YourSharesBlock>
             <RefreshBlock>
