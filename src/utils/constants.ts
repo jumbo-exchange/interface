@@ -38,7 +38,6 @@ export const slippageToleranceOptions = [
 ];
 
 export const ONE_YOCTO_NEAR = '0.000000000000000000000001';
-export const FT_MINIMUM_STORAGE_BALANCE = parseNearAmount('0.00125') ?? '0';
 export const FT_STORAGE_DEPOSIT_GAS = parseNearAmount('0.00000000003');
 export const FT_TRANSFER_GAS = parseNearAmount('0.00000000003');
 export const ONE_MORE_DEPOSIT_AMOUNT = '0.01';

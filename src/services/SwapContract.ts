@@ -16,7 +16,7 @@ const FEE_DIVISOR = 10000;
 
 const CONTRACT_ID = config.contractId;
 
-export const SWAP_GAS = '140000000000000';
+export const SWAP_GAS = '180000000000000';
 
 export default class SwapContract {
   contract = createContract(
