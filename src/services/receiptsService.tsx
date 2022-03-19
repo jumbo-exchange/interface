@@ -1,3 +1,5 @@
+/* eslint-disable no-prototype-builtins */
+/* eslint-disable default-case */
 /* eslint-disable max-len */
 import getConfig from 'services/config';
 import SpecialWallet from 'services/wallet';
@@ -15,6 +17,11 @@ const config = getConfig();
 const Link = styled.a`
   text-decoration: none;
   color: ${({ theme }) => theme.globalWhite};
+  & > p {
+    color: ${({ theme }) => theme.globalGrey};
+    margin: 0;
+    font-size: .75rem;
+  }
 `;
 
 enum ToastType {
@@ -28,24 +35,24 @@ enum TransactionType {
   CreatePool,
   AddLiquidity,
   RemoveLiquidity,
+  NearDeposit,
+  NearWithdraw
 }
 
 enum StatusType {
   None,
-  Succeeded,
-  Failed,
+  SuccessValue,
+  Failure,
 }
 
-const swapMethod = [
-  'ft_transfer_call',
-  'near_deposit',
-  'near_withdraw',
-];
+const swapMethod = ['ft_transfer_call'];
 
 const methodName: { [key: string]: string } = {
   createPoolMethod: 'add_simple_pool',
   addLiquidityMethod: 'add_liquidity',
   removeLiquidityMethod: 'remove_liquidity',
+  nearDeposit: 'near_deposit',
+  nearWithdraw: 'near_withdraw',
 };
 
 const PROPERTY_NAME = 'FunctionCall';
@@ -54,12 +61,14 @@ const getToast = (href: string, title: string, type: ToastType) => {
   const link = (
     <Link href={href} target="_blank" rel="noreferrer">
       {title}
+      <p>Open Transaction</p>
     </Link>
   );
   if (type === ToastType.Success) {
     return toast.success(link, {
       theme: 'dark',
       transition: Slide,
+      closeOnClick: false,
       style: {
         background: colors.backgroundCard,
         boxShadow: '0px 0px 10px 10px rgba(0, 0, 0, 0.15)',
@@ -70,6 +79,7 @@ const getToast = (href: string, title: string, type: ToastType) => {
   return toast.error(link, {
     theme: 'dark',
     transition: Slide,
+    closeOnClick: false,
     style: {
       background: colors.warningBg,
       boxShadow: '0px 0px 10px 10px rgba(0, 0, 0, 0.15)',
@@ -80,20 +90,19 @@ const getToast = (href: string, title: string, type: ToastType) => {
 
 const detailsTransaction = (transaction: any, type: TransactionType) => {
   const { hash } = transaction.transaction;
+  const successStatus = transaction.status.hasOwnProperty('SuccessValue');
 
   if (type === TransactionType.Swap) {
     const successValue = atob(transaction.status.SuccessValue);
-    const status = Big(successValue.replace(/"/g, '') || 0).gt(0);
-    const nearMethod = ['near_deposit', 'near_withdraw'];
-    const actionWithNear = nearMethod.some((el) => el === transaction.transaction.actions[0][PROPERTY_NAME].method_name);
+    const swapStatus = Big(successValue.replace(/"/g, '') || 0).gt(0);
     return {
       hash,
-      status: status || actionWithNear ? StatusType.Succeeded : StatusType.Failed,
+      status: swapStatus && successStatus ? StatusType.SuccessValue : StatusType.Failure,
     };
   }
   return {
     hash,
-    status: StatusType.Succeeded,
+    status: successStatus ? StatusType.SuccessValue : StatusType.Failure,
   };
 };
 
@@ -101,7 +110,7 @@ const getTransaction = (transactions: any, method: { [key: string]: string }) =>
   const [transaction] = transactions.filter((tx:any) => Object.values(method).indexOf(tx.transaction.actions[0][PROPERTY_NAME].method_name) !== -1);
 
   let type = TransactionType.None;
-  if (transactions.length <= 2) {
+  if (!transaction) {
     const [swapTransaction] = transactions.filter((tx:any) => swapMethod.indexOf(tx.transaction.actions[0][PROPERTY_NAME].method_name) !== -1);
     if (swapTransaction) {
       return {
@@ -109,21 +118,27 @@ const getTransaction = (transactions: any, method: { [key: string]: string }) =>
         transaction: swapTransaction,
       };
     }
-  } else {
-    switch (transaction.transaction.actions[0][PROPERTY_NAME].method_name) {
-      case method.createPoolMethod: {
-        type = TransactionType.CreatePool;
-        break;
-      }
-      case method.addLiquidityMethod: {
-        type = TransactionType.AddLiquidity;
-        break;
-      }
-      case method.removeLiquidityMethod: {
-        type = TransactionType.RemoveLiquidity;
-        break;
-      }
-      default:
+  }
+  switch (transaction.transaction.actions[0][PROPERTY_NAME].method_name) {
+    case method.createPoolMethod: {
+      type = TransactionType.CreatePool;
+      break;
+    }
+    case method.addLiquidityMethod: {
+      type = TransactionType.AddLiquidity;
+      break;
+    }
+    case method.removeLiquidityMethod: {
+      type = TransactionType.RemoveLiquidity;
+      break;
+    }
+    case method.nearDeposit: {
+      type = TransactionType.NearDeposit;
+      break;
+    }
+    case method.nearWithdraw: {
+      type = TransactionType.NearWithdraw;
+      break;
     }
   }
   return {
@@ -153,34 +168,47 @@ function parseTransactions(txs: any) {
   const href = `${config.explorerUrl}/transactions/${result.hash}`;
   switch (result.type) {
     case TransactionType.Swap:
-      if (result.status === StatusType.Succeeded) {
+      if (result.status === StatusType.SuccessValue) {
         getToast(href, i18n.t('toast.swap'), ToastType.Success);
-      } else if (result.status === StatusType.Failed) {
+      } else if (result.status === StatusType.Failure) {
         getToast(href, i18n.t('toast.swap'), ToastType.Error);
       }
       break;
+    case TransactionType.NearDeposit:
+      if (result.status === StatusType.SuccessValue) {
+        getToast(href, i18n.t('toast.nearDeposit'), ToastType.Success);
+      } else if (result.status === StatusType.Failure) {
+        getToast(href, i18n.t('toast.nearDeposit'), ToastType.Error);
+      }
+      break;
+    case TransactionType.NearWithdraw:
+      if (result.status === StatusType.SuccessValue) {
+        getToast(href, i18n.t('toast.nearWithdraw'), ToastType.Success);
+      } else if (result.status === StatusType.Failure) {
+        getToast(href, i18n.t('toast.nearWithdraw'), ToastType.Error);
+      }
+      break;
     case TransactionType.AddLiquidity:
-      if (result.status === StatusType.Succeeded) {
+      if (result.status === StatusType.SuccessValue) {
         getToast(href, i18n.t('toast.addLiquidity'), ToastType.Success);
-      } else if (result.status === StatusType.Failed) {
+      } else if (result.status === StatusType.Failure) {
         getToast(href, i18n.t('toast.addLiquidity'), ToastType.Error);
       }
       break;
     case TransactionType.CreatePool:
-      if (result.status === StatusType.Succeeded) {
+      if (result.status === StatusType.SuccessValue) {
         getToast(href, i18n.t('toast.createPool'), ToastType.Success);
-      } else if (result.status === StatusType.Failed) {
+      } else if (result.status === StatusType.Failure) {
         getToast(href, i18n.t('toast.createPool'), ToastType.Error);
       }
       break;
     case TransactionType.RemoveLiquidity:
-      if (result.status === StatusType.Succeeded) {
+      if (result.status === StatusType.SuccessValue) {
         getToast(href, i18n.t('toast.removeLiquidity'), ToastType.Success);
-      } else if (result.status === StatusType.Failed) {
+      } else if (result.status === StatusType.Failure) {
         getToast(href, i18n.t('toast.removeLiquidity'), ToastType.Error);
       }
       break;
-    default:
   }
 }
 

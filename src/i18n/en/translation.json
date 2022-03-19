@@ -178,6 +178,8 @@
     "addLiquidity": "Add Liquidity",
     "createPool": "Create Pool",
     "removeLiquidity": "Remove Liquidity",
-    "transactionFailed": "Transaction failed"
+    "transactionFailed": "Transaction failed",
+    "nearDeposit": "Near Deposit",
+    "nearWithdraw": "Near Withdraw"
   }
 }
