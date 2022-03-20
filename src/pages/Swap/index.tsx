@@ -6,6 +6,7 @@ import {
 } from 'store';
 import {
   BAD_PRICE_IMPACT, FEE_DIVISOR, NEAR_TOKEN_ID, SLIPPAGE_TOLERANCE_DEFAULT,
+  SWAP_INPUT_KEY, SWAP_OUTPUT_KEY,
 } from 'utils/constants';
 import SwapContract from 'services/SwapContract';
 import useDebounce from 'hooks/useDebounce';
@@ -23,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 import Refresh from 'components/Refresh';
 import { useRefresh } from 'services/refreshService';
 import Tooltip from 'components/Tooltip';
+import useNavigateSwapParams from 'hooks/useNavigateSwapParams';
 import Input from './SwapInput';
 import SwapSettings from './SwapSettings';
 import RenderWarning from './SwapWarning';
@@ -54,15 +56,18 @@ const DEBOUNCE_VALUE = 1000;
 export default function Swap() {
   const {
     inputToken,
+    setInputToken,
     outputToken,
-    swapTokens,
+    setOutputToken,
     balances,
     loading,
     currentPools,
     tokens,
     pools,
+    setCurrentPools,
   } = useStore();
   const config = getConfig();
+  const navigate = useNavigateSwapParams();
   const { setTrackedPools } = useRefresh();
   const { t } = useTranslation();
   const [independentField, setIndependentField] = useState(TokenType.Input);
@@ -257,6 +262,21 @@ export default function Swap() {
   ≈ ${exchangeAmount} ${getUpperCase(outputToken?.metadata.symbol ?? '')}
   `
     : 'Loading...';
+
+  const swapTokens = () => {
+    const poolArray = toArray(pools);
+    if (!inputToken || !outputToken || inputToken === outputToken) return;
+    navigate(outputToken.metadata.symbol, inputToken.metadata.symbol);
+    localStorage.setItem(SWAP_OUTPUT_KEY, inputToken.contractId);
+    localStorage.setItem(SWAP_INPUT_KEY, outputToken.contractId);
+    setInputToken(outputToken);
+    setOutputToken(inputToken);
+
+    const availablePools = getPoolsPath(
+      outputToken.contractId, inputToken.contractId, poolArray, tokens,
+    );
+    setCurrentPools(availablePools);
+  };
 
   return (
     <Container>

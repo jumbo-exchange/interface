@@ -14,11 +14,15 @@ import getConfig from 'services/config';
 import SpecialWallet, { createContract } from 'services/wallet';
 import FungibleTokenContract from 'services/FungibleToken';
 import PoolContract from 'services/PoolContract';
-import { NEAR_TOKEN_ID, SWAP_INPUT_KEY, SWAP_OUTPUT_KEY } from 'utils/constants';
+import {
+  NEAR_TOKEN_ID, SWAP_INPUT_KEY, SWAP_OUTPUT_KEY, URL_INPUT_TOKEN, URL_OUTPUT_TOKEN,
+} from 'utils/constants';
 import { formatTokenAmount } from 'utils/calculations';
 import { ITokenPrice, PoolType } from './interfaces';
 
 const config = getConfig();
+const url = new URL(window.location.href);
+
 const DEFAULT_PAGE_LIMIT = 100;
 const JUMBO_INITIAL_DATA = {
   id: config.nearAddress,
@@ -68,7 +72,7 @@ const initialState: StoreContextType = {
   outputToken: null,
   setOutputToken: () => {},
   updatePools: () => {},
-  swapTokens: () => {},
+  findTokenBySymbol: () => {},
 };
 
 const StoreContextHOC = createContext<StoreContextType>(initialState);
@@ -130,16 +134,12 @@ export const StoreContextProvider = (
     }
   };
 
-  const swapTokens = () => {
-    const poolArray = toArray(pools);
-    if (!inputToken || !outputToken || inputToken === outputToken) return;
-    setInputToken(outputToken);
-    setOutputToken(inputToken);
-
-    const availablePools = getPoolsPath(
-      outputToken.contractId, inputToken.contractId, poolArray, tokens,
-    );
-    setCurrentPools(availablePools);
+  const findTokenBySymbol = (
+    symbol: string,
+  ) => {
+    const [token] = toArray(tokens)
+      .filter((el) => el.metadata.symbol.toLowerCase() === symbol.toLowerCase());
+    return token;
   };
 
   const initialLoading = async () => {
@@ -280,7 +280,13 @@ export const StoreContextProvider = (
     tokensMap: { [key: string]: FungibleTokenContract},
     tokenId: string,
     localStorageKey: string,
+    urlKey: string,
   ) => {
+    const urlToken = url.searchParams.get(urlKey) || '';
+    if (
+      url.searchParams.has(urlKey) && findTokenBySymbol(urlToken)
+    ) return tokensMap[findTokenBySymbol(urlToken)?.contractId];
+
     const key = localStorage.getItem(localStorageKey) || '';
     if (key && tokensMap[key]) return tokensMap[key];
     return tokens[tokenId];
@@ -288,8 +294,12 @@ export const StoreContextProvider = (
 
   useEffect(() => {
     if (toArray(pools).length && toArray(tokens).length) {
-      const inputTokenData = tryTokenByKey(tokens, NEAR_TOKEN_ID, SWAP_INPUT_KEY);
-      const outputTokenData = tryTokenByKey(tokens, config.nearAddress, SWAP_OUTPUT_KEY);
+      const inputTokenData = tryTokenByKey(
+        tokens, NEAR_TOKEN_ID, SWAP_INPUT_KEY, URL_INPUT_TOKEN,
+      );
+      const outputTokenData = tryTokenByKey(
+        tokens, config.nearAddress, SWAP_OUTPUT_KEY, URL_OUTPUT_TOKEN,
+      );
       if (!inputTokenData || !outputTokenData) {
         setInputToken(null);
         setOutputToken(null);
@@ -354,7 +364,7 @@ export const StoreContextProvider = (
       setInputToken,
       outputToken,
       setOutputToken,
-      swapTokens,
+      findTokenBySymbol,
     }}
     >
       {children}

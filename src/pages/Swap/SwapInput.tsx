@@ -11,6 +11,7 @@ import { getUpperCase } from 'utils';
 import { TokenType, useModalsStore, useStore } from 'store';
 import { formatTokenAmount } from 'utils/calculations';
 import { SWAP_INPUT_KEY, SWAP_OUTPUT_KEY } from 'utils/constants';
+import useNavigateSwapParams from 'hooks/useNavigateSwapParams';
 import { useTranslation } from 'react-i18next';
 
 const Block = styled.div`
@@ -204,8 +205,11 @@ export default function Input({
   balance: string,
   disabled?: boolean
 }) {
-  const { loading, setCurrentToken } = useStore();
+  const {
+    loading, setCurrentToken, inputToken, outputToken,
+  } = useStore();
   const { setSearchModalOpen } = useModalsStore();
+  const navigate = useNavigateSwapParams();
   const { t } = useTranslation();
 
   const SWAP_KEY = tokenType === TokenType.Input ? SWAP_INPUT_KEY : SWAP_OUTPUT_KEY;
@@ -231,6 +235,13 @@ export default function Input({
       setActiveToken: (activeToken: FungibleTokenContract) => {
         localStorage.setItem(SWAP_KEY, activeToken.contractId);
         setCurrentToken(activeToken, tokenType);
+        if (!inputToken || !outputToken) return;
+
+        if (tokenType === TokenType.Input) {
+          navigate(activeToken.metadata.symbol, outputToken.metadata.symbol);
+        } else {
+          navigate(inputToken.metadata.symbol, activeToken.metadata.symbol);
+        }
       },
     });
   };
