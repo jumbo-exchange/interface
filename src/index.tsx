@@ -7,11 +7,11 @@ import {
 } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import { StoreContextProvider } from 'store';
+import 'react-toastify/dist/ReactToastify.css';
 
 import Landing from 'pages/Landing';
 import theme from 'theme';
 import useFullHeightHook from 'hooks/useFullHeightHook';
-
 import App from 'pages/App';
 import { ALL_MATCH, LANDING } from 'utils/routes';
 

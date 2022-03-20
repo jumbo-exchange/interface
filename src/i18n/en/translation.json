@@ -171,5 +171,15 @@
     "notFound": "404 Error",
     "notFoundLabel": "The page you`re looking for is now beyond our reach",
     "backHome": "Back Home"
+  },
+
+  "toast" : {
+    "swap": "Swap",
+    "addLiquidity": "Add Liquidity",
+    "createPool": "Create Pool",
+    "removeLiquidity": "Remove Liquidity",
+    "transactionFailed": "Transaction failed",
+    "nearDeposit": "Near Deposit",
+    "nearWithdraw": "Near Withdraw"
   }
 }
