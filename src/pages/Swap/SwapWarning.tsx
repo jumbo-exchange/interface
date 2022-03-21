@@ -42,9 +42,15 @@ const RouteBlock = styled.div`
     line-height: 1.063rem;
   }
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    flex-direction: column;
     & > div {
+      align-self: flex-start;
       font-size: .75rem;
       line-height: .875rem;
+    }
+    & > button {
+      margin-top: .5rem;
+      align-self: flex-end;
     }
   `}
 `;
