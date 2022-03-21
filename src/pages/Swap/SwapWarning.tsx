@@ -23,19 +23,23 @@ const WarningBlock = styled.div`
   `}
 `;
 
-const RouteBlock = styled.div`
+const RouteBlock = styled.div<{intersectionTokenId?: boolean}>`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-direction: ${({ intersectionTokenId }) => (intersectionTokenId ? 'column' : 'row')};
   & > div {
     display: flex;
     align-items: center;
+    align-self: ${({ intersectionTokenId }) => (intersectionTokenId ? 'flex-start' : 'center')};
     font-style: normal;
     font-weight: 500;
     font-size: 1rem;
     line-height: 1.188rem;
   }
   & > button {
+    margin-top: ${({ intersectionTokenId }) => (intersectionTokenId ? '.5rem' : '0')};
+    align-self: flex-end;
     padding: .625rem;
     font-weight: 500;
     font-size: .75rem;
@@ -44,13 +48,11 @@ const RouteBlock = styled.div`
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     flex-direction: column;
     & > div {
-      align-self: flex-start;
       font-size: .75rem;
       line-height: .875rem;
     }
     & > button {
       margin-top: .5rem;
-      align-self: flex-end;
     }
   `}
 `;
@@ -105,6 +107,7 @@ export default function RenderWarning() {
     setOutputToken,
     getTokenBalance,
     getToken,
+    currentPools,
     setCurrentPools,
   } = useStore();
   const { t } = useTranslation();
@@ -141,6 +144,11 @@ export default function RenderWarning() {
 
   const firstTokenBalance = getTokenBalance(inputToken?.contractId);
   const secondTokenBalance = getTokenBalance(outputToken?.contractId);
+
+  const intersectionTokenId = currentPools.length === 2
+    ? currentPools[0].tokenAccountIds.find((el) => el !== inputToken?.contractId) : null;
+
+  const intersectionToken = tokens[intersectionTokenId ?? ''] ?? null;
 
   const isBalancesEmpty = Big(firstTokenBalance).lte('0') || Big(secondTokenBalance).lte('0');
 
@@ -293,7 +301,7 @@ export default function RenderWarning() {
           title={t('warningMessage.zeroPoolLiquidity')}
           description={t('warningMessage.zeroPoolLiquidityDesc')}
         >
-          <RouteBlock>
+          <RouteBlock intersectionTokenId={!!intersectionTokenId}>
             <div>
               <LogoContainer>
                 <img
@@ -302,6 +310,20 @@ export default function RenderWarning() {
                 />
               </LogoContainer>
               {inputToken?.metadata.symbol}
+              {intersectionTokenId
+                ? (
+                  <>
+                    <RouteArrowLogo />
+                    <LogoContainer>
+                      <img
+                        src={intersectionToken?.metadata.icon}
+                        alt={intersectionToken?.metadata.symbol}
+                      />
+                    </LogoContainer>
+                    {intersectionToken?.metadata.symbol}
+                  </>
+                )
+                : null}
               <RouteArrowLogo />
               <LogoContainer>
                 <img
