@@ -66,9 +66,9 @@ export type StoreContextType = {
   setCurrentPools: (pools: IPool[]) => void;
   tokens: {[key: string]: FungibleTokenContract};
   setTokens: Dispatch<SetStateAction<{[key: string]: FungibleTokenContract}>>;
-  setCurrentToken: (tokenAddress: string, tokenType: TokenType) => void;
   getToken: (tokenAddress: string) => FungibleTokenContract | null;
 
+  setCurrentToken: (activeToken: FungibleTokenContract, tokenType: TokenType) => void;
   prices: {[key: string]: ITokenPrice},
   setPrices: Dispatch<SetStateAction<{[key: string]: ITokenPrice}>>;
 
@@ -77,7 +77,7 @@ export type StoreContextType = {
   outputToken: FungibleTokenContract | null;
   setOutputToken: Dispatch<SetStateAction<FungibleTokenContract | null>>;
   updatePools: (newPools: IPool[]) => void;
-  swapTokens: () => void;
+  findTokenBySymbol: (symbol: string,) => void;
 }
 
 export const contractMethods = [

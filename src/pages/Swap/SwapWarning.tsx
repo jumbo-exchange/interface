@@ -3,7 +3,7 @@ import getConfig from 'services/config';
 import Warning from 'components/Warning';
 import styled from 'styled-components';
 import Big from 'big.js';
-import { warningMessage, NEAR_TOKEN_ID } from 'utils/constants';
+import { NEAR_TOKEN_ID } from 'utils/constants';
 import { useStore } from 'store';
 import { ReactComponent as RouteArrow } from 'assets/images-app/route-arrow.svg';
 import { ReactComponent as Wallet } from 'assets/images-app/wallet.svg';
@@ -12,6 +12,7 @@ import { getPoolsPath, toArray } from 'utils';
 import { useNavigate } from 'react-router-dom';
 import { wallet } from 'services/near';
 import { toAddLiquidityPage } from 'utils/routes';
+import { useTranslation } from 'react-i18next';
 
 const config = getConfig();
 
@@ -98,7 +99,9 @@ export default function RenderWarning() {
     setOutputToken,
     getTokenBalance,
     getToken,
+    setCurrentPools,
   } = useStore();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const isConnected = wallet.isSignedIn();
 
@@ -151,8 +154,8 @@ export default function RenderWarning() {
     return (
       <WarningBlock>
         <Warning
-          title={warningMessage.zeroBalance}
-          description={warningMessage.zeroBalanceDesc}
+          title={t('warningMessage.zeroBalance')}
+          description={t('warningMessage.zeroBalanceDesc')}
         >
           <RouteBlock>
             <div>
@@ -180,7 +183,7 @@ export default function RenderWarning() {
               }}
             >
               <LogoWallet />
-              Go to Pair
+              {t('swap.goToPair')}
             </ButtonSecondary>
           </RouteBlock>
         </Warning>
@@ -198,19 +201,19 @@ export default function RenderWarning() {
       if (nearIsInput) {
         setInputToken(wNear);
         setOutputToken(outputToken);
-        return;
-      }
-      if (!nearIsInput) {
+        setCurrentPools(poolPathOutputToken);
+      } else {
         setInputToken(inputToken);
         setOutputToken(wNear);
+        setCurrentPools(poolPathInputToken);
       }
     };
 
     return (
       <WarningBlock>
         <Warning
-          title={warningMessage.noSuchPairExists}
-          description={warningMessage.noSuchPairExistsDesc}
+          title={t('warningMessage.noSuchPairExists')}
+          description={t('warningMessage.noSuchPairExistsDesc')}
         >
           <RouteBlock>
             <div>
@@ -258,7 +261,7 @@ export default function RenderWarning() {
               onClick={onClick}
             >
               <LogoWallet />
-              Go to Pair
+              {t('swap.goToPair')}
             </ButtonSecondary>
           </RouteBlock>
         </Warning>
@@ -270,7 +273,7 @@ export default function RenderWarning() {
     return (
       <WarningBlock>
         <Warning
-          title={warningMessage.doesNotExist}
+          title={t('warningMessage.doesNotExist')}
         />
 
       </WarningBlock>
@@ -281,8 +284,8 @@ export default function RenderWarning() {
     return (
       <WarningBlock>
         <Warning
-          title={warningMessage.zeroPoolLiquidity}
-          description={warningMessage.zeroPoolLiquidityDesc}
+          title={t('warningMessage.zeroPoolLiquidity')}
+          description={t('warningMessage.zeroPoolLiquidityDesc')}
         >
           <RouteBlock>
             <div>
@@ -309,7 +312,7 @@ export default function RenderWarning() {
                 }}
               >
                 <LogoWallet />
-                Add liquidity
+                {t('action.addLiquidity')}
               </ButtonSecondary>
             ) : null }
           </RouteBlock>

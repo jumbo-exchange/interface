@@ -21,6 +21,8 @@ import {
 } from 'utils/routes';
 import { RefreshContextProvider } from 'services/refreshService';
 import { ModalsContextProvider, useStore } from 'store';
+import { ToastContainer } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import {
   Container,
   Header,
@@ -56,6 +58,7 @@ function CustomLink({
 }
 
 export default function App() {
+  const { t } = useTranslation();
   const { search } = useLocation();
   useTransactionHash(search, wallet);
   const { updatePools, updateTokensBalances } = useStore();
@@ -78,12 +81,12 @@ export default function App() {
             </LinkContainer>
             <NavBar>
               <CustomLink to={SWAP}>
-                Swap
+                {t('general.swap')}
               </CustomLink>
               <CustomLink to={POOL}>
-                Pool
+                {t('general.pool')}
               </CustomLink>
-              <NavButton disabled>Staking</NavButton>
+              <NavButton disabled>{t('general.staking')}</NavButton>
               <NavButton disabled>...</NavButton>
             </NavBar>
             <BlockButton>
@@ -107,6 +110,7 @@ export default function App() {
             </Suspense>
           </Body>
           <Footer />
+          <ToastContainer />
         </Container>
       </ModalsContextProvider>
     </RefreshContextProvider>

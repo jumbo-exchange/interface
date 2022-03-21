@@ -3,13 +3,16 @@ import styled from 'styled-components';
 import CurrencyInputPanel from 'components/CurrencyInputPanel';
 import tokenLogo from 'assets/images-app/placeholder-token.svg';
 import Big from 'big.js';
+import FungibleTokenContract from 'services/FungibleToken';
 
 import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
 import { getUpperCase } from 'utils';
-import { TokenType, useStore } from 'store';
-import FungibleTokenContract from 'services/FungibleToken';
+import { TokenType, useModalsStore, useStore } from 'store';
 import { formatTokenAmount } from 'utils/calculations';
+import { SWAP_INPUT_KEY, SWAP_OUTPUT_KEY } from 'utils/constants';
+import useNavigateSwapParams from 'hooks/useNavigateSwapParams';
+import { useTranslation } from 'react-i18next';
 
 const Block = styled.div`
   display: flex;
@@ -187,7 +190,6 @@ const getCurrentBalance = (
 };
 
 export default function Input({
-  openModal,
   token,
   tokenType,
   value,
@@ -196,15 +198,22 @@ export default function Input({
   disabled = false,
 }:
 {
-  openModal: (tokenType: TokenType) => void,
   token: FungibleTokenContract | null,
   tokenType: TokenType,
   value: string,
-  setValue: any,
-  balance:string,
+  setValue: (value: string) => void,
+  balance: string,
   disabled?: boolean
 }) {
-  const { loading } = useStore();
+  const {
+    loading, setCurrentToken, inputToken, outputToken,
+  } = useStore();
+  const { setSearchModalOpen } = useModalsStore();
+  const navigate = useNavigateSwapParams();
+  const { t } = useTranslation();
+
+  const SWAP_KEY = tokenType === TokenType.Input ? SWAP_INPUT_KEY : SWAP_OUTPUT_KEY;
+
   const currentBalance = new Big(balance ?? 0);
   const setHalfAmount = () => {
     if (!balance) return;
@@ -218,6 +227,25 @@ export default function Input({
     setValue(newBalance);
   };
 
+  const openModal = (currentToken: FungibleTokenContract | null) => {
+    if (!token) return;
+    setSearchModalOpen({
+      isOpen: true,
+      activeToken: currentToken,
+      setActiveToken: (activeToken: FungibleTokenContract) => {
+        localStorage.setItem(SWAP_KEY, activeToken.contractId);
+        setCurrentToken(activeToken, tokenType);
+        if (!inputToken || !outputToken) return;
+
+        if (tokenType === TokenType.Input) {
+          navigate(activeToken.metadata.symbol, outputToken.metadata.symbol);
+        } else {
+          navigate(inputToken.metadata.symbol, activeToken.metadata.symbol);
+        }
+      },
+    });
+  };
+
   return (
     <Block>
       <InputLabel>
@@ -228,10 +256,10 @@ export default function Input({
         {(tokenType === TokenType.Input) && (
           <>
             <ButtonHalfWallet onClick={setHalfAmount}>
-              <span>HALF</span>
+              <span>{t('common.half')}</span>
             </ButtonHalfWallet>
             <ButtonMaxWallet onClick={setMaxAmount}>
-              <span>MAX</span>
+              <span>{t('common.max')}</span>
             </ButtonMaxWallet>
           </>
         )}
@@ -248,7 +276,7 @@ export default function Input({
         />
         <TokenContainer onClick={() => {
           if (loading) return;
-          openModal(tokenType);
+          openModal(token);
         }}
         >
           {getUpperCase(token?.metadata.symbol ?? '')}

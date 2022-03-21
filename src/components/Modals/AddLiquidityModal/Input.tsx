@@ -8,6 +8,7 @@ import FungibleTokenContract from 'services/FungibleToken';
 import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { getUpperCase } from 'utils';
 import { formatTokenAmount } from 'utils/calculations';
+import { useTranslation } from 'react-i18next';
 
 const Block = styled.div`
   display: flex;
@@ -166,6 +167,8 @@ export default function Input({
   setValue: (value: string)=> void,
   balance: string,
 }) {
+  const { t } = useTranslation();
+
   const currentBalance = new Big(balance ?? 0);
   const setHalfAmount = () => {
     if (!balance) return;
@@ -189,10 +192,10 @@ export default function Input({
           {getCurrentBalance(currentBalance, token)}
         </WalletInformation>
         <ButtonHalfWallet onClick={setHalfAmount}>
-          <span>HALF</span>
+          <span>{t('common.half')}</span>
         </ButtonHalfWallet>
         <ButtonMaxWallet onClick={setMaxAmount}>
-          <span>MAX</span>
+          <span>{t('common.max')}</span>
         </ButtonMaxWallet>
       </InputLabel>
       <InputContainer>

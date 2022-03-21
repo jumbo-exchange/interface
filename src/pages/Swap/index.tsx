@@ -2,10 +2,11 @@ import React, { useCallback, useState, useEffect } from 'react';
 import RenderButton from 'components/Button/RenderButton';
 import { getPoolsPath, getUpperCase, toArray } from 'utils';
 import {
-  useStore, useModalsStore, TokenType, CurrentButton,
+  useStore, TokenType, CurrentButton,
 } from 'store';
 import {
-  BAD_PRICE_IMPACT, FEE_DIVISOR, NEAR_TOKEN_ID, SLIPPAGE_TOLERANCE_DEFAULT, tooltipTitle,
+  BAD_PRICE_IMPACT, FEE_DIVISOR, NEAR_TOKEN_ID, SLIPPAGE_TOLERANCE_DEFAULT,
+  SWAP_INPUT_KEY, SWAP_OUTPUT_KEY,
 } from 'utils/constants';
 import SwapContract from 'services/SwapContract';
 import useDebounce from 'hooks/useDebounce';
@@ -18,10 +19,12 @@ import getConfig from 'services/config';
 import Big from 'big.js';
 
 import { calculatePriceImpact } from 'services/swap';
+import { useTranslation } from 'react-i18next';
 
 import Refresh from 'components/Refresh';
 import { useRefresh } from 'services/refreshService';
 import Tooltip from 'components/Tooltip';
+import useNavigateSwapParams from 'hooks/useNavigateSwapParams';
 import Input from './SwapInput';
 import SwapSettings from './SwapSettings';
 import RenderWarning from './SwapWarning';
@@ -53,17 +56,20 @@ const DEBOUNCE_VALUE = 1000;
 export default function Swap() {
   const {
     inputToken,
+    setInputToken,
     outputToken,
-    swapTokens,
+    setOutputToken,
     balances,
     loading,
     currentPools,
     tokens,
     pools,
+    setCurrentPools,
   } = useStore();
   const config = getConfig();
+  const navigate = useNavigateSwapParams();
   const { setTrackedPools } = useRefresh();
-  const { setSearchModalOpen } = useModalsStore();
+  const { t } = useTranslation();
   const [independentField, setIndependentField] = useState(TokenType.Input);
   const [inputTokenValue, setInputTokenValue] = useState<string>('');
   const debouncedInputValue = useDebounce(inputTokenValue, DEBOUNCE_VALUE);
@@ -79,13 +85,6 @@ export default function Swap() {
     : '';
   const priceImpact = calculatePriceImpact(
     currentPools, inputToken, outputToken, inputTokenValue, tokens,
-  );
-  const openModal = useCallback(
-    (tokenType: TokenType) => {
-      setSearchModalOpen({ isOpen: true, tokenType });
-      setIsSettingsOpen(false);
-    },
-    [],
   );
 
   const verifyToken = (
@@ -167,21 +166,13 @@ export default function Swap() {
     setTrackedPools(currentPools);
   }, [currentPools]);
 
-  const handleAmountChange = async (tokenType: TokenType, value: string) => {
-    if (tokenType === TokenType.Input) {
-      setInputTokenValue(value);
-    } else {
-      setOutputTokenValue(value);
-    }
-  };
-
   const handleInputChange = useCallback(
     (value: string) => {
       if (value === '') {
         setOutputTokenValue('');
       }
       setIndependentField(TokenType.Input);
-      handleAmountChange(TokenType.Input, value);
+      setInputTokenValue(value);
     }, [],
   );
 
@@ -191,7 +182,7 @@ export default function Swap() {
         setInputTokenValue('');
       }
       setIndependentField(TokenType.Output);
-      handleAmountChange(TokenType.Output, value);
+      setOutputTokenValue(value);
     }, [],
   );
 
@@ -247,8 +238,8 @@ export default function Swap() {
         verifiedOutputToken,
         tokens,
       );
-      const lastIndex = minOutput.length - 1;
 
+      const lastIndex = minOutput.length - 1;
       setExchangeAmount(
         removeTrailingZeros(
           formatTokenAmount(
@@ -258,21 +249,39 @@ export default function Swap() {
           ),
         ),
       );
+      setInputTokenValue('');
+      setOutputTokenValue('');
     } catch (e) {
       console.warn(e);
     }
-  }, [inputToken, outputToken]);
+  }, [loading, inputToken, outputToken]);
 
-  const exchangeLabel = `
+  const exchangeLabel = (inputToken && outputToken)
+    ? `
   1 ${getUpperCase(inputToken?.metadata.symbol ?? '')} 
   ≈ ${exchangeAmount} ${getUpperCase(outputToken?.metadata.symbol ?? '')}
-  `;
+  `
+    : 'Loading...';
+
+  const swapTokens = () => {
+    const poolArray = toArray(pools);
+    if (!inputToken || !outputToken || inputToken === outputToken) return;
+    navigate(outputToken.metadata.symbol, inputToken.metadata.symbol);
+    localStorage.setItem(SWAP_OUTPUT_KEY, inputToken.contractId);
+    localStorage.setItem(SWAP_INPUT_KEY, outputToken.contractId);
+    setInputToken(outputToken);
+    setOutputToken(inputToken);
+
+    const availablePools = getPoolsPath(
+      outputToken.contractId, inputToken.contractId, poolArray, tokens,
+    );
+    setCurrentPools(availablePools);
+  };
 
   return (
     <Container>
       <ActionContainer>
         <Input
-          openModal={openModal}
           token={inputToken}
           tokenType={TokenType.Input}
           value={inputTokenValue}
@@ -281,10 +290,9 @@ export default function Swap() {
         />
         <ChangeTokenContainer onClick={swapTokens}>
           <ChangeTokenLogo />
-          <span>Change Direction</span>
+          <span>{t('swap.changeDirection')}</span>
         </ChangeTokenContainer>
         <Input
-          openModal={openModal}
           token={outputToken}
           tokenType={TokenType.Output}
           value={outputTokenValue}
@@ -295,7 +303,7 @@ export default function Swap() {
       <ExchangeBlock>
         <Refresh />
         <ExchangeLabel>
-          {loading ? 'Loading...' : <div>{exchangeLabel}</div>}
+          {loading ? `${t('common.loading')}...` : <div>{exchangeLabel}</div>}
         </ExchangeLabel>
       </ExchangeBlock>
       <RenderWarning />
@@ -310,7 +318,7 @@ export default function Swap() {
             isActive={isSettingsOpen}
             onClick={() => (setIsSettingsOpen(!isSettingsOpen))}
           >
-            <span>Settings</span>
+            <span>{t('swap.settings')}</span>
             <ArrowDown />
           </SettingsLabel>
         </SettingsHeader>
@@ -323,8 +331,8 @@ export default function Swap() {
             <SwapInformation>
               <RouteBlock>
                 <TitleInfo>
-                  Route
-                  <Tooltip title={tooltipTitle.routes} />
+                  {t('swap.route')}
+                  <Tooltip title={t('tooltipTitle.routes')} />
                 </TitleInfo>
                 <div>
                   <LogoContainer>
@@ -346,7 +354,7 @@ export default function Swap() {
                         </LogoContainer>
                         {intersectionToken?.metadata.symbol}
                       </>
-                    ) // TODO: check correct display
+                    )
                     : null}
                   <RouteArrowLogo />
                   <LogoContainer>
@@ -360,15 +368,15 @@ export default function Swap() {
               </RouteBlock>
               <RowInfo>
                 <TitleInfo>
-                  Minimum Received
-                  <Tooltip title={tooltipTitle.minimumReceived} />
+                  {t('swap.minimumReceived')}
+                  <Tooltip title={t('tooltipTitle.minimumReceived')} />
                 </TitleInfo>
                 <LabelInfo>{minAmountOut} {outputToken?.metadata.symbol}</LabelInfo>
               </RowInfo>
               <RowInfo>
                 <TitleInfo>
-                  Price Impact
-                  <Tooltip title={tooltipTitle.priceImpact} />
+                  {t('swap.priceImpact')}
+                  <Tooltip title={t('tooltipTitle.priceImpact')} />
                 </TitleInfo>
                 {
                   Number(formatBalance(priceImpact)) > BAD_PRICE_IMPACT
@@ -378,15 +386,15 @@ export default function Swap() {
               </RowInfo>
               <RowInfo>
                 <TitleInfo>
-                  Liquidity Provider Fee
-                  <Tooltip title={tooltipTitle.liquidityProviderFee} />
+                  {t('swap.liquidityProviderFee')}
+                  <Tooltip title={t('tooltipTitle.liquidityProviderFee')} />
                 </TitleInfo>
                 <LabelInfo>{averageFee}%</LabelInfo>
               </RowInfo>
               <RowInfo>
                 <TitleInfo>
-                  Slippage Tolerance
-                  <Tooltip title={tooltipTitle.slippageTolerance} />
+                  {t('swap.slippageTolerance')}
+                  <Tooltip title={t('tooltipTitle.slippageTolerance')} />
                 </TitleInfo>
                 <LabelInfo>{slippageTolerance}%</LabelInfo>
               </RowInfo>

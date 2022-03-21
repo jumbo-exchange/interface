@@ -2,8 +2,9 @@ import React, {
   createContext, useContext, useState,
   Dispatch, SetStateAction,
 } from 'react';
-import { IPool, TokenType } from 'store';
+import { IPool } from 'store';
 import Modals from 'components/Modals';
+import FungibleTokenContract from 'services/FungibleToken';
 
 type ModalsStoreContextType = {
   isAccountModalOpen: boolean;
@@ -12,8 +13,16 @@ type ModalsStoreContextType = {
   setAddLiquidityModalOpenState: Dispatch<SetStateAction<{isOpen: boolean, pool: IPool | null}>>;
   isCreatePoolModalOpen: boolean;
   setCreatePoolModalOpen: Dispatch<SetStateAction<boolean>>;
-  isSearchModalOpen: {isOpen: boolean, tokenType: TokenType};
-  setSearchModalOpen: Dispatch<SetStateAction<{isOpen: boolean, tokenType: TokenType}>>;
+  isSearchModalOpen: {
+    isOpen: boolean,
+    activeToken: FungibleTokenContract | null,
+    setActiveToken: (token: FungibleTokenContract) => void
+  };
+  setSearchModalOpen: Dispatch<SetStateAction<{
+    isOpen: boolean,
+    activeToken: FungibleTokenContract | null,
+    setActiveToken: (token: FungibleTokenContract) => void
+  }>>;
   isTooltipModalOpen: boolean;
   setTooltipModalOpen: Dispatch<SetStateAction<boolean>>;
   titleTooltipModal: string;
@@ -29,7 +38,11 @@ export const initialModalsState: ModalsStoreContextType = {
   setAddLiquidityModalOpenState: () => {},
   isCreatePoolModalOpen: false,
   setCreatePoolModalOpen: () => {},
-  isSearchModalOpen: { isOpen: false, tokenType: TokenType.Output },
+  isSearchModalOpen: {
+    isOpen: false,
+    activeToken: null,
+    setActiveToken: () => {},
+  },
   setSearchModalOpen: () => {},
   isTooltipModalOpen: false,
   setTooltipModalOpen: () => {},
@@ -56,9 +69,12 @@ export const ModalsContextProvider = (
   const [isCreatePoolModalOpen, setCreatePoolModalOpen] = useState<boolean>(
     initialModalsState.isCreatePoolModalOpen,
   );
-  const [isSearchModalOpen, setSearchModalOpen] = useState<{isOpen: boolean, tokenType: TokenType}>(
-    initialModalsState.isSearchModalOpen,
-  );
+  const [isSearchModalOpen, setSearchModalOpen] = useState<{
+    isOpen: boolean,
+    activeToken: FungibleTokenContract | null,
+    setActiveToken:(token: FungibleTokenContract) => void
+      }>(
+      initialModalsState.isSearchModalOpen);
   const [isTooltipModalOpen, setTooltipModalOpen] = useState<boolean>(
     initialModalsState.isTooltipModalOpen,
   );
