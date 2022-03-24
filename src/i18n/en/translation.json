@@ -98,7 +98,9 @@
     "zeroPoolLiquidityDesc": "Zero liquidity pool, you can add liquidity to the pool",
   
     "transactionMayFail": "Your transaction may be frontrun",
-    "zeroFee": "Total Fee cannot be zero"
+    "zeroFee": "Total Fee cannot be zero",
+    "badPriceImpact": "Price impact is TOO HIGH.",
+    "badPriceImpactDesc": "DON'T SWAP unless you know what you are doing"
   },
 
   "tooltipTitle": {
