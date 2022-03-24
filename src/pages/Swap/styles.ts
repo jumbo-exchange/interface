@@ -1,18 +1,9 @@
-import { PropsWithChildren } from 'react';
 import styled from 'styled-components';
 import { SpecialContainer } from 'components/SpecialContainer';
 
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
 import { ReactComponent as Exchange } from 'assets/images-app/exchange.svg';
 import { ReactComponent as RouteArrow } from 'assets/images-app/route-arrow.svg';
-
-interface ICurrent {
-  isActive?: boolean
-}
-
-interface IColor {
-  isColor?: boolean
-}
 
 export const Container = styled(SpecialContainer)`
   max-width: 500px;
@@ -88,7 +79,7 @@ export const SettingsHeader = styled.div`
     }
 `;
 
-export const SettingsLabel = styled.div<PropsWithChildren<ICurrent>>`
+export const SettingsLabel = styled.div<{ isActive?: boolean }>`
   display: flex;
   align-items: center;
   & > span {
@@ -158,12 +149,12 @@ export const TitleInfo = styled.div`
   margin: 0;
 `;
 
-export const LabelInfo = styled.p<PropsWithChildren<IColor>>`
+export const LabelInfo = styled.p<{active?: boolean}>`
   font-style: normal;
   font-weight: 300;
   font-size: .75rem;
   line-height: .875rem;
-  color: ${({ theme, isColor = false }) => (isColor ? theme.globalGreen : theme.globalWhite)};
+  color: ${({ theme, active = false }) => (active ? theme.globalGreen : theme.globalWhite)};
   margin: 0;
 `;
 

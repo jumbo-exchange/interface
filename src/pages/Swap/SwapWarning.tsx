@@ -3,7 +3,7 @@ import getConfig from 'services/config';
 import Warning from 'components/Warning';
 import styled from 'styled-components';
 import Big from 'big.js';
-import { NEAR_TOKEN_ID } from 'utils/constants';
+import { NEAR_TOKEN_ID, SHOW_WARNING_PRICE_IMPACT } from 'utils/constants';
 import { useStore } from 'store';
 import { ReactComponent as RouteArrow } from 'assets/images-app/route-arrow.svg';
 import { ReactComponent as Wallet } from 'assets/images-app/wallet.svg';
@@ -88,7 +88,7 @@ const LogoWallet = styled(Wallet)`
   margin-right: .313rem;
 `;
 
-export default function RenderWarning() {
+export default function RenderWarning({ priceImpact }: {priceImpact: string}) {
   const {
     loading,
     tokens,
@@ -137,6 +137,17 @@ export default function RenderWarning() {
   const secondTokenBalance = getTokenBalance(outputToken?.contractId);
 
   const isBalancesEmpty = Big(firstTokenBalance).lte('0') || Big(secondTokenBalance).lte('0');
+
+  if (Big(priceImpact).gt(SHOW_WARNING_PRICE_IMPACT)) {
+    return (
+      <WarningBlock>
+        <Warning
+          title={t('warningMessage.badPriceImpact')}
+          description={t('warningMessage.badPriceImpactDesc')}
+        />
+      </WarningBlock>
+    );
+  }
 
   if (!loading
     && (

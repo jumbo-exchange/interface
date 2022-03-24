@@ -51,6 +51,7 @@ export const FEE_DIVISOR = 100;
 export const POOL_SHARES_DECIMALS = 24;
 
 export const BAD_PRICE_IMPACT = 2;
+export const SHOW_WARNING_PRICE_IMPACT = 10;
 
 export const NEAR_TOKEN_ID = 'NEAR';
 

@@ -86,6 +86,7 @@ export default function Swap() {
   const priceImpact = calculatePriceImpact(
     currentPools, inputToken, outputToken, inputTokenValue, tokens,
   );
+  const roundPriceImpact = removeTrailingZeros(formatBalance(priceImpact));
 
   const verifyToken = (
     token: FungibleTokenContract,
@@ -306,7 +307,9 @@ export default function Swap() {
           {loading ? `${t('common.loading')}...` : <div>{exchangeLabel}</div>}
         </ExchangeLabel>
       </ExchangeBlock>
-      <RenderWarning />
+      <RenderWarning
+        priceImpact={priceImpact}
+      />
       <SettingsBlock>
         <SwapSettings
           slippageTolerance={slippageTolerance}
@@ -379,9 +382,9 @@ export default function Swap() {
                   <Tooltip title={t('tooltipTitle.priceImpact')} />
                 </TitleInfo>
                 {
-                  Number(formatBalance(priceImpact)) > BAD_PRICE_IMPACT
-                    ? <LabelError>{formatBalance(priceImpact)}%</LabelError>
-                    : <LabelInfo isColor>{formatBalance(priceImpact)}%</LabelInfo>
+                  Big(priceImpact).gt(BAD_PRICE_IMPACT)
+                    ? <LabelError>{roundPriceImpact}%</LabelError>
+                    : <LabelInfo active>{roundPriceImpact}%</LabelInfo>
                 }
               </RowInfo>
               <RowInfo>
