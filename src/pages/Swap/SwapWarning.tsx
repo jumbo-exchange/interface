@@ -88,7 +88,7 @@ const LogoWallet = styled(Wallet)`
   margin-right: .313rem;
 `;
 
-export default function RenderWarning() {
+export default function RenderWarning({ badPriceImpact }: {badPriceImpact: boolean}) {
   const {
     loading,
     tokens,
@@ -137,6 +137,17 @@ export default function RenderWarning() {
   const secondTokenBalance = getTokenBalance(outputToken?.contractId);
 
   const isBalancesEmpty = Big(firstTokenBalance).lte('0') || Big(secondTokenBalance).lte('0');
+
+  if (badPriceImpact) {
+    return (
+      <WarningBlock>
+        <Warning
+          title={t('warningMessage.badPriceImpact')}
+          description={t('warningMessage.badPriceImpactDesc')}
+        />
+      </WarningBlock>
+    );
+  }
 
   if (!loading
     && (
