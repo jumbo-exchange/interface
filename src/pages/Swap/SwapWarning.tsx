@@ -3,7 +3,7 @@ import getConfig from 'services/config';
 import Warning from 'components/Warning';
 import styled from 'styled-components';
 import Big from 'big.js';
-import { NEAR_TOKEN_ID } from 'utils/constants';
+import { NEAR_TOKEN_ID, BAD_PRICE_IMPACT } from 'utils/constants';
 import { useStore } from 'store';
 import { ReactComponent as RouteArrow } from 'assets/images-app/route-arrow.svg';
 import { ReactComponent as Wallet } from 'assets/images-app/wallet.svg';
@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { wallet } from 'services/near';
 import { toAddLiquidityPage } from 'utils/routes';
 import { useTranslation } from 'react-i18next';
+import { formatBalance } from 'utils/calculations';
 
 const config = getConfig();
 
@@ -88,7 +89,7 @@ const LogoWallet = styled(Wallet)`
   margin-right: .313rem;
 `;
 
-export default function RenderWarning({ badPriceImpact }: {badPriceImpact: boolean}) {
+export default function RenderWarning({ priceImpact }: {priceImpact: string}) {
   const {
     loading,
     tokens,
@@ -138,7 +139,7 @@ export default function RenderWarning({ badPriceImpact }: {badPriceImpact: boole
 
   const isBalancesEmpty = Big(firstTokenBalance).lte('0') || Big(secondTokenBalance).lte('0');
 
-  if (badPriceImpact) {
+  if (Number(formatBalance(priceImpact)) > BAD_PRICE_IMPACT) {
     return (
       <WarningBlock>
         <Warning

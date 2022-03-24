@@ -86,7 +86,6 @@ export default function Swap() {
   const priceImpact = calculatePriceImpact(
     currentPools, inputToken, outputToken, inputTokenValue, tokens,
   );
-  const badPriceImpact = Number(formatBalance(priceImpact)) > BAD_PRICE_IMPACT;
 
   const verifyToken = (
     token: FungibleTokenContract,
@@ -308,7 +307,7 @@ export default function Swap() {
         </ExchangeLabel>
       </ExchangeBlock>
       <RenderWarning
-        badPriceImpact={badPriceImpact}
+        priceImpact={priceImpact}
       />
       <SettingsBlock>
         <SwapSettings
@@ -382,7 +381,7 @@ export default function Swap() {
                   <Tooltip title={t('tooltipTitle.priceImpact')} />
                 </TitleInfo>
                 {
-                  badPriceImpact
+                  Number(formatBalance(priceImpact)) > BAD_PRICE_IMPACT
                     ? <LabelError>{formatBalance(priceImpact)}%</LabelError>
                     : <LabelInfo isColor>{formatBalance(priceImpact)}%</LabelInfo>
                 }
