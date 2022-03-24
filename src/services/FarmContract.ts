@@ -6,11 +6,12 @@ import {
   ONE_MORE_DEPOSIT_AMOUNT,
   STORAGE_PER_TOKEN,
   NEAR_TOKEN_ID,
+  ONE_YOCTO_NEAR,
 } from 'utils/constants';
+import { parseTokenAmount } from 'utils/calculations';
 import sendTransactions, { wallet } from './near';
 import { createContract, Transaction } from './wallet';
 import getConfig from './config';
-import FungibleTokenContract from './FungibleToken';
 
 const basicViewMethods = [
   'get_number_of_farms',
@@ -24,6 +25,8 @@ const basicViewMethods = [
   'list_seeds',
   'list_user_seeds',
   'get_unclaimed_reward',
+
+  'storage_balance_of',
 ];
 
 const basicChangeMethods = [
@@ -31,8 +34,18 @@ const basicChangeMethods = [
 ];
 
 const config = getConfig();
-const CREATE_POOL_NEAR_AMOUNT = '0.05';
-const CONTRACT_ID = config.farmContractId;
+
+const LP_TOKEN_DECIMALS = 24;
+const LP_STABLE_TOKEN_DECIMALS = 18;
+
+const EX_CONTRACT_ID = config.contractId;
+const FARM_CONTRACT_ID = config.farmContractId;
+const STABLE_POOL_ID = config.stablePoolId;
+
+const MFT_GAS = '180000000000000';
+
+const STORAGE_TO_REGISTER_MFT = '0.045';
+const MIN_DEPOSIT_PER_TOKEN_FARM = new Big('45000000000000000000000');
 
 export interface IPoolVolumes {
   [tokenId: string]: { input: string; output: string };
@@ -41,7 +54,7 @@ export interface IPoolVolumes {
 export default class FarmContract {
   contract = createContract(
     wallet,
-    CONTRACT_ID,
+    FARM_CONTRACT_ID,
     basicViewMethods,
     basicChangeMethods,
   )
@@ -50,7 +63,7 @@ export default class FarmContract {
 
   walletInstance = wallet;
 
-  contractId = CONTRACT_ID;
+  contractId = FARM_CONTRACT_ID;
 
   async getNumberOfFarms() {
     // @ts-expect-error: Property 'get_number_of_farms' does not exist on type 'Contract'.
@@ -82,43 +95,26 @@ export default class FarmContract {
     return this.contract.get_unclaimed_reward({ account_id: accountId, farm_id: farmId });
   }
 
-  async checkStorageState(accountId = wallet.getAccountId()) {
-    const storage = await this.getStorageState(accountId);
-    return storage ? new Big(storage?.deposit).lte(new Big(storage?.usage)) : true;
-  }
-
-  async getStorageState(accountId = wallet.getAccountId()) {
-    // @ts-expect-error: Property 'get_user_storage_state' does not exist on type 'Contract'.
-    return this.contract.get_user_storage_state({ account_id: accountId });
-  }
-
   async currentStorageBalance(accountId = wallet.getAccountId()) {
-    // @ts-expect-error: Property 'get_user_storage_state' does not exist on type 'Contract'.
+    // @ts-expect-error: Property 'storage_balance_of' does not exist on type 'Contract'.
     return this.contract.storage_balance_of({ account_id: accountId });
   }
 
-  async checkStorageBalance(accountId: string = wallet.getAccountId()) {
+  async checkFarmStorageBalance(accountId: string = wallet.getAccountId()) {
     const transactions: Transaction[] = [];
 
     let storageAmount = new Big(0);
+    const balance = await this.currentStorageBalance(accountId);
 
-    const storageAvailable = await this.getStorageState(accountId);
-
-    if (!storageAvailable) {
-      storageAmount = new Big(ONE_MORE_DEPOSIT_AMOUNT);
-    } else {
-      const balance = await this.currentStorageBalance(accountId);
-
-      if (!balance) {
-        storageAmount = new Big(ACCOUNT_MIN_STORAGE_AMOUNT);
-      }
-
-      if (new Big(balance?.available || '0').lt(MIN_DEPOSIT_PER_TOKEN)) {
-        storageAmount = storageAmount.plus(Number(STORAGE_PER_TOKEN));
-      }
+    if (!balance) {
+      storageAmount = new Big(ACCOUNT_MIN_STORAGE_AMOUNT);
     }
 
-    if (storageAmount.gt(0) && this.contractId !== NEAR_TOKEN_ID) {
+    if (new Big(balance?.available || '0').lt(MIN_DEPOSIT_PER_TOKEN_FARM)) {
+      storageAmount = storageAmount.plus(Number(STORAGE_TO_REGISTER_MFT));
+    }
+
+    if (storageAmount.gt(0)) {
       transactions.push({
         receiverId: this.contractId,
         functionCalls: [{
@@ -134,5 +130,31 @@ export default class FarmContract {
     return transactions;
   }
 
-  // TODO: delete MFT.ts and add everything here
+  async stake(
+    tokenId: number,
+    amount: string,
+    poolId : number,
+    message?: string,
+  ): Promise<Transaction[]> {
+    const transactions: Transaction[] = [];
+    const checkStorage = await this.checkFarmStorageBalance();
+    transactions.push(...checkStorage);
+    transactions.push({
+      receiverId: EX_CONTRACT_ID,
+      functionCalls: [{
+        methodName: 'mft_transfer_call',
+        args: {
+          receiver_id: FARM_CONTRACT_ID,
+          token_id: tokenId,
+          amount: STABLE_POOL_ID === poolId
+            ? parseTokenAmount(amount, LP_STABLE_TOKEN_DECIMALS)
+            : parseTokenAmount(amount, LP_TOKEN_DECIMALS),
+          msg: message,
+        },
+        amount: ONE_YOCTO_NEAR,
+        gas: MFT_GAS,
+      }],
+    });
+    return transactions;
+  }
 }
