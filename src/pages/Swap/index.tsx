@@ -384,7 +384,7 @@ export default function Swap() {
                 {
                   Big(priceImpact).gt(BAD_PRICE_IMPACT)
                     ? <LabelError>{roundPriceImpact}%</LabelError>
-                    : <LabelInfo goodPriceImpact>{roundPriceImpact}%</LabelInfo>
+                    : <LabelInfo active>{roundPriceImpact}%</LabelInfo>
                 }
               </RowInfo>
               <RowInfo>

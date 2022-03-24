@@ -149,12 +149,12 @@ export const TitleInfo = styled.div`
   margin: 0;
 `;
 
-export const LabelInfo = styled.p<{goodPriceImpact?: boolean}>`
+export const LabelInfo = styled.p<{active?: boolean}>`
   font-style: normal;
   font-weight: 300;
   font-size: .75rem;
   line-height: .875rem;
-  color: ${({ theme, goodPriceImpact = false }) => (goodPriceImpact ? theme.globalGreen : theme.globalWhite)};
+  color: ${({ theme, active = false }) => (active ? theme.globalGreen : theme.globalWhite)};
   margin: 0;
 `;
 
