@@ -41,12 +41,15 @@ export default function PoolResult(
       .minus(a.totalLiquidity).toNumber(),
   );
 
+  const isFarming = currentFilterPools === FilterPoolsEnum.Farming;
+
   if (loading) {
     return (
       <Wrapper>
         {numberPlaceholderCard.map((el) => (
           <PoolCardPlaceholder
             key={el}
+            isFarming={isFarming}
           />
         ))}
       </Wrapper>
@@ -61,6 +64,7 @@ export default function PoolResult(
           <PoolCard
             key={pool.id}
             pool={pool}
+            isFarming={isFarming}
           />
         ))}
         {filteredPools.length === 0
@@ -73,12 +77,34 @@ export default function PoolResult(
     );
   }
 
+  if (currentFilterPools === FilterPoolsEnum.Farming) {
+    const farmingPool = poolsArraySorted.filter((pool) => pool.farm);
+    return (
+      <Wrapper>
+        {farmingPool.map((pool) => (
+          <PoolCard
+            key={pool.id}
+            pool={pool}
+            isFarming={isFarming}
+          />
+        ))}
+        {poolsArraySorted.length === 0
+          && (
+          <NoResult>
+            {t('noResult.noResultFound')}
+          </NoResult>
+          )}
+      </Wrapper>
+    );
+  }
+
   return (
     <Wrapper>
       {poolsArraySorted.map((pool) => (
         <PoolCard
           key={pool.id}
           pool={pool}
+          isFarming={isFarming}
         />
       ))}
       {poolsArraySorted.length === 0

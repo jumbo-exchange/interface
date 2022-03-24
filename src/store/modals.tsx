@@ -29,6 +29,11 @@ type ModalsStoreContextType = {
   setTitleTooltipModal: Dispatch<SetStateAction<string>>;
   removeLiquidityModalOpenState: {isOpen: boolean, pool: IPool | null};
   setRemoveLiquidityModalOpenState: Dispatch<SetStateAction<{isOpen: boolean, pool: IPool | null}>>;
+
+  stakeModalOpenState: {isOpen: boolean, pool: IPool | null};
+  setStakeModalOpenState: Dispatch<SetStateAction<{isOpen: boolean, pool: IPool | null}>>;
+  unStakeModalOpenState: {isOpen: boolean, pool: IPool | null};
+  setUnStakeModalOpenState: Dispatch<SetStateAction<{isOpen: boolean, pool: IPool | null}>>;
 }
 
 export const initialModalsState: ModalsStoreContextType = {
@@ -50,6 +55,11 @@ export const initialModalsState: ModalsStoreContextType = {
   setTitleTooltipModal: () => {},
   removeLiquidityModalOpenState: { isOpen: false, pool: null },
   setRemoveLiquidityModalOpenState: () => {},
+
+  stakeModalOpenState: { isOpen: false, pool: null },
+  setStakeModalOpenState: () => {},
+  unStakeModalOpenState: { isOpen: false, pool: null },
+  setUnStakeModalOpenState: () => {},
 };
 
 const ModalsStoreContextHOC = createContext<ModalsStoreContextType>(initialModalsState);
@@ -87,6 +97,19 @@ export const ModalsContextProvider = (
     initialModalsState.removeLiquidityModalOpenState,
   );
 
+  const [stakeModalOpenState, setStakeModalOpenState] = useState<{
+    isOpen: boolean,
+    pool: IPool | null
+  }>(
+    initialModalsState.stakeModalOpenState,
+  );
+  const [unStakeModalOpenState, setUnStakeModalOpenState] = useState<{
+    isOpen: boolean,
+    pool: IPool | null
+  }>(
+    initialModalsState.unStakeModalOpenState,
+  );
+
   return (
     <ModalsStoreContextHOC.Provider value={{
       isAccountModalOpen,
@@ -103,6 +126,11 @@ export const ModalsContextProvider = (
       setTitleTooltipModal,
       removeLiquidityModalOpenState,
       setRemoveLiquidityModalOpenState,
+
+      stakeModalOpenState,
+      setStakeModalOpenState,
+      unStakeModalOpenState,
+      setUnStakeModalOpenState,
     }}
     >
       <Modals>

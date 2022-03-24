@@ -65,11 +65,13 @@ export interface ThemeColors {
   tooltip: string;
 
   jumboLabel: string;
-  miceLabel: string;
+  farmLabel: string;
 
   warningBg: string;
 
   bgToken: string;
+
+  farmingBg: string;
 }
 
 export const colors: ThemeColors = {
@@ -119,10 +121,12 @@ export const colors: ThemeColors = {
   tooltip: '#454D5C',
 
   jumboLabel: '#47872B',
-  miceLabel: '#A91BAC',
+  farmLabel: '#A91BAC',
 
   warningBg: '#4C2739',
   bgToken: '#dfe2e8',
+
+  farmingBg: '#2E253E',
 };
 
 function theme(): DefaultTheme {

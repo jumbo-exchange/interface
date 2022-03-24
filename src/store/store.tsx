@@ -7,7 +7,7 @@ import {
 } from 'store';
 import {
   calculatePriceForToken,
-  formatPool, getPoolsPath, toArray, toMap, calculateTotalAmount,
+  formatPool, getPoolsPath, toArray, toMap, calculateTotalAmount, formatFarm,
 } from 'utils';
 
 import getConfig from 'services/config';
@@ -18,7 +18,8 @@ import {
   NEAR_TOKEN_ID, SWAP_INPUT_KEY, SWAP_OUTPUT_KEY, URL_INPUT_TOKEN, URL_OUTPUT_TOKEN,
 } from 'utils/constants';
 import { formatTokenAmount } from 'utils/calculations';
-import { ITokenPrice, PoolType } from './interfaces';
+import FarmContract from 'services/FarmContract';
+import { Farm, ITokenPrice, PoolType } from './interfaces';
 
 const config = getConfig();
 const url = new URL(window.location.href);
@@ -73,6 +74,9 @@ const initialState: StoreContextType = {
   setOutputToken: () => {},
   updatePools: () => {},
   findTokenBySymbol: () => {},
+
+  farms: {},
+  setFarms: () => {},
 };
 
 const StoreContextHOC = createContext<StoreContextType>(initialState);
@@ -96,6 +100,7 @@ export const StoreContextProvider = (
 ) => {
   const contract: any = createContract(nearWallet, config.contractId, contractMethods);
   const poolContract = new PoolContract();
+  const farmContract = new FarmContract();
 
   const [loading, setLoading] = useState<boolean>(initialState.loading);
   const [priceLoading, setPriceLoading] = useState<boolean>(initialState.loading);
@@ -114,6 +119,8 @@ export const StoreContextProvider = (
   const [outputToken, setOutputToken] = useState<FungibleTokenContract | null>(
     initialState.outputToken,
   );
+
+  const [farms, setFarms] = useState<{[key:string]: Farm}>(initialState.farms);
 
   const setCurrentToken = (activeToken: FungibleTokenContract, tokenType: TokenType) => {
     const poolArray = toArray(pools);
@@ -196,6 +203,28 @@ export const StoreContextProvider = (
         }),
       );
       const tokensMetadataFiltered = tokensMetadata.filter((el) => !!el);
+      const metadataMap = tokensMetadataFiltered.reduce(
+        (acc, curr) => ({ ...acc, [curr.contractId]: curr }), {},
+      );
+
+      const farmsLength = await farmContract.getNumberOfFarms();
+      const farmsPages = Math.ceil(farmsLength / DEFAULT_PAGE_LIMIT);
+
+      const farmsResult = (await Promise.all(
+        [...Array(farmsPages)]
+          .map((_, i) => farmContract.getListFarms(
+            i * DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_LIMIT,
+          )),
+      )).flat();
+
+      const farmArray = await Promise.all(farmsResult
+        .map(async (farm: any, index) => {
+          const seeds = await farmContract.getSeeds(index * DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_LIMIT);
+          return {
+            ...formatFarm(farm, index, poolArray, seeds, metadataMap),
+          };
+        }));
+      let newFarmArray = farmArray;
 
       if (isSignedIn) {
         setWallet(nearWallet);
@@ -221,14 +250,35 @@ export const StoreContextProvider = (
               shares,
             };
           }));
+
+          newFarmArray = await Promise.all(farmArray
+            .map(async (farm: Farm) => {
+              const staked = await farmContract.getStakedListByAccountId();
+              const rewards = await farmContract.getRewards();
+              const currentUserReward = await farmContract.getUnclaimedReward(farm.farmId);
+
+              return {
+                ...farm,
+                userStaked: staked[farm.seedId],
+                rewardNumber: rewards[farm.rewardToken],
+                currentUserReward,
+              };
+            }));
         } catch (e) {
           console.warn(e, 'while initial loading user specific data');
         }
       }
-      const metadataMap = tokensMetadataFiltered.reduce(
-        (acc, curr) => ({ ...acc, [curr.contractId]: curr }), {},
-      );
-      const newPoolMap = toMap(newPoolArray);
+      const updatePool = newPoolArray.map((pool) => {
+        const [poolWithFarm] = newFarmArray.filter((farm) => farm.pool.id === pool.id);
+
+        return {
+          ...pool,
+          farm: poolWithFarm || null,
+        };
+      });
+
+      const newPoolMap = toMap(updatePool);
+      const newFarmMap = toMap(newFarmArray);
 
       if (
         newPoolMap[config.jumboPoolId]
@@ -265,6 +315,7 @@ export const StoreContextProvider = (
       setTokens(metadataMap);
       setPools(resultedPoolsArray);
       setPrices(pricesData);
+      setFarms(newFarmMap);
     } catch (e) {
       console.warn(e);
     } finally {
@@ -365,6 +416,9 @@ export const StoreContextProvider = (
       outputToken,
       setOutputToken,
       findTokenBySymbol,
+
+      farms,
+      setFarms,
     }}
     >
       {children}

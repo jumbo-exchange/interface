@@ -18,6 +18,8 @@ import {
   SWAP,
   toAddLiquidityPage,
   toRemoveLiquidityPage,
+  toStakePage,
+  toUnStakeAndClaimPage,
 } from 'utils/routes';
 import { RefreshContextProvider } from 'services/refreshService';
 import { ModalsContextProvider, useStore } from 'store';
@@ -105,6 +107,8 @@ export default function App() {
                 <Route path={SWAP} element={<Swap />} />
                 <Route path={toAddLiquidityPage()} element={<Pool />} />
                 <Route path={toRemoveLiquidityPage()} element={<Pool />} />
+                <Route path={toStakePage()} element={<Pool />} />
+                <Route path={toUnStakeAndClaimPage()} element={<Pool />} />
                 <Route path={ALL_MATCH} element={<Error />} />
               </Routes>
             </Suspense>

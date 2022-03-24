@@ -18,7 +18,10 @@
     "createPool": "Create Pool",
     "swap": "Swap",
     "addLiquidity": "Add Liquidity",
-    "removeLiquidity": "Withdraw"
+    "removeLiquidity": "Withdraw",
+    "stake": "Stake",
+    "unStakeAndClaim": "Unstake & Claim",
+    "claim": "Claim"
   },
 
   "swap": {
@@ -181,5 +184,14 @@
     "transactionFailed": "Transaction failed",
     "nearDeposit": "Near Deposit",
     "nearWithdraw": "Near Withdraw"
+  },
+
+  "stakeModal" : {
+    "stake": "Stake",
+    "shares": "Shares"
+  },
+
+  "unStakeModal" : {
+    "unStake": "Unstake and Claim"
   }
 }

@@ -3,7 +3,9 @@ import { FilterButton } from 'components/Button';
 import { isMobile } from 'utils/userAgent';
 import { IPool, useModalsStore, useStore } from 'store';
 import { useLocation, useParams } from 'react-router-dom';
-import { toAddLiquidityPage, toRemoveLiquidityPage } from 'utils/routes';
+import {
+  toAddLiquidityPage, toRemoveLiquidityPage, toStakePage, toUnStakeAndClaimPage,
+} from 'utils/routes';
 import { toArray } from 'utils';
 import { useTranslation } from 'react-i18next';
 
@@ -49,7 +51,6 @@ const filters: IFilters[] = [
   {
     title: 'Farming',
     isActive: FilterPoolsEnum.Farming,
-    disabled: true,
   },
   {
     title: 'Smart Pools',
@@ -70,7 +71,12 @@ export default function Pool() {
   const {
     pools, loading, prices,
   } = useStore();
-  const { setAddLiquidityModalOpenState, setRemoveLiquidityModalOpenState } = useModalsStore();
+  const {
+    setAddLiquidityModalOpenState,
+    setRemoveLiquidityModalOpenState,
+    setStakeModalOpenState,
+    setUnStakeModalOpenState,
+  } = useModalsStore();
   const { id } = useParams<'id'>();
   const config = getConfig();
   const location = useLocation();
@@ -84,6 +90,10 @@ export default function Pool() {
         setRemoveLiquidityModalOpenState({ isOpen: true, pool });
       } else if (location.pathname === toAddLiquidityPage(pool.id)) {
         setAddLiquidityModalOpenState({ isOpen: true, pool });
+      } else if (location.pathname === toStakePage(pool.id)) {
+        setStakeModalOpenState({ isOpen: true, pool });
+      } else if (location.pathname === toUnStakeAndClaimPage(pool.id)) {
+        setUnStakeModalOpenState({ isOpen: true, pool });
       }
     }
   }, [id, pools]);

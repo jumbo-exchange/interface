@@ -2,7 +2,9 @@ import React from 'react';
 import styled from 'styled-components';
 import { SpecialContainer } from 'components/SpecialContainer';
 
-const Wrapper = styled(SpecialContainer)`
+const Wrapper = styled(SpecialContainer)<{isFarming: boolean}>`
+  background-color: ${({ theme, isFarming }) => (isFarming ? theme.farmingBg : theme.backgroundCard)};
+
   max-width: 736px;
   width: 100%;
   border-radius: 24px;
@@ -148,9 +150,9 @@ const Button = styled.div`
 const PLACEHOLDERS_NUMBER = 3;
 const numberVolume = Array.from(Array(PLACEHOLDERS_NUMBER).keys());
 
-export default function PoolCardPlaceholder() {
+export default function PoolCardPlaceholder({ isFarming }: {isFarming: boolean}) {
   return (
-    <Wrapper>
+    <Wrapper isFarming={isFarming}>
       <UpperRow>
         <BlockTitle>
           <LogoPool>

@@ -6,7 +6,14 @@ import SpecialWallet from 'services/wallet';
 export enum StatusLink { Swap = 'swap', Pool ='pool', Farm = 'farm' }
 export enum TokenType { 'Input', 'Output'}
 export enum PoolType {'SIMPLE_POOL' = 'SIMPLE_POOL', 'STABLE_SWAP' = 'STABLE_SWAP'}
-export enum CurrentButton { 'Swap', 'AddLiquidity', 'CreatePool', 'Withdraw' }
+export enum CurrentButton {
+  'Swap',
+  'AddLiquidity',
+  'CreatePool',
+  'Withdraw',
+  'Stake',
+  'UnStake'
+}
 
 export interface IPool {
   id: number;
@@ -25,7 +32,7 @@ export interface IPool {
 
   shares?: string;
   volumes?: IPoolVolumes ;
-
+  farm?: Farm | null,
   // Views
   totalLiquidity: string;
 }
@@ -44,6 +51,36 @@ export interface ITokenPrice {
     decimal: number,
     price: string,
     symbol: string
+}
+
+export interface Farm {
+  id: number;
+  farmId: string;
+  type: string;
+  status: string;
+  seedId: string;
+  rewardToken: ITokenMetadata;
+  startAt: number;
+  rewardPerSession: number;
+  sessionInterval: number;
+  totalReward: number;
+  curRound: number;
+  lastRound: number;
+  claimedReward: number;
+  unclaimedReward: number;
+  currentUserReward?: number;
+
+  pool: IPool;
+  lpTokenId: string;
+  rewardNumber?: string;
+  userStaked?: string;
+  rewardsPerWeek: string;
+  tokenAccountIds: string[];
+  seedAmount: string;
+  // userRewardsPerWeek: string;
+  // userUnclaimedReward: string;
+  // totalStaked: number;
+  // apr: string;
 }
 
 export type StoreContextType = {
@@ -78,6 +115,9 @@ export type StoreContextType = {
   setOutputToken: Dispatch<SetStateAction<FungibleTokenContract | null>>;
   updatePools: (newPools: IPool[]) => void;
   findTokenBySymbol: (symbol: string,) => void;
+
+  farms: {[key:string]: Farm};
+  setFarms: Dispatch<SetStateAction<{[key:string]: Farm}>>;
 }
 
 export const contractMethods = [

@@ -11,7 +11,12 @@ export default function getConfig(
         helperUrl: 'https://helper.testnet.near.org',
         explorerUrl: 'https://explorer.testnet.near.org',
         indexerUrl: 'https://testnet-indexer.ref-finance.com',
-        contractId: 'jumbo-testnet-v3.solniechniy.testnet',
+        contractId: 'jumbo-exchange-v1.rkonoval.testnet',
+
+        //!
+        farmContractId: 'jumbo-farming-v2.rkonoval.testnet',
+        //!
+
         nearAddress: 'wrap.testnet',
         jumboAddress: 'jumbo_exchange_v2.solniechniy.testnet',
         jumboPoolId: 4,
@@ -26,6 +31,11 @@ export default function getConfig(
         explorerUrl: 'https://explorer.mainnet.near.org',
         indexerUrl: 'https://ps.jumbo.exchange',
         contractId: 'v1.jumbo_exchange.near',
+
+        //!
+        farmContractId: 'jumbo-farming-v2.rkonoval.testnet',
+        //!
+
         nearAddress: 'wrap.near',
         jumboAddress: 'token.jumbo_exchange.near',
         jumboPoolId: 4,

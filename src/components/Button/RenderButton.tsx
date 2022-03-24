@@ -51,6 +51,10 @@ export default function RenderButton({
         return t('action.swap');
       case CurrentButton.Withdraw:
         return t('action.removeLiquidity');
+      case CurrentButton.Stake:
+        return t('action.stake');
+      case CurrentButton.UnStake:
+        return t('action.unStakeAndClaim');
       default:
         return null;
     }
@@ -65,6 +69,8 @@ export default function RenderButton({
         return <AddIconLogo />;
       case CurrentButton.Swap:
         return <IconSwap />;
+      case CurrentButton.Stake:
+        return <AddIconLogo />;
       default:
         return null;
     }

@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import Tooltip from 'components/Tooltip';
 import Big from 'big.js';
@@ -7,14 +7,17 @@ import { IPool, useStore } from 'store';
 import { SpecialContainer } from 'components/SpecialContainer';
 import { useNavigate } from 'react-router-dom';
 import { ReactComponent as AddIcon } from 'assets/images-app/icon-add.svg';
-import { toAddLiquidityPage, toRemoveLiquidityPage } from 'utils/routes';
+import {
+  toAddLiquidityPage, toRemoveLiquidityPage, toStakePage, toUnStakeAndClaimPage,
+} from 'utils/routes';
 import { useTranslation } from 'react-i18next';
+import getConfig from 'services/config';
 
-interface IColor {
-  isColor?: boolean
-}
+const config = getConfig();
 
-const Wrapper = styled(SpecialContainer)`
+const Wrapper = styled(SpecialContainer)<{isFarming: boolean}>`
+  background-color: ${({ theme, isFarming }) => (isFarming ? theme.farmingBg : theme.backgroundCard)};
+
   max-width: 736px;
   width: 100%;
   border-radius: 24px;
@@ -117,6 +120,10 @@ const JumboBlock = styled.div`
   border-radius: 4px;
 `;
 
+const FarmBlock = styled(JumboBlock)`
+  background-color: ${({ theme }) => theme.farmLabel};
+`;
+
 const BlockVolume = styled.div`
   display: flex;
   width: 100%;
@@ -125,7 +132,7 @@ const BlockVolume = styled.div`
   `}
 `;
 
-export const Column = styled.div`
+const Column = styled.div`
   display: flex;
   flex-direction: column;
   margin-right: 2.125rem;
@@ -152,7 +159,7 @@ const TitleVolume = styled.div`
   `}
 `;
 
-const LabelVolume = styled.div<PropsWithChildren<IColor>>`
+const LabelVolume = styled.div<{isColor?: boolean}>`
   display: flex;
   font-style: normal;
   font-weight: 300;
@@ -230,7 +237,15 @@ interface IVolume {
   tooltip: string;
 }
 
-export default function PoolCard({ pool } : { pool: IPool }) {
+export default function PoolCard(
+  {
+    pool,
+    isFarming,
+  } : {
+    pool: IPool,
+    isFarming: boolean
+  },
+) {
   const {
     tokens,
   } = useStore();
@@ -240,8 +255,10 @@ export default function PoolCard({ pool } : { pool: IPool }) {
   const [inputToken, outputToken] = pool.tokenAccountIds;
   const tokenInput = tokens[inputToken] ?? null;
   const tokenOutput = tokens[outputToken] ?? null;
-
   if (!tokenInput || !tokenOutput) return null;
+
+  const jumboToken = tokens[config.jumboAddress] ?? null;
+  const JumboTokenInPool = jumboToken === (tokenInput || tokenOutput);
 
   const volume: IVolume[] = [
     {
@@ -263,9 +280,10 @@ export default function PoolCard({ pool } : { pool: IPool }) {
   ];
 
   const canWithdraw = pool.shares === '0' || pool.shares === undefined || Big(pool.shares) === Big('0');
+  const canUnStake = true;
 
   return (
-    <Wrapper>
+    <Wrapper isFarming={isFarming}>
       <UpperRow>
         <BlockTitle>
           <LogoPool>
@@ -283,7 +301,8 @@ export default function PoolCard({ pool } : { pool: IPool }) {
           </TitlePool>
         </BlockTitle>
         <LabelPool>
-          <JumboBlock>Jumbo</JumboBlock>
+          {JumboTokenInPool && <JumboBlock>Jumbo</JumboBlock>}
+          {pool.farm && <FarmBlock>Farm</FarmBlock>}
         </LabelPool>
       </UpperRow>
       <LowerRow>
@@ -299,23 +318,48 @@ export default function PoolCard({ pool } : { pool: IPool }) {
           ))}
         </BlockVolume>
         <BlockButton>
-          {!canWithdraw && (
-          <BtnSecondary
-            onClick={() => {
-              navigate(toRemoveLiquidityPage(pool.id));
-            }}
-          >
-            {t('action.removeLiquidity')}
-          </BtnSecondary>
-          )}
+          {isFarming
+            ? (
+              <>
+                {canUnStake && (
+                <BtnSecondary
+                  onClick={() => {
+                    navigate(toUnStakeAndClaimPage(pool.id));
+                  }}
+                >
+                  {t('action.unStakeAndClaim')}
+                </BtnSecondary>
+                )}
 
-          <BtnPrimary
-            onClick={() => {
-              navigate(toAddLiquidityPage(pool.id));
-            }}
-          >
-            <LogoButton /> {t('action.addLiquidity')}
-          </BtnPrimary>
+                <BtnPrimary
+                  onClick={() => {
+                    navigate(toStakePage(pool.id));
+                  }}
+                >
+                  <LogoButton /> {t('action.stake')}
+                </BtnPrimary>
+              </>
+            )
+            : (
+              <>
+                {!canWithdraw && (
+                <BtnSecondary
+                  onClick={() => {
+                    navigate(toRemoveLiquidityPage(pool.id));
+                  }}
+                >
+                  {t('action.removeLiquidity')}
+                </BtnSecondary>
+                )}
+                <BtnPrimary
+                  onClick={() => {
+                    navigate(toAddLiquidityPage(pool.id));
+                  }}
+                >
+                  <LogoButton /> {t('action.addLiquidity')}
+                </BtnPrimary>
+              </>
+            )}
         </BlockButton>
       </LowerRow>
     </Wrapper>

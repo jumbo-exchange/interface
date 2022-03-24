@@ -1,10 +1,13 @@
 import Big from 'big.js';
 import getConfig from 'services/config';
 import FungibleTokenContract from 'services/FungibleToken';
-import { IPool, ITokenPrice, PoolType } from 'store';
+import {
+  Farm, IPool, ITokenMetadata, ITokenPrice, PoolType,
+} from 'store';
 import { formatTokenAmount, removeTrailingZeros } from './calculations';
 
 const ACCOUNT_TRIM_LENGTH = 10;
+const LP_TOKEN_DECIMALS = 24;
 
 export const trimAccountId = (accountId: string) => {
   if (accountId.length > 20) {
@@ -167,3 +170,49 @@ export const calculateTotalAmount = (
 
   return toMap(calculatedPools);
 };
+
+export function formatFarm(
+  farm: any,
+  id: number,
+  pools: IPool[],
+  seeds: any,
+  metadataMap: ITokenMetadata[],
+): Farm {
+  const lpTokenId = farm.farm_id.slice(farm.farm_id.indexOf('@') + 1, farm.farm_id.lastIndexOf('#'));
+  const pool = pools.filter(
+    (poolItem: IPool) => poolItem.id === Number(lpTokenId),
+  )[0];
+  const { tokenAccountIds } = pool;
+  const rewardToken = metadataMap[farm.reward_token] ?? null;
+  const seed = seeds[farm.seed_id];
+  const seedAmount = seed ?? '0';
+
+  const rewardNumberPerWeek = (farm.reward_per_session / farm.session_interval) * 604800;
+
+  const rewardsPerWeek = Big(formatTokenAmount(
+    rewardNumberPerWeek.toFixed(), rewardToken?.decimals,
+  )).toFixed(0);
+
+  return {
+    id,
+    farmId: farm.farm_id,
+    type: farm.farm_kind,
+    status: farm.farm_status,
+    seedId: farm.seed_id,
+    rewardToken,
+    startAt: farm.start_at,
+    rewardPerSession: farm.reward_per_session,
+    sessionInterval: farm.session_interval,
+    totalReward: farm.total_reward,
+    curRound: farm.cur_round,
+    lastRound: farm.last_round,
+    claimedReward: farm.claimed_reward,
+    unclaimedReward: farm.unclaimed_reward,
+    // currentUserReward: farm.current_user_reward,
+    lpTokenId,
+    pool,
+    rewardsPerWeek,
+    seedAmount,
+    tokenAccountIds,
+  };
+}
