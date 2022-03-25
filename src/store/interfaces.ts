@@ -77,7 +77,7 @@ export type StoreContextType = {
   outputToken: FungibleTokenContract | null;
   setOutputToken: Dispatch<SetStateAction<FungibleTokenContract | null>>;
   updatePools: (newPools: IPool[]) => void;
-  findTokenBySymbol: (symbol: string,) => void;
+  findTokenBySymbol?: (symbol: string,) => void;
 }
 
 export const contractMethods = [
