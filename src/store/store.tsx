@@ -36,7 +36,7 @@ const pricesInitialState = {
     id: config.nearAddress,
     decimal: 24,
     symbol: 'near',
-    price: '10.45',
+    price: '12.28',
   },
   [config.jumboAddress]: JUMBO_INITIAL_DATA,
 };
