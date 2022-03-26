@@ -44,7 +44,6 @@ const AppWrapper = () => {
             <Routes>
               <Route path={LANDING} element={<Landing />} />
               <Route path={ALL_MATCH} element={<App />} />
-
             </Routes>
           </Router>
         </Suspense>
