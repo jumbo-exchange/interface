@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import GifLoading from 'assets/gif/loading.gif';
 
 import {
   Route, BrowserRouter as Router, Routes,
@@ -9,7 +10,6 @@ import { ThemeProvider } from 'styled-components';
 import { StoreContextProvider } from 'store';
 import 'react-toastify/dist/ReactToastify.css';
 
-import Landing from 'pages/Landing';
 import theme from 'theme';
 import useFullHeightHook from 'hooks/useFullHeightHook';
 import App from 'pages/App';
@@ -18,6 +18,7 @@ import { ALL_MATCH, LANDING } from 'utils/routes';
 import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/tracing';
 import './i18n';
+import { LoadingBlock } from 'pages/App/styles';
 
 Sentry.init({
   dsn: process.env.REACT_APP_NEAR_ENV === 'mainnet'
@@ -25,6 +26,7 @@ Sentry.init({
   integrations: [new BrowserTracing()],
   tracesSampleRate: 1.0,
 });
+const Landing = lazy(() => import('pages/Landing'));
 
 const AppWrapper = () => {
   useFullHeightHook();
@@ -32,12 +34,20 @@ const AppWrapper = () => {
   return (
     <ThemeProvider theme={theme}>
       <StoreContextProvider>
-        <Router>
-          <Routes>
-            <Route path={LANDING} element={<Landing />} />
-            <Route path={ALL_MATCH} element={<App />} />
-          </Routes>
-        </Router>
+        <Suspense fallback={(
+          <LoadingBlock>
+            <img src={GifLoading} alt="loading" />
+          </LoadingBlock>
+        )}
+        >
+          <Router>
+            <Routes>
+              <Route path={LANDING} element={<Landing />} />
+              <Route path={ALL_MATCH} element={<App />} />
+
+            </Routes>
+          </Router>
+        </Suspense>
       </StoreContextProvider>
     </ThemeProvider>
   );
