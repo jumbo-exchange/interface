@@ -88,14 +88,14 @@ export default function Swap() {
   );
   const roundPriceImpact = removeTrailingZeros(formatBalance(priceImpact));
 
-  const verifyToken = (
+  const verifyToken = useCallback((
     token: FungibleTokenContract,
   ) => {
     if (token.contractId === NEAR_TOKEN_ID) {
       const wrappedTokenId = config.nearAddress;
       return tokens[wrappedTokenId];
     } return token;
-  };
+  }, [config.nearAddress, tokens]);
 
   useEffect(() => {
     if (!inputToken || !outputToken || !debouncedInputValue) return;
@@ -165,7 +165,7 @@ export default function Swap() {
 
     if (newAverageFee !== averageFee) setAverageFee(removeTrailingZeros(newAverageFee));
     setTrackedPools(currentPools);
-  }, [currentPools]);
+  }, [currentPools, averageFee, setTrackedPools]);
 
   const handleInputChange = useCallback(
     (value: string) => {
@@ -255,7 +255,7 @@ export default function Swap() {
     } catch (e) {
       console.warn(e);
     }
-  }, [loading, inputToken, outputToken]);
+  }, [loading, inputToken, outputToken, currentPools, tokens, verifyToken]);
 
   const exchangeLabel = (inputToken && outputToken)
     ? `

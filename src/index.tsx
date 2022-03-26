@@ -15,7 +15,16 @@ import useFullHeightHook from 'hooks/useFullHeightHook';
 import App from 'pages/App';
 import { ALL_MATCH, LANDING } from 'utils/routes';
 
+import * as Sentry from '@sentry/react';
+import { BrowserTracing } from '@sentry/tracing';
 import './i18n';
+
+Sentry.init({
+  dsn: process.env.REACT_APP_SENTRY_ENV,
+  // dsn: process.env.REACT_APP_NEAR_ENV === 'mainnet' ? process.env.REACT_APP_SENTRY_ENV : '',
+  integrations: [new BrowserTracing()],
+  tracesSampleRate: 1.0,
+});
 
 const AppWrapper = () => {
   useFullHeightHook();

@@ -3,14 +3,14 @@ import React, {
 } from 'react';
 import { getUserWalletTokens, wallet as nearWallet } from 'services/near';
 import {
-  contractMethods, IPool, StoreContextType, TokenType,
+  IPool, StoreContextType, TokenType,
 } from 'store';
 import {
   formatPool, getPoolsPath, toArray, toMap, calculateTotalAmount,
 } from 'utils';
 
 import getConfig from 'services/config';
-import SpecialWallet, { createContract } from 'services/wallet';
+import SpecialWallet from 'services/wallet';
 import FungibleTokenContract from 'services/FungibleToken';
 import PoolContract from 'services/PoolContract';
 import {
@@ -19,6 +19,7 @@ import {
 import { ITokenPrice, PoolType } from './interfaces';
 import {
   JUMBO_INITIAL_DATA,
+  NEAR_INITIAL_DATA,
   DEFAULT_PAGE_LIMIT,
   retrievePoolResult,
   retrieveTokenAddresses,
@@ -27,17 +28,13 @@ import {
   retrieveNewPoolArray,
   retrievePricesData,
   tryTokenByKey,
+  getPriceData,
 } from './helpers';
 
 const config = getConfig();
 
 const pricesInitialState = {
-  [config.nearAddress]: {
-    id: config.nearAddress,
-    decimal: 24,
-    symbol: 'near',
-    price: '12.28',
-  },
+  [config.nearAddress]: NEAR_INITIAL_DATA,
   [config.jumboAddress]: JUMBO_INITIAL_DATA,
 };
 
@@ -47,7 +44,6 @@ const initialState: StoreContextType = {
   setLoading: () => {},
   setPriceLoading: () => {},
 
-  contract: null,
   wallet: null,
   setWallet: () => {},
   balances: {},
@@ -61,7 +57,6 @@ const initialState: StoreContextType = {
   setCurrentPools: () => {},
   tokens: {},
   setTokens: () => {},
-  getToken: () => null,
 
   setCurrentToken: () => {},
   prices: pricesInitialState,
@@ -72,32 +67,13 @@ const initialState: StoreContextType = {
   outputToken: null,
   setOutputToken: () => {},
   updatePools: () => {},
-  findTokenBySymbol: () => {},
 };
 
 const StoreContextHOC = createContext<StoreContextType>(initialState);
 
-export const getPriceData = async () => {
-  const pricesData = await fetch(`${config.indexerUrl}/token-prices`, {
-    method: 'GET',
-    headers: { 'Content-type': 'application/json; charset=UTF-8' },
-  })
-    .then((res) => res.json())
-    .then((list) => list);
-  return pricesData.reduce(
-    (acc: {[key: string]: ITokenPrice}, item: ITokenPrice) => ({
-      ...acc, [item.id]: item,
-    }), {},
-  );
-};
-
 export const StoreContextProvider = (
   { children }:{ children: JSX.Element },
 ) => {
-  const contract: any = useMemo(
-    () => createContract(nearWallet, config.contractId, contractMethods),
-    [],
-  );
   const poolContract = useMemo(() => new PoolContract(), []);
 
   const [loading, setLoading] = useState<boolean>(initialState.loading);
@@ -145,10 +121,10 @@ export const StoreContextProvider = (
       try {
         setLoading(true);
         const isSignedIn = nearWallet.isSignedIn();
-        const poolsLength = await contract.get_number_of_pools();
+        const poolsLength = await poolContract.getNumberOfPools();
         const pages = Math.ceil(poolsLength / DEFAULT_PAGE_LIMIT);
 
-        const poolsResult = (await retrievePoolResult(pages, contract)).flat();
+        const poolsResult = (await retrievePoolResult(pages, poolContract)).flat();
         let pricesData;
 
         try {
@@ -179,7 +155,7 @@ export const StoreContextProvider = (
             setBalances(balancesMap);
             newPoolArray = await retrieveNewPoolArray(poolArray, poolContract);
           } catch (e) {
-            console.warn(e, 'while initial loading user specific data');
+            console.warn(`Error: ${e} while initial loading user specific data`);
           }
         }
         const metadataMap = tokensMetadataFiltered.reduce(
@@ -192,7 +168,7 @@ export const StoreContextProvider = (
           && pricesData
           && pricesData[config.nearAddress]
         ) {
-          pricesData = retrievePricesData(pricesData, newPoolMap, prices, metadataMap);
+          pricesData = await retrievePricesData(pricesData, newPoolMap, metadataMap);
         }
 
         const resultedPoolsArray = calculateTotalAmount(
@@ -212,7 +188,7 @@ export const StoreContextProvider = (
     };
 
     initialLoading();
-  }, []);
+  }, [poolContract]);
 
   useEffect(() => {
     if (toArray(pools).length && toArray(tokens).length) {
@@ -237,8 +213,7 @@ export const StoreContextProvider = (
       );
       setCurrentPools(availablePools);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toArray(tokens).length, toArray(pools).length]);
+  }, [tokens, pools]);
 
   const updatePools = useCallback(() => (newPools: IPool[]) => {
     const newPoolSet = newPools.reduce((acc, item) => ({ ...acc, [item.id]: item }), pools);
@@ -257,11 +232,6 @@ export const StoreContextProvider = (
     [balances],
   );
 
-  const getToken = useCallback(
-    (tokenId: string | undefined) => (tokenId ? tokens[tokenId] ?? null : null),
-    [tokens],
-  );
-
   return (
     <StoreContextHOC.Provider value={{
       loading,
@@ -269,7 +239,6 @@ export const StoreContextProvider = (
       priceLoading,
       setPriceLoading,
 
-      contract,
       wallet,
       setWallet,
       balances,
@@ -284,7 +253,6 @@ export const StoreContextProvider = (
       setCurrentPools,
       tokens,
       setTokens,
-      getToken,
       prices,
       setPrices,
 
@@ -294,7 +262,6 @@ export const StoreContextProvider = (
       setInputToken,
       outputToken,
       setOutputToken,
-      // findTokenBySymbol,
     }}
     >
       {children}

@@ -5,7 +5,7 @@ import { wallet as nearWallet } from 'services/near';
 import { calculatePriceForToken, toArray } from 'utils';
 import { formatTokenAmount } from 'utils/calculations';
 import { NEAR_TOKEN_ID } from 'utils/constants';
-import { IPool } from './interfaces';
+import { IPool, ITokenPrice } from './interfaces';
 
 const config = getConfig();
 const url = new URL(window.location.href);
@@ -17,13 +17,17 @@ export const JUMBO_INITIAL_DATA = {
   symbol: 'JUMBO',
   price: '0',
 };
+export const NEAR_INITIAL_DATA = {
+  id: config.nearAddress,
+  decimal: 24,
+  symbol: 'near',
+  price: '12.28',
+};
 
-export async function retrievePoolResult(pages: any, contract: any) {
+export async function retrievePoolResult(pages: number, contract: PoolContract) {
   return Promise.all(
     [...Array(pages)]
-      .map((_, i) => contract.get_pools(
-        { from_index: i * DEFAULT_PAGE_LIMIT, limit: DEFAULT_PAGE_LIMIT },
-      )),
+      .map((_, i) => contract.getPools(i * DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_LIMIT)),
   );
 }
 
@@ -40,6 +44,35 @@ export function retrieveTokenAddresses(poolsResult: any, userTokens: any) {
   );
 }
 
+export const getPriceData = async () => {
+  const pricesData = await fetch(`${config.indexerUrl}/token-prices`, {
+    method: 'GET',
+    headers: { 'Content-type': 'application/json; charset=UTF-8' },
+  })
+    .then((res) => res.json())
+    .then((list) => list);
+  return pricesData.reduce(
+    (acc: {[key: string]: ITokenPrice}, item: ITokenPrice) => ({
+      ...acc, [item.id]: item,
+    }), {},
+  );
+};
+
+export const getNearPrice = async () => {
+  try {
+    const pricesData = await fetch(`${config.helperUrl}/fiat`, {
+      method: 'GET',
+      headers: { 'Content-type': 'application/json; charset=UTF-8' },
+    })
+      .then((res) => res.json())
+      .then((list) => list.near.usd || 0);
+    return pricesData;
+  } catch (e) {
+    console.warn('Near price loading failed');
+    return 0;
+  }
+};
+
 export async function retrieveFilteredTokenMetadata(tokenAddresses: any) {
   const tokensMetadata = await Promise.all(
     tokenAddresses.map(async (address: string) => {
@@ -55,10 +88,13 @@ export async function retrieveFilteredTokenMetadata(tokenAddresses: any) {
   return tokensMetadataFiltered;
 }
 
-export async function retrieveBalancesMap(tokensMetadataFiltered: any, accountId: string) {
-  const balancesArray = await Promise.all(
-    tokensMetadataFiltered.map(async (token: any) => {
-      const balance = await token.contract.getBalanceOf({ accountId });
+export async function retrieveBalancesMap(
+  tokensMetadataFiltered: any,
+  accountId: string,
+): Promise<{ [key: string]: string; }> {
+  const balancesArray: {contractId: string, balance: string}[] = await Promise.all(
+    tokensMetadataFiltered.map(async (token: FungibleTokenContract) => {
+      const balance: string = await token.contract.getBalanceOf({ accountId });
       return { contractId: token.contractId, balance };
     }),
   );
@@ -67,6 +103,7 @@ export async function retrieveBalancesMap(tokensMetadataFiltered: any, accountId
     { ...acc, [curr.contractId]: curr.balance }
   ), {});
 }
+
 export async function retrieveNewPoolArray(
   poolArray: IPool[],
   poolContract: PoolContract,
@@ -83,25 +120,27 @@ export async function retrieveNewPoolArray(
   }));
 }
 
-export function retrievePricesData(
+export async function retrievePricesData(
   pricesData: any,
   newPoolMap: any,
-  prices: any,
   metadataMap: any,
-): any {
+): Promise<{[key: string]: string}> {
   const jumboPool = newPoolMap[config.jumboPoolId];
   const [firstToken, secondToken] = jumboPool.tokenAccountIds;
-  const secondPrice = prices[firstToken]?.price ?? 0;
-  const firstDecimals = metadataMap[firstToken]?.metadata.decimals;
-  const secondDecimals = metadataMap[secondToken]?.metadata.decimals;
+  const [wrapNear, jumboToken] = firstToken === config.nearAddress
+    ? [firstToken, secondToken] : [secondToken, firstToken];
+  const nearPrice = await getNearPrice();
+
+  const firstDecimals = metadataMap[wrapNear]?.metadata.decimals;
+  const secondDecimals = metadataMap[jumboToken]?.metadata.decimals;
 
   const firstAmount = formatTokenAmount(
-    jumboPool.supplies[firstToken], firstDecimals,
+    jumboPool.supplies[wrapNear], firstDecimals,
   );
   const secondAmount = formatTokenAmount(
-    jumboPool.supplies[secondToken], secondDecimals,
+    jumboPool.supplies[jumboToken], secondDecimals,
   );
-  const newJumboPrice = calculatePriceForToken(firstAmount, secondAmount, secondPrice);
+  const newJumboPrice = calculatePriceForToken(firstAmount, secondAmount, nearPrice);
   return {
     ...pricesData,
     [config.jumboAddress]: {
@@ -134,3 +173,8 @@ export const tryTokenByKey = (
   if (key && tokensMap[key]) return tokensMap[key];
   return tokensMap[tokenId];
 };
+
+export const getToken = (
+  tokenId: string,
+  tokens: {[key: string]: FungibleTokenContract},
+): FungibleTokenContract | null => (tokenId ? tokens[tokenId] ?? null : null);
