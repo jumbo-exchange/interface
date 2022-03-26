@@ -123,9 +123,9 @@ export const calculatePriceForToken = (
 };
 
 export const calculateTotalAmount = (
-  pricesData:{[key: string]: ITokenPrice},
+  pricesData: {[key: string]: ITokenPrice},
   metadataMap: {[key: string]: FungibleTokenContract},
-  newPoolMap:{[key:string]: IPool},
+  newPoolMap: {[key:string]: IPool},
 ):{[key:string]: IPool} => {
   const calculatedPools = toArray(newPoolMap).map((pool: IPool) => {
     const config = getConfig();

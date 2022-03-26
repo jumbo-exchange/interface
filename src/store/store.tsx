@@ -28,12 +28,12 @@ import {
   retrieveNewPoolArray,
   retrievePricesData,
   tryTokenByKey,
-  getPriceData,
+  getPrices,
 } from './helpers';
 
 const config = getConfig();
 
-const pricesInitialState = {
+export const pricesInitialState = {
   [config.nearAddress]: NEAR_INITIAL_DATA,
   [config.jumboAddress]: JUMBO_INITIAL_DATA,
 };
@@ -124,15 +124,10 @@ export const StoreContextProvider = (
         const poolsLength = await poolContract.getNumberOfPools();
         const pages = Math.ceil(poolsLength / DEFAULT_PAGE_LIMIT);
 
-        const poolsResult = (await retrievePoolResult(pages, poolContract)).flat();
-        let pricesData;
-
-        try {
-          pricesData = await getPriceData();
-        } catch (e) {
-          pricesData = initialState.prices;
-          console.warn('Price data loading failed');
-        }
+        const [poolsResult, pricesData] = await Promise.all([
+          await retrievePoolResult(pages, poolContract),
+          await getPrices(),
+        ]);
 
         const userTokens = await getUserWalletTokens();
 
@@ -151,9 +146,12 @@ export const StoreContextProvider = (
           setWallet(nearWallet);
           const accountId = nearWallet.getAccountId();
           try {
-            const balancesMap = await retrieveBalancesMap(tokensMetadataFiltered, accountId);
+            const [balancesMap, poolArrayWithShares] = await Promise.all([
+              retrieveBalancesMap(tokensMetadataFiltered, accountId),
+              retrieveNewPoolArray(poolArray, poolContract),
+            ]);
             setBalances(balancesMap);
-            newPoolArray = await retrieveNewPoolArray(poolArray, poolContract);
+            newPoolArray = poolArrayWithShares;
           } catch (e) {
             console.warn(`Error: ${e} while initial loading user specific data`);
           }
@@ -168,18 +166,19 @@ export const StoreContextProvider = (
           && pricesData
           && pricesData[config.nearAddress]
         ) {
-          pricesData = await retrievePricesData(pricesData, newPoolMap, metadataMap);
+          const pricesDataWithJumbo = retrievePricesData(pricesData, newPoolMap, metadataMap);
+          const resultedPoolsArray = calculateTotalAmount(
+            pricesDataWithJumbo,
+            metadataMap,
+            newPoolMap,
+          );
+          setTokens(metadataMap);
+          setPools(resultedPoolsArray);
+          setPrices(pricesDataWithJumbo);
+        } else {
+          setTokens(metadataMap);
+          setPrices(pricesData);
         }
-
-        const resultedPoolsArray = calculateTotalAmount(
-          pricesData,
-          metadataMap,
-          newPoolMap,
-        );
-
-        setTokens(metadataMap);
-        setPools(resultedPoolsArray);
-        setPrices(pricesData);
       } catch (e) {
         console.warn(e);
       } finally {

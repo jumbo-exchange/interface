@@ -20,8 +20,8 @@ import { BrowserTracing } from '@sentry/tracing';
 import './i18n';
 
 Sentry.init({
-  dsn: process.env.REACT_APP_SENTRY_ENV,
-  // dsn: process.env.REACT_APP_NEAR_ENV === 'mainnet' ? process.env.REACT_APP_SENTRY_ENV : '',
+  dsn: process.env.REACT_APP_NEAR_ENV === 'mainnet'
+    ? 'https://55b37db9db874285be63ab7d133bcfc8@o1178607.ingest.sentry.io/6290446' : '',
   integrations: [new BrowserTracing()],
   tracesSampleRate: 1.0,
 });

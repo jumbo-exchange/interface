@@ -6,6 +6,7 @@ import { calculatePriceForToken, toArray } from 'utils';
 import { formatTokenAmount } from 'utils/calculations';
 import { NEAR_TOKEN_ID } from 'utils/constants';
 import { IPool, ITokenPrice } from './interfaces';
+import { pricesInitialState } from './store';
 
 const config = getConfig();
 const url = new URL(window.location.href);
@@ -21,14 +22,14 @@ export const NEAR_INITIAL_DATA = {
   id: config.nearAddress,
   decimal: 24,
   symbol: 'near',
-  price: '12.28',
+  price: '0',
 };
 
 export async function retrievePoolResult(pages: number, contract: PoolContract) {
-  return Promise.all(
+  return (await Promise.all(
     [...Array(pages)]
       .map((_, i) => contract.getPools(i * DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_LIMIT)),
-  );
+  )).flat();
 }
 
 export function retrieveTokenAddresses(poolsResult: any, userTokens: any) {
@@ -45,20 +46,25 @@ export function retrieveTokenAddresses(poolsResult: any, userTokens: any) {
 }
 
 export const getPriceData = async () => {
-  const pricesData = await fetch(`${config.indexerUrl}/token-prices`, {
-    method: 'GET',
-    headers: { 'Content-type': 'application/json; charset=UTF-8' },
-  })
-    .then((res) => res.json())
-    .then((list) => list);
-  return pricesData.reduce(
-    (acc: {[key: string]: ITokenPrice}, item: ITokenPrice) => ({
-      ...acc, [item.id]: item,
-    }), {},
-  );
+  try {
+    const pricesData = await fetch(`${config.indexerUrl}/token-prices`, {
+      method: 'GET',
+      headers: { 'Content-type': 'application/json; charset=UTF-8' },
+    })
+      .then((res) => res.json())
+      .then((list) => list);
+    return pricesData.reduce(
+      (acc: {[key: string]: ITokenPrice}, item: ITokenPrice) => ({
+        ...acc, [item.id]: item,
+      }), {},
+    );
+  } catch (e) {
+    console.warn(`Error ${e} while loading prices from ${config.indexerUrl}/token-prices`);
+    return pricesInitialState;
+  }
 };
 
-export const getNearPrice = async () => {
+export async function getNearPrice(): Promise<string | null> {
   try {
     const pricesData = await fetch(`${config.helperUrl}/fiat`, {
       method: 'GET',
@@ -69,9 +75,22 @@ export const getNearPrice = async () => {
     return pricesData;
   } catch (e) {
     console.warn('Near price loading failed');
-    return 0;
+    return null;
   }
-};
+}
+
+export async function getPrices() {
+  const allPrices = await getPriceData();
+  const nearPrice = await getNearPrice();
+
+  if (nearPrice) {
+    return {
+      ...allPrices,
+      [config.nearAddress]: { ...allPrices[config.nearAddress], price: nearPrice },
+    };
+  }
+  return allPrices;
+}
 
 export async function retrieveFilteredTokenMetadata(tokenAddresses: any) {
   const tokensMetadata = await Promise.all(
@@ -109,8 +128,10 @@ export async function retrieveNewPoolArray(
   poolContract: PoolContract,
 ): Promise<IPool[]> {
   return Promise.all(poolArray.map(async (pool: IPool) => {
-    const volumes = await poolContract.getPoolVolumes(pool);
-    const shares = await poolContract.getSharesInPool(pool.id);
+    const [volumes, shares] = await Promise.all([
+      poolContract.getPoolVolumes(pool),
+      poolContract.getSharesInPool(pool.id),
+    ]);
 
     return {
       ...pool,
@@ -120,17 +141,16 @@ export async function retrieveNewPoolArray(
   }));
 }
 
-export async function retrievePricesData(
-  pricesData: any,
+export function retrievePricesData(
+  pricesData: {[key: string]: ITokenPrice},
   newPoolMap: any,
   metadataMap: any,
-): Promise<{[key: string]: string}> {
+): {[key: string]: ITokenPrice} {
   const jumboPool = newPoolMap[config.jumboPoolId];
   const [firstToken, secondToken] = jumboPool.tokenAccountIds;
   const [wrapNear, jumboToken] = firstToken === config.nearAddress
     ? [firstToken, secondToken] : [secondToken, firstToken];
-  const nearPrice = await getNearPrice();
-
+  const nearPrice = pricesData[config.nearAddress].price || '0';
   const firstDecimals = metadataMap[wrapNear]?.metadata.decimals;
   const secondDecimals = metadataMap[jumboToken]?.metadata.decimals;
 
