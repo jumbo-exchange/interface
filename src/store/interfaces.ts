@@ -32,7 +32,7 @@ export interface IPool {
 
   shares?: string;
   volumes?: IPoolVolumes ;
-  farm?: Farm | null,
+  farm: string[] | null,
   // Views
   totalLiquidity: string;
 }
@@ -59,14 +59,14 @@ export interface Farm {
   type: string;
   status: string;
   seedId: string;
-  rewardToken: ITokenMetadata;
+  rewardToken: FungibleTokenContract;
   startAt: number;
   rewardPerSession: number;
   sessionInterval: number;
   totalReward: number;
   curRound: number;
   lastRound: number;
-  claimedReward: number;
+  claimedReward: string;
   unclaimedReward: number;
   currentUserReward?: number;
 

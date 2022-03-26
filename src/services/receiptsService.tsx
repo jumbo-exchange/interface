@@ -53,6 +53,8 @@ const methodName: { [key: string]: string } = {
   removeLiquidityMethod: 'remove_liquidity',
   nearDeposit: 'near_deposit',
   nearWithdraw: 'near_withdraw',
+  stake: 'mft_transfer_call',
+  unStake: 'withdraw_seed',
 };
 
 const PROPERTY_NAME = 'FunctionCall';

@@ -2,10 +2,6 @@ import Big from 'big.js';
 
 import {
   ACCOUNT_MIN_STORAGE_AMOUNT,
-  MIN_DEPOSIT_PER_TOKEN,
-  ONE_MORE_DEPOSIT_AMOUNT,
-  STORAGE_PER_TOKEN,
-  NEAR_TOKEN_ID,
   ONE_YOCTO_NEAR,
 } from 'utils/constants';
 import { parseTokenAmount } from 'utils/calculations';
@@ -27,6 +23,7 @@ const basicViewMethods = [
   'get_unclaimed_reward',
 
   'storage_balance_of',
+  'withdraw_reward',
 ];
 
 const basicChangeMethods = [
@@ -111,7 +108,7 @@ export default class FarmContract {
     }
 
     if (new Big(balance?.available || '0').lt(MIN_DEPOSIT_PER_TOKEN_FARM)) {
-      storageAmount = storageAmount.plus(Number(STORAGE_TO_REGISTER_MFT));
+      storageAmount = storageAmount.plus(STORAGE_TO_REGISTER_MFT);
     }
 
     if (storageAmount.gt(0)) {
@@ -131,11 +128,11 @@ export default class FarmContract {
   }
 
   async stake(
-    tokenId: number,
+    tokenId: string,
     amount: string,
-    poolId : number,
-    message?: string,
-  ): Promise<Transaction[]> {
+    poolId: number,
+    message: string = '',
+  ) {
     const transactions: Transaction[] = [];
     const checkStorage = await this.checkFarmStorageBalance();
     transactions.push(...checkStorage);
@@ -144,7 +141,7 @@ export default class FarmContract {
       functionCalls: [{
         methodName: 'mft_transfer_call',
         args: {
-          receiver_id: FARM_CONTRACT_ID,
+          receiver_id: this.contractId,
           token_id: tokenId,
           amount: STABLE_POOL_ID === poolId
             ? parseTokenAmount(amount, LP_STABLE_TOKEN_DECIMALS)
@@ -155,6 +152,33 @@ export default class FarmContract {
         gas: MFT_GAS,
       }],
     });
-    return transactions;
+    sendTransactions(transactions, this.walletInstance);
+  }
+
+  async unstake(
+    seedId: string,
+    amount: string,
+    poolId: number,
+    message: string = '',
+  ) {
+    const transactions: Transaction[] = [];
+    const checkStorage = await this.checkFarmStorageBalance();
+    transactions.push(...checkStorage);
+    transactions.push({
+      receiverId: this.contractId,
+      functionCalls: [{
+        methodName: 'withdraw_seed',
+        args: {
+          seed_id: seedId,
+          amount: STABLE_POOL_ID === poolId
+            ? parseTokenAmount(amount, LP_STABLE_TOKEN_DECIMALS)
+            : parseTokenAmount(amount, LP_TOKEN_DECIMALS),
+          msg: message,
+        },
+        amount: ONE_YOCTO_NEAR,
+        gas: '200000000000000',
+      }],
+    });
+    sendTransactions(transactions, this.walletInstance);
   }
 }

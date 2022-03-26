@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { ReactComponent as AddIcon } from 'assets/images-app/icon-add.svg';
 import { Modal } from '../styles';
 
 export const UnStakeModalContainer = styled(Modal)`
@@ -17,18 +16,7 @@ export const ModalBody = styled.div`
   justify-content: space-between;
 `;
 
-export const LogoContainerAdd = styled(AddIcon)`
+export const TokensBlock = styled.div`
   display: flex;
-  justify-content: center;
-  margin: 1rem 0;
-  align-self: center;
-`;
-
-export const RefreshBlock = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  margin: 2.063rem .75rem;
-  & > div {
-    font-size: 1rem;
-  }
+  margin: .7rem 0 3rem;
 `;

@@ -20,7 +20,7 @@ export default function getConfig(
         nearAddress: 'wrap.testnet',
         jumboAddress: 'jumbo_exchange_v2.solniechniy.testnet',
         jumboPoolId: 4,
-        stablePoolId: 0,
+        stablePoolId: 1513, // ?
       };
     default:
       return {

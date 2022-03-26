@@ -12,18 +12,19 @@ import { POOL_SHARES_DECIMALS } from 'utils/constants';
 import FarmContract from 'services/FarmContract';
 import Big from 'big.js';
 
+import TokenPairDisplay from 'components/TokenPairDisplay';
 import {
   Layout, ModalBlock, ModalIcon, ModalTitle,
 } from '../styles';
 import Input from './Input';
-import { StakeModalContainer, ModalBody, GetShareBtn } from './styles';
+import {
+  StakeModalContainer, ModalBody, GetShareBtn, TokensBlock,
+} from './styles';
 
 const INITIAL_INPUT_PLACEHOLDER = '';
 
 export default function StakeModal() {
-  const {
-    tokens,
-  } = useStore();
+  const { farms } = useStore();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -36,11 +37,6 @@ export default function StakeModal() {
   const [stakeValue, setStakeValue] = useState<string>(INITIAL_INPUT_PLACEHOLDER);
 
   if (!pool) return null;
-  const [tokenInputName, tokenOutputName] = pool.tokenAccountIds;
-
-  const tokenInput = tokens[tokenInputName] ?? null;
-  const tokenOutput = tokens[tokenOutputName] ?? null;
-  if (!tokenInput || !tokenOutput) return null;
 
   const formattedPoolShares = formatTokenAmount(pool?.shares ?? '0', POOL_SHARES_DECIMALS);
 
@@ -49,17 +45,23 @@ export default function StakeModal() {
   || new Big(stakeValue).gt(formattedPoolShares))
     : true;
 
+  const farm = farms[pool.farm ? pool.farm[0] : ''] ?? null; // todo: fix it
+
+  const getMftTokenId = (id: string) => `:${id}`;
+
   const onSubmit = () => {
-    const withdrawValueBN = new Big(stakeValue);
+    const stakeValueBN = new Big(stakeValue);
     const shareBN = new Big(formatTokenAmount(pool?.shares ?? '', POOL_SHARES_DECIMALS));
     if (Number(stakeValue) === 0) return;
-    if (withdrawValueBN.gt(shareBN)) return;
+    if (stakeValueBN.gt(shareBN)) return;
 
-    console.log('STAKE');
     const contract = new FarmContract();
-    // if (!tokenInput || !tokenOutput
-    //   || !stakeModalOpenState.pool) return;
-    // contract.stake({});
+    if (!stakeModalOpenState.pool) return;
+    contract.stake(
+      getMftTokenId(farm.lpTokenId),
+      stakeValue,
+      pool.id,
+    );
   };
 
   return (
@@ -84,10 +86,18 @@ export default function StakeModal() {
             </ModalIcon>
           </ModalBlock>
           <ModalBody>
+            <TokensBlock>
+              <TokenPairDisplay pool={pool} />
+            </TokensBlock>
             <Input
               shares={formattedPoolShares}
               stakeValue={stakeValue}
               setStakeValue={setStakeValue}
+            />
+            <RenderButton
+              typeButton={CurrentButton.Stake}
+              onSubmit={onSubmit}
+              disabled={buttonDisabled}
             />
             <GetShareBtn
               onClick={() => {
@@ -98,11 +108,6 @@ export default function StakeModal() {
             >
               Get share
             </GetShareBtn>
-            <RenderButton
-              typeButton={CurrentButton.Stake}
-              onSubmit={onSubmit}
-              disabled={buttonDisabled}
-            />
           </ModalBody>
         </StakeModalContainer>
       </Layout>

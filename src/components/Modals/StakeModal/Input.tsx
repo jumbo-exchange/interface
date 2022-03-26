@@ -40,7 +40,7 @@ const TotalShares = styled.div`
   `}
 `;
 
-const ButtonHalfWallet = styled.button`
+const ButtonMaxWallet = styled.button`
   background: none;
   border: none;
   padding: 0;
@@ -72,10 +72,6 @@ const ButtonHalfWallet = styled.button`
       line-height: .875rem;
     }
   `}
-`;
-
-const ButtonMaxWallet = styled(ButtonHalfWallet)`
-  margin-left: 1rem;
 `;
 
 const InputContainer = styled.div`
@@ -128,12 +124,6 @@ export default function Input({
   setStakeValue: React.Dispatch<React.SetStateAction<string>>,
 }) {
   const { t } = useTranslation();
-  const setHalf = () => {
-    const halfShares = new Big(shares).div(2);
-    if (halfShares.gte(0)) {
-      setStakeValue(removeTrailingZeros(halfShares.toFixed()));
-    }
-  };
 
   const setMax = () => {
     const maxShares = new Big(shares);
@@ -150,9 +140,6 @@ export default function Input({
           <span>{removeTrailingZeros(formatBalance(shares))}</span>
         </TotalShares>
 
-        <ButtonHalfWallet onClick={setHalf}>
-          <span>{t('common.half')}</span>
-        </ButtonHalfWallet>
         <ButtonMaxWallet onClick={setMax}>
           <span>{t('common.max')}</span>
         </ButtonMaxWallet>

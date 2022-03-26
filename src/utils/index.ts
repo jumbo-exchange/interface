@@ -2,12 +2,11 @@ import Big from 'big.js';
 import getConfig from 'services/config';
 import FungibleTokenContract from 'services/FungibleToken';
 import {
-  Farm, IPool, ITokenMetadata, ITokenPrice, PoolType,
+  Farm, IPool, ITokenPrice, PoolType,
 } from 'store';
 import { formatTokenAmount, removeTrailingZeros } from './calculations';
 
 const ACCOUNT_TRIM_LENGTH = 10;
-const LP_TOKEN_DECIMALS = 24;
 
 export const trimAccountId = (accountId: string) => {
   if (accountId.length > 20) {
@@ -41,6 +40,7 @@ export function formatPool(pool: any, id: number): IPool {
     sharesTotalSupply: pool.shares_total_supply,
     amp: pool.amp,
     totalLiquidity: '0',
+    farm: null,
   };
 }
 
@@ -176,23 +176,26 @@ export function formatFarm(
   id: number,
   pools: IPool[],
   seeds: any,
-  metadataMap: ITokenMetadata[],
+  metadataMap: {[key: string]: FungibleTokenContract},
 ): Farm {
   const lpTokenId = farm.farm_id.slice(farm.farm_id.indexOf('@') + 1, farm.farm_id.lastIndexOf('#'));
   const pool = pools.filter(
     (poolItem: IPool) => poolItem.id === Number(lpTokenId),
   )[0];
   const { tokenAccountIds } = pool;
+
   const rewardToken = metadataMap[farm.reward_token] ?? null;
   const seed = seeds[farm.seed_id];
   const seedAmount = seed ?? '0';
 
-  const rewardNumberPerWeek = (farm.reward_per_session / farm.session_interval) * 604800;
+  const rewardNumberPerWeek = Big(farm.reward_per_session)
+    .div(farm.session_interval)
+    .mul(604800)
+    .toFixed();
 
   const rewardsPerWeek = Big(formatTokenAmount(
-    rewardNumberPerWeek.toFixed(), rewardToken?.decimals,
-  )).toFixed(0);
-
+    rewardNumberPerWeek, rewardToken.metadata.decimals,
+  )).toFixed(4);
   return {
     id,
     farmId: farm.farm_id,
@@ -208,7 +211,7 @@ export function formatFarm(
     lastRound: farm.last_round,
     claimedReward: farm.claimed_reward,
     unclaimedReward: farm.unclaimed_reward,
-    // currentUserReward: farm.current_user_reward,
+    currentUserReward: farm.current_user_reward,
     lpTokenId,
     pool,
     rewardsPerWeek,

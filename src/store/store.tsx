@@ -259,8 +259,8 @@ export const StoreContextProvider = (
 
               return {
                 ...farm,
-                userStaked: staked[farm.seedId],
-                rewardNumber: rewards[farm.rewardToken],
+                userStaked: staked[farm.seedId] || null,
+                rewardNumber: rewards[farm.rewardToken] || null,
                 currentUserReward,
               };
             }));
@@ -269,16 +269,20 @@ export const StoreContextProvider = (
         }
       }
       const updatePool = newPoolArray.map((pool) => {
-        const [poolWithFarm] = newFarmArray.filter((farm) => farm.pool.id === pool.id);
-
+        const poolWithFarm = newFarmArray.filter((farm) => farm.pool.id === pool.id);
+        const farmIds = poolWithFarm.length > 0
+          ? poolWithFarm.map((el) => el.farmId)
+          : null;
         return {
           ...pool,
-          farm: poolWithFarm || null,
+          farm: farmIds,
         };
       });
 
       const newPoolMap = toMap(updatePool);
-      const newFarmMap = toMap(newFarmArray);
+      const newFarmMap = newFarmArray.reduce(
+        (acc, farm) => ({ ...acc, [farm.farmId]: farm }), {},
+      );
 
       if (
         newPoolMap[config.jumboPoolId]

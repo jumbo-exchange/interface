@@ -192,6 +192,7 @@
   },
 
   "unStakeModal" : {
-    "unStake": "Unstake and Claim"
+    "unStake": "Unstake and Claim",
+    "shares": "Shares"
   }
 }

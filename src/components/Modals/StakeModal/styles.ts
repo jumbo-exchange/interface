@@ -18,6 +18,10 @@ export const ModalBody = styled.div`
 `;
 
 export const GetShareBtn = styled(ButtonSecondary)`
-  width: 150px;
-  margin-bottom: 2rem;
+  margin-top: 1rem;
+`;
+
+export const TokensBlock = styled.div`
+  display: flex;
+  margin: .7rem 0 3rem;
 `;

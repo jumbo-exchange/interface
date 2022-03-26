@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { SpecialContainer } from 'components/SpecialContainer';
 import { ReactComponent as Soon } from 'assets/images-app/logo-soon.svg';
+import { ButtonClaim } from 'components/Button';
 
 export const Container = styled.div`
   display: flex;
@@ -36,6 +37,7 @@ export const InformationBlock = styled(SpecialContainer)`
   border-radius: 24px;
   justify-content: space-between;
   margin: 0;
+  min-height: 90px;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     flex-direction: column;
     & > button {
@@ -77,4 +79,30 @@ export const LabelInfo = styled.div`
 
 export const LogoSoon = styled(Soon)`
   margin-left: .25rem;
+`;
+
+export const ButtonAndClaimList = styled.div`
+  position: relative;
+  margin-left: 1rem;
+  :hover div {
+    display: flex;
+  }
+`;
+
+export const RewardList = styled.div`
+  position: absolute;
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  background-color: ${({ theme }) => theme.claimListBg};
+  padding: 12px 16px;
+  border-radius: 12px;
+  top: 45px;
+  & > p {
+    margin: 4px 0;
+    font-weight: 300;
+    font-size: 12px;
+    line-height: 14px;
+  }
 `;

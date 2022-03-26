@@ -57,6 +57,7 @@ export interface ThemeColors {
 
   greyButton: string;
   claimButton: string;
+  claimListBg: string;
 
   backgroundCard: string;
   boxShadowCard: string;
@@ -113,6 +114,7 @@ export const colors: ThemeColors = {
 
   greyButton: '#454D5C',
   claimButton: '#151922',
+  claimListBg: '#2A303C',
 
   backgroundCard: '#202632',
   boxShadowCard: 'rgba(10, 12, 18, 0.2)',

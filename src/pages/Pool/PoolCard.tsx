@@ -12,6 +12,7 @@ import {
 } from 'utils/routes';
 import { useTranslation } from 'react-i18next';
 import getConfig from 'services/config';
+import TokenPairDisplay from 'components/TokenPairDisplay';
 
 const config = getConfig();
 
@@ -49,43 +50,6 @@ const LowerRow = styled.div`
     flex-direction: column;
     align-items: flex-start;
   `}
-`;
-
-const BlockTitle = styled.div`
-  display: flex;
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    margin-top: 1.5rem;
-  `}
-`;
-
-const LogoPool = styled.div`
-  position: relative;
-  margin-right: 1.75rem;
-  & > div:last-child {
-    position: absolute;
-    left: 19px;
-    top: -5px;
-    filter: drop-shadow(0px 4px 8px #202632);
-  }
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    & > img {
-      width: 32px;
-      height: 32px;
-    }
-  `}
-`;
-
-const TitlePool = styled.div`
-  display: flex;
-  width: 100%;
-  & > p {
-    font-style: normal;
-    font-weight: 500;
-    font-size: 1rem;
-    line-height: 1.188rem;
-    color: ${({ theme }) => theme.globalWhite};
-    margin: 0;
-  }
 `;
 
 const LabelPool = styled.div`
@@ -172,13 +136,11 @@ const BlockButton = styled.div`
   display: flex;
   justify-content: flex-end;
   width: 100%;
-  height: 40px;
   & > button {
     padding: 9px 15px;
   }
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     flex-direction: column-reverse;
-    height: 48px;
   `}
 `;
 
@@ -200,36 +162,6 @@ const LogoButton = styled(AddIcon)`
   height: 12px;
   margin-right: .625rem;
 `;
-
-const LogoContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: ${({ theme }) => theme.bgToken};
-  border-radius: 8px;
-  transition: all 1s ease-out;
-  height: 1.625rem;
-  min-width: 1.625rem;
-  & > img {
-    border-radius: 8px;
-    height: 1.5rem;
-    width: 1.5rem;
-    transition: all 1s ease-out;
-  }
-
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    border-radius: 10px;
-    height: 2.125rem;
-    min-width: 2.125rem;
-    & > img {
-      border-radius: 10px;
-      height: 2rem;
-      width: 2rem;
-      transition: all 1s ease-out;
-    }
-  `}
-`;
-
 interface IVolume {
   title: string;
   label: string;
@@ -248,6 +180,7 @@ export default function PoolCard(
 ) {
   const {
     tokens,
+    farms,
   } = useStore();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -259,6 +192,9 @@ export default function PoolCard(
 
   const jumboToken = tokens[config.jumboAddress] ?? null;
   const JumboTokenInPool = jumboToken === (tokenInput || tokenOutput);
+
+  const farmId = pool.farm ? pool.farm[0] : ''; // todo: fix it
+  const farm = farms[farmId] ?? null; // todo: fix it
 
   const volume: IVolume[] = [
     {
@@ -279,27 +215,13 @@ export default function PoolCard(
     },
   ];
 
-  const canWithdraw = pool.shares === '0' || pool.shares === undefined || Big(pool.shares) === Big('0');
-  const canUnStake = true;
+  const canWithdraw = Big(pool.shares || '0').gt('0');
+  const canUnStake = Big(farm?.userStaked || '0').gt('0');
 
   return (
     <Wrapper isFarming={isFarming}>
       <UpperRow>
-        <BlockTitle>
-          <LogoPool>
-            <LogoContainer>
-              <img src={tokenInput.metadata.icon} alt="logo token" />
-            </LogoContainer>
-            <LogoContainer>
-              <img src={tokenOutput.metadata.icon} alt="logo token" />
-            </LogoContainer>
-          </LogoPool>
-          <TitlePool>
-            <p>{tokenInput.metadata.symbol}</p>
-            <p>/</p>
-            <p>{tokenOutput.metadata.symbol}</p>
-          </TitlePool>
-        </BlockTitle>
+        <TokenPairDisplay pool={pool} />
         <LabelPool>
           {JumboTokenInPool && <JumboBlock>Jumbo</JumboBlock>}
           {pool.farm && <FarmBlock>Farm</FarmBlock>}
@@ -342,7 +264,7 @@ export default function PoolCard(
             )
             : (
               <>
-                {!canWithdraw && (
+                {canWithdraw && (
                 <BtnSecondary
                   onClick={() => {
                     navigate(toRemoveLiquidityPage(pool.id));

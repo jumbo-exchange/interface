@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FilterButton } from 'components/Button';
+import { FilterButton, ButtonClaim } from 'components/Button';
 import { isMobile } from 'utils/userAgent';
 import { IPool, useModalsStore, useStore } from 'store';
 import { useLocation, useParams } from 'react-router-dom';
@@ -11,6 +11,8 @@ import { useTranslation } from 'react-i18next';
 
 import getConfig from 'services/config';
 import Big from 'big.js';
+import { formatTokenAmount, removeTrailingZeros } from 'utils/calculations';
+import FarmContract from 'services/FarmContract';
 import {
   Container,
   FilterBlock,
@@ -20,6 +22,8 @@ import {
   TitleInfo,
   LabelInfo,
   LogoSoon,
+  ButtonAndClaimList,
+  RewardList,
 } from './styles';
 import PoolSettings from './PoolSettings';
 import PoolResult from './PoolResult';
@@ -63,13 +67,14 @@ const filters: IFilters[] = [
 export interface IMainInfo {
   title: string,
   label: string,
+  show: boolean,
 }
 
 export default function Pool() {
   const { t } = useTranslation();
 
   const {
-    pools, loading, prices,
+    pools, loading, prices, farms,
   } = useStore();
   const {
     setAddLiquidityModalOpenState,
@@ -82,6 +87,14 @@ export default function Pool() {
   const location = useLocation();
   const [totalValueLocked, setTotalValueLocked] = useState('0');
   const [poolsArray, setPoolsArray] = useState<IPool[]>([]);
+
+  const rewardList = Object.values(farms).filter((el) => Big(el.claimedReward).gt(0));
+  const canClaimAll = rewardList.length > 0;
+
+  const rewardPrice = rewardList.reduce((sum, el) => {
+    const priceToken = prices[el.rewardToken.contractId] ?? null;
+    return Big(sum).plus(priceToken?.price ?? '0').toFixed(2);
+  }, '0');
 
   useEffect(() => {
     if (id && pools[Number(id)]) {
@@ -115,18 +128,22 @@ export default function Pool() {
     {
       title: t('pool.totalValueLocked'),
       label: Big(totalValueLocked ?? 0).lte(0) ? '-' : `$${totalValueLocked}`,
+      show: true,
     },
     {
       title: t('pool.totalDayLocked'),
       label: '-',
+      show: true,
     },
     {
       title: t('pool.jumboPrice'),
       label: `$${prices[config.jumboAddress].price ?? 0}` || '-',
+      show: true,
     },
     {
       title: t('pool.weeklyEmissions'),
       label: '-',
+      show: !canClaimAll,
     },
   ];
 
@@ -151,19 +168,47 @@ export default function Pool() {
         : (
           <InformationBlock>
             <WrapperInfoBlock>
-              {mainInfo.map((el) => (
-                <InfoBLock
-                  key={el.title}
-                >
-                  <TitleInfo>
-                    {el.title}
-                  </TitleInfo>
-                  <LabelInfo>
-                    {el.label}
-                  </LabelInfo>
-                </InfoBLock>
-              ))}
+              {mainInfo.map((el) => {
+                if (!el.show) return null;
+                return (
+                  <InfoBLock
+                    key={el.title}
+                  >
+                    <TitleInfo>
+                      {el.title}
+                    </TitleInfo>
+                    <LabelInfo>
+                      {el.label}
+                    </LabelInfo>
+                  </InfoBLock>
+                );
+              })}
             </WrapperInfoBlock>
+            {canClaimAll && (
+              <ButtonAndClaimList>
+                <ButtonClaim
+                  onClick={() => {
+                    if (!canClaimAll) return;
+                    const contract = new FarmContract();
+                    // contract.withdrawAllReward();
+                  }}
+                >
+                  <span>${removeTrailingZeros(rewardPrice)} </span>
+                  <span>Claim All</span>
+                </ButtonClaim>
+                <RewardList>
+                  {rewardList.map((el) => {
+                    const claimReward = formatTokenAmount(
+                      el.claimedReward, el.rewardToken.metadata.decimals, 6,
+                    );
+                    const tokenSymbol = el.rewardToken.metadata.symbol;
+                    return (
+                      <p key={el.farmId}>{claimReward} <span>{tokenSymbol}</span></p>
+                    );
+                  })}
+                </RewardList>
+              </ButtonAndClaimList>
+            )}
           </InformationBlock>
         )}
 

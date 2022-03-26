@@ -49,6 +49,7 @@ export const YOCTO_IN_NEAR_DECIMALS = 24;
 export const FEE_DIVISOR = 100;
 
 export const POOL_SHARES_DECIMALS = 24;
+export const LP_TOKEN_DECIMALS = 24;
 
 export const BAD_PRICE_IMPACT = 2;
 
