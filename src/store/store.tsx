@@ -140,7 +140,9 @@ export const StoreContextProvider = (
           // || (pool.type === PoolType.STABLE_SWAP && pool.id === config.stablePoolId)
 
         let newPoolArray = poolArray;
-        const tokensMetadataFiltered: any[] = await retrieveFilteredTokenMetadata(tokenAddresses);
+        const tokensMetadataFiltered = await retrieveFilteredTokenMetadata(
+          tokenAddresses,
+        );
 
         if (isSignedIn) {
           setWallet(nearWallet);
@@ -159,6 +161,7 @@ export const StoreContextProvider = (
         const metadataMap = tokensMetadataFiltered.reduce(
           (acc, curr) => ({ ...acc, [curr.contractId]: curr }), {},
         );
+
         const newPoolMap = toMap(newPoolArray);
 
         if (

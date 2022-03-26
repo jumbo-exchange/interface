@@ -2,10 +2,10 @@ import getConfig from 'services/config';
 import FungibleTokenContract from 'services/FungibleToken';
 import PoolContract from 'services/PoolContract';
 import { wallet as nearWallet } from 'services/near';
-import { calculatePriceForToken, toArray } from 'utils';
+import { calculatePriceForToken, isNotNullOrUndefined, toArray } from 'utils';
 import { formatTokenAmount } from 'utils/calculations';
 import { NEAR_TOKEN_ID } from 'utils/constants';
-import { IPool, ITokenPrice } from './interfaces';
+import { IPool, ITokenMetadata, ITokenPrice } from './interfaces';
 import { pricesInitialState } from './store';
 
 const config = getConfig();
@@ -32,7 +32,7 @@ export async function retrievePoolResult(pages: number, contract: PoolContract) 
   )).flat();
 }
 
-export function retrieveTokenAddresses(poolsResult: any, userTokens: any) {
+export function retrieveTokenAddresses(poolsResult: any, userTokens: any): string[] {
   return Array.from(
     new Set(
       [...poolsResult
@@ -45,7 +45,7 @@ export function retrieveTokenAddresses(poolsResult: any, userTokens: any) {
   );
 }
 
-export const getPriceData = async () => {
+export async function getPriceData(): Promise<{[key: string]: ITokenPrice}> {
   try {
     const pricesData = await fetch(`${config.indexerUrl}/token-prices`, {
       method: 'GET',
@@ -62,7 +62,7 @@ export const getPriceData = async () => {
     console.warn(`Error ${e} while loading prices from ${config.indexerUrl}/token-prices`);
     return pricesInitialState;
   }
-};
+}
 
 export async function getNearPrice(): Promise<string | null> {
   try {
@@ -79,7 +79,7 @@ export async function getNearPrice(): Promise<string | null> {
   }
 }
 
-export async function getPrices() {
+export async function getPrices(): Promise<{[key: string]: ITokenPrice}> {
   const allPrices = await getPriceData();
   const nearPrice = await getNearPrice();
 
@@ -92,29 +92,30 @@ export async function getPrices() {
   return allPrices;
 }
 
-export async function retrieveFilteredTokenMetadata(tokenAddresses: any) {
-  const tokensMetadata = await Promise.all(
+export async function retrieveFilteredTokenMetadata(tokenAddresses: string[]):
+Promise<FungibleTokenContract[]> {
+  const tokensMetadata: (FungibleTokenContract | null)[] = await Promise.all(
     tokenAddresses.map(async (address: string) => {
       const ftTokenContract: FungibleTokenContract = new FungibleTokenContract(
         { wallet: nearWallet, contractId: address },
       );
       const metadata = await ftTokenContract.getMetadata();
       if (!metadata) return null;
-      return { metadata, contractId: address, contract: ftTokenContract };
+      return ftTokenContract;
     }),
   );
-  const tokensMetadataFiltered = tokensMetadata.filter((el) => !!el);
+  const tokensMetadataFiltered = tokensMetadata.filter(isNotNullOrUndefined);
   return tokensMetadataFiltered;
 }
 
 export async function retrieveBalancesMap(
-  tokensMetadataFiltered: any,
+  tokensMetadataFiltered: FungibleTokenContract[],
   accountId: string,
 ): Promise<{ [key: string]: string; }> {
   const balancesArray: {contractId: string, balance: string}[] = await Promise.all(
-    tokensMetadataFiltered.map(async (token: FungibleTokenContract) => {
-      const balance: string = await token.contract.getBalanceOf({ accountId });
-      return { contractId: token.contractId, balance };
+    tokensMetadataFiltered.map(async (tokenContract: FungibleTokenContract) => {
+      const balance: string = await tokenContract.getBalanceOf({ accountId }) || 0;
+      return { contractId: tokenContract.contractId, balance };
     }),
   );
 
@@ -143,8 +144,8 @@ export async function retrieveNewPoolArray(
 
 export function retrievePricesData(
   pricesData: {[key: string]: ITokenPrice},
-  newPoolMap: any,
-  metadataMap: any,
+  newPoolMap: {[key: string]: IPool},
+  metadataMap: {[key: string]: FungibleTokenContract},
 ): {[key: string]: ITokenPrice} {
   const jumboPool = newPoolMap[config.jumboPoolId];
   const [firstToken, secondToken] = jumboPool.tokenAccountIds;
