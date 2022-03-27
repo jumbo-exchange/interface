@@ -77,7 +77,7 @@ export default class PoolContract {
   async createPool({ tokens, fee }: { tokens: FungibleTokenContract[], fee: string }) {
     const transactions: Transaction[] = [];
     const tokensStorages = await Promise.all(tokens.map(
-      (token) => token.contract.checkSwapStorageBalance({ accountId: this.contractId }),
+      (token) => token.checkSwapStorageBalance({ accountId: this.contractId }),
     ));
     const tokensStoragesAmounts = tokensStorages.flat();
     if (tokensStoragesAmounts.length) {
@@ -138,7 +138,7 @@ export default class PoolContract {
       }
     });
 
-    const isInputTokenStorage = await inputToken.token.contract.transfer(
+    const isInputTokenStorage = await inputToken.token.transfer(
       {
         accountId: this.contractId,
         inputToken: inputToken.token.contractId,
@@ -147,7 +147,7 @@ export default class PoolContract {
     );
     if (isInputTokenStorage.length) transactions.push(...isInputTokenStorage);
 
-    const isOutputTokenStorage = await outputToken.token.contract.transfer(
+    const isOutputTokenStorage = await outputToken.token.transfer(
       {
         accountId: this.contractId,
         inputToken: outputToken.token.contractId,
