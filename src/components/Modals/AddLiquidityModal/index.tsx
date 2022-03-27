@@ -56,7 +56,7 @@ export default function AddLiquidityModal() {
       setOutputTokenValue(INITIAL_INPUT_PLACEHOLDER);
       setPreShare(INITIAL_INPUT_PLACEHOLDER);
     }
-  }, [pool?.id, inputTokenValue, outputTokenValue]);
+  }, [pool?.id]);
 
   if (!pool) return null;
   const [tokenInputName, tokenOutputName] = pool.tokenAccountIds;
