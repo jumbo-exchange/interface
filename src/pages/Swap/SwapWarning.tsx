@@ -14,6 +14,7 @@ import { wallet } from 'services/near';
 import { toAddLiquidityPage } from 'utils/routes';
 import { useTranslation } from 'react-i18next';
 import { getToken } from 'store/helpers';
+import useNavigateSwapParams from 'hooks/useNavigateSwapParams';
 
 const config = getConfig();
 
@@ -104,6 +105,7 @@ export default function RenderWarning({ priceImpact }: {priceImpact: string}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isConnected = wallet.isSignedIn();
+  const navigateSwapTokens = useNavigateSwapParams();
 
   const near = useMemo(() => getToken(NEAR_TOKEN_ID, tokens), [tokens]);
   const wNear = useMemo(() => getToken(config.nearAddress, tokens), [tokens]);
@@ -194,6 +196,9 @@ export default function RenderWarning({ priceImpact }: {priceImpact: string}) {
               onClick={() => {
                 setInputToken(near);
                 setOutputToken(wNear);
+                if (near && wNear) {
+                  navigateSwapTokens(near.metadata.symbol, wNear.metadata.symbol);
+                }
               }}
             >
               <LogoWallet />
@@ -215,10 +220,16 @@ export default function RenderWarning({ priceImpact }: {priceImpact: string}) {
       if (nearIsInput) {
         setInputToken(wNear);
         setOutputToken(outputToken);
+        if (wNear && outputToken) {
+          navigateSwapTokens(wNear.metadata.symbol, outputToken.metadata.symbol);
+        }
         setCurrentPools(poolPathOutputToken);
       } else {
         setInputToken(inputToken);
         setOutputToken(wNear);
+        if (wNear && inputToken) {
+          navigateSwapTokens(inputToken?.metadata.symbol, wNear?.metadata.symbol);
+        }
         setCurrentPools(poolPathInputToken);
       }
     };

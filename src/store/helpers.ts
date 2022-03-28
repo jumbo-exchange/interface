@@ -5,7 +5,7 @@ import { wallet as nearWallet } from 'services/near';
 import { calculatePriceForToken, isNotNullOrUndefined, toArray } from 'utils';
 import { formatTokenAmount } from 'utils/calculations';
 import { NEAR_TOKEN_ID } from 'utils/constants';
-import { IPool, ITokenMetadata, ITokenPrice } from './interfaces';
+import { IPool, ITokenPrice } from './interfaces';
 import { pricesInitialState } from './store';
 
 const config = getConfig();
@@ -37,8 +37,8 @@ export function retrieveTokenAddresses(poolsResult: any, userTokens: any): strin
     new Set(
       [...poolsResult
         .flatMap((pool: any) => pool.token_account_ids),
-      config.nearAddress,
       NEAR_TOKEN_ID,
+      config.nearAddress,
       ...userTokens,
       ],
     ),
@@ -173,11 +173,8 @@ export function retrievePricesData(
 export const findTokenBySymbol = (
   symbol: string,
   tokens: {[key: string]: FungibleTokenContract},
-) => {
-  const [token] = toArray(tokens)
-    .filter((el) => el.metadata.symbol.toLowerCase() === symbol.toLowerCase());
-  return token;
-};
+) => toArray(tokens)
+  .find((el) => el.metadata.symbol.toLowerCase() === symbol.toLowerCase());
 
 export const tryTokenByKey = (
   tokensMap: { [key: string]: FungibleTokenContract},
@@ -186,9 +183,10 @@ export const tryTokenByKey = (
   urlKey: string,
 ) => {
   const urlToken = url.searchParams.get(urlKey) || '';
+  const tokenFromMap = findTokenBySymbol(urlToken, tokensMap);
   if (
-    url.searchParams.has(urlKey) && findTokenBySymbol(urlToken, tokensMap)
-  ) return tokensMap[findTokenBySymbol(urlToken, tokensMap)?.contractId];
+    url.searchParams.has(urlKey) && tokenFromMap
+  ) return tokensMap[tokenFromMap.contractId];
 
   const key = localStorage.getItem(localStorageKey) || '';
   if (key && tokensMap[key]) return tokensMap[key];
