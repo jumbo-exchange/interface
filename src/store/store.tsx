@@ -81,7 +81,7 @@ export const StoreContextProvider = (
   { children }:{ children: JSX.Element },
 ) => {
   const poolContract = useMemo(() => new PoolContract(), []);
-  const farmContract = new FarmContract();
+  const farmContract = useMemo(() => new FarmContract(), []);
 
   const [loading, setLoading] = useState<boolean>(initialState.loading);
   const [priceLoading, setPriceLoading] = useState<boolean>(initialState.loading);
@@ -207,7 +207,17 @@ export const StoreContextProvider = (
             }));
         }
 
-        const newPoolMap = toMap(newPoolArray);
+        const updatePool = newPoolArray.map((pool) => {
+          const poolWithFarm = newFarmArray.filter((farm) => farm.pool.id === pool.id);
+          const farmIds = poolWithFarm.length > 0
+            ? poolWithFarm.map((el) => el.farmId)
+            : null;
+          return {
+            ...pool,
+            farm: farmIds,
+          };
+        });
+        const newPoolMap = toMap(updatePool);
         const newFarmMap = newFarmArray.reduce(
           (acc, farm) => ({ ...acc, [farm.farmId]: farm }), {},
         );
@@ -240,7 +250,7 @@ export const StoreContextProvider = (
     };
 
     initialLoading();
-  }, [poolContract]);
+  }, [poolContract, farmContract]);
 
   useEffect(() => {
     if (toArray(pools).length && toArray(tokens).length) {

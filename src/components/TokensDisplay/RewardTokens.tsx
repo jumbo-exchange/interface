@@ -42,11 +42,14 @@ export default function RewardTokens(
   return (
     <Container>
       <p>Reward tokens</p>
-      {rewardTokens.map((token) => (
-        <LogoContainer key={token.contractId}>
-          <img src={token.metadata.icon} alt={token.metadata.symbol} />
-        </LogoContainer>
-      ))}
+      {rewardTokens.map((token) => {
+        if (!token?.metadata) return null;
+        return (
+          <LogoContainer key={token.contractId}>
+            <img src={token.metadata.icon} alt={token.metadata.symbol} />
+          </LogoContainer>
+        );
+      })}
     </Container>
   );
 }

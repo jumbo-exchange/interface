@@ -233,12 +233,12 @@ export default function PoolCard(
 
   const jumboToken = tokens[config.jumboAddress] ?? null;
   const JumboTokenInPool = jumboToken === (tokenInput || tokenOutput);
-
+  console.log(pool);
   const farm = !pool.farm ? [] : pool.farm?.map((el) => farms[el]);
   const rewardFarm = farm.filter((el) => Big(el.claimedReward ?? 0).gt(0));
 
   const rewardPrice = rewardFarm.reduce((sum, el) => {
-    const priceToken = prices[el.rewardToken.contractId] ?? null;
+    const priceToken = prices[el.rewardTokenId] ?? null;
     const tokenAmount = el.claimedReward;
     const amount = Big(tokenAmount).mul(priceToken?.price ?? '0');
     return Big(sum).plus(amount).toFixed(2);

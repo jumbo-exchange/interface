@@ -194,7 +194,7 @@ export function formatFarm(
     .toFixed();
 
   const rewardsPerWeek = Big(formatTokenAmount(
-    rewardNumberPerWeek, rewardToken.metadata.decimals,
+    rewardNumberPerWeek, rewardToken?.metadata?.decimals || 8,
   )).toFixed(4); // TODO: need check if user have this token
 
   return {
