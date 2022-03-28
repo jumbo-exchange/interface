@@ -9,10 +9,11 @@ export const calculateMarketPrice = (
   tokenIn: FungibleTokenContract,
   tokenOut: FungibleTokenContract,
 ) => {
+  // TODO: Check for stable swap
   if (pool.type === PoolType.STABLE_SWAP) {
     return '1';
   }
-
+  if (!pool.supplies[tokenIn.contractId] || !pool.supplies[tokenOut.contractId]) return 0;
   const tokenInBalance = formatTokenAmount(
     pool.supplies[tokenIn.contractId],
     tokenIn.metadata.decimals,
@@ -32,6 +33,8 @@ export const calculateAmountReceived = (
   tokenOut: FungibleTokenContract,
 ) => {
   const partialAmountIn = amountIn;
+
+  if (!pool.supplies[tokenIn.contractId] || !pool.supplies[tokenOut.contractId]) return Big(0);
 
   const inBalance = formatTokenAmount(
     pool.supplies[tokenIn.contractId],
@@ -72,6 +75,8 @@ export const calculatePriceImpact = (
   let tokenOutReceived = new Big(0);
   if (pools.length === SWAP_ENUM.DIRECT_SWAP) {
     const [currentPool] = pools;
+    if (!currentPool.supplies[tokenIn.contractId]
+      || !currentPool.supplies[tokenOut.contractId]) return '0';
 
     const marketPrice = calculateMarketPrice(currentPool, tokenIn, tokenOut);
 

@@ -10,7 +10,7 @@ import {
 import type { LinkProps } from 'react-router-dom';
 import useTransactionHash from 'services/receiptsService';
 import { wallet } from 'services/near';
-import Error from 'pages/Error';
+
 import {
   ALL_MATCH,
   LANDING,
@@ -41,6 +41,7 @@ import ConnectionButton from './ConnectionButton';
 
 const Swap = lazy(() => import('pages/Swap'));
 const Pool = lazy(() => import('pages/Pool'));
+const Error = lazy(() => import('pages/Error'));
 
 function CustomLink({
   children, to,
@@ -100,7 +101,7 @@ export default function App() {
               <LoadingBlock>
                 <img src={GifLoading} alt="loading" />
               </LoadingBlock>
-        )}
+              )}
             >
               <Routes>
                 <Route path={POOL} element={<Pool />} />

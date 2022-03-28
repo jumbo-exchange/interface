@@ -5,6 +5,7 @@ import {
   Farm, IPool, ITokenPrice, PoolType,
 } from 'store';
 import { formatTokenAmount, removeTrailingZeros } from './calculations';
+import { SWAP_INPUT_KEY, SWAP_OUTPUT_KEY } from './constants';
 
 const ACCOUNT_TRIM_LENGTH = 10;
 
@@ -126,9 +127,9 @@ export const calculatePriceForToken = (
 };
 
 export const calculateTotalAmount = (
-  pricesData:{[key: string]: ITokenPrice},
+  pricesData: {[key: string]: ITokenPrice},
   metadataMap: {[key: string]: FungibleTokenContract},
-  newPoolMap:{[key:string]: IPool},
+  newPoolMap: {[key:string]: IPool},
 ):{[key:string]: IPool} => {
   const calculatedPools = toArray(newPoolMap).map((pool: IPool) => {
     const config = getConfig();
@@ -221,3 +222,14 @@ export function formatFarm(
 
   };
 }
+export function isNotNullOrUndefined<T extends Object>(input: null | undefined | T): input is T {
+  return input != null;
+}
+
+export const saveSwapTokens = (
+  inputToken: string | null | undefined, outputToken: string | null| undefined,
+) => {
+  if (!inputToken || !outputToken) return;
+  localStorage.setItem(SWAP_INPUT_KEY, inputToken);
+  localStorage.setItem(SWAP_OUTPUT_KEY, outputToken);
+};

@@ -204,14 +204,14 @@ export default class SwapContract {
 
     const transactions: Transaction[] = [];
     const accountId = this.walletInstance.getAccountId();
-    const outputTokenStorage = await outputToken.contract.checkSwapStorageBalance({ accountId });
+    const outputTokenStorage = await outputToken.checkSwapStorageBalance({ accountId });
     transactions.push(...outputTokenStorage);
 
     if (tokensIds.includes(NEAR_TOKEN_ID) && tokensIds.includes(config.nearAddress)) {
       if (inputToken.contractId === NEAR_TOKEN_ID) {
-        transactions.push(...outputToken.contract.wrap({ amount }));
+        transactions.push(...outputToken.wrap({ amount }));
       } else {
-        transactions.push(...inputToken.contract.unwrap({ amount }));
+        transactions.push(...inputToken.unwrap({ amount }));
       }
     } else {
       const swapAction = SwapContract.generateTransferMessage(

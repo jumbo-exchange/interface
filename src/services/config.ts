@@ -29,7 +29,7 @@ export default function getConfig(
         walletUrl: 'https://wallet.near.org',
         helperUrl: 'https://helper.mainnet.near.org',
         explorerUrl: 'https://explorer.mainnet.near.org',
-        indexerUrl: 'https://ps.jumbo.exchange',
+        indexerUrl: 'https://price-service.jumbo.exchange',
         contractId: 'v1.jumbo_exchange.near',
 
         //!
