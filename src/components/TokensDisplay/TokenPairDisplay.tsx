@@ -5,7 +5,7 @@ import styled from 'styled-components';
 const BlockTitle = styled.div`
   display: flex;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    margin-top: 1.5rem;
+    margin-top: 1rem;
   `}
 `;
 
@@ -46,26 +46,14 @@ const LogoContainer = styled.div`
   background-color: ${({ theme }) => theme.bgToken};
   border-radius: 8px;
   transition: all 1s ease-out;
-  height: 1.625rem;
-  min-width: 1.625rem;
+  height: 2rem;
+  min-width: 2rem;
   & > img {
     border-radius: 8px;
-    height: 1.5rem;
-    width: 1.5rem;
+    height: 1.875rem;
+    width: 1.875rem;
     transition: all 1s ease-out;
   }
-
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    border-radius: 10px;
-    height: 2.125rem;
-    min-width: 2.125rem;
-    & > img {
-      border-radius: 10px;
-      height: 2rem;
-      width: 2rem;
-      transition: all 1s ease-out;
-    }
-  `}
 `;
 
 export default function TokenPairDisplay({ pool }:{ pool: IPool }) {

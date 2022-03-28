@@ -2,17 +2,21 @@ import React from 'react';
 import styled from 'styled-components';
 import Tooltip from 'components/Tooltip';
 import Big from 'big.js';
-import { ButtonPrimary, ButtonSecondary } from 'components/Button';
+import { ButtonClaim, ButtonPrimary, ButtonSecondary } from 'components/Button';
 import { IPool, useStore } from 'store';
 import { SpecialContainer } from 'components/SpecialContainer';
-import { useNavigate } from 'react-router-dom';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { ReactComponent as AddIcon } from 'assets/images-app/icon-add.svg';
 import {
   toAddLiquidityPage, toRemoveLiquidityPage, toStakePage, toUnStakeAndClaimPage,
 } from 'utils/routes';
 import { useTranslation } from 'react-i18next';
 import getConfig from 'services/config';
-import TokenPairDisplay from 'components/TokenPairDisplay';
+import TokenPairDisplay from 'components/TokensDisplay/TokenPairDisplay';
+import RewardTokens from 'components/TokensDisplay/RewardTokens';
+import FarmContract from 'services/FarmContract';
+import { removeTrailingZeros } from 'utils/calculations';
+import { isMobile } from 'utils/userAgent';
 
 const config = getConfig();
 
@@ -24,9 +28,17 @@ const Wrapper = styled(SpecialContainer)<{isFarming: boolean}>`
   border-radius: 24px;
   justify-content: space-between;
   margin: 0 0 1rem 0;
+  padding-top: 18px;
+  min-height: 160px;
   & > div:first-child {
-    margin-bottom: 1.5rem;
+    min-height: 40px;
   }
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+      & > div:first-child {
+      margin-bottom: 1.563rem;
+    }
+  `}
   ::before{
     border-radius: 24px;
   }
@@ -39,6 +51,7 @@ const UpperRow = styled.div`
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     flex-direction: column-reverse;
     align-items: flex-start;
+    
   `}
 `;
 
@@ -55,20 +68,10 @@ const LowerRow = styled.div`
 const LabelPool = styled.div`
   display: flex;
   align-items: center;
-  p {
-    font-weight: 500;
-    font-size: .75rem;
-    line-height: .875rem;
-    color: ${({ theme }) => theme.globalWhite};
-    margin: 0 1rem 0 0;
-  }
+  min-height: 40px;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     width: 100%;
     justify-content: flex-end;
-    p {
-      flex: 1;
-      text-align: left;
-    }
   `}
 `;
 
@@ -162,12 +165,49 @@ const LogoButton = styled(AddIcon)`
   height: 12px;
   margin-right: .625rem;
 `;
+
+const BtnClaim = styled(ButtonClaim)`
+  min-width: 120px;
+  margin-left: 1.5rem;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    justify-content: center;
+    margin: 0;
+    & > span:last-child {
+      margin-left: 1rem;
+    }
+  `}
+`;
+
 interface IVolume {
   title: string;
   label: string;
   color?: boolean;
   tooltip: string;
 }
+
+interface IButtons {
+  toPageAdd: string,
+  titleAdd: string,
+  toPageRemove: string,
+  titleRemove: string,
+  showButton: boolean
+  navigate: NavigateFunction;
+}
+
+const Buttons = ({
+  toPageAdd, titleAdd, toPageRemove, titleRemove, showButton, navigate,
+}: IButtons) => (
+  <>
+    {showButton && (
+    <BtnSecondary onClick={() => navigate(toPageRemove)}>
+      {titleRemove}
+    </BtnSecondary>
+    )}
+    <BtnPrimary onClick={() => navigate(toPageAdd)}>
+      <LogoButton /> {titleAdd}
+    </BtnPrimary>
+  </>
+);
 
 export default function PoolCard(
   {
@@ -181,6 +221,7 @@ export default function PoolCard(
   const {
     tokens,
     farms,
+    prices,
   } = useStore();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -193,8 +234,21 @@ export default function PoolCard(
   const jumboToken = tokens[config.jumboAddress] ?? null;
   const JumboTokenInPool = jumboToken === (tokenInput || tokenOutput);
 
-  const farmId = pool.farm ? pool.farm[0] : ''; // todo: fix it
-  const farm = farms[farmId] ?? null; // todo: fix it
+  const farm = !pool.farm ? [] : pool.farm?.map((el) => farms[el]);
+  const rewardFarm = farm.filter((el) => Big(el.claimedReward ?? 0).gt(0));
+
+  const rewardPrice = rewardFarm.reduce((sum, el) => {
+    const priceToken = prices[el.rewardToken.contractId] ?? null;
+    const tokenAmount = el.claimedReward;
+    const amount = Big(tokenAmount).mul(priceToken?.price ?? '0');
+    return Big(sum).plus(amount).toFixed(2);
+  }, '0');
+
+  const rewardList = farm.map((el) => ({
+    token: el.rewardToken,
+    seedId: el.seedId,
+    userRewardAmount: el.userReward ?? '0',
+  }));
 
   const volume: IVolume[] = [
     {
@@ -214,17 +268,40 @@ export default function PoolCard(
       tooltip: t('tooltipTitle.APY'),
     },
   ];
-
   const canWithdraw = Big(pool.shares || '0').gt('0');
-  const canUnStake = Big(farm?.userStaked || '0').gt('0');
+  const canUnStake = farm.some((el) => Big(el.userStaked || '0').gt('0'));
+  const canClaim = rewardFarm.some((el) => Big(el.userReward ?? '0').gt('0'));
+
+  const onClaim = () => {
+    if (!canClaim) return;
+    const contract = new FarmContract();
+    contract.withdrawAllReward(rewardList);
+  };
 
   return (
     <Wrapper isFarming={isFarming}>
       <UpperRow>
         <TokenPairDisplay pool={pool} />
         <LabelPool>
-          {JumboTokenInPool && <JumboBlock>Jumbo</JumboBlock>}
-          {pool.farm && <FarmBlock>Farm</FarmBlock>}
+          {isFarming
+            ? (
+              <>
+                <RewardTokens rewardTokens={rewardList.map((el) => el.token)} />
+                {!isMobile && canClaim && (
+                <BtnClaim onClick={onClaim}>
+                  <span>${removeTrailingZeros(rewardPrice)} </span>
+                  <span>Claim</span>
+                </BtnClaim>
+                )}
+
+              </>
+            )
+            : (
+              <>
+                {JumboTokenInPool && <JumboBlock>Jumbo</JumboBlock>}
+                {pool.farm && <FarmBlock>Farm</FarmBlock>}
+              </>
+            )}
         </LabelPool>
       </UpperRow>
       <LowerRow>
@@ -243,44 +320,33 @@ export default function PoolCard(
           {isFarming
             ? (
               <>
-                {canUnStake && (
-                <BtnSecondary
-                  onClick={() => {
-                    navigate(toUnStakeAndClaimPage(pool.id));
-                  }}
+                <Buttons
+                  toPageAdd={toStakePage(pool.id)}
+                  titleAdd={t('action.stake')}
+                  toPageRemove={toUnStakeAndClaimPage(pool.id)}
+                  titleRemove={t('action.unStakeAndClaim')}
+                  showButton={canUnStake}
+                  navigate={navigate}
+                />
+                {isMobile && (
+                <BtnClaim
+                  onClick={onClaim}
                 >
-                  {t('action.unStakeAndClaim')}
-                </BtnSecondary>
+                  <span>${removeTrailingZeros(rewardPrice)} </span>
+                  <span>Claim</span>
+                </BtnClaim>
                 )}
-
-                <BtnPrimary
-                  onClick={() => {
-                    navigate(toStakePage(pool.id));
-                  }}
-                >
-                  <LogoButton /> {t('action.stake')}
-                </BtnPrimary>
               </>
             )
             : (
-              <>
-                {canWithdraw && (
-                <BtnSecondary
-                  onClick={() => {
-                    navigate(toRemoveLiquidityPage(pool.id));
-                  }}
-                >
-                  {t('action.removeLiquidity')}
-                </BtnSecondary>
-                )}
-                <BtnPrimary
-                  onClick={() => {
-                    navigate(toAddLiquidityPage(pool.id));
-                  }}
-                >
-                  <LogoButton /> {t('action.addLiquidity')}
-                </BtnPrimary>
-              </>
+              <Buttons
+                toPageAdd={toAddLiquidityPage(pool.id)}
+                titleAdd={t('action.addLiquidity')}
+                toPageRemove={toRemoveLiquidityPage(pool.id)}
+                titleRemove={t('action.removeLiquidity')}
+                showButton={canWithdraw}
+                navigate={navigate}
+              />
             )}
         </BlockButton>
       </LowerRow>

@@ -36,14 +36,14 @@ export enum FilterPoolsEnum {
   'Smart Pools',
 }
 
-interface IFilters {
+export interface IFilters {
   title: string
   isActive: FilterPoolsEnum,
   disabled?: boolean,
   logoSoon?: boolean,
 }
 
-const filters: IFilters[] = [
+export const filters: IFilters[] = [
   {
     title: 'All Pools',
     isActive: FilterPoolsEnum['All Pools'],
@@ -88,12 +88,19 @@ export default function Pool() {
   const [totalValueLocked, setTotalValueLocked] = useState('0');
   const [poolsArray, setPoolsArray] = useState<IPool[]>([]);
 
-  const rewardList = Object.values(farms).filter((el) => Big(el.claimedReward).gt(0));
+  const rewardList = Object.values(farms).filter((el) => Big(el.userReward ?? 0).gt(0));
   const canClaimAll = rewardList.length > 0;
 
+  const rewards = rewardList.map((el) => ({
+    token: el.rewardToken,
+    seedId: el.seedId,
+    userRewardAmount: el.userReward ?? '0',
+  }));
+
   const rewardPrice = rewardList.reduce((sum, el) => {
-    const priceToken = prices[el.rewardToken.contractId] ?? null;
-    return Big(sum).plus(priceToken?.price ?? '0').toFixed(2);
+    const priceToken = prices[el.rewardTokenId] ?? null;
+    const amount = Big(el.userReward ?? 0).mul(priceToken?.price ?? '0');
+    return Big(sum).plus(amount).toFixed(2);
   }, '0');
 
   useEffect(() => {
@@ -190,7 +197,7 @@ export default function Pool() {
                   onClick={() => {
                     if (!canClaimAll) return;
                     const contract = new FarmContract();
-                    // contract.withdrawAllReward();
+                    contract.withdrawAllReward(rewards);
                   }}
                 >
                   <span>${removeTrailingZeros(rewardPrice)} </span>
@@ -199,7 +206,7 @@ export default function Pool() {
                 <RewardList>
                   {rewardList.map((el) => {
                     const claimReward = formatTokenAmount(
-                      el.claimedReward, el.rewardToken.metadata.decimals, 6,
+                      el.userReward ?? '0', el.rewardToken.metadata.decimals, 6,
                     );
                     const tokenSymbol = el.rewardToken.metadata.symbol;
                     return (

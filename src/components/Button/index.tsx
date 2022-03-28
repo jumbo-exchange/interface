@@ -140,8 +140,8 @@ export const ButtonClaim = styled.button`
   & > span:last-child {
     font-style: normal;
     font-weight: 500;
-    font-size: 14px;
-    line-height: 17px;
+    font-size: 1rem;
+    line-height: 1.063rem;
     color: ${({ theme }) => theme.pink};
   }
 

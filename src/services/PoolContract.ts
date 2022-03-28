@@ -225,7 +225,7 @@ export default class PoolContract {
     }:
     {
       pool: IPool,
-      shares: string | undefined;
+      shares: string;
       minAmounts: { [tokenId: string]: string; };
       slippageTolerance?: string
     },

@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 import { SpecialContainer } from 'components/SpecialContainer';
 import { ReactComponent as Soon } from 'assets/images-app/logo-soon.svg';
-import { ButtonClaim } from 'components/Button';
 
 export const Container = styled.div`
   display: flex;
@@ -102,7 +101,7 @@ export const RewardList = styled.div`
   & > p {
     margin: 4px 0;
     font-weight: 300;
-    font-size: 12px;
-    line-height: 14px;
+    font-size: .75rem;
+    line-height: .875rem;
   }
 `;

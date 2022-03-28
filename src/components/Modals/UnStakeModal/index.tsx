@@ -11,7 +11,7 @@ import { POOL } from 'utils/routes';
 import { formatTokenAmount } from 'utils/calculations';
 import Big from 'big.js';
 import { POOL_SHARES_DECIMALS, LP_TOKEN_DECIMALS } from 'utils/constants';
-import TokenPairDisplay from 'components/TokenPairDisplay';
+import TokenPairDisplay from 'components/TokensDisplay/TokenPairDisplay';
 import {
   Layout, ModalBlock, ModalIcon, ModalTitle,
 } from '../styles';
@@ -51,9 +51,8 @@ export default function UnStakeModal() {
 
   const onSubmit = () => {
     const stakeValueBN = new Big(unStakeValue);
-    const shareBN = new Big(formatTokenAmount(pool?.shares ?? '', POOL_SHARES_DECIMALS));
     if (Number(unStakeValue) === 0) return;
-    if (stakeValueBN.gt(shareBN)) return;
+    if (stakeValueBN.gt(formattedFarmShares)) return;
 
     const contract = new FarmContract();
     if (!unStakeModalOpenState.pool) return;

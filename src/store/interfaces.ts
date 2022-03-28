@@ -59,27 +59,30 @@ export interface Farm {
   type: string;
   status: string;
   seedId: string;
+  rewardTokenId: string;
   rewardToken: FungibleTokenContract;
   startAt: number;
   rewardPerSession: number;
   sessionInterval: number;
-  totalReward: number;
+  totalReward: string;
   curRound: number;
   lastRound: number;
   claimedReward: string;
-  unclaimedReward: number;
-  currentUserReward?: number;
+  unclaimedReward: string;
 
   pool: IPool;
   lpTokenId: string;
-  rewardNumber?: string;
-  userStaked?: string;
+  totalSeedAmount: string;
   rewardsPerWeek: string;
   tokenAccountIds: string[];
-  seedAmount: string;
-  // userRewardsPerWeek: string;
-  // userUnclaimedReward: string;
-  // totalStaked: number;
+
+  userStaked?: string;
+  userUnclaimedReward?: string;
+  userRewardByTokenId?: string;
+  userAllRewards?: {[key: string]: string};
+  userReward?: string;
+
+  // totalStaked: string;
   // apr: string;
 }
 

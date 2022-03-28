@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { SpecialContainer } from 'components/SpecialContainer';
-import { IMainInfo } from './index';
+import { IMainInfo } from '.';
 import { InfoBLock, TitleInfo, LabelInfo } from './styles';
 
 const Container = styled(SpecialContainer)`
@@ -81,6 +81,9 @@ export default function Slider({ mainInfo }: {mainInfo: IMainInfo[]}) {
         <SliderLink />
         <SliderLink />
       </SliderNav>
+      {
+      // TODO: claim button
+      }
     </Container>
   );
 }

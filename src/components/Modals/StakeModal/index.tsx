@@ -12,7 +12,7 @@ import { POOL_SHARES_DECIMALS } from 'utils/constants';
 import FarmContract from 'services/FarmContract';
 import Big from 'big.js';
 
-import TokenPairDisplay from 'components/TokenPairDisplay';
+import TokenPairDisplay from 'components/TokensDisplay/TokenPairDisplay';
 import {
   Layout, ModalBlock, ModalIcon, ModalTitle,
 } from '../styles';

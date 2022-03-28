@@ -185,8 +185,7 @@ export function formatFarm(
   const { tokenAccountIds } = pool;
 
   const rewardToken = metadataMap[farm.reward_token] ?? null;
-  const seed = seeds[farm.seed_id];
-  const seedAmount = seed ?? '0';
+  const totalSeedAmount = seeds[farm.seed_id] ?? '0';
 
   const rewardNumberPerWeek = Big(farm.reward_per_session)
     .div(farm.session_interval)
@@ -195,7 +194,8 @@ export function formatFarm(
 
   const rewardsPerWeek = Big(formatTokenAmount(
     rewardNumberPerWeek, rewardToken.metadata.decimals,
-  )).toFixed(4);
+  )).toFixed(4); // TODO: need check if user have this token
+
   return {
     id,
     farmId: farm.farm_id,
@@ -203,6 +203,7 @@ export function formatFarm(
     status: farm.farm_status,
     seedId: farm.seed_id,
     rewardToken,
+    rewardTokenId: farm.reward_token,
     startAt: farm.start_at,
     rewardPerSession: farm.reward_per_session,
     sessionInterval: farm.session_interval,
@@ -211,11 +212,12 @@ export function formatFarm(
     lastRound: farm.last_round,
     claimedReward: farm.claimed_reward,
     unclaimedReward: farm.unclaimed_reward,
-    currentUserReward: farm.current_user_reward,
+
     lpTokenId,
     pool,
     rewardsPerWeek,
-    seedAmount,
+    totalSeedAmount,
     tokenAccountIds,
+
   };
 }

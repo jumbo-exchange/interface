@@ -73,6 +73,7 @@ export interface ThemeColors {
   bgToken: string;
 
   farmingBg: string;
+  rewardTokensBg: string;
 }
 
 export const colors: ThemeColors = {
@@ -129,6 +130,7 @@ export const colors: ThemeColors = {
   bgToken: '#dfe2e8',
 
   farmingBg: '#2E253E',
+  rewardTokensBg: '#201B2C',
 };
 
 function theme(): DefaultTheme {

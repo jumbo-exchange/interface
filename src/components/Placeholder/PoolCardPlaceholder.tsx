@@ -10,6 +10,8 @@ const Wrapper = styled(SpecialContainer)<{isFarming: boolean}>`
   border-radius: 24px;
   justify-content: space-between;
   margin: 0 0 1rem 0;
+  min-height: 160px;
+
   & > div:first-child {
     margin-bottom: 1.5rem;
   }

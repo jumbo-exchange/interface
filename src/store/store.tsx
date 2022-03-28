@@ -19,6 +19,7 @@ import {
 } from 'utils/constants';
 import { formatTokenAmount } from 'utils/calculations';
 import FarmContract from 'services/FarmContract';
+import Big from 'big.js';
 import { Farm, ITokenPrice, PoolType } from './interfaces';
 
 const config = getConfig();
@@ -254,14 +255,18 @@ export const StoreContextProvider = (
           newFarmArray = await Promise.all(farmArray
             .map(async (farm: Farm) => {
               const staked = await farmContract.getStakedListByAccountId();
-              const rewards = await farmContract.getRewards();
-              const currentUserReward = await farmContract.getUnclaimedReward(farm.farmId);
+              const userAllRewards = await farmContract.getRewards();
+              const userUnclaimedReward = await farmContract.getUnclaimedReward(farm.farmId);
+              const userRewardByTokenId = await farmContract.getRewardByTokenId(farm.rewardTokenId);
+              const userReward = Big(userUnclaimedReward).plus(userRewardByTokenId).toFixed();
 
               return {
                 ...farm,
                 userStaked: staked[farm.seedId] || null,
-                rewardNumber: rewards[farm.rewardToken] || null,
-                currentUserReward,
+                userAllRewards: userAllRewards[farm.rewardTokenId] || null,
+                userUnclaimedReward,
+                userRewardByTokenId,
+                userReward,
               };
             }));
         } catch (e) {

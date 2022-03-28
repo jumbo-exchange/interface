@@ -8,6 +8,7 @@ import { parseTokenAmount } from 'utils/calculations';
 import sendTransactions, { wallet } from './near';
 import { createContract, Transaction } from './wallet';
 import getConfig from './config';
+import FungibleTokenContract from './FungibleToken';
 
 const basicViewMethods = [
   'get_number_of_farms',
@@ -21,13 +22,14 @@ const basicViewMethods = [
   'list_seeds',
   'list_user_seeds',
   'get_unclaimed_reward',
-
   'storage_balance_of',
-  'withdraw_reward',
+
+  'get_reward',
 ];
 
 const basicChangeMethods = [
   'storage_deposit',
+  'withdraw_reward',
 ];
 
 const config = getConfig();
@@ -70,6 +72,11 @@ export default class FarmContract {
   async getListFarms(fromIndex: number, limit: number) {
     // @ts-expect-error: Property 'list_farms' does not exist on type 'Contract'.
     return this.contract.list_farms({ from_index: fromIndex, limit });
+  }
+
+  async getRewardByTokenId(tokenId: string, accountId = wallet.getAccountId()) {
+    // @ts-expect-error: Property 'get_reward' does not exist on type 'Contract'.
+    return this.contract.get_reward({ account_id: accountId, token_id: tokenId });
   }
 
   async getRewards(accountId = wallet.getAccountId()) {
@@ -179,6 +186,67 @@ export default class FarmContract {
         gas: '200000000000000',
       }],
     });
+    sendTransactions(transactions, this.walletInstance);
+  }
+
+  // async claimRewardBySeed(seedId: string) {
+  //   const transactions: Transaction[] = [];
+  //   transactions.push({
+  //     receiverId: this.contractId,
+  //     functionCalls: [{
+  //       methodName: 'claim_reward_by_seed',
+  //       args: { seed_id: seedId },
+  //       amount: '0',
+  //       gas: '100000000000000',
+  //     }],
+  //   });
+  //   return transactions;
+  // }
+
+  async withdrawAllReward(
+    //! the seed farms and the array to be output should be returned
+    rewardList: {
+      token: FungibleTokenContract;
+      seedId: string;
+      userRewardAmount: string;
+  }[],
+  ) {
+    let transactions: Transaction[] = [];
+
+    const storageDeposits = await Promise.all(
+      rewardList.map((reward) => reward
+        .token.contract.checkSwapStorageBalance(wallet.getAccountId())),
+    );
+    if (storageDeposits.length) transactions = transactions.concat(...storageDeposits);
+
+    rewardList.map(async (farmReward) => {
+      // const claimReward = await this.claimRewardBySeed(farmReward.seedId);
+      // transactions.push(...claimReward);
+
+      transactions.push({
+        receiverId: this.contractId,
+        functionCalls: [{
+          methodName: 'claim_reward_by_seed',
+          args: { seed_id: farmReward.seedId },
+          amount: '0',
+          gas: '100000000000000',
+        }],
+      });
+
+      transactions.push({
+        receiverId: this.contractId,
+        functionCalls: [{
+          methodName: 'withdraw_reward',
+          args: {
+            token_id: farmReward.token.contractId,
+            amount: farmReward.userRewardAmount,
+          },
+          gas: '40000000000000',
+          amount: ONE_YOCTO_NEAR,
+        }],
+      });
+    });
+
     sendTransactions(transactions, this.walletInstance);
   }
 }
