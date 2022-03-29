@@ -74,7 +74,7 @@ export default function Pool() {
   const { t } = useTranslation();
 
   const {
-    pools, loading, prices, farms,
+    pools, loading, prices, userRewards, tokens, farms,
   } = useStore();
   const {
     setAddLiquidityModalOpenState,
@@ -88,18 +88,22 @@ export default function Pool() {
   const [totalValueLocked, setTotalValueLocked] = useState('0');
   const [poolsArray, setPoolsArray] = useState<IPool[]>([]);
 
-  const rewardList = Object.values(farms).filter((el) => Big(el.userReward ?? 0).gt(0));
-  const canClaimAll = rewardList.length > 0;
-
-  const rewards = rewardList.map((el) => ({
-    token: el.rewardToken,
-    seedId: el.seedId,
-    userRewardAmount: el.userReward ?? '0',
+  const rewardTokenId = Object.keys(userRewards);
+  const rewardList = rewardTokenId.map((tokenId) => ({
+    token: tokens[tokenId] ?? null,
+    value: userRewards[tokenId].valueOf(),
   }));
 
-  const rewardPrice = rewardList.reduce((sum, el) => {
-    const priceToken = prices[el.rewardTokenId] ?? null;
-    const amount = Big(el.userReward ?? 0).mul(priceToken?.price ?? '0');
+  const allFarms = Object.values(farms);
+  const userUnclaimedRewards = allFarms.filter((farm) => Big(farm.userUnclaimedReward || 0).gt(0));
+  console.log(userUnclaimedRewards);
+
+  const canClaimAll = rewardList.every((el) => Big(el.value).gt(0));
+  // console.log(canClaimAll);
+
+  const rewardPrice = rewardList.reduce((sum, { token, value }) => {
+    const priceToken = prices[token?.contractId ?? ''] ?? null;
+    const amount = Big(value).mul(priceToken?.price ?? '0');
     return Big(sum).plus(amount).toFixed(2);
   }, '0');
 
@@ -135,7 +139,8 @@ export default function Pool() {
     setTotalValueLocked(newTotalValueLocked.toFixed(2));
   }, [pools, poolsArray.length, loading]);
 
-  const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum['All Pools']);
+  // const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum['All Pools']);
+  const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum.Farming);
 
   const mainInfo: IMainInfo[] = [
     {
@@ -203,20 +208,23 @@ export default function Pool() {
                   onClick={() => {
                     if (!canClaimAll) return;
                     const contract = new FarmContract();
-                    contract.withdrawAllReward(rewards);
+                    contract.withdrawAllReward(rewardList);
                   }}
                 >
                   <span>${removeTrailingZeros(rewardPrice)} </span>
                   <span>Claim All</span>
                 </ButtonClaim>
                 <RewardList>
-                  {rewardList.map((el) => {
+                  {rewardList.map(({ token, value }) => {
+                    if (!token) return null;
                     const claimReward = formatTokenAmount(
-                      el.userReward ?? '0', el.rewardToken.metadata.decimals, 6,
+                      value, token?.metadata.decimals, 6,
                     );
-                    const tokenSymbol = el.rewardToken.metadata.symbol;
+                    const tokenSymbol = token?.metadata.symbol;
                     return (
-                      <p key={el.farmId}>{claimReward} <span>{tokenSymbol}</span></p>
+                      <p key={tokenSymbol}>
+                        {claimReward} <span>{tokenSymbol}</span>
+                      </p>
                     );
                   })}
                 </RewardList>

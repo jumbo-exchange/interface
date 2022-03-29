@@ -189,33 +189,31 @@ export default class FarmContract {
     sendTransactions(transactions, this.walletInstance);
   }
 
-  // async claimRewardBySeed(seedId: string) {
-  //   const transactions: Transaction[] = [];
-  //   transactions.push({
-  //     receiverId: this.contractId,
-  //     functionCalls: [{
-  //       methodName: 'claim_reward_by_seed',
-  //       args: { seed_id: seedId },
-  //       amount: '0',
-  //       gas: '100000000000000',
-  //     }],
-  //   });
-  //   return transactions;
-  // }
+  async claimRewardBySeed(seedId: string) {
+    const transactions: Transaction[] = [];
+    transactions.push({
+      receiverId: this.contractId,
+      functionCalls: [{
+        methodName: 'claim_reward_by_seed',
+        args: { seed_id: seedId },
+        amount: '0',
+        gas: '100000000000000',
+      }],
+    });
+    return transactions;
+  }
 
   async withdrawAllReward(
     //! the seed farms and the array to be output should be returned
     rewardList: {
       token: FungibleTokenContract;
-      seedId: string;
-      userRewardAmount: string;
+      value: string;
   }[],
   ) {
     let transactions: Transaction[] = [];
 
     const storageDeposits = await Promise.all(
-      rewardList.map((reward) => reward
-        .token.contract.checkSwapStorageBalance(wallet.getAccountId())),
+      rewardList.map((reward) => reward.token.checkSwapStorageBalance(wallet.getAccountId())),
     );
     if (storageDeposits.length) transactions = transactions.concat(...storageDeposits);
 
@@ -226,20 +224,10 @@ export default class FarmContract {
       transactions.push({
         receiverId: this.contractId,
         functionCalls: [{
-          methodName: 'claim_reward_by_seed',
-          args: { seed_id: farmReward.seedId },
-          amount: '0',
-          gas: '100000000000000',
-        }],
-      });
-
-      transactions.push({
-        receiverId: this.contractId,
-        functionCalls: [{
           methodName: 'withdraw_reward',
           args: {
             token_id: farmReward.token.contractId,
-            amount: farmReward.userRewardAmount,
+            amount: farmReward.value,
           },
           gas: '40000000000000',
           amount: ONE_YOCTO_NEAR,

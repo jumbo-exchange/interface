@@ -233,22 +233,8 @@ export default function PoolCard(
 
   const jumboToken = tokens[config.jumboAddress] ?? null;
   const JumboTokenInPool = jumboToken === (tokenInput || tokenOutput);
-  console.log(pool);
+
   const farm = !pool.farm ? [] : pool.farm?.map((el) => farms[el]);
-  const rewardFarm = farm.filter((el) => Big(el.claimedReward ?? 0).gt(0));
-
-  const rewardPrice = rewardFarm.reduce((sum, el) => {
-    const priceToken = prices[el.rewardTokenId] ?? null;
-    const tokenAmount = el.claimedReward;
-    const amount = Big(tokenAmount).mul(priceToken?.price ?? '0');
-    return Big(sum).plus(amount).toFixed(2);
-  }, '0');
-
-  const rewardList = farm.map((el) => ({
-    token: el.rewardToken,
-    seedId: el.seedId,
-    userRewardAmount: el.userReward ?? '0',
-  }));
 
   const volume: IVolume[] = [
     {
@@ -270,12 +256,9 @@ export default function PoolCard(
   ];
   const canWithdraw = Big(pool.shares || '0').gt('0');
   const canUnStake = farm.some((el) => Big(el.userStaked || '0').gt('0'));
-  const canClaim = rewardFarm.some((el) => Big(el.userReward ?? '0').gt('0'));
 
   const onClaim = () => {
-    if (!canClaim) return;
     const contract = new FarmContract();
-    contract.withdrawAllReward(rewardList);
   };
 
   return (
@@ -286,13 +269,13 @@ export default function PoolCard(
           {isFarming
             ? (
               <>
-                <RewardTokens rewardTokens={rewardList.map((el) => el.token)} />
+                {/* <RewardTokens rewardTokens={rewardList.map((el) => el.token)} />
                 {!isMobile && canClaim && (
                 <BtnClaim onClick={onClaim}>
                   <span>${removeTrailingZeros(rewardPrice)} </span>
                   <span>Claim</span>
                 </BtnClaim>
-                )}
+                )} */}
 
               </>
             )
@@ -332,7 +315,7 @@ export default function PoolCard(
                 <BtnClaim
                   onClick={onClaim}
                 >
-                  <span>${removeTrailingZeros(rewardPrice)} </span>
+                  {/* <span>${removeTrailingZeros(rewardPrice)} </span> */}
                   <span>Claim</span>
                 </BtnClaim>
                 )}
