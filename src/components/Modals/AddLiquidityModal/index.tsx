@@ -13,7 +13,7 @@ import {
   toNonDivisibleNumber,
 } from 'utils/calculations';
 import { wallet } from 'services/near';
-import { POOL_SHARES_DECIMALS } from 'utils/constants';
+import { LP_TOKEN_DECIMALS } from 'utils/constants';
 import Big from 'big.js';
 import Refresh from 'components/Refresh';
 import { POOL } from 'utils/routes';
@@ -89,7 +89,7 @@ export default function AddLiquidityModal() {
       }
       setInputTokenValue(value);
       setOutputTokenValue(outputValue);
-      setPreShare(formatTokenAmount(fairShares, POOL_SHARES_DECIMALS));
+      setPreShare(formatTokenAmount(fairShares, LP_TOKEN_DECIMALS));
     }
   };
 
@@ -115,7 +115,7 @@ export default function AddLiquidityModal() {
       }
       setOutputTokenValue(value);
       setInputTokenValue(inputValue);
-      setPreShare(formatTokenAmount(fairShares, POOL_SHARES_DECIMALS));
+      setPreShare(formatTokenAmount(fairShares, LP_TOKEN_DECIMALS));
     }
   };
 

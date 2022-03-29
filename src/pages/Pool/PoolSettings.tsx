@@ -188,6 +188,7 @@ export default function PoolSettings({
 
   const [currentAPRFilter, setCurrentAPRFilter] = useState(APRFiletEnum['24H']);
   const [searchValue, setSearchValue] = useState<string>('');
+  const isShowingCreatePool = currentFilterPools !== FilterPoolsEnum.Farming;
 
   const onChange = (value: string) => {
     const newValue = value.trim().toUpperCase();
@@ -252,11 +253,13 @@ export default function PoolSettings({
             </FilterBlock>
           </APYWrapper>
         </MobileRow>
+        {isShowingCreatePool && (
         <ButtonSecondary
           onClick={() => setCreatePoolModalOpen(true)}
         >
           <LogoPlus /> {t('action.createPool')}
         </ButtonSecondary>
+        )}
       </MobileContainer>
     );
   }
@@ -294,11 +297,13 @@ export default function PoolSettings({
         </FilterBlock>
       </APYWrapper>
       <Title><Refresh /></Title>
+      { isShowingCreatePool && (
       <ButtonSecondary
         onClick={() => setCreatePoolModalOpen(true)}
       >
         <LogoPlus /> {t('action.createPool')}
       </ButtonSecondary>
+      )}
     </Container>
   );
 }

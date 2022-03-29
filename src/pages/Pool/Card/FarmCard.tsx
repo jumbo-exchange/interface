@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next';
 import TokenPairDisplay from 'components/TokensDisplay/TokenPairDisplay';
 import RewardTokens from 'components/TokensDisplay/RewardTokens';
 import { PoolOrFarmButtons } from 'components/Button/RenderButton';
+import { formatTokenAmount, removeTrailingZeros } from 'utils/calculations';
+import { LP_TOKEN_DECIMALS } from 'utils/constants';
 import {
   Wrapper,
   UpperRow,
@@ -27,31 +29,37 @@ interface IVolume {
   tooltip: string;
 }
 
+const calcStakedAmount = (shares: string, pool: IPool) => {
+  const { sharesTotalSupply, totalLiquidity } = pool;
+  const formatTotalShares = formatTokenAmount(sharesTotalSupply, LP_TOKEN_DECIMALS);
+  const formatShares = formatTokenAmount(shares, LP_TOKEN_DECIMALS);
+
+  const numerator = Big(formatShares).times(totalLiquidity);
+  const sharesInUsdt = Big(numerator).div(formatTotalShares).toFixed(2);
+  return removeTrailingZeros(sharesInUsdt);
+};
+
 export default function FarmCard({ pool } : { pool: IPool }) {
-  const {
-    tokens,
-    farms,
-  } = useStore();
+  const { farms } = useStore();
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const [inputToken, outputToken] = pool.tokenAccountIds;
-  const tokenInput = tokens[inputToken] ?? null;
-  const tokenOutput = tokens[outputToken] ?? null;
-  if (!tokenInput || !tokenOutput) return null;
-
   const farmsInPool = pool.farms?.length ? pool.farms.map((el) => farms[el]) : [];
+  const { totalSeedAmount, userStaked } = farmsInPool[0];
+
+  const totalStaked = calcStakedAmount(totalSeedAmount, pool);
+  const yourStaked = calcStakedAmount(userStaked || '0', pool);
 
   const volume: IVolume[] = [
     {
       title: t('farm.totalStaked'),
-      label: '-',
-      tooltip: t('tooltipTitle.totalLiquidity'),
+      label: Big(totalStaked).gt(0) ? `$${totalStaked}` : '-',
+      tooltip: t('tooltipTitle.totalStaked'),
     },
     {
       title: t('farm.yourStaked'),
-      label: '-',
-      tooltip: t('tooltipTitle.dayVolume'),
+      label: Big(yourStaked).gt(0) ? `$${yourStaked}` : '-',
+      tooltip: t('tooltipTitle.yourStaked'),
     },
     {
       title: t('farm.APY'),

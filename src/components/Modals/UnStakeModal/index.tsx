@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { POOL } from 'utils/routes';
 import { formatTokenAmount } from 'utils/calculations';
 import Big from 'big.js';
-import { POOL_SHARES_DECIMALS, LP_TOKEN_DECIMALS } from 'utils/constants';
+import { LP_TOKEN_DECIMALS } from 'utils/constants';
 import TokenPairDisplay from 'components/TokensDisplay/TokenPairDisplay';
 import {
   Layout, ModalBlock, ModalIcon, ModalTitle,
@@ -25,9 +25,7 @@ import {
 const INITIAL_INPUT_PLACEHOLDER = '';
 
 export default function UnStakeModal() {
-  const {
-    farms,
-  } = useStore();
+  const { farms } = useStore();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -39,10 +37,11 @@ export default function UnStakeModal() {
   const [unStakeValue, setUnStakeValue] = useState<string>(INITIAL_INPUT_PLACEHOLDER);
 
   if (!pool) return null;
+  const [farmsInPool] = pool.farms?.length ? pool.farms.map((el) => farms[el]) : [];
+  if (!farmsInPool) return null;
 
-  const farm = farms[pool.farms ? pool.farms[0] : '']; // todo: fix it
-
-  const formattedFarmShares = formatTokenAmount(farm?.userStaked ?? '0', LP_TOKEN_DECIMALS);
+  const { userStaked, seedId } = farmsInPool;
+  const formattedFarmShares = formatTokenAmount(userStaked ?? '0', LP_TOKEN_DECIMALS);
 
   const buttonDisabled = unStakeValue
     ? (new Big(unStakeValue).lte(0)
@@ -57,7 +56,7 @@ export default function UnStakeModal() {
     const contract = new FarmContract();
     if (!unStakeModalOpenState.pool) return;
     contract.unstake(
-      farm.seedId,
+      seedId,
       unStakeValue,
       pool.id,
     );

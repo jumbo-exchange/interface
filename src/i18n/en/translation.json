@@ -129,7 +129,10 @@
     "totalFee": "A sum paid for creating a pool",
     "lPFee": "A sum paid for providing liquidity",
     "protocolFee": "A sum deducted from pool creation that accrues on platform",
-    "referralFee": "A sum you get from referred user as reward"
+    "referralFee": "A sum you get from referred user as reward",
+    
+    "totalStaked": "Amount of staked in the current pool",
+    "yourStaked": "Amount of YOUR staked in the current pool"
   },
   
   "footer": {

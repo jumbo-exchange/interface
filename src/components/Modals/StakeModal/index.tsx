@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useModalsStore, useStore, CurrentButton } from 'store';
+import { useModalsStore, CurrentButton } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
 import RenderButton from 'components/Button/RenderButton';
 
@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { POOL, toAddLiquidityPage } from 'utils/routes';
 import { formatTokenAmount } from 'utils/calculations';
-import { POOL_SHARES_DECIMALS } from 'utils/constants';
+import { LP_TOKEN_DECIMALS } from 'utils/constants';
 import FarmContract from 'services/FarmContract';
 import Big from 'big.js';
 
@@ -24,7 +24,6 @@ import {
 const INITIAL_INPUT_PLACEHOLDER = '';
 
 export default function StakeModal() {
-  const { farms } = useStore();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -38,7 +37,7 @@ export default function StakeModal() {
 
   if (!pool) return null;
 
-  const formattedPoolShares = formatTokenAmount(pool?.shares ?? '0', POOL_SHARES_DECIMALS);
+  const formattedPoolShares = formatTokenAmount(pool?.shares ?? '0', LP_TOKEN_DECIMALS);
 
   const buttonDisabled = stakeValue
     ? (new Big(stakeValue).lte(0)
@@ -47,7 +46,7 @@ export default function StakeModal() {
 
   const onSubmit = () => {
     const stakeValueBN = new Big(stakeValue);
-    const shareBN = new Big(formatTokenAmount(pool?.shares ?? '', POOL_SHARES_DECIMALS));
+    const shareBN = new Big(formatTokenAmount(pool?.shares ?? '', LP_TOKEN_DECIMALS));
     if (Number(stakeValue) === 0) return;
     if (stakeValueBN.gt(shareBN)) return;
 

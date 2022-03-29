@@ -12,7 +12,7 @@ import {
   MIN_SLIPPAGE_TOLERANCE,
   slippageToleranceOptions,
   SLIPPAGE_TOLERANCE_DEFAULT,
-  POOL_SHARES_DECIMALS,
+  LP_TOKEN_DECIMALS,
 } from 'utils/constants';
 import { useModalsStore, useStore, CurrentButton } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
@@ -74,7 +74,7 @@ export default function RemoveLiquidityModal() {
   }>((acc, [tokenId, totalSupply]) => {
     acc[tokenId] = percentLess(slippageTolerance, calculateFairShare(
       totalSupply,
-      withdrawValue ? toNonDivisibleNumber(POOL_SHARES_DECIMALS, withdrawValue) : '0',
+      withdrawValue ? toNonDivisibleNumber(LP_TOKEN_DECIMALS, withdrawValue) : '0',
       checkTotalSupply,
     ), 0);
     return acc;
@@ -94,7 +94,7 @@ export default function RemoveLiquidityModal() {
 
   const onSubmit = () => {
     const withdrawValueBN = new Big(withdrawValue);
-    const shareBN = new Big(formatTokenAmount(pool?.shares ?? '', POOL_SHARES_DECIMALS));
+    const shareBN = new Big(formatTokenAmount(pool?.shares ?? '', LP_TOKEN_DECIMALS));
     if (Number(withdrawValue) === 0) return;
     if (withdrawValueBN.gt(shareBN)) return;
 
@@ -102,12 +102,12 @@ export default function RemoveLiquidityModal() {
     if (!tokenInput || !tokenOutput || !removeLiquidityModalOpenState.pool) return;
     contract.removeLiquidity({
       pool,
-      shares: parseTokenAmount(withdrawValue, POOL_SHARES_DECIMALS),
+      shares: parseTokenAmount(withdrawValue, LP_TOKEN_DECIMALS),
       minAmounts,
     });
   };
 
-  const formattedPoolShares = formatTokenAmount(pool?.shares ?? '0', POOL_SHARES_DECIMALS);
+  const formattedPoolShares = formatTokenAmount(pool?.shares ?? '0', LP_TOKEN_DECIMALS);
 
   const buttonDisabled = isConnected
     && withdrawValue

@@ -143,10 +143,11 @@ export const StoreContextProvider = (
         const pages = Math.ceil(poolsLength / DEFAULT_PAGE_LIMIT);
         const farmsPages = Math.ceil(farmsLength / DEFAULT_PAGE_LIMIT);
 
-        const [poolsResult, farmsResult, pricesData] = await Promise.all([
+        const [poolsResult, farmsResult, pricesData, seeds] = await Promise.all([
           await retrievePoolResult(pages, poolContract),
           await retrieveFarmsResult(farmsPages, farmContract),
           await getPrices(),
+          await farmContract.getSeeds(0, DEFAULT_PAGE_LIMIT),
         ]);
 
         const userTokens = await getUserWalletTokens();
@@ -160,10 +161,7 @@ export const StoreContextProvider = (
 
         let newPoolArray = poolArray;
 
-        const farmArray = await Promise.all(farmsResult.map(async (farm: any, index) => {
-          const seeds = await farmContract.getSeeds(index * DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_LIMIT);
-          return formatFarm(farm, poolArray, seeds);
-        }));
+        const farmArray = farmsResult.map((farm: any) => formatFarm(farm, poolArray, seeds));
 
         let newFarmArray = farmArray.filter(isNotNullOrUndefined);
 
