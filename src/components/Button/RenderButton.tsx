@@ -8,6 +8,7 @@ import { ReactComponent as LogoWallet } from 'assets/images-app/wallet.svg';
 import { ReactComponent as SwapIcon } from 'assets/images-app/swap-icon.svg';
 import { ReactComponent as AddIcon } from 'assets/images-app/icon-add.svg';
 import { useTranslation } from 'react-i18next';
+import { NavigateFunction } from 'react-router-dom';
 
 const Wallet = styled(LogoWallet)`
   margin-right: .625rem;
@@ -93,3 +94,46 @@ export default function RenderButton({
     </ButtonSecondary>
   );
 }
+
+const BtnPrimary = styled(ButtonPrimary)`
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    margin: .75rem 0;
+  `}
+`;
+
+const BtnSecondary = styled(ButtonSecondary)`
+  margin-right: .75rem;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    margin: 0;
+  `}
+`;
+
+const LogoButton = styled(AddIcon)`
+  width: 12px;
+  height: 12px;
+  margin-right: .625rem;
+`;
+
+interface IButtons {
+  toPageAdd: string,
+  titleAdd: string,
+  toPageRemove: string,
+  titleRemove: string,
+  showButton: boolean
+  navigate: NavigateFunction;
+}
+
+export const PoolOrFarmButtons = ({
+  toPageAdd, titleAdd, toPageRemove, titleRemove, showButton, navigate,
+}: IButtons) => (
+  <>
+    {showButton && (
+      <BtnSecondary onClick={() => navigate(toPageRemove)}>
+        {titleRemove}
+      </BtnSecondary>
+    )}
+    <BtnPrimary onClick={() => navigate(toPageAdd)}>
+      <LogoButton /> {titleAdd}
+    </BtnPrimary>
+  </>
+);

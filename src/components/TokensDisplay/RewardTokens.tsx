@@ -1,5 +1,6 @@
 import React from 'react';
-import FungibleTokenContract from 'services/FungibleToken';
+import { useTranslation } from 'react-i18next';
+import { useStore } from 'store';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -37,13 +38,15 @@ const LogoContainer = styled.div`
 `;
 
 export default function RewardTokens(
-  { rewardTokens }:{ rewardTokens: FungibleTokenContract[] },
+  { rewardTokens }:{ rewardTokens: string[] },
 ) {
+  const { tokens } = useStore();
+  const { t } = useTranslation();
   return (
     <Container>
-      <p>Reward tokens</p>
-      {rewardTokens.map((token) => {
-        if (!token?.metadata) return null;
+      <p>{t('farm.rewardTokens')}</p>
+      {rewardTokens.map((tokenId) => {
+        const token = tokens[tokenId] || null;
         return (
           <LogoContainer key={token.contractId}>
             <img src={token.metadata.icon} alt={token.metadata.symbol} />

@@ -222,7 +222,7 @@ export default function Pool() {
                   {rewardList.map(([token, value]) => {
                     const isShowing = Big(value).lte(0);
                     const tokenContract = tokens[token];
-                    if (!isShowing || !tokenContract) return null;
+                    if (isShowing || !tokenContract) return null;
                     const claimReward = formatTokenAmount(
                       value, tokenContract.metadata.decimals, 6,
                     );

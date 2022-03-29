@@ -50,6 +50,14 @@
     "APYBasis": "APY Basis"
   },
 
+  "farm": {
+    "totalStaked": "Total Staked",
+    "yourStaked": "Your Staked",
+    "APY": "APY",
+
+    "rewardTokens": "Reward Tokens"
+  },
+
   "accountModal": {
     "yourWallet": "Your Wallet",
     "connectWallet": "Connect Wallet",

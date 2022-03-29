@@ -1,11 +1,12 @@
 import React from 'react';
-import { IPool } from 'store';
+import { IFarm, IPool } from 'store';
 import { FilterPoolsEnum } from 'pages/Pool';
 import styled from 'styled-components';
 import Big from 'big.js';
 import PoolCardPlaceholder from 'components/Placeholder/PoolCardPlaceholder';
 import { useTranslation } from 'react-i18next';
-import PoolCard from './PoolCard';
+import PoolCard from './Card/PoolCard';
+import FarmCard from './Card/FarmCard';
 
 const numberPlaceholderCard = Array.from(Array(5).keys());
 const Wrapper = styled.div`
@@ -41,15 +42,13 @@ export default function PoolResult(
       .minus(a.totalLiquidity).toNumber(),
   );
 
-  const isFarming = currentFilterPools === FilterPoolsEnum.Farming;
-
   if (loading) {
     return (
       <Wrapper>
         {numberPlaceholderCard.map((el) => (
           <PoolCardPlaceholder
             key={el}
-            isFarming={isFarming}
+            isFarming={currentFilterPools === FilterPoolsEnum.Farming}
           />
         ))}
       </Wrapper>
@@ -64,7 +63,6 @@ export default function PoolResult(
           <PoolCard
             key={pool.id}
             pool={pool}
-            isFarming={isFarming}
           />
         ))}
         {filteredPools.length === 0
@@ -82,10 +80,9 @@ export default function PoolResult(
     return (
       <Wrapper>
         {farmingPool.map((pool) => (
-          <PoolCard
+          <FarmCard
             key={pool.id}
             pool={pool}
-            isFarming={isFarming}
           />
         ))}
         {poolsArraySorted.length === 0
@@ -104,7 +101,6 @@ export default function PoolResult(
         <PoolCard
           key={pool.id}
           pool={pool}
-          isFarming={isFarming}
         />
       ))}
       {poolsArraySorted.length === 0
