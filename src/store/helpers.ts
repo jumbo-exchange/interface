@@ -1,6 +1,7 @@
 import getConfig from 'services/config';
 import FungibleTokenContract from 'services/FungibleToken';
 import PoolContract from 'services/PoolContract';
+import FarmContract from 'services/FarmContract';
 import { wallet as nearWallet } from 'services/near';
 import { calculatePriceForToken, isNotNullOrUndefined, toArray } from 'utils';
 import { formatTokenAmount } from 'utils/calculations';
@@ -207,3 +208,5 @@ export const getToken = (
   tokenId: string,
   tokens: {[key: string]: FungibleTokenContract},
 ): FungibleTokenContract | null => (tokenId ? tokens[tokenId] ?? null : null);
+
+export const getUserRewardsFormFarms = (contract: FarmContract) => contract.getRewards();

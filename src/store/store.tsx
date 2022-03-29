@@ -6,7 +6,6 @@ import {
   IPool, StoreContextType, TokenType,
 } from 'store';
 import {
-  calculatePriceForToken,
   formatPool, getPoolsPath, toArray, toMap, calculateTotalAmount, formatFarm,
 } from 'utils';
 
@@ -17,9 +16,7 @@ import PoolContract from 'services/PoolContract';
 import {
   NEAR_TOKEN_ID, SWAP_INPUT_KEY, SWAP_OUTPUT_KEY, URL_INPUT_TOKEN, URL_OUTPUT_TOKEN,
 } from 'utils/constants';
-import { formatTokenAmount } from 'utils/calculations';
 import FarmContract from 'services/FarmContract';
-import Big from 'big.js';
 import { Farm, ITokenPrice, PoolType } from './interfaces';
 import {
   JUMBO_INITIAL_DATA,
@@ -34,6 +31,7 @@ import {
   tryTokenByKey,
   getPrices,
   retrieveFarmsResult,
+  getUserRewardsFormFarms,
 } from './helpers';
 
 const config = getConfig();
@@ -74,6 +72,8 @@ const initialState: StoreContextType = {
   updatePools: () => {},
   farms: {},
   setFarms: () => {},
+  userRewards: {},
+  setUserRewards: () => {},
 };
 
 const StoreContextHOC = createContext<StoreContextType>(initialState);
@@ -102,6 +102,7 @@ export const StoreContextProvider = (
     initialState.outputToken,
   );
   const [farms, setFarms] = useState<{[key:string]: Farm}>(initialState.farms);
+  const [userRewards, setUserRewards] = useState<{[key:string]: string}>(initialState.userRewards);
 
   const setCurrentToken = useCallback(
     (activeToken: FungibleTokenContract, tokenType: TokenType) => {
@@ -186,20 +187,16 @@ export const StoreContextProvider = (
           newFarmArray = await Promise.all(farmArray
             .map(async (farm: Farm) => {
               const staked = await farmContract.getStakedListByAccountId();
-              const userAllRewards = await farmContract.getRewards();
               const userUnclaimedReward = await farmContract.getUnclaimedReward(farm.farmId);
-              const userRewardByTokenId = await farmContract.getRewardByTokenId(farm.rewardTokenId);
-              const userReward = Big(userUnclaimedReward).plus(userRewardByTokenId).toFixed();
 
               return {
                 ...farm,
                 userStaked: staked[farm.seedId] || null,
-                userAllRewards: userAllRewards[farm.rewardTokenId] || null,
                 userUnclaimedReward,
-                userRewardByTokenId,
-                userReward,
               };
             }));
+          const userRewardsFormFarms = await getUserRewardsFormFarms(farmContract);
+          setUserRewards(userRewardsFormFarms);
         }
 
         const updatePool = newPoolArray.map((pool) => {
@@ -321,6 +318,8 @@ export const StoreContextProvider = (
       setOutputToken,
       farms,
       setFarms,
+      userRewards,
+      setUserRewards,
     }}
     >
       {children}

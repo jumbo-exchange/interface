@@ -22,11 +22,6 @@ export interface IPool {
   amounts: string[];
   totalFee: number;
   sharesTotalSupply: string;
-  poolFee?: string;
-  poolVolumes?: string;
-  poolSharePrice?: string;
-  poolShares?: string;
-  poolTotalShares?: string;
   supplies: { [key: string]: string };
   amp: string;
 
@@ -78,9 +73,6 @@ export interface Farm {
 
   userStaked?: string;
   userUnclaimedReward?: string;
-  userRewardByTokenId?: string;
-  userAllRewards?: {[key: string]: string};
-  userReward?: string;
 
   // totalStaked: string;
   // apr: string;
@@ -117,4 +109,7 @@ export type StoreContextType = {
   updatePools: (newPools: IPool[]) => void;
   farms: {[key:string]: Farm};
   setFarms: Dispatch<SetStateAction<{[key:string]: Farm}>>;
+
+  userRewards: {[key:string]: string};
+  setUserRewards: Dispatch<SetStateAction<{[key:string]: string}>>;
 }
