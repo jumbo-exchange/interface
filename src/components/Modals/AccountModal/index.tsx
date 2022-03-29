@@ -93,7 +93,7 @@ export default function AccountModal() {
                 </WalletRow>
               )
               : (
-                <WalletRow onClick={() => nearWallet.requestSignIn(config.contractId)}>
+                <WalletRow onClick={() => nearWallet.requestSignIn(config.farmContractId)}>
                   <WalletTitle>
                     <img src={nearLogo} alt="logo" />
                     Near

@@ -33,6 +33,7 @@ import {
   retrievePricesData,
   tryTokenByKey,
   getPrices,
+  retrieveFarmsResult,
 } from './helpers';
 
 const config = getConfig();
@@ -129,11 +130,15 @@ export const StoreContextProvider = (
       try {
         setLoading(true);
         const isSignedIn = nearWallet.isSignedIn();
-        const poolsLength = await poolContract.getNumberOfPools();
+        const [poolsLength, farmsLength] = await Promise.all(
+          [poolContract.getNumberOfPools(), farmContract.getNumberOfFarms()],
+        );
         const pages = Math.ceil(poolsLength / DEFAULT_PAGE_LIMIT);
+        const farmsPages = Math.ceil(farmsLength / DEFAULT_PAGE_LIMIT);
 
-        const [poolsResult, pricesData] = await Promise.all([
+        const [poolsResult, farmsResult, pricesData] = await Promise.all([
           await retrievePoolResult(pages, poolContract),
+          await retrieveFarmsResult(farmsPages, farmContract),
           await getPrices(),
         ]);
 
@@ -151,16 +156,6 @@ export const StoreContextProvider = (
         const tokensMetadataFiltered = await retrieveFilteredTokenMetadata(
           tokenAddresses,
         );
-
-        const farmsLength = await farmContract.getNumberOfFarms();
-        const farmsPages = Math.ceil(farmsLength / DEFAULT_PAGE_LIMIT);
-
-        const farmsResult = (await Promise.all(
-          [...Array(farmsPages)]
-            .map((_, i) => farmContract.getListFarms(
-              i * DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_LIMIT,
-            )),
-        )).flat();
 
         const metadataMap = tokensMetadataFiltered.reduce(
           (acc, curr) => ({ ...acc, [curr.contractId]: curr }), {},

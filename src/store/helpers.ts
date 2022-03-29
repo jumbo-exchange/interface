@@ -5,6 +5,7 @@ import { wallet as nearWallet } from 'services/near';
 import { calculatePriceForToken, isNotNullOrUndefined, toArray } from 'utils';
 import { formatTokenAmount } from 'utils/calculations';
 import { NEAR_TOKEN_ID } from 'utils/constants';
+import FarmContract from 'services/FarmContract';
 import { IPool, ITokenPrice } from './interfaces';
 import { pricesInitialState } from './store';
 
@@ -29,6 +30,15 @@ export async function retrievePoolResult(pages: number, contract: PoolContract) 
   return (await Promise.all(
     [...Array(pages)]
       .map((_, i) => contract.getPools(i * DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_LIMIT)),
+  )).flat();
+}
+
+export async function retrieveFarmsResult(farmsPages: number, farmContract: FarmContract) {
+  return (await Promise.all(
+    [...Array(farmsPages)]
+      .map((_, i) => farmContract.getListFarms(
+        i * DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_LIMIT,
+      )),
   )).flat();
 }
 
