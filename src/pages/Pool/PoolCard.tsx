@@ -221,7 +221,6 @@ export default function PoolCard(
   const {
     tokens,
     farms,
-    prices,
   } = useStore();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -234,7 +233,7 @@ export default function PoolCard(
   const jumboToken = tokens[config.jumboAddress] ?? null;
   const JumboTokenInPool = jumboToken === (tokenInput || tokenOutput);
 
-  const farm = !pool.farm ? [] : pool.farm?.map((el) => farms[el]);
+  const farm = !pool.farms ? [] : pool.farms.map((el) => farms[el]);
 
   const volume: IVolume[] = [
     {
@@ -255,6 +254,7 @@ export default function PoolCard(
     },
   ];
   const canWithdraw = Big(pool.shares || '0').gt('0');
+
   const canUnStake = farm.some((el) => Big(el.userStaked || '0').gt('0'));
 
   const onClaim = () => {
@@ -282,7 +282,7 @@ export default function PoolCard(
             : (
               <>
                 {JumboTokenInPool && <JumboBlock>Jumbo</JumboBlock>}
-                {pool.farm && <FarmBlock>Farm</FarmBlock>}
+                {pool.farms && <FarmBlock>Farm</FarmBlock>}
               </>
             )}
         </LabelPool>

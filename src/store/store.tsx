@@ -6,7 +6,14 @@ import {
   IPool, StoreContextType, TokenType,
 } from 'store';
 import {
-  formatPool, getPoolsPath, toArray, toMap, calculateTotalAmount, formatFarm,
+  toMap,
+  toArray,
+  formatPool,
+  formatFarm,
+  getPoolsPath,
+  onlyUniqueValues,
+  calculateTotalAmount,
+  isNotNullOrUndefined,
 } from 'utils';
 
 import getConfig from 'services/config';
@@ -17,7 +24,7 @@ import {
   NEAR_TOKEN_ID, SWAP_INPUT_KEY, SWAP_OUTPUT_KEY, URL_INPUT_TOKEN, URL_OUTPUT_TOKEN,
 } from 'utils/constants';
 import FarmContract from 'services/FarmContract';
-import { Farm, ITokenPrice, PoolType } from './interfaces';
+import { IFarm, ITokenPrice, PoolType } from './interfaces';
 import {
   JUMBO_INITIAL_DATA,
   NEAR_INITIAL_DATA,
@@ -31,7 +38,6 @@ import {
   tryTokenByKey,
   getPrices,
   retrieveFarmsResult,
-  getUserRewardsFormFarms,
 } from './helpers';
 
 const config = getConfig();
@@ -101,7 +107,7 @@ export const StoreContextProvider = (
   const [outputToken, setOutputToken] = useState<FungibleTokenContract | null>(
     initialState.outputToken,
   );
-  const [farms, setFarms] = useState<{[key:string]: Farm}>(initialState.farms);
+  const [farms, setFarms] = useState<{[key: string]: IFarm}>(initialState.farms);
   const [userRewards, setUserRewards] = useState<{[key:string]: string}>(initialState.userRewards);
 
   const setCurrentToken = useCallback(
@@ -149,70 +155,82 @@ export const StoreContextProvider = (
 
         const poolArray = poolsResult
           .map((pool: any, index: number) => formatPool(pool, index))
-          .filter((pool: IPool) => pool.type === PoolType.SIMPLE_POOL);
-          // WILL BE OPENED AS SOON AS STABLE SWAP WILL BE AVAILABLE
-          // || (pool.type === PoolType.STABLE_SWAP && pool.id === config.stablePoolId)
+          .filter((pool: IPool) => pool.type === PoolType.SIMPLE_POOL
+          || (pool.type === PoolType.STABLE_SWAP && pool.id === config.stablePoolId));
 
         let newPoolArray = poolArray;
+
+        const farmArray = await Promise.all(farmsResult.map(async (farm: any, index) => {
+          const seeds = await farmContract.getSeeds(index * DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_LIMIT);
+          return formatFarm(farm, poolArray, seeds);
+        }));
+
+        let newFarmArray = farmArray.filter(isNotNullOrUndefined);
+
+        const farmingTokens = newFarmArray.map((farm) => farm.rewardTokenId);
+
         const tokensMetadataFiltered = await retrieveFilteredTokenMetadata(
-          tokenAddresses,
+          onlyUniqueValues([...tokenAddresses, ...farmingTokens]),
         );
 
         const metadataMap = tokensMetadataFiltered.reduce(
           (acc, curr) => ({ ...acc, [curr.contractId]: curr }), {},
         );
 
-        const farmArray = await Promise.all(farmsResult.map(async (farm: any, index) => {
-          const seeds = await farmContract.getSeeds(index * DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_LIMIT);
-          return {
-            ...formatFarm(farm, index, poolArray, seeds, metadataMap),
-          };
-        }));
-        let newFarmArray = farmArray;
-
         if (isSignedIn) {
           setWallet(nearWallet);
           const accountId = nearWallet.getAccountId();
           try {
-            const [balancesMap, poolArrayWithShares] = await Promise.all([
+            const [
+              balancesMap,
+              poolArrayWithShares,
+              userRewardsFormFarms,
+              ...farmsDataByUser
+            ] = await Promise.all([
               retrieveBalancesMap(tokensMetadataFiltered, accountId),
               retrieveNewPoolArray(poolArray, poolContract),
+              farmContract.getRewards(),
+              ...newFarmArray.map(async (farm: IFarm) => {
+                const [staked, userUnclaimedReward] = await Promise.all([
+                  farmContract.getStakedListByAccountId(),
+                  farmContract.getUnclaimedReward(farm.id),
+                ]);
+
+                return {
+                  ...farm,
+                  userStaked: staked[farm.seedId] || null,
+                  userUnclaimedReward,
+                };
+              }),
             ]);
             setBalances(balancesMap);
             newPoolArray = poolArrayWithShares;
+            newFarmArray = farmsDataByUser;
+            setUserRewards(userRewardsFormFarms);
           } catch (e) {
             console.warn(`Error: ${e} while initial loading user specific data`);
           }
-
-          newFarmArray = await Promise.all(farmArray
-            .map(async (farm: Farm) => {
-              const staked = await farmContract.getStakedListByAccountId();
-              const userUnclaimedReward = await farmContract.getUnclaimedReward(farm.farmId);
-
-              return {
-                ...farm,
-                userStaked: staked[farm.seedId] || null,
-                userUnclaimedReward,
-              };
-            }));
-          const userRewardsFormFarms = await getUserRewardsFormFarms(farmContract);
-          setUserRewards(userRewardsFormFarms);
         }
 
-        const updatePool = newPoolArray.map((pool) => {
-          const poolWithFarm = newFarmArray.filter((farm) => farm.pool.id === pool.id);
-          const farmIds = poolWithFarm.length > 0
-            ? poolWithFarm.map((el) => el.farmId)
-            : null;
+        const newPoolMap: {[key: number]: IPool} = newPoolArray.reduce((
+          acc, pool,
+        ) => {
+          const poolWithFarm = newFarmArray
+            .filter((farm) => farm.poolId === pool.id)
+            .map((farm) => farm.id);
+
+          const farmIds = poolWithFarm.length ? poolWithFarm : null;
+
           return {
-            ...pool,
-            farm: farmIds,
+            ...acc,
+            [pool.id]: {
+              ...pool,
+              farms: farmIds,
+            },
           };
-        });
-        const newPoolMap = toMap(updatePool);
-        const newFarmMap = newFarmArray.reduce(
-          (acc, farm) => ({ ...acc, [farm.farmId]: farm }), {},
-        );
+        }, {});
+
+        const newFarmMap = toMap(newFarmArray);
 
         if (
           newPoolMap[config.jumboPoolId]

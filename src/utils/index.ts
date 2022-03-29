@@ -2,7 +2,7 @@ import Big from 'big.js';
 import getConfig from 'services/config';
 import FungibleTokenContract from 'services/FungibleToken';
 import {
-  Farm, IPool, ITokenPrice, PoolType,
+  IFarm, IPool, ITokenPrice, PoolType,
 } from 'store';
 import { formatTokenAmount, removeTrailingZeros } from './calculations';
 import { SWAP_INPUT_KEY, SWAP_OUTPUT_KEY } from './constants';
@@ -27,6 +27,7 @@ export function escapeRegExp(string: string): string {
 export function formatPool(pool: any, id: number): IPool {
   return {
     id,
+    lpTokenId: `:${id}`,
     type: pool.pool_kind === PoolType.STABLE_SWAP ? PoolType.STABLE_SWAP : PoolType.SIMPLE_POOL,
     tokenAccountIds: pool.token_account_ids,
     amounts: pool.amounts,
@@ -41,14 +42,8 @@ export function formatPool(pool: any, id: number): IPool {
     sharesTotalSupply: pool.shares_total_supply,
     amp: pool.amp,
     totalLiquidity: '0',
-    farm: null,
+    farms: null,
   };
-}
-
-export interface IVertex {
-  name: string;
-  distance: number;
-  predecessor: IVertex | null;
 }
 
 export const sortPoolsByLiquidity = (
@@ -174,36 +169,22 @@ export const calculateTotalAmount = (
 
 export function formatFarm(
   farm: any,
-  id: number,
   pools: IPool[],
   seeds: any,
-  metadataMap: {[key: string]: FungibleTokenContract},
-): Farm {
+): IFarm | null {
   const lpTokenId = farm.farm_id.slice(farm.farm_id.indexOf('@') + 1, farm.farm_id.lastIndexOf('#'));
-  const pool = pools.filter(
+  const pool = pools.find(
     (poolItem: IPool) => poolItem.id === Number(lpTokenId),
-  )[0];
-  const { tokenAccountIds } = pool;
+  );
+  if (!pool) return null;
 
-  const rewardToken = metadataMap[farm.reward_token] ?? null;
   const totalSeedAmount = seeds[farm.seed_id] ?? '0';
 
-  const rewardNumberPerWeek = Big(farm.reward_per_session)
-    .div(farm.session_interval)
-    .mul(604800)
-    .toFixed();
-
-  const rewardsPerWeek = Big(formatTokenAmount(
-    rewardNumberPerWeek, rewardToken?.metadata?.decimals || 8,
-  )).toFixed(4); // TODO: need check if user have this token
-
   return {
-    id,
-    farmId: farm.farm_id,
+    id: farm.farm_id,
     type: farm.farm_kind,
     status: farm.farm_status,
     seedId: farm.seed_id,
-    rewardToken,
     rewardTokenId: farm.reward_token,
     startAt: farm.start_at,
     rewardPerSession: farm.reward_per_session,
@@ -214,16 +195,16 @@ export function formatFarm(
     claimedReward: farm.claimed_reward,
     unclaimedReward: farm.unclaimed_reward,
 
-    lpTokenId,
-    pool,
-    rewardsPerWeek,
+    poolId: pool.id,
     totalSeedAmount,
-    tokenAccountIds,
-
   };
 }
 export function isNotNullOrUndefined<T extends Object>(input: null | undefined | T): input is T {
   return input != null;
+}
+
+export function onlyUniqueValues(values: string[]) {
+  return Array.from(new Set(values));
 }
 
 export const saveSwapTokens = (

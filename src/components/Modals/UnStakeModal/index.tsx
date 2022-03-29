@@ -40,7 +40,7 @@ export default function UnStakeModal() {
 
   if (!pool) return null;
 
-  const farm = farms[pool.farm ? pool.farm[0] : '']; // todo: fix it
+  const farm = farms[pool.farms ? pool.farms[0] : '']; // todo: fix it
 
   const formattedFarmShares = formatTokenAmount(farm?.userStaked ?? '0', LP_TOKEN_DECIMALS);
 

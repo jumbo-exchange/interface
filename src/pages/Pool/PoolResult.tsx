@@ -78,7 +78,7 @@ export default function PoolResult(
   }
 
   if (currentFilterPools === FilterPoolsEnum.Farming) {
-    const farmingPool = poolsArraySorted.filter((pool) => pool.farm);
+    const farmingPool = poolsArraySorted.filter((pool) => pool.farms);
     return (
       <Wrapper>
         {farmingPool.map((pool) => (

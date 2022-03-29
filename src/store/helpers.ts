@@ -6,7 +6,6 @@ import { wallet as nearWallet } from 'services/near';
 import { calculatePriceForToken, isNotNullOrUndefined, toArray } from 'utils';
 import { formatTokenAmount } from 'utils/calculations';
 import { NEAR_TOKEN_ID } from 'utils/constants';
-import FarmContract from 'services/FarmContract';
 import { IPool, ITokenPrice } from './interfaces';
 import { pricesInitialState } from './store';
 
@@ -208,5 +207,3 @@ export const getToken = (
   tokenId: string,
   tokens: {[key: string]: FungibleTokenContract},
 ): FungibleTokenContract | null => (tokenId ? tokens[tokenId] ?? null : null);
-
-export const getUserRewardsFormFarms = (contract: FarmContract) => contract.getRewards();

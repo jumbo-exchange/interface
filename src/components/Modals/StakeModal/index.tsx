@@ -45,10 +45,6 @@ export default function StakeModal() {
   || new Big(stakeValue).gt(formattedPoolShares))
     : true;
 
-  const farm = farms[pool.farm ? pool.farm[0] : ''] ?? null; // todo: fix it
-
-  const getMftTokenId = (id: string) => `:${id}`;
-
   const onSubmit = () => {
     const stakeValueBN = new Big(stakeValue);
     const shareBN = new Big(formatTokenAmount(pool?.shares ?? '', POOL_SHARES_DECIMALS));
@@ -58,7 +54,7 @@ export default function StakeModal() {
     const contract = new FarmContract();
     if (!stakeModalOpenState.pool) return;
     contract.stake(
-      getMftTokenId(farm.lpTokenId),
+      pool.lpTokenId,
       stakeValue,
       pool.id,
     );
