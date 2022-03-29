@@ -33,6 +33,15 @@ export async function retrievePoolResult(pages: number, contract: PoolContract) 
   )).flat();
 }
 
+export async function retrieveFarmsResult(farmsPages: number, farmContract: FarmContract) {
+  return (await Promise.all(
+    [...Array(farmsPages)]
+      .map((_, i) => farmContract.getListFarms(
+        i * DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_LIMIT,
+      )),
+  )).flat();
+}
+
 export function retrieveTokenAddresses(poolsResult: any, userTokens: any): string[] {
   return Array.from(
     new Set(
@@ -198,5 +207,3 @@ export const getToken = (
   tokenId: string,
   tokens: {[key: string]: FungibleTokenContract},
 ): FungibleTokenContract | null => (tokenId ? tokens[tokenId] ?? null : null);
-
-export const getUserRewardsFormFarms = (contract: FarmContract) => contract.getRewards();

@@ -94,7 +94,7 @@ export default class FarmContract {
     return this.contract.list_seeds({ from_index: fromIndex, limit });
   }
 
-  async getUnclaimedReward(farmId: string, accountId = wallet.getAccountId()) {
+  async getUnclaimedReward(farmId: string | number, accountId = wallet.getAccountId()) {
     // @ts-expect-error: Property 'get_unclaimed_reward' does not exist on type 'Contract'.
     return this.contract.get_unclaimed_reward({ account_id: accountId, farm_id: farmId });
   }

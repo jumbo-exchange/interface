@@ -17,6 +17,7 @@ export enum CurrentButton {
 
 export interface IPool {
   id: number;
+  lpTokenId: string;
   type: PoolType;
   tokenAccountIds: string[];
   amounts: string[];
@@ -27,8 +28,8 @@ export interface IPool {
 
   shares?: string;
   volumes?: IPoolVolumes ;
-  farm: string[] | null,
-  // Views
+  farms: string[] | null,
+
   totalLiquidity: string;
 }
 
@@ -48,14 +49,12 @@ export interface ITokenPrice {
     symbol: string
 }
 
-export interface Farm {
+export interface IFarm {
   id: number;
-  farmId: string;
   type: string;
   status: string;
   seedId: string;
   rewardTokenId: string;
-  rewardToken: FungibleTokenContract;
   startAt: number;
   rewardPerSession: number;
   sessionInterval: number;
@@ -65,17 +64,11 @@ export interface Farm {
   claimedReward: string;
   unclaimedReward: string;
 
-  pool: IPool;
-  lpTokenId: string;
+  poolId: number;
   totalSeedAmount: string;
-  rewardsPerWeek: string;
-  tokenAccountIds: string[];
 
   userStaked?: string;
   userUnclaimedReward?: string;
-
-  // totalStaked: string;
-  // apr: string;
 }
 
 export type StoreContextType = {
@@ -107,8 +100,8 @@ export type StoreContextType = {
   outputToken: FungibleTokenContract | null;
   setOutputToken: Dispatch<SetStateAction<FungibleTokenContract | null>>;
   updatePools: (newPools: IPool[]) => void;
-  farms: {[key:string]: Farm};
-  setFarms: Dispatch<SetStateAction<{[key:string]: Farm}>>;
+  farms: {[key: string]: IFarm};
+  setFarms: Dispatch<SetStateAction<{[key:string]: IFarm}>>;
 
   userRewards: {[key:string]: string};
   setUserRewards: Dispatch<SetStateAction<{[key:string]: string}>>;
