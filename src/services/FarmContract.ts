@@ -218,9 +218,6 @@ export default class FarmContract {
     if (storageDeposits.length) transactions = transactions.concat(...storageDeposits);
 
     rewardList.map(async (farmReward) => {
-      // const claimReward = await this.claimRewardBySeed(farmReward.seedId);
-      // transactions.push(...claimReward);
-
       transactions.push({
         receiverId: this.contractId,
         functionCalls: [{
