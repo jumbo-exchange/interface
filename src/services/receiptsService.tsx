@@ -245,7 +245,7 @@ export default function useTransactionHash(
             (res) => parseTransactions(res),
           );
         } catch (e) {
-          console.warn(e, ' error while loading tx');
+          console.warn(`${e} error while loading tx`);
         }
       }
     }

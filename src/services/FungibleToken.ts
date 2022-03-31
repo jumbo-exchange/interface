@@ -99,13 +99,14 @@ export default class FungibleTokenContract {
       ) return this.metadata;
 
       const metadata = await this.contract.ft_metadata();
+
       if (this.contractId === config.nearAddress) metadata.icon = wrapNearIcon;
       if (!metadata.icon) metadata.icon = defaultToken;
 
       this.metadata = { ...defaultMetadata, ...metadata };
       return metadata;
     } catch (e) {
-      console.warn(e, 'while loading', this.contractId);
+      console.warn(`Error while loading ${this.contractId}`);
     }
     return null;
   }

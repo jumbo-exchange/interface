@@ -165,13 +165,11 @@ const BlockButton = styled.div`
   display: flex;
   justify-content: flex-end;
   width: 100%;
-  height: 40px;
   & > button {
     padding: 9px 15px;
   }
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     flex-direction: column-reverse;
-    height: 48px;
   `}
 `;
 

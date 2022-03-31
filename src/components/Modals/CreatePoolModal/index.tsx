@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import Big from 'big.js';
 import PoolContract from 'services/PoolContract';
 import RenderButton from 'components/Button/RenderButton';
@@ -16,6 +16,7 @@ import {
 import { wallet } from 'services/near';
 import FungibleTokenContract from 'services/FungibleToken';
 import getConfig from 'services/config';
+import { getToken } from 'store/helpers';
 import {
   Layout, ModalBlock, ModalIcon, ModalTitle,
 } from '../styles';
@@ -30,7 +31,7 @@ const config = getConfig();
 
 export default function CreatePoolModal() {
   const isConnected = wallet.isSignedIn();
-  const { getToken, tokens } = useStore();
+  const { tokens } = useStore();
   const { isCreatePoolModalOpen, setCreatePoolModalOpen } = useModalsStore();
   const { t } = useTranslation();
 
@@ -39,14 +40,15 @@ export default function CreatePoolModal() {
   const [inputToken, setInputToken] = useState<FungibleTokenContract | null>(null);
   const [outputToken, setOutputToken] = useState<FungibleTokenContract | null>(null);
 
-  const near = getToken(NEAR_TOKEN_ID);
+  const near = useMemo(() => getToken(NEAR_TOKEN_ID, tokens), [tokens]);
+  const jumbo = useMemo(() => getToken(config.jumboAddress, tokens), [tokens]);
+  const wNear = useMemo(() => getToken(config.nearAddress, tokens), [tokens]);
+
   useEffect(() => {
-    const jumbo = getToken(config.jumboAddress);
-    const wNear = getToken(config.nearAddress);
     if (!jumbo || !wNear) return;
     setInputToken(jumbo);
     setOutputToken(wNear);
-  }, [tokens]);
+  }, [jumbo, wNear]);
 
   const canCreatePool = isConnected
   && !!fee
