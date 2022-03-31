@@ -94,7 +94,8 @@ export default function PoolCard({ pool } : { pool: IPool }) {
             titleAdd={t('action.addLiquidity')}
             toPageRemove={toRemoveLiquidityPage(pool.id)}
             titleRemove={t('action.removeLiquidity')}
-            showButton={canWithdraw}
+            showRemoveButton={canWithdraw}
+            showAddButton
             navigate={navigate}
           />
         </BlockButton>

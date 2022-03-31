@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import styled from 'styled-components';
 import Tooltip from 'components/Tooltip';
 import Refresh from 'components/Refresh';
@@ -7,18 +7,21 @@ import { ReactComponent as SearchIcon } from 'assets/images-app/search-icon.svg'
 import { ReactComponent as ArrowDownIcon } from 'assets/images-app/icon-arrow-down.svg';
 import { ReactComponent as Plus } from 'assets/images-app/plus.svg';
 import { isMobile } from 'utils/userAgent';
-import { useModalsStore, useStore } from 'store';
+import { IPool, useModalsStore, useStore } from 'store';
 import { toArray } from 'utils';
 import { useTranslation } from 'react-i18next';
 import { getToken } from 'store/helpers';
 import { FilterPoolsEnum } from '.';
 
-const Container = styled.div`
+const Container = styled.div<{isAllPools: boolean}>`
   display: flex;
-  justify-content: space-between;
   align-items: center;
   width: 100%;
   margin: 1.5rem 0;
+  justify-content: ${({ isAllPools }) => (isAllPools ? 'space-between' : 'flex-start')};
+  & > div:not(:first-child), & > button {
+    margin-left: ${({ isAllPools }) => (isAllPools ? ' 0' : '1.5rem')};
+  }
 `;
 
 const SearchInputBlock = styled.div`
@@ -88,6 +91,10 @@ const Title = styled.div`
   color: ${({ theme }) => theme.globalGrey};
 `;
 
+const NoWrapTitle = styled(Title)`
+  white-space: nowrap;
+`;
+
 const FilterBlock = styled.div`
   display: flex;
   & > button:nth-child(2) {
@@ -146,6 +153,54 @@ const RefreshBlock = styled.div`
   margin-left: 1.5rem;
 `;
 
+const WrapperRow = styled.div`
+  display: flex;
+  align-self: center;
+`;
+
+const Toggle = styled.div`
+  display: flex;
+  margin-left: .5rem;
+`;
+
+const LabelCheckbox = styled.label`
+  cursor: pointer;
+  display: flex;
+  & > input {
+    position: absolute;
+    visibility: hidden;
+  }
+`;
+
+const ToggleSwitch = styled.div`
+  display: inline-block;
+  background: ${({ theme }) => theme.globalGrey};
+  width: 32px;
+  height: 16px;
+  position: relative;
+  border-radius: 8px;
+  transition: background 0.25s;
+  &:before {
+    content: "";
+    display: block;
+    background: ${({ theme }) => theme.globalWhite};
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    position: absolute;
+    top: 2px;
+    left: 3px;
+    transition: left 0.25s;
+  }
+  #toggle:checked + & {
+    background: ${({ theme }) => theme.globalGreen0p02};
+    &:before {
+      background: ${({ theme }) => theme.globalGreen};
+      left: 18px;
+    }
+  }
+`;
+
 enum APRFiletEnum {
   '24H',
   '7D',
@@ -178,9 +233,11 @@ const aprFilters: IAPRFilters[] = [
 export default function PoolSettings({
   setPoolsArray,
   currentFilterPools,
+  setIsShowingEndedOnly,
 }:{
-  setPoolsArray: any,
-  currentFilterPools: FilterPoolsEnum
+  setPoolsArray: Dispatch<SetStateAction<IPool[]>>,
+  currentFilterPools: FilterPoolsEnum,
+  setIsShowingEndedOnly: Dispatch<SetStateAction<boolean>>,
 }) {
   const { setCreatePoolModalOpen } = useModalsStore();
   const { pools, tokens } = useStore();
@@ -188,7 +245,9 @@ export default function PoolSettings({
 
   const [currentAPRFilter, setCurrentAPRFilter] = useState(APRFiletEnum['24H']);
   const [searchValue, setSearchValue] = useState<string>('');
-  const isShowingCreatePool = currentFilterPools !== FilterPoolsEnum.Farming;
+
+  const isAllPools = currentFilterPools === FilterPoolsEnum['All Pools'];
+  const isFarming = currentFilterPools === FilterPoolsEnum.Farming;
 
   const onChange = (value: string) => {
     const newValue = value.trim().toUpperCase();
@@ -227,7 +286,7 @@ export default function PoolSettings({
           </RefreshBlock>
         </MobileRow>
         <MobileRow>
-          {currentFilterPools === FilterPoolsEnum['All Pools']
+          {isAllPools
           && (
           <Wrapper>
             <Title>{t('pool.sortBy')}</Title>
@@ -236,6 +295,21 @@ export default function PoolSettings({
               <ArrowDown />
             </SortBlock>
           </Wrapper>
+          )}
+          {isFarming && (
+          <WrapperRow>
+            <NoWrapTitle>{t('pool.endedOnly')}</NoWrapTitle>
+            <Toggle>
+              <LabelCheckbox htmlFor="toggle">
+                <input
+                  id="toggle"
+                  type="checkbox"
+                  onChange={(e) => setIsShowingEndedOnly(e.target.checked)}
+                />
+                <ToggleSwitch />
+              </LabelCheckbox>
+            </Toggle>
+          </WrapperRow>
           )}
           <APYWrapper>
             <Title>{t('pool.APYBasis')} <Tooltip title={t('tooltipTitle.APYBasis')} /></Title>
@@ -253,7 +327,7 @@ export default function PoolSettings({
             </FilterBlock>
           </APYWrapper>
         </MobileRow>
-        {isShowingCreatePool && (
+        {!isFarming && (
         <ButtonSecondary
           onClick={() => setCreatePoolModalOpen(true)}
         >
@@ -265,7 +339,7 @@ export default function PoolSettings({
   }
 
   return (
-    <Container>
+    <Container isAllPools={isAllPools}>
       <SearchInputBlock>
         <SearchIcon />
         <SearchInput
@@ -274,6 +348,7 @@ export default function PoolSettings({
           placeholder={t('pool.search')}
         />
       </SearchInputBlock>
+      {isAllPools && (
       <Wrapper>
         <Title>{t('pool.sortBy')}</Title>
         <SortBlock>
@@ -281,6 +356,7 @@ export default function PoolSettings({
           <ArrowDown />
         </SortBlock>
       </Wrapper>
+      )}
       <APYWrapper>
         <Title>{t('pool.APYBasis')} <Tooltip title={t('tooltipTitle.APYBasis')} /></Title>
         <FilterBlock>
@@ -297,13 +373,29 @@ export default function PoolSettings({
         </FilterBlock>
       </APYWrapper>
       <Title><Refresh /></Title>
-      { isShowingCreatePool && (
-      <ButtonSecondary
-        onClick={() => setCreatePoolModalOpen(true)}
-      >
-        <LogoPlus /> {t('action.createPool')}
-      </ButtonSecondary>
-      )}
+      { isFarming
+        ? (
+          <WrapperRow>
+            <Title>{t('pool.endedOnly')}</Title>
+            <Toggle>
+              <LabelCheckbox htmlFor="toggle">
+                <input
+                  id="toggle"
+                  type="checkbox"
+                  onChange={(e) => setIsShowingEndedOnly(e.target.checked)}
+                />
+                <ToggleSwitch />
+              </LabelCheckbox>
+            </Toggle>
+          </WrapperRow>
+        )
+        : (
+          <ButtonSecondary
+            onClick={() => setCreatePoolModalOpen(true)}
+          >
+            <LogoPlus /> {t('action.createPool')}
+          </ButtonSecondary>
+        )}
     </Container>
   );
 }

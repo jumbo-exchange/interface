@@ -1,10 +1,11 @@
 import React from 'react';
-import { IFarm, IPool } from 'store';
+import { IPool, useStore } from 'store';
 import { FilterPoolsEnum } from 'pages/Pool';
 import styled from 'styled-components';
 import Big from 'big.js';
 import PoolCardPlaceholder from 'components/Placeholder/PoolCardPlaceholder';
 import { useTranslation } from 'react-i18next';
+import { FarmStatusEnum } from 'components/FarmStatus';
 import PoolCard from './Card/PoolCard';
 import FarmCard from './Card/FarmCard';
 
@@ -25,17 +26,34 @@ const NoResult = styled.div`
   margin: 2rem 0;
 `;
 
+const EndedFarm = styled.div<{isShowingEndedOnly: boolean}>`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  margin: ${({ isShowingEndedOnly }) => (isShowingEndedOnly ? '0' : '3rem 0')};
+  & > p {
+    font-style: normal;
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.125rem;
+    color: ${({ theme }) => theme.globalGrey};
+    margin: 0 0 1.5rem;
+  }
+`;
+
 export default function PoolResult(
   {
     poolsArray,
     currentFilterPools,
-    loading,
+    isShowingEndedOnly,
   }:{
     poolsArray: IPool[],
     currentFilterPools:FilterPoolsEnum,
-    loading:boolean,
+    isShowingEndedOnly:boolean,
   },
 ) {
+  const { farms, loading } = useStore();
   const { t } = useTranslation();
   const poolsArraySorted = poolsArray.sort(
     (a, b) => Big(b.totalLiquidity)
@@ -76,22 +94,52 @@ export default function PoolResult(
   }
 
   if (currentFilterPools === FilterPoolsEnum.Farming) {
-    const farmingPool = poolsArraySorted.filter((pool) => pool.farms);
+    const filteredFarms = poolsArraySorted.reduce(
+      (acc: {active:IPool[], ended: IPool[]}, pool:IPool) => {
+        const poolFarmIds = pool.farms;
+        if (!poolFarmIds) return acc;
+        const poolFarms = poolFarmIds.map((id) => farms[id]);
+        if (!poolFarms) return acc;
+        const isAnyActive = poolFarms.some(
+          (farm) => farm.status === FarmStatusEnum.Active || farm.status === FarmStatusEnum.Pending,
+        );
+
+        if (isAnyActive) return { ...acc, active: [...acc.active, pool] };
+        return { ...acc, ended: [...acc.ended, pool] };
+      }, { active: [], ended: [] },
+    );
+
     return (
-      <Wrapper>
-        {farmingPool.map((pool) => (
-          <FarmCard
-            key={pool.id}
-            pool={pool}
-          />
-        ))}
-        {poolsArraySorted.length === 0
+      <>
+        {!isShowingEndedOnly && (
+        <Wrapper>
+          {filteredFarms.active.map((pool) => (
+            <FarmCard
+              key={pool.id}
+              pool={pool}
+            />
+          ))}
+          {poolsArraySorted.length === 0
           && (
           <NoResult>
             {t('noResult.noResultFound')}
           </NoResult>
           )}
-      </Wrapper>
+        </Wrapper>
+        )}
+        {filteredFarms.ended.length
+        && (
+          <EndedFarm isShowingEndedOnly={isShowingEndedOnly}>
+            <p>Ended</p>
+            {filteredFarms.ended.map((pool) => (
+              <FarmCard
+                key={pool.id}
+                pool={pool}
+              />
+            ))}
+          </EndedFarm>
+        )}
+      </>
     );
   }
 

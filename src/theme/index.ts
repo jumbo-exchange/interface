@@ -74,6 +74,11 @@ export interface ThemeColors {
 
   farmingBg: string;
   rewardTokensBg: string;
+  farmingTimeBg: string;
+
+  statusActive: string;
+  statusPending: string;
+  statusEnded: string;
 }
 
 export const colors: ThemeColors = {
@@ -131,6 +136,11 @@ export const colors: ThemeColors = {
 
   farmingBg: '#2E253E',
   rewardTokensBg: '#201B2C',
+  farmingTimeBg: '#373048',
+
+  statusActive: '#84DA18',
+  statusPending: '#F0B237',
+  statusEnded: '#8991A3',
 };
 
 function theme(): DefaultTheme {

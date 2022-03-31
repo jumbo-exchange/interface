@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Tooltip from 'components/Tooltip';
 import Big from 'big.js';
 import { IPool, useStore } from 'store';
@@ -10,16 +10,22 @@ import RewardTokens from 'components/TokensDisplay/RewardTokens';
 import { PoolOrFarmButtons } from 'components/Button/RenderButton';
 import { formatTokenAmount, removeTrailingZeros } from 'utils/calculations';
 import { LP_TOKEN_DECIMALS } from 'utils/constants';
+import moment from 'moment';
+import { FarmStatusLocales, getFarmStartAndEnd } from 'components/FarmStatus';
 import {
-  Wrapper,
+  FarmWrapper,
+  FarmContainer,
   UpperRow,
   LabelPool,
   LowerRow,
   BlockVolume,
   Column,
   TitleVolume,
+  TitlePool,
   LabelVolume,
   BlockButton,
+  FarmsStatus,
+  FarmTime,
 } from './styles';
 
 interface IVolume {
@@ -31,6 +37,7 @@ interface IVolume {
 
 const calcStakedAmount = (shares: string, pool: IPool) => {
   const { sharesTotalSupply, totalLiquidity } = pool;
+  if (Big(sharesTotalSupply).lte('0') || Big(shares).lte('0')) return null;
   const formatTotalShares = formatTokenAmount(sharesTotalSupply, LP_TOKEN_DECIMALS);
   const formatShares = formatTokenAmount(shares, LP_TOKEN_DECIMALS);
 
@@ -44,8 +51,10 @@ export default function FarmCard({ pool } : { pool: IPool }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const [timeToStartFarm, setTimeToStart] = useState<number>(0);
+
   const farmsInPool = pool.farms?.length ? pool.farms.map((el) => farms[el]) : [];
-  const { totalSeedAmount, userStaked } = farmsInPool[0];
+  const { totalSeedAmount, userStaked, status } = farmsInPool[0];
 
   const totalStaked = calcStakedAmount(totalSeedAmount, pool);
   const yourStaked = calcStakedAmount(userStaked || '0', pool);
@@ -53,12 +62,12 @@ export default function FarmCard({ pool } : { pool: IPool }) {
   const volume: IVolume[] = [
     {
       title: t('farm.totalStaked'),
-      label: Big(totalStaked).gt(0) ? `$${totalStaked}` : '-',
+      label: Big(totalStaked || 0).gt(0) ? `$${totalStaked}` : '-',
       tooltip: t('tooltipTitle.totalStaked'),
     },
     {
       title: t('farm.yourStaked'),
-      label: Big(yourStaked).gt(0) ? `$${yourStaked}` : '-',
+      label: Big(yourStaked || 0).gt(0) ? `$${yourStaked}` : '-',
       tooltip: t('tooltipTitle.yourStaked'),
     },
     {
@@ -69,39 +78,69 @@ export default function FarmCard({ pool } : { pool: IPool }) {
     },
   ];
 
+  const currentDate = moment().valueOf();
+  const { farmStart, farmEnd, timeToStart } = getFarmStartAndEnd(farmsInPool);
+
+  const isFarmingEnd = currentDate > farmEnd;
+  const isFarmingActive = currentDate > farmStart && currentDate < farmEnd;
+
+  const activeTime = `
+  ${moment(farmStart).format('YYYY-MM-DD HH:mm:ss')}
+  \xa0 \u2014 \xa0
+  ${moment(farmEnd).format('YYYY-MM-DD HH:mm:ss')}
+  `;
+  const pendingTime = `${moment(timeToStartFarm).format('DD [days] \xa0 HH : mm : ss')}`;
   const canUnStake = farmsInPool.some((el) => Big(el.userStaked || '0').gt('0'));
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeToStart(timeToStart);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [timeToStart]);
+
   return (
-    <Wrapper isFarming>
-      <UpperRow>
-        <TokenPairDisplay pool={pool} />
-        <LabelPool>
-          <RewardTokens rewardTokens={farmsInPool.map((el) => el.rewardTokenId)} />
-        </LabelPool>
-      </UpperRow>
-      <LowerRow>
-        <BlockVolume>
-          {volume.map((el) => (
-            <Column key={el.title}>
-              <TitleVolume>
-                <span>{el.title}</span>
-                <Tooltip title={el.tooltip} />
-              </TitleVolume>
-              <LabelVolume isColor={el.color}>{el.label}</LabelVolume>
-            </Column>
-          ))}
-        </BlockVolume>
-        <BlockButton>
-          <PoolOrFarmButtons
-            toPageAdd={toStakePage(pool.id)}
-            titleAdd={t('action.stake')}
-            toPageRemove={toUnStakeAndClaimPage(pool.id)}
-            titleRemove={t('action.unStakeAndClaim')}
-            showButton={canUnStake}
-            navigate={navigate}
-          />
-        </BlockButton>
-      </LowerRow>
-    </Wrapper>
+    <FarmWrapper isShowingTime={isFarmingEnd}>
+      <FarmContainer>
+        <UpperRow>
+          <TitlePool>
+            <TokenPairDisplay pool={pool} />
+            <FarmsStatus type={status}>{FarmStatusLocales[status]}</FarmsStatus>
+          </TitlePool>
+          <LabelPool>
+            <RewardTokens rewardTokens={farmsInPool.map((el) => el.rewardTokenId)} />
+          </LabelPool>
+        </UpperRow>
+        <LowerRow>
+          <BlockVolume>
+            {volume.map((el) => (
+              <Column key={el.title}>
+                <TitleVolume>
+                  <span>{el.title}</span>
+                  <Tooltip title={el.tooltip} />
+                </TitleVolume>
+                <LabelVolume isColor={el.color}>{el.label}</LabelVolume>
+              </Column>
+            ))}
+          </BlockVolume>
+          <BlockButton>
+            <PoolOrFarmButtons
+              toPageAdd={toStakePage(pool.id)}
+              titleAdd={t('action.stake')}
+              toPageRemove={toUnStakeAndClaimPage(pool.id)}
+              titleRemove={t('action.unStakeAndClaim')}
+              showRemoveButton={canUnStake}
+              showAddButton={!isFarmingEnd}
+              navigate={navigate}
+            />
+          </BlockButton>
+        </LowerRow>
+      </FarmContainer>
+      {!isFarmingEnd && (
+      <FarmTime>
+        <p>{isFarmingActive ? activeTime : pendingTime}</p>
+      </FarmTime>
+      )}
+    </FarmWrapper>
   );
 }

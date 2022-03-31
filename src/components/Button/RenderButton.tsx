@@ -119,21 +119,31 @@ interface IButtons {
   titleAdd: string,
   toPageRemove: string,
   titleRemove: string,
-  showButton: boolean
+  showRemoveButton: boolean
+  showAddButton?: boolean
   navigate: NavigateFunction;
 }
 
 export const PoolOrFarmButtons = ({
-  toPageAdd, titleAdd, toPageRemove, titleRemove, showButton, navigate,
+  toPageAdd,
+  titleAdd,
+  toPageRemove,
+  titleRemove,
+  showRemoveButton,
+  showAddButton,
+  navigate,
 }: IButtons) => (
   <>
-    {showButton && (
+    {showRemoveButton && (
       <BtnSecondary onClick={() => navigate(toPageRemove)}>
         {titleRemove}
       </BtnSecondary>
     )}
+    {showAddButton && (
     <BtnPrimary onClick={() => navigate(toPageAdd)}>
       <LogoButton /> {titleAdd}
     </BtnPrimary>
+    )}
+
   </>
 );

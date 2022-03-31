@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { SpecialContainer } from 'components/SpecialContainer';
+import { FarmStatusEnum } from 'components/FarmStatus';
 
 export const Wrapper = styled(SpecialContainer)<{isFarming?: boolean}>`
   background-color: ${({ theme, isFarming }) => (isFarming ? theme.farmingBg : theme.backgroundCard)};
@@ -121,9 +122,97 @@ export const BlockButton = styled.div`
   justify-content: flex-end;
   width: 100%;
   & > button {
-    padding: 9px 15px;
+    padding: .563rem .938rem;
   }
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     flex-direction: column-reverse;
   `}
+`;
+
+export const TitlePool = styled.div`
+  display: flex;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    margin-top: .5rem;
+  `}
+`;
+
+export const FarmsStatus = styled.div<{type: FarmStatusEnum;}>`
+  display: flex;
+  align-items: center;
+  margin-left: 1rem;
+  border: 1px solid ${({ theme, type }) => {
+    if (type === FarmStatusEnum.Active) return theme.statusActive;
+    if (type === FarmStatusEnum.Pending) return theme.statusPending;
+    return theme.statusEnded;
+  }};
+  
+  box-sizing: border-box;
+  border-radius: 4px;
+  color: ${({ theme }) => theme.statusActive};
+  color: ${({ theme, type }) => {
+    if (type === FarmStatusEnum.Active) return theme.statusActive;
+    if (type === FarmStatusEnum.Pending) return theme.statusPending;
+    return theme.statusEnded;
+  }};
+
+  user-select: none;
+  font-style: normal;
+  font-weight: 400;
+  font-size: .75rem;
+  line-height: .875rem;
+  max-height: 22px;
+  padding: 4px;
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    align-self: center;
+  `}
+`;
+
+export const FarmWrapper = styled(SpecialContainer)<{isShowingTime?: boolean}>`
+  background-color: ${({ theme }) => theme.farmingTimeBg};
+  max-width: 736px;
+  width: 100%;
+  border-radius: 24px;
+  margin: 0 0 1rem 0;
+  padding: 0;
+  min-height: ${({ isShowingTime }) => (isShowingTime ? '160px' : '190px')};
+  ::before{
+    border-radius: 24px;
+  }
+`;
+
+export const FarmContainer = styled.div`
+  background-color: ${({ theme }) => theme.farmingBg};
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 160px;
+  padding: 1.125rem 1.5rem 1.5rem;
+  border-radius: 24px;
+
+  & > div:first-child {
+      min-height: 40px;
+    }
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+      & > div:first-child {
+      margin-bottom: 1.563rem;
+    }
+  `}
+`;
+
+export const FarmTime = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  background-color: ${({ theme }) => theme.farmingTimeBg};
+  border-radius: 0 0 24px 24px;
+  & > p {
+    margin: 0;
+    font-style: normal;
+    font-weight: 300;
+    font-size: .75rem;
+    line-height: .875rem;
+  }
 `;

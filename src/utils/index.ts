@@ -1,4 +1,5 @@
 import Big from 'big.js';
+import { farmStatus, getFarmStatus } from 'components/FarmStatus';
 import getConfig from 'services/config';
 import FungibleTokenContract from 'services/FungibleToken';
 import {
@@ -180,10 +181,13 @@ export function formatFarm(
 
   const totalSeedAmount = seeds[farm.seed_id] ?? '0';
 
+  if (farm.farm_status === farmStatus.created) return null;
+  const statusFarm = getFarmStatus(farm.farm_status, farm.start_at);
+
   return {
     id: farm.farm_id,
     type: farm.farm_kind,
-    status: farm.farm_status,
+    status: statusFarm,
     seedId: farm.seed_id,
     rewardTokenId: farm.reward_token,
     startAt: farm.start_at,
@@ -199,6 +203,7 @@ export function formatFarm(
     totalSeedAmount,
   };
 }
+
 export function isNotNullOrUndefined<T extends Object>(input: null | undefined | T): input is T {
   return input != null;
 }

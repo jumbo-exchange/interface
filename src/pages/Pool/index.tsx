@@ -89,6 +89,7 @@ export default function Pool() {
   const location = useLocation();
   const [totalValueLocked, setTotalValueLocked] = useState('0');
   const [poolsArray, setPoolsArray] = useState<IPool[]>([]);
+  const [isShowingEndedOnly, setIsShowingEndedOnly] = useState<boolean>(false);
 
   const rewardList = Object.entries(userRewards);
 
@@ -242,11 +243,12 @@ export default function Pool() {
       <PoolSettings
         setPoolsArray={setPoolsArray}
         currentFilterPools={currentFilterPools}
+        setIsShowingEndedOnly={setIsShowingEndedOnly}
       />
       <PoolResult
         poolsArray={poolsArray}
         currentFilterPools={currentFilterPools}
-        loading={loading}
+        isShowingEndedOnly={isShowingEndedOnly}
       />
     </Container>
   );

@@ -47,7 +47,8 @@
 
     "search": "Search",
     "sortBy": "Sort by",
-    "APYBasis": "APY Basis"
+    "APYBasis": "APY Basis",
+    "endedOnly": "Ended Only"
   },
 
   "farm": {

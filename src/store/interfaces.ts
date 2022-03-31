@@ -1,3 +1,4 @@
+import { FarmStatusEnum } from 'components/FarmStatus';
 import { Dispatch, SetStateAction } from 'react';
 import FungibleTokenContract from 'services/FungibleToken';
 import { IPoolVolumes } from 'services/PoolContract';
@@ -52,11 +53,11 @@ export interface ITokenPrice {
 export interface IFarm {
   id: number;
   type: string;
-  status: string;
+  status: FarmStatusEnum;
   seedId: string;
   rewardTokenId: string;
   startAt: number;
-  rewardPerSession: number;
+  rewardPerSession: string;
   sessionInterval: number;
   totalReward: string;
   curRound: number;
