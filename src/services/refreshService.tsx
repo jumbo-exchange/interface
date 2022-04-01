@@ -2,7 +2,7 @@ import React, {
   createContext, Dispatch, SetStateAction, useContext, useState,
 } from 'react';
 import { wallet as nearWallet } from 'services/near';
-import { contractMethods, IPool } from 'store';
+import { IPool } from 'store';
 
 import { NEAR_TOKEN_ID } from 'utils/constants';
 
@@ -10,8 +10,8 @@ import getConfig from 'services/config';
 
 import { formatPool } from 'utils';
 import useUpdateService from './updatePoolService';
-import { createContract } from './wallet';
 import FungibleTokenContract from './FungibleToken';
+import PoolContract from './PoolContract';
 
 const config = getConfig();
 
@@ -47,7 +47,7 @@ export const RefreshContextProvider = (
     updateTokensBalances: (newBalances: { [key: string]: string; }) => void
   },
 ) => {
-  const contract: any = createContract(nearWallet, config.contractId, contractMethods);
+  const contract = new PoolContract();
   const [trackedPools, setTrackedPools] = useState<IPool[]>([]);
   const [trackedTokensBalances, setTrackedTokensBalances] = useState<string[]>(
     [NEAR_TOKEN_ID, config.nearAddress],
@@ -58,16 +58,14 @@ export const RefreshContextProvider = (
     if (!trackedPools.length || !refreshEnabled) return;
     try {
       const results: any = await Promise.all(trackedPools.map(async (pool) => {
-        const poolInfo = await contract.get_pool(
-          { pool_id: pool.id },
-        );
+        const poolInfo = await contract.getPool(pool.id);
         return { poolInfo, id: pool.id };
       }));
       if (!results.length) return;
       const parsedPools: IPool[] = results.map((pool: any) => formatPool(pool.poolInfo, pool.id));
       updatePools(parsedPools);
     } catch (e) {
-      console.warn('error', e, `while updating pools with id ${trackedPools.map((el) => el.id)}`);
+      console.warn(`Error ${e} while updating pools with id ${trackedPools.map((el) => el.id)}`);
     }
   });
 
@@ -100,7 +98,7 @@ export const RefreshContextProvider = (
       ), {});
       updateTokensBalances(balancesMap);
     } catch (e) {
-      console.warn('error', e, `while updating tokens with id ${trackedTokensBalances}`);
+      console.warn(`Error ${e} while updating tokens with id ${trackedTokensBalances}`);
     }
   });
 

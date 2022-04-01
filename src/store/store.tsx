@@ -1,43 +1,40 @@
 import React, {
-  createContext, useContext, useEffect, useState,
+  createContext, useCallback, useContext, useEffect, useMemo, useState,
 } from 'react';
 import { getUserWalletTokens, wallet as nearWallet } from 'services/near';
 import {
-  contractMethods, IPool, StoreContextType, TokenType,
+  IPool, StoreContextType, TokenType,
 } from 'store';
 import {
-  calculatePriceForToken,
   formatPool, getPoolsPath, toArray, toMap, calculateTotalAmount,
 } from 'utils';
 
 import getConfig from 'services/config';
-import SpecialWallet, { createContract } from 'services/wallet';
+import SpecialWallet from 'services/wallet';
 import FungibleTokenContract from 'services/FungibleToken';
 import PoolContract from 'services/PoolContract';
 import {
   NEAR_TOKEN_ID, SWAP_INPUT_KEY, SWAP_OUTPUT_KEY, URL_INPUT_TOKEN, URL_OUTPUT_TOKEN,
 } from 'utils/constants';
-import { formatTokenAmount } from 'utils/calculations';
 import { ITokenPrice, PoolType } from './interfaces';
+import {
+  JUMBO_INITIAL_DATA,
+  NEAR_INITIAL_DATA,
+  DEFAULT_PAGE_LIMIT,
+  retrievePoolResult,
+  retrieveTokenAddresses,
+  retrieveFilteredTokenMetadata,
+  retrieveBalancesMap,
+  retrieveNewPoolArray,
+  retrievePricesData,
+  tryTokenByKey,
+  getPrices,
+} from './helpers';
 
 const config = getConfig();
-const url = new URL(window.location.href);
 
-const DEFAULT_PAGE_LIMIT = 100;
-const JUMBO_INITIAL_DATA = {
-  id: config.nearAddress,
-  decimal: 18,
-  symbol: 'JUMBO',
-  price: '0',
-};
-
-const pricesInitialState = {
-  [config.nearAddress]: {
-    id: config.nearAddress,
-    decimal: 24,
-    symbol: 'near',
-    price: '12.28',
-  },
+export const pricesInitialState = {
+  [config.nearAddress]: NEAR_INITIAL_DATA,
   [config.jumboAddress]: JUMBO_INITIAL_DATA,
 };
 
@@ -47,7 +44,6 @@ const initialState: StoreContextType = {
   setLoading: () => {},
   setPriceLoading: () => {},
 
-  contract: null,
   wallet: null,
   setWallet: () => {},
   balances: {},
@@ -61,7 +57,6 @@ const initialState: StoreContextType = {
   setCurrentPools: () => {},
   tokens: {},
   setTokens: () => {},
-  getToken: () => null,
 
   setCurrentToken: () => {},
   prices: pricesInitialState,
@@ -72,30 +67,14 @@ const initialState: StoreContextType = {
   outputToken: null,
   setOutputToken: () => {},
   updatePools: () => {},
-  findTokenBySymbol: () => {},
 };
 
 const StoreContextHOC = createContext<StoreContextType>(initialState);
 
-export const getPriceData = async () => {
-  const pricesData = await fetch(`${config.indexerUrl}/token-prices`, {
-    method: 'GET',
-    headers: { 'Content-type': 'application/json; charset=UTF-8' },
-  })
-    .then((res) => res.json())
-    .then((list) => list);
-  return pricesData.reduce(
-    (acc: {[key: string]: ITokenPrice}, item: ITokenPrice) => ({
-      ...acc, [item.id]: item,
-    }), {},
-  );
-};
-
 export const StoreContextProvider = (
   { children }:{ children: JSX.Element },
 ) => {
-  const contract: any = createContract(nearWallet, config.contractId, contractMethods);
-  const poolContract = new PoolContract();
+  const poolContract = useMemo(() => new PoolContract(), []);
 
   const [loading, setLoading] = useState<boolean>(initialState.loading);
   const [priceLoading, setPriceLoading] = useState<boolean>(initialState.loading);
@@ -115,182 +94,103 @@ export const StoreContextProvider = (
     initialState.outputToken,
   );
 
-  const setCurrentToken = (activeToken: FungibleTokenContract, tokenType: TokenType) => {
-    const poolArray = toArray(pools);
-    if (tokenType === TokenType.Output) {
-      if (!inputToken) return;
-      setOutputToken(activeToken);
-      const availablePools = getPoolsPath(
-        inputToken.contractId, activeToken.contractId, poolArray, tokens,
-      );
-      setCurrentPools(availablePools);
-    } else {
-      if (!outputToken) return;
-      setInputToken(activeToken);
-      const availablePools = getPoolsPath(
-        activeToken.contractId, outputToken.contractId, poolArray, tokens,
-      );
-      setCurrentPools(availablePools);
-    }
-  };
-
-  const findTokenBySymbol = (
-    symbol: string,
-  ) => {
-    const [token] = toArray(tokens)
-      .filter((el) => el.metadata.symbol.toLowerCase() === symbol.toLowerCase());
-    return token;
-  };
-
-  const initialLoading = async () => {
-    try {
-      setLoading(true);
-      const isSignedIn = nearWallet.isSignedIn();
-      const poolsLength = await contract.get_number_of_pools();
-      const pages = Math.ceil(poolsLength / DEFAULT_PAGE_LIMIT);
-
-      const poolsResult = (await Promise.all(
-        [...Array(pages)]
-          .map((_, i) => contract.get_pools(
-            { from_index: i * DEFAULT_PAGE_LIMIT, limit: DEFAULT_PAGE_LIMIT },
-          )),
-      )).flat();
-      let pricesData;
-
-      try {
-        pricesData = await getPriceData();
-      } catch (e) {
-        pricesData = initialState.prices;
-        console.warn('Price data loading failed');
-      }
-
-      const userTokens = await getUserWalletTokens();
-
-      const tokenAddresses = Array.from(
-        new Set(
-          [...poolsResult
-            .flatMap((pool: any) => pool.token_account_ids),
-          config.nearAddress,
-          NEAR_TOKEN_ID,
-          ...userTokens,
-          ],
-        ),
-      );
-
-      const poolArray = poolsResult
-        .map((pool: any, index: number) => formatPool(pool, index))
-        .filter((pool: IPool) => pool.type === PoolType.SIMPLE_POOL);
-        // WILL BE OPENED AS SOON AS STABLE SWAP WILL BE AVAILABLE
-        // || (pool.type === PoolType.STABLE_SWAP && pool.id === config.stablePoolId)
-
-      let newPoolArray = poolArray;
-
-      const tokensMetadata: any[] = await Promise.all(
-        tokenAddresses.map(async (address: string) => {
-          const ftTokenContract: FungibleTokenContract = new FungibleTokenContract(
-            { wallet: nearWallet, contractId: address },
-          );
-          const metadata = await ftTokenContract.getMetadata();
-          if (!metadata) return null;
-          return { metadata, contractId: address, contract: ftTokenContract };
-        }),
-      );
-      const tokensMetadataFiltered = tokensMetadata.filter((el) => !!el);
-
-      if (isSignedIn) {
-        setWallet(nearWallet);
-        const accountId = nearWallet.getAccountId();
-        try {
-          const balancesArray = await Promise.all(
-            tokensMetadataFiltered.map(async (token) => {
-              const balance = await token.contract.getBalanceOf({ accountId });
-              return { contractId: token.contractId, balance };
-            }),
-          );
-          const balancesMap = balancesArray.reduce((acc, curr) => (
-            { ...acc, [curr.contractId]: curr.balance }
-          ), {});
-          setBalances(balancesMap);
-          newPoolArray = await Promise.all(poolArray.map(async (pool: IPool) => {
-            const volumes = await poolContract.getPoolVolumes(pool);
-            const shares = await poolContract.getSharesInPool(pool.id);
-
-            return {
-              ...pool,
-              volumes,
-              shares,
-            };
-          }));
-        } catch (e) {
-          console.warn(e, 'while initial loading user specific data');
-        }
-      }
-      const metadataMap = tokensMetadataFiltered.reduce(
-        (acc, curr) => ({ ...acc, [curr.contractId]: curr }), {},
-      );
-      const newPoolMap = toMap(newPoolArray);
-
-      if (
-        newPoolMap[config.jumboPoolId]
-        && pricesData
-        && pricesData[config.nearAddress]
-      ) {
-        const jumboPool = newPoolMap[config.jumboPoolId];
-        const [firstToken, secondToken] = jumboPool.tokenAccountIds;
-        const secondPrice = prices[firstToken]?.price ?? 0;
-        const firstDecimals = metadataMap[firstToken]?.metadata.decimals;
-        const secondDecimals = metadataMap[secondToken]?.metadata.decimals;
-
-        const firstAmount = formatTokenAmount(
-          jumboPool.supplies[firstToken], firstDecimals,
+  const setCurrentToken = useCallback(
+    (activeToken: FungibleTokenContract, tokenType: TokenType) => {
+      const poolArray = toArray(pools);
+      if (tokenType === TokenType.Output) {
+        if (!inputToken) return;
+        setOutputToken(activeToken);
+        const availablePools = getPoolsPath(
+          inputToken.contractId, activeToken.contractId, poolArray, tokens,
         );
-        const secondAmount = formatTokenAmount(
-          jumboPool.supplies[secondToken], secondDecimals,
+        setCurrentPools(availablePools);
+      } else {
+        if (!outputToken) return;
+        setInputToken(activeToken);
+        const availablePools = getPoolsPath(
+          activeToken.contractId, outputToken.contractId, poolArray, tokens,
         );
-        const newJumboPrice = calculatePriceForToken(firstAmount, secondAmount, secondPrice);
-        pricesData = {
-          ...pricesData,
-          [config.jumboAddress]: {
-            ...JUMBO_INITIAL_DATA, price: newJumboPrice,
-          },
-        };
+        setCurrentPools(availablePools);
       }
-
-      const resultedPoolsArray = calculateTotalAmount(
-        pricesData,
-        metadataMap,
-        newPoolMap,
-      );
-
-      setTokens(metadataMap);
-      setPools(resultedPoolsArray);
-      setPrices(pricesData);
-    } catch (e) {
-      console.warn(e);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [pools, outputToken, inputToken, tokens],
+  );
 
   useEffect(() => {
+    const initialLoading = async () => {
+      try {
+        setLoading(true);
+        const isSignedIn = nearWallet.isSignedIn();
+        const poolsLength = await poolContract.getNumberOfPools();
+        const pages = Math.ceil(poolsLength / DEFAULT_PAGE_LIMIT);
+
+        const [poolsResult, pricesData] = await Promise.all([
+          await retrievePoolResult(pages, poolContract),
+          await getPrices(),
+        ]);
+
+        const userTokens = await getUserWalletTokens();
+
+        const tokenAddresses = retrieveTokenAddresses(poolsResult, userTokens);
+
+        const poolArray = poolsResult
+          .map((pool: any, index: number) => formatPool(pool, index))
+          .filter((pool: IPool) => pool.type === PoolType.SIMPLE_POOL);
+          // WILL BE OPENED AS SOON AS STABLE SWAP WILL BE AVAILABLE
+          // || (pool.type === PoolType.STABLE_SWAP && pool.id === config.stablePoolId)
+
+        let newPoolArray = poolArray;
+        const tokensMetadataFiltered = await retrieveFilteredTokenMetadata(
+          tokenAddresses,
+        );
+
+        if (isSignedIn) {
+          setWallet(nearWallet);
+          const accountId = nearWallet.getAccountId();
+          try {
+            const [balancesMap, poolArrayWithShares] = await Promise.all([
+              retrieveBalancesMap(tokensMetadataFiltered, accountId),
+              retrieveNewPoolArray(poolArray, poolContract),
+            ]);
+            setBalances(balancesMap);
+            newPoolArray = poolArrayWithShares;
+          } catch (e) {
+            console.warn(`Error: ${e} while initial loading user specific data`);
+          }
+        }
+        const metadataMap = tokensMetadataFiltered.reduce(
+          (acc, curr) => ({ ...acc, [curr.contractId]: curr }), {},
+        );
+
+        const newPoolMap = toMap(newPoolArray);
+
+        if (
+          newPoolMap[config.jumboPoolId]
+          && pricesData
+          && pricesData[config.nearAddress]
+        ) {
+          const pricesDataWithJumbo = retrievePricesData(pricesData, newPoolMap, metadataMap);
+          const resultedPoolsArray = calculateTotalAmount(
+            pricesDataWithJumbo,
+            metadataMap,
+            newPoolMap,
+          );
+          setTokens(metadataMap);
+          setPools(resultedPoolsArray);
+          setPrices(pricesDataWithJumbo);
+        } else {
+          setTokens(metadataMap);
+          setPrices(pricesData);
+        }
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     initialLoading();
-  }, []);
-
-  const tryTokenByKey = (
-    tokensMap: { [key: string]: FungibleTokenContract},
-    tokenId: string,
-    localStorageKey: string,
-    urlKey: string,
-  ) => {
-    const urlToken = url.searchParams.get(urlKey) || '';
-    if (
-      url.searchParams.has(urlKey) && findTokenBySymbol(urlToken)
-    ) return tokensMap[findTokenBySymbol(urlToken)?.contractId];
-
-    const key = localStorage.getItem(localStorageKey) || '';
-    if (key && tokensMap[key]) return tokensMap[key];
-    return tokens[tokenId];
-  };
+  }, [poolContract]);
 
   useEffect(() => {
     if (toArray(pools).length && toArray(tokens).length) {
@@ -315,22 +215,24 @@ export const StoreContextProvider = (
       );
       setCurrentPools(availablePools);
     }
-  }, [toArray(tokens).length, toArray(pools).length]);
+  }, [tokens, pools]);
 
-  const updatePools = (newPools: IPool[]) => {
+  const updatePools = useCallback(() => (newPools: IPool[]) => {
     const newPoolSet = newPools.reduce((acc, item) => ({ ...acc, [item.id]: item }), pools);
     setPools(newPoolSet);
-  };
+  }, [pools]);
 
-  const updateTokensBalances = (newBalances: {[key: string]: string}) => {
+  const updateTokensBalances = useCallback(() => (newBalances: {[key: string]: string}) => {
     const newBalancesSet = Object.entries(newBalances).reduce((acc, [key, value]) => (
       { ...acc, [key]: value }
     ), balances);
     setBalances(newBalancesSet);
-  };
+  }, [balances]);
 
-  const getTokenBalance = (tokenId: string | undefined) => (tokenId ? balances[tokenId] ?? '0' : '0');
-  const getToken = (tokenId: string | undefined) => (tokenId ? tokens[tokenId] ?? null : null);
+  const getTokenBalance = useCallback(
+    (tokenId: string | undefined) => (tokenId ? balances[tokenId] ?? '0' : '0'),
+    [balances],
+  );
 
   return (
     <StoreContextHOC.Provider value={{
@@ -339,7 +241,6 @@ export const StoreContextProvider = (
       priceLoading,
       setPriceLoading,
 
-      contract,
       wallet,
       setWallet,
       balances,
@@ -354,7 +255,6 @@ export const StoreContextProvider = (
       setCurrentPools,
       tokens,
       setTokens,
-      getToken,
       prices,
       setPrices,
 
@@ -364,7 +264,6 @@ export const StoreContextProvider = (
       setInputToken,
       outputToken,
       setOutputToken,
-      findTokenBySymbol,
     }}
     >
       {children}

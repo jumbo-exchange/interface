@@ -1,12 +1,13 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import RenderButton from 'components/Button/RenderButton';
-import { getPoolsPath, getUpperCase, toArray } from 'utils';
+import {
+  getPoolsPath, getUpperCase, saveSwapTokens, toArray,
+} from 'utils';
 import {
   useStore, TokenType, CurrentButton,
 } from 'store';
 import {
   BAD_PRICE_IMPACT, FEE_DIVISOR, NEAR_TOKEN_ID, SLIPPAGE_TOLERANCE_DEFAULT,
-  SWAP_INPUT_KEY, SWAP_OUTPUT_KEY,
 } from 'utils/constants';
 import SwapContract from 'services/SwapContract';
 import useDebounce from 'hooks/useDebounce';
@@ -88,14 +89,14 @@ export default function Swap() {
   );
   const roundPriceImpact = removeTrailingZeros(formatBalance(priceImpact));
 
-  const verifyToken = (
+  const verifyToken = useCallback((
     token: FungibleTokenContract,
   ) => {
     if (token.contractId === NEAR_TOKEN_ID) {
       const wrappedTokenId = config.nearAddress;
       return tokens[wrappedTokenId];
     } return token;
-  };
+  }, [config.nearAddress, tokens]);
 
   useEffect(() => {
     if (!inputToken || !outputToken || !debouncedInputValue) return;
@@ -165,7 +166,7 @@ export default function Swap() {
 
     if (newAverageFee !== averageFee) setAverageFee(removeTrailingZeros(newAverageFee));
     setTrackedPools(currentPools);
-  }, [currentPools]);
+  }, [currentPools, averageFee, setTrackedPools]);
 
   const handleInputChange = useCallback(
     (value: string) => {
@@ -255,7 +256,7 @@ export default function Swap() {
     } catch (e) {
       console.warn(e);
     }
-  }, [loading, inputToken, outputToken]);
+  }, [loading, inputToken, outputToken, currentPools, tokens, verifyToken]);
 
   const exchangeLabel = (inputToken && outputToken)
     ? `
@@ -268,8 +269,7 @@ export default function Swap() {
     const poolArray = toArray(pools);
     if (!inputToken || !outputToken || inputToken === outputToken) return;
     navigate(outputToken.metadata.symbol, inputToken.metadata.symbol);
-    localStorage.setItem(SWAP_OUTPUT_KEY, inputToken.contractId);
-    localStorage.setItem(SWAP_INPUT_KEY, outputToken.contractId);
+    saveSwapTokens(outputToken.contractId, inputToken.contractId);
     setInputToken(outputToken);
     setOutputToken(inputToken);
 

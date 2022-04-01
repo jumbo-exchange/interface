@@ -35,6 +35,9 @@ const basicViewMethods = [
   'get_deposits',
   'get_whitelisted_tokens',
   'get_user_whitelisted_tokens',
+  'get_pools', // from_index: u64, limit: u64
+  'get_number_of_pools',
+  'get_pool', // pool_id: u64
 ];
 
 const basicChangeMethods = [
@@ -74,7 +77,7 @@ export default class PoolContract {
   async createPool({ tokens, fee }: { tokens: FungibleTokenContract[], fee: string }) {
     const transactions: Transaction[] = [];
     const tokensStorages = await Promise.all(tokens.map(
-      (token) => token.contract.checkSwapStorageBalance({ accountId: this.contractId }),
+      (token) => token.checkSwapStorageBalance({ accountId: this.contractId }),
     ));
     const tokensStoragesAmounts = tokensStorages.flat();
     if (tokensStoragesAmounts.length) {
@@ -135,7 +138,7 @@ export default class PoolContract {
       }
     });
 
-    const isInputTokenStorage = await inputToken.token.contract.transfer(
+    const isInputTokenStorage = await inputToken.token.transfer(
       {
         accountId: this.contractId,
         inputToken: inputToken.token.contractId,
@@ -144,7 +147,7 @@ export default class PoolContract {
     );
     if (isInputTokenStorage.length) transactions.push(...isInputTokenStorage);
 
-    const isOutputTokenStorage = await outputToken.token.contract.transfer(
+    const isOutputTokenStorage = await outputToken.token.transfer(
       {
         accountId: this.contractId,
         inputToken: outputToken.token.contractId,
@@ -178,6 +181,21 @@ export default class PoolContract {
   async currentStorageBalance(accountId = wallet.getAccountId()) {
     // @ts-expect-error: Property 'get_user_storage_state' does not exist on type 'Contract'.
     return this.contract.storage_balance_of({ account_id: accountId });
+  }
+
+  async getNumberOfPools() {
+    // @ts-expect-error: Property 'get_user_storage_state' does not exist on type 'Contract'.
+    return this.contract.get_number_of_pools();
+  }
+
+  async getPool(poolId: number) {
+    // @ts-expect-error: Property 'get_user_storage_state' does not exist on type 'Contract'.
+    return this.contract.get_pool({ pool_id: poolId });
+  }
+
+  async getPools(from: number, limit: number) {
+    // @ts-expect-error: Property 'get_user_storage_state' does not exist on type 'Contract'.
+    return this.contract.get_pools({ from_index: from, limit });
   }
 
   async checkStorageBalance(accountId: string = wallet.getAccountId()) {

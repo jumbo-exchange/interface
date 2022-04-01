@@ -10,6 +10,7 @@ import { isMobile } from 'utils/userAgent';
 import { useModalsStore, useStore } from 'store';
 import { toArray } from 'utils';
 import { useTranslation } from 'react-i18next';
+import { getToken } from 'store/helpers';
 import { FilterPoolsEnum } from '.';
 
 const Container = styled.div`
@@ -182,7 +183,7 @@ export default function PoolSettings({
   currentFilterPools: FilterPoolsEnum
 }) {
   const { setCreatePoolModalOpen } = useModalsStore();
-  const { pools, getToken } = useStore();
+  const { pools, tokens } = useStore();
   const { t } = useTranslation();
 
   const [currentAPRFilter, setCurrentAPRFilter] = useState(APRFiletEnum['24H']);
@@ -196,11 +197,11 @@ export default function PoolSettings({
         .filter((el) => el.tokenAccountIds
           .some((item) => {
             const formattedValue = newValue.toLowerCase();
-            const tokenData = getToken(item)?.metadata;
-            if (!tokenData) return false;
+            const token = getToken(item, tokens);
+            if (!token || !token.metadata) return false;
 
-            return tokenData.symbol.toLowerCase().includes(formattedValue)
-            || tokenData.name.toLowerCase().includes(formattedValue)
+            return token.metadata.symbol.toLowerCase().includes(formattedValue)
+            || token.metadata.name.toLowerCase().includes(formattedValue)
             || item.includes(formattedValue);
           }))
       : toArray(pools);

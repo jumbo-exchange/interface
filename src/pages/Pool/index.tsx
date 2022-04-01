@@ -86,7 +86,13 @@ export default function Pool() {
         setAddLiquidityModalOpenState({ isOpen: true, pool });
       }
     }
-  }, [id, pools]);
+  }, [
+    id,
+    pools,
+    location.pathname,
+    setRemoveLiquidityModalOpenState,
+    setAddLiquidityModalOpenState,
+  ]);
 
   useEffect(() => {
     const newPools = toArray(pools);
@@ -97,7 +103,7 @@ export default function Pool() {
       (acc, item:IPool) => acc.add(item.totalLiquidity), Big(0),
     );
     setTotalValueLocked(newTotalValueLocked.toFixed(2));
-  }, [pools, loading]);
+  }, [pools, poolsArray.length, loading]);
 
   const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum['All Pools']);
 

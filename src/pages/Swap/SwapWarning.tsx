@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import getConfig from 'services/config';
 import Warning from 'components/Warning';
 import styled from 'styled-components';
@@ -13,6 +13,8 @@ import { useNavigate } from 'react-router-dom';
 import { wallet } from 'services/near';
 import { toAddLiquidityPage } from 'utils/routes';
 import { useTranslation } from 'react-i18next';
+import { getToken } from 'store/helpers';
+import useNavigateSwapParams from 'hooks/useNavigateSwapParams';
 
 const config = getConfig();
 
@@ -98,15 +100,15 @@ export default function RenderWarning({ priceImpact }: {priceImpact: string}) {
     outputToken,
     setOutputToken,
     getTokenBalance,
-    getToken,
     setCurrentPools,
   } = useStore();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isConnected = wallet.isSignedIn();
+  const navigateSwapTokens = useNavigateSwapParams();
 
-  const near = getToken(NEAR_TOKEN_ID);
-  const wNear = getToken(config.nearAddress);
+  const near = useMemo(() => getToken(NEAR_TOKEN_ID, tokens), [tokens]);
+  const wNear = useMemo(() => getToken(config.nearAddress, tokens), [tokens]);
 
   const poolPathInputToken = getPoolsPath(
     inputToken?.contractId ?? '',
@@ -114,18 +116,21 @@ export default function RenderWarning({ priceImpact }: {priceImpact: string}) {
     toArray(pools),
     tokens,
   );
+
   const poolPathOutputToken = getPoolsPath(
     wNear?.contractId ?? '',
     outputToken?.contractId ?? '',
     toArray(pools),
     tokens,
   );
+
   const poolPathToken = getPoolsPath(
     inputToken?.contractId ?? '',
     outputToken?.contractId ?? '',
     toArray(pools),
     tokens,
   );
+
   const havePoolPathInputToken = poolPathInputToken.length > 0;
   const havePoolPathOutputToken = poolPathOutputToken.length > 0;
   const havePoolPathToken = poolPathToken.length > 0;
@@ -191,6 +196,9 @@ export default function RenderWarning({ priceImpact }: {priceImpact: string}) {
               onClick={() => {
                 setInputToken(near);
                 setOutputToken(wNear);
+                if (near && wNear) {
+                  navigateSwapTokens(near.metadata.symbol, wNear.metadata.symbol);
+                }
               }}
             >
               <LogoWallet />
@@ -212,10 +220,16 @@ export default function RenderWarning({ priceImpact }: {priceImpact: string}) {
       if (nearIsInput) {
         setInputToken(wNear);
         setOutputToken(outputToken);
+        if (wNear && outputToken) {
+          navigateSwapTokens(wNear.metadata.symbol, outputToken.metadata.symbol);
+        }
         setCurrentPools(poolPathOutputToken);
       } else {
         setInputToken(inputToken);
         setOutputToken(wNear);
+        if (wNear && inputToken) {
+          navigateSwapTokens(inputToken?.metadata.symbol, wNear?.metadata.symbol);
+        }
         setCurrentPools(poolPathInputToken);
       }
     };
