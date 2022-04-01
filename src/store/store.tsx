@@ -6,7 +6,7 @@ import {
   IPool, StoreContextType, TokenType,
 } from 'store';
 import {
-  formatPool, getPoolsPath, toArray, toMap, calculateTotalAmount,
+  formatPool, getPoolsPath, toArray, toMap, calculateTotalAmountAndDayVolume,
 } from 'utils';
 
 import getConfig from 'services/config';
@@ -29,6 +29,7 @@ import {
   retrievePricesData,
   tryTokenByKey,
   getPrices,
+  getDayVolumeData,
 } from './helpers';
 
 const config = getConfig();
@@ -124,9 +125,10 @@ export const StoreContextProvider = (
         const poolsLength = await poolContract.getNumberOfPools();
         const pages = Math.ceil(poolsLength / DEFAULT_PAGE_LIMIT);
 
-        const [poolsResult, pricesData] = await Promise.all([
+        const [poolsResult, pricesData, dayVolumesData] = await Promise.all([
           await retrievePoolResult(pages, poolContract),
           await getPrices(),
+          await getDayVolumeData(),
         ]);
 
         const userTokens = await getUserWalletTokens();
@@ -134,7 +136,7 @@ export const StoreContextProvider = (
         const tokenAddresses = retrieveTokenAddresses(poolsResult, userTokens);
 
         const poolArray = poolsResult
-          .map((pool: any, index: number) => formatPool(pool, index))
+          .map((pool: any) => formatPool(pool))
           .filter((pool: IPool) => pool.type === PoolType.SIMPLE_POOL);
           // WILL BE OPENED AS SOON AS STABLE SWAP WILL BE AVAILABLE
           // || (pool.type === PoolType.STABLE_SWAP && pool.id === config.stablePoolId)
@@ -170,10 +172,11 @@ export const StoreContextProvider = (
           && pricesData[config.nearAddress]
         ) {
           const pricesDataWithJumbo = retrievePricesData(pricesData, newPoolMap, metadataMap);
-          const resultedPoolsArray = calculateTotalAmount(
+          const resultedPoolsArray = calculateTotalAmountAndDayVolume(
             pricesDataWithJumbo,
             metadataMap,
             newPoolMap,
+            dayVolumesData,
           );
           setTokens(metadataMap);
           setPools(resultedPoolsArray);

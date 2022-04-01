@@ -28,6 +28,7 @@ export interface IPool {
 
   // Views
   totalLiquidity: string;
+  dayVolume: string;
 }
 
 export interface ITokenMetadata {
@@ -44,6 +45,15 @@ export interface ITokenPrice {
     decimal: number,
     price: string,
     symbol: string
+}
+
+export interface IDayVolume {
+  id: string,
+  volume24hFirst: string,
+  volume24hSecond: string,
+  tokenFirst: string,
+  tokenSecond: string,
+  updatedAt: string,
 }
 
 export type StoreContextType = {

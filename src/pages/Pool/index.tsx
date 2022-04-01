@@ -75,6 +75,7 @@ export default function Pool() {
   const config = getConfig();
   const location = useLocation();
   const [totalValueLocked, setTotalValueLocked] = useState('0');
+  const [totalDayVolume, setTotalDayVolume] = useState('0');
   const [poolsArray, setPoolsArray] = useState<IPool[]>([]);
 
   useEffect(() => {
@@ -102,7 +103,11 @@ export default function Pool() {
     const newTotalValueLocked = newPools.reduce(
       (acc, item:IPool) => acc.add(item.totalLiquidity), Big(0),
     );
+    const newTotalDayVolume = newPools.reduce(
+      (acc, item:IPool) => acc.add(item.dayVolume), Big(0),
+    );
     setTotalValueLocked(newTotalValueLocked.toFixed(2));
+    setTotalDayVolume(newTotalDayVolume.toFixed());
   }, [pools, poolsArray.length, loading]);
 
   const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum['All Pools']);
@@ -114,7 +119,7 @@ export default function Pool() {
     },
     {
       title: t('pool.totalDayLocked'),
-      label: '-',
+      label: Big(totalValueLocked ?? 0).lte(0) ? '-' : `$${totalDayVolume}`,
     },
     {
       title: t('pool.jumboPrice'),

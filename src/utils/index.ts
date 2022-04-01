@@ -1,7 +1,9 @@
 import Big from 'big.js';
 import getConfig from 'services/config';
 import FungibleTokenContract from 'services/FungibleToken';
-import { IPool, ITokenPrice, PoolType } from 'store';
+import {
+  IDayVolume, IPool, ITokenPrice, PoolType,
+} from 'store';
 import { formatTokenAmount, removeTrailingZeros } from './calculations';
 import { SWAP_INPUT_KEY, SWAP_OUTPUT_KEY } from './constants';
 
@@ -22,9 +24,9 @@ export function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
-export function formatPool(pool: any, id: number): IPool {
+export function formatPool(pool: any): IPool {
   return {
-    id,
+    id: pool.id,
     type: pool.pool_kind === PoolType.STABLE_SWAP ? PoolType.STABLE_SWAP : PoolType.SIMPLE_POOL,
     tokenAccountIds: pool.token_account_ids,
     amounts: pool.amounts,
@@ -39,6 +41,7 @@ export function formatPool(pool: any, id: number): IPool {
     sharesTotalSupply: pool.shares_total_supply,
     amp: pool.amp,
     totalLiquidity: '0',
+    dayVolume: '0',
   };
 }
 
@@ -123,10 +126,11 @@ export const calculatePriceForToken = (
     .mul(price).div(secondAmount).toFixed(2);
 };
 
-export const calculateTotalAmount = (
+export const calculateTotalAmountAndDayVolume = (
   pricesData: {[key: string]: ITokenPrice},
   metadataMap: {[key: string]: FungibleTokenContract},
   newPoolMap: {[key:string]: IPool},
+  dayVolumesData: {[key: string]: IDayVolume},
 ):{[key:string]: IPool} => {
   const calculatedPools = toArray(newPoolMap).map((pool: IPool) => {
     const config = getConfig();
@@ -161,9 +165,18 @@ export const calculateTotalAmount = (
       const secondLiquidity = new Big(secondAmount).mul(secondPrice);
       const totalLiquidityAmount = new Big(firstLiquidity).add(secondLiquidity);
       const totalLiquidityValue = removeTrailingZeros(totalLiquidityAmount.toFixed(2));
-      return { ...pool, totalLiquidity: totalLiquidityValue };
+
+      const dayVolumeData = dayVolumesData[pool.id] || null;
+      if (!dayVolumeData) return { ...pool, totalLiquidity: totalLiquidityValue };
+
+      const tokenFirst = pricesData[dayVolumeData.tokenFirst]?.price ?? 0;
+      const tokenFirstDecimals = metadataMap[dayVolumeData.tokenFirst]?.metadata.decimals;
+      const tokenFirstAmount = formatTokenAmount(dayVolumeData.volume24hFirst, tokenFirstDecimals);
+      const firstDayVolume = new Big(tokenFirst).mul(tokenFirstAmount);
+      const totalDayVolumeValue = removeTrailingZeros(firstDayVolume.toFixed(2));
+      return { ...pool, totalLiquidity: totalLiquidityValue, dayVolume: totalDayVolumeValue };
     }
-    return { ...pool, totalLiquidity: 0 };
+    return { ...pool, totalLiquidity: 0, dayVolume: 0 };
   });
 
   return toMap(calculatedPools);

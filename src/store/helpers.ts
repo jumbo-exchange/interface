@@ -5,7 +5,7 @@ import { wallet as nearWallet } from 'services/near';
 import { calculatePriceForToken, isNotNullOrUndefined, toArray } from 'utils';
 import { formatTokenAmount } from 'utils/calculations';
 import { NEAR_TOKEN_ID } from 'utils/constants';
-import { IPool, ITokenPrice } from './interfaces';
+import { IDayVolume, IPool, ITokenPrice } from './interfaces';
 import { pricesInitialState } from './store';
 
 const config = getConfig();
@@ -197,3 +197,22 @@ export const getToken = (
   tokenId: string,
   tokens: {[key: string]: FungibleTokenContract},
 ): FungibleTokenContract | null => (tokenId ? tokens[tokenId] ?? null : null);
+
+export async function getDayVolumeData(): Promise<{[key: string]: IDayVolume}> {
+  try {
+    const dayVolumesData = await fetch(`${config.indexerUrl}/pool-volumes`, {
+      method: 'GET',
+      headers: { 'Content-type': 'application/json; charset=UTF-8' },
+    })
+      .then((res) => res.json())
+      .then((list) => list);
+    return dayVolumesData.reduce(
+      (acc: {[key: string]: IDayVolume}, item: IDayVolume) => ({
+        ...acc, [item.id]: item,
+      }), {},
+    );
+  } catch (e) {
+    console.warn(`Error ${e} while loading prices from ${config.indexerUrl}/pool-volumes`);
+    return {};
+  }
+}
