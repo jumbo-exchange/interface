@@ -42,7 +42,7 @@ export default function PoolCard({ pool } : { pool: IPool }) {
   if (!tokenInput || !tokenOutput) return null;
 
   const jumboToken = tokens[config.jumboAddress] ?? null;
-  const JumboTokenInPool = jumboToken === (tokenInput || tokenOutput);
+  const jumboTokenInPool = jumboToken === (tokenInput || tokenOutput);
 
   const volume: IVolume[] = [
     {
@@ -71,7 +71,7 @@ export default function PoolCard({ pool } : { pool: IPool }) {
         <TokenPairDisplay pool={pool} />
         <LabelPool>
           <>
-            {JumboTokenInPool && <JumboBlock>Jumbo</JumboBlock>}
+            {jumboTokenInPool && <JumboBlock>Jumbo</JumboBlock>}
             {pool.farms && <FarmBlock>Farm</FarmBlock>}
           </>
         </LabelPool>
@@ -90,13 +90,12 @@ export default function PoolCard({ pool } : { pool: IPool }) {
         </BlockVolume>
         <BlockButton>
           <PoolOrFarmButtons
-            toPageAdd={toAddLiquidityPage(pool.id)}
+            toPageAdd={() => navigate(toAddLiquidityPage(pool.id))}
             titleAdd={t('action.addLiquidity')}
-            toPageRemove={toRemoveLiquidityPage(pool.id)}
+            toPageRemove={() => navigate(toRemoveLiquidityPage(pool.id))}
             titleRemove={t('action.removeLiquidity')}
             showRemoveButton={canWithdraw}
             showAddButton
-            navigate={navigate}
           />
         </BlockButton>
       </LowerRow>

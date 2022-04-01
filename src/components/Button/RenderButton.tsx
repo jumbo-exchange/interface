@@ -8,7 +8,6 @@ import { ReactComponent as LogoWallet } from 'assets/images-app/wallet.svg';
 import { ReactComponent as SwapIcon } from 'assets/images-app/swap-icon.svg';
 import { ReactComponent as AddIcon } from 'assets/images-app/icon-add.svg';
 import { useTranslation } from 'react-i18next';
-import { NavigateFunction } from 'react-router-dom';
 
 const Wallet = styled(LogoWallet)`
   margin-right: .625rem;
@@ -115,13 +114,12 @@ const LogoButton = styled(AddIcon)`
 `;
 
 interface IButtons {
-  toPageAdd: string,
+  toPageAdd: () => void,
   titleAdd: string,
-  toPageRemove: string,
+  toPageRemove: () => void,
   titleRemove: string,
   showRemoveButton: boolean
   showAddButton?: boolean
-  navigate: NavigateFunction;
 }
 
 export const PoolOrFarmButtons = ({
@@ -131,19 +129,17 @@ export const PoolOrFarmButtons = ({
   titleRemove,
   showRemoveButton,
   showAddButton,
-  navigate,
 }: IButtons) => (
   <>
     {showRemoveButton && (
-      <BtnSecondary onClick={() => navigate(toPageRemove)}>
+      <BtnSecondary onClick={toPageRemove}>
         {titleRemove}
       </BtnSecondary>
     )}
     {showAddButton && (
-    <BtnPrimary onClick={() => navigate(toPageAdd)}>
+    <BtnPrimary onClick={toPageAdd}>
       <LogoButton /> {titleAdd}
     </BtnPrimary>
     )}
-
   </>
 );

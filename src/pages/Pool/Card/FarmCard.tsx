@@ -8,8 +8,7 @@ import { useTranslation } from 'react-i18next';
 import TokenPairDisplay from 'components/TokensDisplay/TokenPairDisplay';
 import RewardTokens from 'components/TokensDisplay/RewardTokens';
 import { PoolOrFarmButtons } from 'components/Button/RenderButton';
-import { formatTokenAmount, removeTrailingZeros } from 'utils/calculations';
-import { LP_TOKEN_DECIMALS } from 'utils/constants';
+import { calcStakedAmount } from 'utils';
 import moment from 'moment';
 import { FarmStatusLocales, getFarmStartAndEnd } from 'components/FarmStatus';
 import {
@@ -35,17 +34,6 @@ interface IVolume {
   tooltip: string;
 }
 
-const calcStakedAmount = (shares: string, pool: IPool) => {
-  const { sharesTotalSupply, totalLiquidity } = pool;
-  if (Big(sharesTotalSupply).lte('0') || Big(shares).lte('0')) return null;
-  const formatTotalShares = formatTokenAmount(sharesTotalSupply, LP_TOKEN_DECIMALS);
-  const formatShares = formatTokenAmount(shares, LP_TOKEN_DECIMALS);
-
-  const numerator = Big(formatShares).times(totalLiquidity);
-  const sharesInUsdt = Big(numerator).div(formatTotalShares).toFixed(2);
-  return removeTrailingZeros(sharesInUsdt);
-};
-
 export default function FarmCard({ pool } : { pool: IPool }) {
   const { farms } = useStore();
   const { t } = useTranslation();
@@ -53,7 +41,8 @@ export default function FarmCard({ pool } : { pool: IPool }) {
 
   const [timeToStartFarm, setTimeToStart] = useState<number>(0);
 
-  const farmsInPool = pool.farms?.length ? pool.farms.map((el) => farms[el]) : [];
+  if (!pool.farms?.length) return null;
+  const farmsInPool = pool.farms.map((el) => farms[el]);
   const { totalSeedAmount, userStaked, status } = farmsInPool[0];
 
   const totalStaked = calcStakedAmount(totalSeedAmount, pool);
@@ -92,12 +81,12 @@ export default function FarmCard({ pool } : { pool: IPool }) {
   const pendingTime = `${moment(timeToStartFarm).format('DD [days] \xa0 HH : mm : ss')}`;
   const canUnStake = farmsInPool.some((el) => Big(el.userStaked || '0').gt('0'));
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTimeToStart(timeToStart);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [timeToStart]);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setTimeToStart(timeToStart);
+  //   }, 1000);
+  //   return () => clearInterval(interval);
+  // }, [timeToStart]);
 
   return (
     <FarmWrapper isShowingTime={isFarmingEnd}>
@@ -125,13 +114,12 @@ export default function FarmCard({ pool } : { pool: IPool }) {
           </BlockVolume>
           <BlockButton>
             <PoolOrFarmButtons
-              toPageAdd={toStakePage(pool.id)}
+              toPageAdd={() => navigate(toStakePage(pool.id))}
               titleAdd={t('action.stake')}
-              toPageRemove={toUnStakeAndClaimPage(pool.id)}
+              toPageRemove={() => navigate(toUnStakeAndClaimPage(pool.id))}
               titleRemove={t('action.unStakeAndClaim')}
               showRemoveButton={canUnStake}
               showAddButton={!isFarmingEnd}
-              navigate={navigate}
             />
           </BlockButton>
         </LowerRow>

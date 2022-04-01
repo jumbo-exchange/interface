@@ -73,7 +73,7 @@ export default function PoolResult(
     );
   }
 
-  if (currentFilterPools === FilterPoolsEnum['Your Liquidity']) {
+  if (currentFilterPools === FilterPoolsEnum.YourLiquidity) {
     const filteredPools = poolsArraySorted.filter((pool) => pool.shares && Big(pool.shares).gt(0));
     return (
       <Wrapper>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useModalsStore, useStore, CurrentButton } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
 import FarmContract from 'services/FarmContract';
@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { POOL } from 'utils/routes';
 import { formatTokenAmount } from 'utils/calculations';
 import Big from 'big.js';
-import { LP_TOKEN_DECIMALS } from 'utils/constants';
+import { INITIAL_INPUT_PLACEHOLDER, LP_TOKEN_DECIMALS } from 'utils/constants';
 import TokenPairDisplay from 'components/TokensDisplay/TokenPairDisplay';
 import {
   Layout, ModalBlock, ModalIcon, ModalTitle,
@@ -22,12 +22,11 @@ import {
   TokensBlock,
 } from './styles';
 
-const INITIAL_INPUT_PLACEHOLDER = '';
-
 export default function UnStakeModal() {
   const { farms } = useStore();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const contract = useMemo(() => new FarmContract(), []);
 
   const {
     unStakeModalOpenState,
@@ -36,8 +35,8 @@ export default function UnStakeModal() {
   const { pool } = unStakeModalOpenState;
   const [unStakeValue, setUnStakeValue] = useState<string>(INITIAL_INPUT_PLACEHOLDER);
 
-  if (!pool) return null;
-  const [farmsInPool] = pool.farms?.length ? pool.farms.map((el) => farms[el]) : [];
+  if (!pool || !pool.farms?.length) return null;
+  const [farmsInPool] = pool.farms.map((el) => farms[el]);
   if (!farmsInPool) return null;
 
   const { userStaked, seedId } = farmsInPool;
@@ -50,10 +49,9 @@ export default function UnStakeModal() {
 
   const onSubmit = () => {
     const stakeValueBN = new Big(unStakeValue);
-    if (Number(unStakeValue) === 0) return;
+    if (Big(unStakeValue).eq(0)) return;
     if (stakeValueBN.gt(formattedFarmShares)) return;
 
-    const contract = new FarmContract();
     if (!unStakeModalOpenState.pool) return;
     contract.unstake(
       seedId,

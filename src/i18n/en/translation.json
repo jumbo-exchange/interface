@@ -56,7 +56,13 @@
     "yourStaked": "Your Staked",
     "APY": "APY",
 
-    "rewardTokens": "Reward Tokens"
+    "rewardTokens": "Reward Tokens",
+
+    "status": {
+      "active": "Active",
+      "pending": "Pending",
+      "ended": "Ended"
+    }
   },
 
   "accountModal": {

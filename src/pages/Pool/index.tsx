@@ -32,10 +32,10 @@ import PoolResult from './PoolResult';
 import Slider from './Slider';
 
 export enum FilterPoolsEnum {
-  'All Pools',
-  'Your Liquidity',
+  'AllPools',
+  'YourLiquidity',
   'Farming',
-  'Smart Pools',
+  'SmartPools',
 }
 
 export interface IFilters {
@@ -48,11 +48,11 @@ export interface IFilters {
 export const filters: IFilters[] = [
   {
     title: 'All Pools',
-    isActive: FilterPoolsEnum['All Pools'],
+    isActive: FilterPoolsEnum.AllPools,
   },
   {
     title: 'Your Liquidity',
-    isActive: FilterPoolsEnum['Your Liquidity'],
+    isActive: FilterPoolsEnum.YourLiquidity,
   },
   {
     title: 'Farming',
@@ -60,7 +60,7 @@ export const filters: IFilters[] = [
   },
   {
     title: 'Smart Pools',
-    isActive: FilterPoolsEnum['Smart Pools'],
+    isActive: FilterPoolsEnum.SmartPools,
     disabled: true,
     logoSoon: !isMobile,
   },
@@ -97,9 +97,9 @@ export default function Pool() {
 
   const rewardPrice = rewardList.reduce((sum, [tokenId, value]) => {
     const priceToken = prices[tokenId ?? ''] || '0';
-    const amount = Big(value).mul(priceToken?.price ?? '0');
-    return Big(sum).plus(amount).toFixed(2);
-  }, '0');
+    const amountInUSD = Big(value).mul(priceToken?.price ?? '0');
+    return sum.plus(amountInUSD);
+  }, new Big(0));
 
   useEffect(() => {
     if (id && pools[Number(id)]) {
@@ -148,8 +148,7 @@ export default function Pool() {
     setTotalValueLocked(newTotalValueLocked.toFixed(2));
   }, [pools, poolsArray.length, loading]);
 
-  // const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum['All Pools']);
-  const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum.Farming);
+  const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum.AllPools);
 
   const mainInfo: IMainInfo[] = [
     {
@@ -173,6 +172,21 @@ export default function Pool() {
       show: !canClaimAll,
     },
   ];
+
+  const rewardListArray = useMemo(() => rewardList.map(([token, value]) => {
+    const isShowing = Big(value).lte(0);
+    const tokenContract = tokens[token];
+    if (isShowing || !tokenContract) return null;
+    const claimReward = formatTokenAmount(
+      value, tokenContract.metadata.decimals, 6,
+    );
+    const tokenSymbol = tokenContract.metadata.symbol;
+    return (
+      <p key={tokenSymbol}>
+        {claimReward} <span>{tokenSymbol}</span>
+      </p>
+    );
+  }), [tokens, rewardList]);
 
   return (
     <Container>
@@ -216,24 +230,11 @@ export default function Pool() {
                 <ButtonClaim
                   onClick={onClaimReward}
                 >
-                  <span>${removeTrailingZeros(rewardPrice)} </span>
+                  <span>${removeTrailingZeros(rewardPrice.toFixed(2))} </span>
                   <span>Claim All</span>
                 </ButtonClaim>
                 <RewardList>
-                  {rewardList.map(([token, value]) => {
-                    const isShowing = Big(value).lte(0);
-                    const tokenContract = tokens[token];
-                    if (isShowing || !tokenContract) return null;
-                    const claimReward = formatTokenAmount(
-                      value, tokenContract.metadata.decimals, 6,
-                    );
-                    const tokenSymbol = tokenContract.metadata.symbol;
-                    return (
-                      <p key={tokenSymbol}>
-                        {claimReward} <span>{tokenSymbol}</span>
-                      </p>
-                    );
-                  })}
+                  {rewardListArray}
                 </RewardList>
               </ButtonAndClaimList>
             )}

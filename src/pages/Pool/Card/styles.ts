@@ -10,7 +10,7 @@ export const Wrapper = styled(SpecialContainer)<{isFarming?: boolean}>`
   border-radius: 24px;
   justify-content: space-between;
   margin: 0 0 1rem 0;
-  padding-top: 18px;
+  padding-top: 1.125rem;
   min-height: 160px;
   & > div:first-child {
     min-height: 40px;
@@ -60,7 +60,7 @@ export const LabelPool = styled.div`
 export const JumboBlock = styled.div`
   display: flex;
   margin-left: .5rem;
-  padding: 4px;
+  padding: .25rem;
   font-style: normal;
   font-weight: normal;
   font-size: .75rem;

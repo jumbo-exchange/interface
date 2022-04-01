@@ -6,7 +6,7 @@ import {
   IFarm, IPool, ITokenPrice, PoolType,
 } from 'store';
 import { formatTokenAmount, removeTrailingZeros } from './calculations';
-import { SWAP_INPUT_KEY, SWAP_OUTPUT_KEY } from './constants';
+import { LP_TOKEN_DECIMALS, SWAP_INPUT_KEY, SWAP_OUTPUT_KEY } from './constants';
 
 const ACCOUNT_TRIM_LENGTH = 10;
 
@@ -218,4 +218,15 @@ export const saveSwapTokens = (
   if (!inputToken || !outputToken) return;
   localStorage.setItem(SWAP_INPUT_KEY, inputToken);
   localStorage.setItem(SWAP_OUTPUT_KEY, outputToken);
+};
+
+export const calcStakedAmount = (shares: string, pool: IPool) => {
+  const { sharesTotalSupply, totalLiquidity } = pool;
+  if (Big(sharesTotalSupply).lte('0') || Big(shares).lte('0')) return null;
+  const formatTotalShares = formatTokenAmount(sharesTotalSupply, LP_TOKEN_DECIMALS);
+  const formatShares = formatTokenAmount(shares, LP_TOKEN_DECIMALS);
+
+  const numerator = Big(formatShares).times(totalLiquidity);
+  const sharesInUsdt = Big(numerator).div(formatTotalShares).toFixed(2);
+  return removeTrailingZeros(sharesInUsdt);
 };

@@ -29,7 +29,7 @@ const SearchInputBlock = styled.div`
   border: 1px solid ${({ theme }) => theme.globalGreyOp04};
   box-sizing: border-box;
   border-radius: 12px;
-  padding: 9px 9px;
+  padding: .563rem;
   max-width: 180px;
   & > svg {
     margin-right: .75rem;
@@ -246,7 +246,7 @@ export default function PoolSettings({
   const [currentAPRFilter, setCurrentAPRFilter] = useState(APRFiletEnum['24H']);
   const [searchValue, setSearchValue] = useState<string>('');
 
-  const isAllPools = currentFilterPools === FilterPoolsEnum['All Pools'];
+  const isAllPools = currentFilterPools === FilterPoolsEnum.AllPools;
   const isFarming = currentFilterPools === FilterPoolsEnum.Farming;
 
   const onChange = (value: string) => {

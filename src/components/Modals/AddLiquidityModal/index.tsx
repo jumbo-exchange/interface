@@ -13,7 +13,9 @@ import {
   toNonDivisibleNumber,
 } from 'utils/calculations';
 import { wallet } from 'services/near';
-import { LP_TOKEN_DECIMALS } from 'utils/constants';
+import {
+  INITIAL_INPUT_PLACEHOLDER, LP_TOKEN_DECIMALS, ZERO_AMOUNT, SMALL_SHARE,
+} from 'utils/constants';
 import Big from 'big.js';
 import Refresh from 'components/Refresh';
 import { POOL } from 'utils/routes';
@@ -28,10 +30,6 @@ import {
   RefreshBlock,
   YourSharesBlock,
 } from './styles';
-
-const INITIAL_INPUT_PLACEHOLDER = '';
-const ZERO_AMOUNT = '0';
-const SMALL_SHARE = '0.001';
 
 export default function AddLiquidityModal() {
   const isConnected = wallet.isSignedIn();

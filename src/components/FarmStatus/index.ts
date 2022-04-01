@@ -1,12 +1,14 @@
 import moment from 'moment';
 import { IFarm } from 'store';
+import i18n from 'i18n';
+import Big from 'big.js';
 
-export const farmStatus = {
-  created: 'Created',
-  running: 'Running',
-  ended: 'Ended',
-  cleared: 'Cleared',
-};
+export const enum farmStatus {
+  created = 'Created',
+  running = 'Running',
+  ended = 'Ended',
+  cleared = 'Cleared',
+}
 
 export enum FarmStatusEnum {
   'Active',
@@ -14,13 +16,14 @@ export enum FarmStatusEnum {
   'Ended'
 }
 
+export const secondsToMilliseconds = (date: number): number => date * 1000;
+
 export const getFarmStatus = (
   status: string,
   dateStart: number,
-) => {
-  const toMilliseconds = dateStart * 1000;
+): FarmStatusEnum => {
   const currentDate = moment().valueOf();
-  const startDate = moment(toMilliseconds).valueOf();
+  const startDate = moment(secondsToMilliseconds(dateStart)).valueOf();
 
   if (status === farmStatus.ended) return FarmStatusEnum.Ended;
 
@@ -30,17 +33,16 @@ export const getFarmStatus = (
 };
 
 export const FarmStatusLocales = {
-  [FarmStatusEnum.Active]: 'Active',
-  [FarmStatusEnum.Pending]: 'Pending',
-  [FarmStatusEnum.Ended]: 'Ended',
+  [FarmStatusEnum.Active]: i18n.t('farm.status.active'),
+  [FarmStatusEnum.Pending]: i18n.t('farm.status.pending'),
+  [FarmStatusEnum.Ended]: i18n.t('farm.status.ended'),
 };
 
-export const secondsToMilliseconds = (date: number) => date * 1000;
-
-export const getFarmStartAndEnd = (farms: IFarm[]) => {
-  const farmStart: number[] = [];
-  const farmEnd: number[] = [];
-  const timeToStart: number[] = [];
+// TODO: Refactor
+export const getFarmStartAndEnd = (farms: IFarm[]): {[key: string]: number} => {
+  const farmStarts: number[] = [];
+  const farmEnds: number[] = [];
+  const timeToStarts: number[] = [];
   const currentDate = moment().valueOf();
 
   if (farms.length !== 0) {
@@ -51,13 +53,13 @@ export const getFarmStartAndEnd = (farms: IFarm[]) => {
         secondsToMilliseconds(farm.startAt) > currentDate
         && farm.status === FarmStatusEnum.Pending
       ) {
-        timeToStart.push(farm.startAt);
+        timeToStarts.push(farm.startAt);
         return null;
       }
 
-      farmStart.push(farm.startAt);
-      farmEnd.push(
-        Number(farm.rewardPerSession) > 0
+      farmStarts.push(farm.startAt);
+      farmEnds.push(
+        Big(farm.rewardPerSession).gt(0)
           ? moment(farm.startAt).valueOf()
           + (farm.sessionInterval * Number(farm.totalReward))
           / Number(farm.rewardPerSession)
@@ -67,13 +69,13 @@ export const getFarmStartAndEnd = (farms: IFarm[]) => {
     });
   }
 
-  farmEnd.sort((a, b) => b - a);
-  farmStart.sort((a, b) => b - a);
-  timeToStart.sort((a, b) => b - a);
+  farmEnds.sort((a, b) => b - a);
+  farmStarts.sort((a, b) => b - a);
+  timeToStarts.sort((a, b) => b - a);
 
   return {
-    farmStart: secondsToMilliseconds(farmStart[0]),
-    farmEnd: secondsToMilliseconds(farmEnd[0]),
-    timeToStart: secondsToMilliseconds(timeToStart[0]) - currentDate,
+    farmStart: secondsToMilliseconds(farmStarts[0]),
+    farmEnd: secondsToMilliseconds(farmEnds[0]),
+    timeToStart: secondsToMilliseconds(timeToStarts[0]) - currentDate,
   };
 };

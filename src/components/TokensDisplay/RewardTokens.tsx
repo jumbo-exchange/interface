@@ -47,6 +47,7 @@ export default function RewardTokens(
       <p>{t('farm.rewardTokens')}</p>
       {rewardTokens.map((tokenId) => {
         const token = tokens[tokenId] || null;
+        if (!token) return null;
         return (
           <LogoContainer key={token.contractId}>
             <img src={token.metadata.icon} alt={token.metadata.symbol} />

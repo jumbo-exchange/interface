@@ -95,7 +95,7 @@ export const RewardList = styled.div`
   align-items: flex-start;
   width: 100%;
   background-color: ${({ theme }) => theme.claimListBg};
-  padding: 12px 16px;
+  padding: .75rem 1rem;
   border-radius: 12px;
   top: 45px;
   & > p {

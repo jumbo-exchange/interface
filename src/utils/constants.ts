@@ -19,8 +19,8 @@ export const MIN_SLIPPAGE_TOLERANCE = 0;
 export const MAX_TOTAL_FEE = 20;
 export const MIN_TOTAL_FEE = 0;
 
-export const COEFFICIENT_SLIPPAGE = 0.3;
-export const COEFFICIENT_TOTAL_FEE = 0.3;
+export const COEFFICIENT_SLIPPAGE = 0.33;
+export const COEFFICIENT_TOTAL_FEE = 0.33;
 
 export const MIN_FEE_CREATE_POOL = '0.01';
 export const MAX_FEE_CREATE_POOL = '20';
@@ -33,8 +33,8 @@ export const poolFeeOptions = [
 
 export const slippageToleranceOptions = [
   { label: '0.1%', value: '0.1' },
-  { label: '0.5%', value: '0.5' },
   { label: '1%', value: '1' },
+  { label: '5%', value: '5' },
 ];
 
 export const ONE_YOCTO_NEAR = '0.000000000000000000000001';
@@ -60,3 +60,7 @@ export const SWAP_OUTPUT_KEY = 'JUMBO_SWAP_OUTPUT_TOKEN';
 
 export const URL_INPUT_TOKEN = 'inputToken';
 export const URL_OUTPUT_TOKEN = 'outputToken';
+
+export const INITIAL_INPUT_PLACEHOLDER = '';
+export const ZERO_AMOUNT = '0';
+export const SMALL_SHARE = '0.001';

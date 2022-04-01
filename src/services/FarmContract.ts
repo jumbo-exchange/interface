@@ -37,11 +37,12 @@ const config = getConfig();
 const LP_TOKEN_DECIMALS = 24;
 const LP_STABLE_TOKEN_DECIMALS = 18;
 
-const EX_CONTRACT_ID = config.contractId;
+const EXCHANGE_CONTRACT_ID = config.contractId;
 const FARM_CONTRACT_ID = config.farmContractId;
 const STABLE_POOL_ID = config.stablePoolId;
 
 const MFT_GAS = '180000000000000';
+const UNSTAKE_GAS = '200000000000000';
 
 const STORAGE_TO_REGISTER_MFT = '0.045';
 const MIN_DEPOSIT_PER_TOKEN_FARM = new Big('45000000000000000000000');
@@ -65,42 +66,42 @@ export default class FarmContract {
   contractId = FARM_CONTRACT_ID;
 
   async getNumberOfFarms() {
-    // @ts-expect-error: Property 'get_number_of_farms' does not exist on type 'Contract'.
+    // @ts-expect-error: Property 'getNumberOfFarms' does not exist on type 'Contract'.
     return this.contract.get_number_of_farms();
   }
 
   async getListFarms(fromIndex: number, limit: number) {
-    // @ts-expect-error: Property 'list_farms' does not exist on type 'Contract'.
+    // @ts-expect-error: Property 'getListFarms' does not exist on type 'Contract'.
     return this.contract.list_farms({ from_index: fromIndex, limit });
   }
 
   async getRewardByTokenId(tokenId: string, accountId = wallet.getAccountId()) {
-    // @ts-expect-error: Property 'get_reward' does not exist on type 'Contract'.
+    // @ts-expect-error: Property 'getRewardByTokenId' does not exist on type 'Contract'.
     return this.contract.get_reward({ account_id: accountId, token_id: tokenId });
   }
 
   async getRewards(accountId = wallet.getAccountId()) {
-    // @ts-expect-error: Property 'list_rewards' does not exist on type 'Contract'.
+    // @ts-expect-error: Property 'getRewards' does not exist on type 'Contract'.
     return this.contract.list_rewards({ account_id: accountId });
   }
 
   async getStakedListByAccountId(accountId = wallet.getAccountId()) {
-    // @ts-expect-error: Property 'list_user_seeds' does not exist on type 'Contract'.
+    // @ts-expect-error: Property 'getStakedListByAccountId' does not exist on type 'Contract'.
     return this.contract.list_user_seeds({ account_id: accountId });
   }
 
   async getSeeds(fromIndex: number, limit: number) {
-    // @ts-expect-error: Property 'list_seeds' does not exist on type 'Contract'.
+    // @ts-expect-error: Property 'getSeeds' does not exist on type 'Contract'.
     return this.contract.list_seeds({ from_index: fromIndex, limit });
   }
 
   async getUnclaimedReward(farmId: string | number, accountId = wallet.getAccountId()) {
-    // @ts-expect-error: Property 'get_unclaimed_reward' does not exist on type 'Contract'.
+    // @ts-expect-error: Property 'getUnclaimedReward' does not exist on type 'Contract'.
     return this.contract.get_unclaimed_reward({ account_id: accountId, farm_id: farmId });
   }
 
   async currentStorageBalance(accountId = wallet.getAccountId()) {
-    // @ts-expect-error: Property 'storage_balance_of' does not exist on type 'Contract'.
+    // @ts-expect-error: Property 'currentStorageBalance' does not exist on type 'Contract'.
     return this.contract.storage_balance_of({ account_id: accountId });
   }
 
@@ -144,7 +145,7 @@ export default class FarmContract {
     const checkStorage = await this.checkFarmStorageBalance();
     transactions.push(...checkStorage);
     transactions.push({
-      receiverId: EX_CONTRACT_ID,
+      receiverId: EXCHANGE_CONTRACT_ID,
       functionCalls: [{
         methodName: 'mft_transfer_call',
         args: {
@@ -183,7 +184,7 @@ export default class FarmContract {
           msg: message,
         },
         amount: ONE_YOCTO_NEAR,
-        gas: '200000000000000',
+        gas: UNSTAKE_GAS,
       }],
     });
     sendTransactions(transactions, this.walletInstance);
@@ -217,7 +218,7 @@ export default class FarmContract {
     );
     if (storageDeposits.length) transactions = transactions.concat(...storageDeposits);
 
-    rewardList.map(async (farmReward) => {
+    rewardList.forEach((farmReward) => {
       transactions.push({
         receiverId: this.contractId,
         functionCalls: [{

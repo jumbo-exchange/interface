@@ -152,7 +152,7 @@ const Button = styled.div`
 const PLACEHOLDERS_NUMBER = 3;
 const numberVolume = Array.from(Array(PLACEHOLDERS_NUMBER).keys());
 
-export default function PoolCardPlaceholder({ isFarming }: {isFarming: boolean}) {
+export default function PoolCardPlaceholder({ isFarming = false }: {isFarming: boolean}) {
   return (
     <Wrapper isFarming={isFarming}>
       <UpperRow>
