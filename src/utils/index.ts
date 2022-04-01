@@ -170,13 +170,31 @@ export const calculateTotalAmountAndDayVolume = (
       if (!dayVolumeData) return { ...pool, totalLiquidity: totalLiquidityValue };
 
       const tokenFirst = pricesData[dayVolumeData.tokenFirst]?.price ?? 0;
+      const tokenSecond = pricesData[dayVolumeData.tokenSecond]?.price ?? 0;
       const tokenFirstDecimals = metadataMap[dayVolumeData.tokenFirst]?.metadata.decimals;
-      const tokenFirstAmount = formatTokenAmount(dayVolumeData.volume24hFirst, tokenFirstDecimals);
+      const tokenSecondDecimals = metadataMap[dayVolumeData.tokenSecond]?.metadata.decimals;
+      const tokenFirstAmount = formatTokenAmount(
+        dayVolumeData.volume24hFirst, tokenFirstDecimals,
+      );
+      const tokenSecondAmount = formatTokenAmount(
+        dayVolumeData.volume24hSecond, tokenSecondDecimals,
+      );
+
       const firstDayVolume = new Big(tokenFirst).mul(tokenFirstAmount);
-      const totalDayVolumeValue = removeTrailingZeros(firstDayVolume.toFixed(2));
-      return { ...pool, totalLiquidity: totalLiquidityValue, dayVolume: totalDayVolumeValue };
+      const secondDayVolume = new Big(tokenSecond).mul(tokenSecondAmount);
+      const totalDayVolumeAmount = firstDayVolume.add(secondDayVolume);
+      const totalDayVolumeValue = removeTrailingZeros(totalDayVolumeAmount.toFixed(2));
+      return {
+        ...pool,
+        totalLiquidity: totalLiquidityValue,
+        dayVolume: totalDayVolumeValue,
+      };
     }
-    return { ...pool, totalLiquidity: 0, dayVolume: 0 };
+    return {
+      ...pool,
+      totalLiquidity: 0,
+      dayVolume: 0,
+    };
   });
 
   return toMap(calculatedPools);
