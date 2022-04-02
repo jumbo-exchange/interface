@@ -29,6 +29,9 @@ type ModalsStoreContextType = {
   setTitleTooltipModal: Dispatch<SetStateAction<string>>;
   removeLiquidityModalOpenState: {isOpen: boolean, pool: IPool | null};
   setRemoveLiquidityModalOpenState: Dispatch<SetStateAction<{isOpen: boolean, pool: IPool | null}>>;
+
+  isWithdrawDepositModalOpen: boolean;
+  setWithdrawDepositModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export const initialModalsState: ModalsStoreContextType = {
@@ -50,6 +53,9 @@ export const initialModalsState: ModalsStoreContextType = {
   setTitleTooltipModal: () => {},
   removeLiquidityModalOpenState: { isOpen: false, pool: null },
   setRemoveLiquidityModalOpenState: () => {},
+
+  isWithdrawDepositModalOpen: false,
+  setWithdrawDepositModalOpen: () => {},
 };
 
 const ModalsStoreContextHOC = createContext<ModalsStoreContextType>(initialModalsState);
@@ -87,6 +93,10 @@ export const ModalsContextProvider = (
     initialModalsState.removeLiquidityModalOpenState,
   );
 
+  const [isWithdrawDepositModalOpen, setWithdrawDepositModalOpen] = useState<boolean>(
+    initialModalsState.isWithdrawDepositModalOpen,
+  );
+
   return (
     <ModalsStoreContextHOC.Provider value={{
       isAccountModalOpen,
@@ -103,6 +113,8 @@ export const ModalsContextProvider = (
       setTitleTooltipModal,
       removeLiquidityModalOpenState,
       setRemoveLiquidityModalOpenState,
+      isWithdrawDepositModalOpen,
+      setWithdrawDepositModalOpen,
     }}
     >
       <Modals>

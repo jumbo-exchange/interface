@@ -293,6 +293,30 @@ export default class PoolContract {
     return sumValues;
   }
 
+  async withdraw({ claimList }:{claimList: [string, string][]}) {
+    const transactions: Transaction[] = [];
+    const storageAmount = await this.checkStorageBalance();
+
+    if (storageAmount.length) transactions.push(...storageAmount);
+
+    claimList.map(([tokenId, value]) => transactions.push({
+      receiverId: this.contractId,
+      functionCalls: [
+        {
+          methodName: 'withdraw',
+          args: {
+            token_id: tokenId,
+            amount: value,
+          },
+          gas: '100000000000000',
+          amount: ONE_YOCTO_NEAR,
+        },
+      ],
+    }));
+
+    sendTransactions(transactions, this.walletInstance);
+  }
+
   async getWhitelistedTokens() {
     let userWhitelist = [];
     // @ts-expect-error: Property 'get_whitelisted_tokens' does not exist on type 'Contract'.
@@ -313,6 +337,13 @@ export default class PoolContract {
     // @ts-expect-error: Property 'get_pool_shares' does not exist on type 'Contract'.
     return this.contract.get_pool_shares(
       { pool_id: poolId, account_id: accountId },
+    );
+  }
+
+  async getDeposits(accountId = wallet.getAccountId()) {
+    // @ts-expect-error: Property 'get_deposits' does not exist on type 'Contract'.
+    return this.contract.get_deposits(
+      { account_id: accountId },
     );
   }
 }

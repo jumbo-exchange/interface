@@ -36,7 +36,7 @@ enum TransactionType {
   AddLiquidity,
   RemoveLiquidity,
   NearDeposit,
-  NearWithdraw
+  NearWithdraw,
 }
 
 enum StatusType {
@@ -53,6 +53,7 @@ const methodName: { [key: string]: string } = {
   removeLiquidityMethod: 'remove_liquidity',
   nearDeposit: 'near_deposit',
   nearWithdraw: 'near_withdraw',
+  withdraw: 'withdraw',
 };
 
 const PROPERTY_NAME = 'FunctionCall';
@@ -112,6 +113,8 @@ const getTransaction = (transactions: any, method: { [key: string]: string }) =>
   let type = TransactionType.None;
   if (!transaction) {
     const [swapTransaction] = transactions.filter((tx:any) => swapMethod.indexOf(tx.transaction.actions[0][PROPERTY_NAME].method_name) !== -1);
+    console.log('swapTransaction: ', swapTransaction);
+
     if (swapTransaction) {
       return {
         type: TransactionType.Swap,
