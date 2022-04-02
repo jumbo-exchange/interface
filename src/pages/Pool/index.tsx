@@ -93,7 +93,8 @@ export default function Pool() {
 
   const rewardList = Object.entries(userRewards);
 
-  const canClaimAll = rewardList.length > 0 && rewardList.find(([, value]) => Big(value).gt(0));
+  const canClaimAll = rewardList.length > 0
+  && rewardList.filter(([, value]) => Big(value).gt(0)).length > 0;
 
   const rewardPrice = rewardList.reduce((sum, [tokenId, value]) => {
     const priceToken = prices[tokenId ?? ''] || '0';
@@ -205,7 +206,7 @@ export default function Pool() {
         ))}
       </FilterBlock>
       {isMobile
-        ? <Slider mainInfo={mainInfo} />
+        ? <Slider mainInfo={mainInfo} rewardList={rewardList} />
         : (
           <InformationBlock>
             <WrapperInfoBlock>
