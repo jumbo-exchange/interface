@@ -5,15 +5,16 @@ import { IPool, useStore } from 'store';
 import { useNavigate } from 'react-router-dom';
 import { toAddLiquidityPage, toRemoveLiquidityPage } from 'utils/routes';
 import { useTranslation } from 'react-i18next';
-import getConfig from 'services/config';
 import TokenPairDisplay from 'components/TokensDisplay/TokenPairDisplay';
 import { PoolOrFarmButtons } from 'components/Button/RenderButton';
+import { ReactComponent as Arrow } from 'assets/images-app/route-arrow.svg';
+import { FarmStatusEnum, FarmStatusLocalesInPool, getAvailableTimestamp } from 'components/FarmStatus';
 import {
   Wrapper,
   UpperRow,
   LabelPool,
-  JumboBlock,
   FarmBlock,
+  LogoArrowContainer,
   LowerRow,
   BlockVolume,
   Column,
@@ -21,8 +22,6 @@ import {
   LabelVolume,
   BlockButton,
 } from './styles';
-
-const config = getConfig();
 
 interface IVolume {
   title: string;
@@ -32,17 +31,9 @@ interface IVolume {
 }
 
 export default function PoolCard({ pool } : { pool: IPool }) {
-  const { tokens } = useStore();
+  const { farms } = useStore();
   const { t } = useTranslation();
   const navigate = useNavigate();
-
-  const [inputToken, outputToken] = pool.tokenAccountIds;
-  const tokenInput = tokens[inputToken] ?? null;
-  const tokenOutput = tokens[outputToken] ?? null;
-  if (!tokenInput || !tokenOutput) return null;
-
-  const jumboToken = tokens[config.jumboAddress] ?? null;
-  const jumboTokenInPool = jumboToken === (tokenInput || tokenOutput);
 
   const volume: IVolume[] = [
     {
@@ -65,14 +56,22 @@ export default function PoolCard({ pool } : { pool: IPool }) {
 
   const canWithdraw = Big(pool.shares || '0').gt('0');
 
+  const farmsInPool = !pool.farms?.length ? [] : pool.farms.map((el) => farms[el]);
+  const { status } = getAvailableTimestamp(farmsInPool);
   return (
     <Wrapper>
       <UpperRow>
         <TokenPairDisplay pool={pool} />
         <LabelPool>
           <>
-            {jumboTokenInPool && <JumboBlock>Jumbo</JumboBlock>}
-            {pool.farms && <FarmBlock>Farm</FarmBlock>}
+            {pool.farms && status !== FarmStatusEnum.Ended && (
+            <FarmBlock type={status}>
+              Farming {FarmStatusLocalesInPool[status].toLowerCase()}
+              <LogoArrowContainer type={status}>
+                <Arrow />
+              </LogoArrowContainer>
+            </FarmBlock>
+            )}
           </>
         </LabelPool>
       </UpperRow>

@@ -72,29 +72,6 @@ const TitlePool = styled.div`
   border-radius: 4px;
 `;
 
-const LabelPool = styled.div`
-  display: flex;
-  align-items: center;
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    width: 100%;
-    justify-content: flex-end;
-  `}
-`;
-
-const JumboBlock = styled.div`
-  display: flex;
-  margin-left: .5rem;
-  padding: 4px;
-  background-color: ${({ theme }) => theme.globalGreyOp02};
-  border-radius: 4px;
-  width: 48px;
-  height: 22px;
-`;
-
-const MiceBlock = styled(JumboBlock)`
-  width: 34px;
-`;
-
 const BlockVolume = styled.div`
   display: flex;
   width: 100%;
@@ -163,10 +140,6 @@ export default function PoolCardPlaceholder({ isFarming = false }: {isFarming: b
           </LogoPool>
           <TitlePool />
         </BlockTitle>
-        <LabelPool>
-          <MiceBlock />
-          <JumboBlock />
-        </LabelPool>
       </UpperRow>
       <LowerRow>
         <BlockVolume>

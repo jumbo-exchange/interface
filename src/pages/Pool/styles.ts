@@ -89,6 +89,7 @@ export const ButtonAndClaimList = styled.div`
 `;
 
 export const RewardList = styled.div`
+  z-index: 1;
   position: absolute;
   display: none;
   flex-direction: column;

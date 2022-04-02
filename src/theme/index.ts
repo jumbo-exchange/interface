@@ -65,9 +65,6 @@ export interface ThemeColors {
   error: string;
   tooltip: string;
 
-  jumboLabel: string;
-  farmLabel: string;
-
   warningBg: string;
 
   bgToken: string;
@@ -77,8 +74,11 @@ export interface ThemeColors {
   farmingTimeBg: string;
 
   statusActive: string;
+  statusActiveOp01: string;
   statusPending: string;
+  statusPendingOp01: string;
   statusEnded: string;
+  statusFarmInPoolBg: string;
 }
 
 export const colors: ThemeColors = {
@@ -128,9 +128,6 @@ export const colors: ThemeColors = {
   error: '#FF6F6F',
   tooltip: '#454D5C',
 
-  jumboLabel: '#47872B',
-  farmLabel: '#A91BAC',
-
   warningBg: '#4C2739',
   bgToken: '#dfe2e8',
 
@@ -139,8 +136,11 @@ export const colors: ThemeColors = {
   farmingTimeBg: '#373048',
 
   statusActive: '#84DA18',
+  statusActiveOp01: '#26332A',
   statusPending: '#F0B237',
+  statusPendingOp01: '#31302D',
   statusEnded: '#8991A3',
+  statusFarmInPoolBg: '#1C212C',
 };
 
 function theme(): DefaultTheme {

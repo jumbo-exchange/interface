@@ -2,6 +2,7 @@ import Big from 'big.js';
 
 import {
   ACCOUNT_MIN_STORAGE_AMOUNT,
+  FT_GAS,
   ONE_YOCTO_NEAR,
 } from 'utils/constants';
 import { parseTokenAmount } from 'utils/calculations';
@@ -40,9 +41,6 @@ const LP_STABLE_TOKEN_DECIMALS = 18;
 const EXCHANGE_CONTRACT_ID = config.contractId;
 const FARM_CONTRACT_ID = config.farmContractId;
 const STABLE_POOL_ID = config.stablePoolId;
-
-const MFT_GAS = '180000000000000';
-const UNSTAKE_GAS = '200000000000000';
 
 const STORAGE_TO_REGISTER_MFT = '0.045';
 const MIN_DEPOSIT_PER_TOKEN_FARM = new Big('45000000000000000000000');
@@ -157,7 +155,7 @@ export default class FarmContract {
           msg: message,
         },
         amount: ONE_YOCTO_NEAR,
-        gas: MFT_GAS,
+        gas: FT_GAS,
       }],
     });
     sendTransactions(transactions, this.walletInstance);
@@ -184,7 +182,7 @@ export default class FarmContract {
           msg: message,
         },
         amount: ONE_YOCTO_NEAR,
-        gas: UNSTAKE_GAS,
+        gas: FT_GAS,
       }],
     });
     sendTransactions(transactions, this.walletInstance);

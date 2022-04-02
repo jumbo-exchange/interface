@@ -7,13 +7,13 @@ import {
   NEAR_TOKEN_ID,
   FT_TRANSFER_GAS,
   ONE_YOCTO_NEAR,
+  FT_GAS,
 } from 'utils/constants';
 
 import Big from 'big.js';
 import { wallet } from './near';
 import SpecialWallet, { createContract, Transaction } from './wallet';
 import getConfig from './config';
-import { SWAP_GAS } from './SwapContract';
 
 const {
   utils: {
@@ -173,7 +173,7 @@ export default class FungibleTokenContract {
           msg: message,
         },
         amount: ONE_YOCTO_NEAR,
-        gas: SWAP_GAS,
+        gas: FT_GAS,
       }],
     });
     return transactions;

@@ -61,7 +61,9 @@
     "status": {
       "active": "Active",
       "pending": "Pending",
-      "ended": "Ended"
+      "ended": "Ended",
+
+      "available": "Available"
     }
   },
 

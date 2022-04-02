@@ -57,20 +57,42 @@ export const LabelPool = styled.div`
   `}
 `;
 
-export const JumboBlock = styled.div`
+export const FarmBlock = styled.div<{type: FarmStatusEnum}>`
+  background-color: ${({ theme }) => theme.statusFarmInPoolBg};
   display: flex;
-  margin-left: .5rem;
-  padding: .25rem;
+  align-items: center;
   font-style: normal;
-  font-weight: normal;
+  font-weight: 300;
   font-size: .75rem;
   line-height: .875rem;
-  background-color: ${({ theme }) => theme.jumboLabel};
-  border-radius: 4px;
+  padding: .5rem;
+  border-radius: 12px;
+  color: ${({ theme, type }) => {
+    if (type === FarmStatusEnum.Active) return theme.statusActive;
+    if (type === FarmStatusEnum.Pending) return theme.statusPending;
+    return theme.statusEnded;
+  }};
 `;
 
-export const FarmBlock = styled(JumboBlock)`
-  background-color: ${({ theme }) => theme.farmLabel};
+export const LogoArrowContainer = styled.div<{type: FarmStatusEnum}>`
+  display: flex;
+  background-color: ${({ theme, type }) => {
+    if (type === FarmStatusEnum.Active) return theme.statusActiveOp01;
+    if (type === FarmStatusEnum.Pending) return theme.statusPendingOp01;
+    return theme.statusEnded;
+  }};
+  border-radius: 8px;
+  padding: .438rem .313rem;
+  margin-left: .5rem;
+  svg {
+    path {
+      fill: ${({ theme, type }) => {
+    if (type === FarmStatusEnum.Active) return theme.statusActive;
+    if (type === FarmStatusEnum.Pending) return theme.statusPending;
+    return theme.statusEnded;
+  }};
+    }
+  }
 `;
 
 export const BlockVolume = styled.div`
@@ -136,7 +158,7 @@ export const TitlePool = styled.div`
   `}
 `;
 
-export const FarmsStatus = styled.div<{type: FarmStatusEnum;}>`
+export const FarmsStatus = styled.div<{type: FarmStatusEnum}>`
   display: flex;
   align-items: center;
   margin-left: 1rem;
@@ -148,7 +170,6 @@ export const FarmsStatus = styled.div<{type: FarmStatusEnum;}>`
   
   box-sizing: border-box;
   border-radius: 4px;
-  color: ${({ theme }) => theme.statusActive};
   color: ${({ theme, type }) => {
     if (type === FarmStatusEnum.Active) return theme.statusActive;
     if (type === FarmStatusEnum.Pending) return theme.statusPending;

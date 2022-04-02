@@ -10,7 +10,7 @@ import RewardTokens from 'components/TokensDisplay/RewardTokens';
 import { PoolOrFarmButtons } from 'components/Button/RenderButton';
 import { calcStakedAmount } from 'utils';
 import moment from 'moment';
-import { FarmStatusLocales, getFarmStartAndEnd } from 'components/FarmStatus';
+import { FarmStatusLocales, getAvailableTimestamp } from 'components/FarmStatus';
 import {
   FarmWrapper,
   FarmContainer,
@@ -41,9 +41,8 @@ export default function FarmCard({ pool } : { pool: IPool }) {
 
   const [timeToStartFarm, setTimeToStart] = useState<number>(0);
 
-  if (!pool.farms?.length) return null;
-  const farmsInPool = pool.farms.map((el) => farms[el]);
-  const { totalSeedAmount, userStaked, status } = farmsInPool[0];
+  const farmsInPool = !pool.farms?.length ? [] : pool.farms.map((el) => farms[el]);
+  const { totalSeedAmount, userStaked } = farmsInPool[0];
 
   const totalStaked = calcStakedAmount(totalSeedAmount, pool);
   const yourStaked = calcStakedAmount(userStaked || '0', pool);
@@ -68,7 +67,9 @@ export default function FarmCard({ pool } : { pool: IPool }) {
   ];
 
   const currentDate = moment().valueOf();
-  const { farmStart, farmEnd, timeToStart } = getFarmStartAndEnd(farmsInPool);
+  const {
+    farmStart, farmEnd, timeToStart, status,
+  } = getAvailableTimestamp(farmsInPool);
 
   const isFarmingEnd = currentDate > farmEnd;
   const isFarmingActive = currentDate > farmStart && currentDate < farmEnd;
@@ -81,12 +82,12 @@ export default function FarmCard({ pool } : { pool: IPool }) {
   const pendingTime = `${moment(timeToStartFarm).format('DD [days] \xa0 HH : mm : ss')}`;
   const canUnStake = farmsInPool.some((el) => Big(el.userStaked || '0').gt('0'));
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setTimeToStart(timeToStart);
-  //   }, 1000);
-  //   return () => clearInterval(interval);
-  // }, [timeToStart]);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeToStart(timeToStart);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [timeToStart]);
 
   return (
     <FarmWrapper isShowingTime={isFarmingEnd}>

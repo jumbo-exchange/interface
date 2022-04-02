@@ -1,6 +1,6 @@
 import { IPool } from 'store/interfaces';
 import { SWAP_FAILED, SWAP_TOKENS_NOT_IN_SWAP_POOL } from 'utils/errors';
-import { ONE_YOCTO_NEAR, NEAR_TOKEN_ID } from 'utils/constants';
+import { ONE_YOCTO_NEAR, NEAR_TOKEN_ID, FT_GAS } from 'utils/constants';
 import { percentLess } from 'utils/calculations';
 import Big from 'big.js';
 import FungibleTokenContract from './FungibleToken';
@@ -15,8 +15,6 @@ const config = getConfig();
 const FEE_DIVISOR = 10000;
 
 const CONTRACT_ID = config.contractId;
-
-export const SWAP_GAS = '180000000000000';
 
 export default class SwapContract {
   contract = createContract(
@@ -230,7 +228,7 @@ export default class SwapContract {
             amount,
           },
           amount: ONE_YOCTO_NEAR,
-          gas: SWAP_GAS,
+          gas: FT_GAS,
         }],
       });
     }
