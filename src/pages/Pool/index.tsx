@@ -90,8 +90,6 @@ export default function Pool() {
     id,
     pools,
     location.pathname,
-    setRemoveLiquidityModalOpenState,
-    setAddLiquidityModalOpenState,
   ]);
 
   useEffect(() => {

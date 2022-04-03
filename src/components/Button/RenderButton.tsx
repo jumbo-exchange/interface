@@ -40,12 +40,7 @@ export default function RenderButton({
   disabled: boolean,
   }) {
   const isConnected = wallet.isSignedIn();
-  const {
-    setAccountModalOpen,
-    setAddLiquidityModalOpenState,
-    setCreatePoolModalOpen,
-    setRemoveLiquidityModalOpenState,
-  } = useModalsStore();
+  const { setAccountModalOpen } = useModalsStore();
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -95,9 +90,6 @@ export default function RenderButton({
         navigate(POOL);
       }
       setAccountModalOpen(true);
-      setAddLiquidityModalOpenState({ isOpen: false, pool: null });
-      setCreatePoolModalOpen(false);
-      setRemoveLiquidityModalOpenState({ isOpen: false, pool: null });
     }}
     >
       <Wallet />

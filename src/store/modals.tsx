@@ -1,34 +1,47 @@
 import React, {
   createContext, useContext, useState,
-  Dispatch, SetStateAction,
+  Dispatch, SetStateAction, useCallback,
 } from 'react';
 import { IPool } from 'store';
 import Modals from 'components/Modals';
 import FungibleTokenContract from 'services/FungibleToken';
 
+enum ModalEnum {
+  search,
+  account,
+  createPool,
+  addLiquidity,
+  removeLiquidity,
+}
+
+interface IIsSearchModalOpen {
+  isOpen: boolean,
+  activeToken: FungibleTokenContract | null,
+  setActiveToken: (token: FungibleTokenContract) => void
+}
+
+interface IIsOpenAndPool {
+  isOpen: boolean,
+  pool: IPool | null
+}
+
 type ModalsStoreContextType = {
   isAccountModalOpen: boolean;
-  setAccountModalOpen: Dispatch<SetStateAction<boolean>>;
-  addLiquidityModalOpenState: {isOpen: boolean, pool: IPool | null};
-  setAddLiquidityModalOpenState: Dispatch<SetStateAction<{isOpen: boolean, pool: IPool | null}>>;
+  setAccountModalOpen: (isOpen: boolean) => void;
+  addLiquidityModalOpenState: IIsOpenAndPool;
+  setAddLiquidityModalOpenState: (props: IIsOpenAndPool) => void;
   isCreatePoolModalOpen: boolean;
-  setCreatePoolModalOpen: Dispatch<SetStateAction<boolean>>;
-  isSearchModalOpen: {
-    isOpen: boolean,
-    activeToken: FungibleTokenContract | null,
-    setActiveToken: (token: FungibleTokenContract) => void
-  };
-  setSearchModalOpen: Dispatch<SetStateAction<{
-    isOpen: boolean,
-    activeToken: FungibleTokenContract | null,
-    setActiveToken: (token: FungibleTokenContract) => void
-  }>>;
+  setCreatePoolModalOpen: (isOpen: boolean) => void;
+  isSearchModalOpen: IIsSearchModalOpen;
+  setSearchModalOpen: (props: IIsSearchModalOpen) => void;
   isTooltipModalOpen: boolean;
   setTooltipModalOpen: Dispatch<SetStateAction<boolean>>;
   titleTooltipModal: string;
   setTitleTooltipModal: Dispatch<SetStateAction<string>>;
-  removeLiquidityModalOpenState: {isOpen: boolean, pool: IPool | null};
-  setRemoveLiquidityModalOpenState: Dispatch<SetStateAction<{isOpen: boolean, pool: IPool | null}>>;
+  removeLiquidityModalOpenState: IIsOpenAndPool;
+  setRemoveLiquidityModalOpenState: (props: IIsOpenAndPool) => void;
+  modalState: ModalEnum | null;
+  setModalState: (modal: ModalEnum | null) => void;
 }
 
 export const initialModalsState: ModalsStoreContextType = {
@@ -50,6 +63,8 @@ export const initialModalsState: ModalsStoreContextType = {
   setTitleTooltipModal: () => {},
   removeLiquidityModalOpenState: { isOpen: false, pool: null },
   setRemoveLiquidityModalOpenState: () => {},
+  modalState: null,
+  setModalState: () => {},
 };
 
 const ModalsStoreContextHOC = createContext<ModalsStoreContextType>(initialModalsState);
@@ -57,35 +72,93 @@ const ModalsStoreContextHOC = createContext<ModalsStoreContextType>(initialModal
 export const ModalsContextProvider = (
   { children }:{ children: JSX.Element },
 ) => {
-  const [isAccountModalOpen, setAccountModalOpen] = useState<boolean>(
+  const [isAccountModalOpen, setAccountModalOpenInner] = useState<boolean>(
     initialModalsState.isAccountModalOpen,
   );
-  const [addLiquidityModalOpenState, setAddLiquidityModalOpenState] = useState<{
-    isOpen: boolean,
-    pool: IPool | null
-  }>(
-    initialModalsState.addLiquidityModalOpenState,
-  );
-  const [isCreatePoolModalOpen, setCreatePoolModalOpen] = useState<boolean>(
+  const [isCreatePoolModalOpen, setCreatePoolModalOpenInner] = useState<boolean>(
     initialModalsState.isCreatePoolModalOpen,
   );
-  const [isSearchModalOpen, setSearchModalOpen] = useState<{
-    isOpen: boolean,
-    activeToken: FungibleTokenContract | null,
-    setActiveToken:(token: FungibleTokenContract) => void
-      }>(
-      initialModalsState.isSearchModalOpen);
+  const [isSearchModalOpen, setSearchModalOpenInner] = useState<IIsSearchModalOpen>(
+    initialModalsState.isSearchModalOpen,
+  );
   const [isTooltipModalOpen, setTooltipModalOpen] = useState<boolean>(
     initialModalsState.isTooltipModalOpen,
   );
   const [titleTooltipModal, setTitleTooltipModal] = useState<string>('');
+  const [modalState, setModalState] = useState<ModalEnum | null>(null);
+  const [
+    addLiquidityModalOpenState, setAddLiquidityModalOpenStateInner,
+  ] = useState<IIsOpenAndPool>(initialModalsState.addLiquidityModalOpenState);
+  const [
+    removeLiquidityModalOpenState, setRemoveLiquidityModalOpenStateInner,
+  ] = useState<IIsOpenAndPool>(initialModalsState.removeLiquidityModalOpenState);
 
-  const [removeLiquidityModalOpenState, setRemoveLiquidityModalOpenState] = useState<{
-    isOpen: boolean,
-    pool: IPool | null
-  }>(
-    initialModalsState.removeLiquidityModalOpenState,
-  );
+  const stateCallback = useCallback((isOpen: boolean, modal: ModalEnum) => {
+    setModalState(isOpen ? modal : null);
+  }, []);
+
+  const closePreviousModal = () => {
+    switch (modalState) {
+      case ModalEnum.account:
+        setAccountModalOpenInner(false);
+        break;
+      case ModalEnum.createPool:
+        setCreatePoolModalOpenInner(false);
+        break;
+      case ModalEnum.search:
+        setSearchModalOpenInner({
+          isOpen: false,
+          activeToken: null,
+          setActiveToken: () => {},
+        });
+        break;
+      case ModalEnum.addLiquidity:
+        setAddLiquidityModalOpenStateInner({
+          isOpen: false,
+          pool: null,
+        });
+        break;
+      case ModalEnum.removeLiquidity:
+        setRemoveLiquidityModalOpenStateInner({
+          isOpen: false,
+          pool: null,
+        });
+        break;
+      default: {
+        break;
+      }
+    }
+  };
+
+  const setAccountModalOpen = (isOpen: boolean) => {
+    if (isOpen) closePreviousModal();
+    stateCallback(isOpen, ModalEnum.account);
+    setAccountModalOpenInner(isOpen);
+  };
+
+  const setCreatePoolModalOpen = (isOpen: boolean) => {
+    if (isOpen) closePreviousModal();
+    stateCallback(isOpen, ModalEnum.createPool);
+    setCreatePoolModalOpenInner(isOpen);
+  };
+
+  const setSearchModalOpen = (props: IIsSearchModalOpen) => {
+    if (props.isOpen) closePreviousModal();
+    stateCallback(props.isOpen, ModalEnum.search);
+    setSearchModalOpenInner(props);
+  };
+
+  const setAddLiquidityModalOpenState = (props: IIsOpenAndPool) => {
+    if (props.isOpen) closePreviousModal();
+    stateCallback(props.isOpen, ModalEnum.addLiquidity);
+    setAddLiquidityModalOpenStateInner(props);
+  };
+
+  const setRemoveLiquidityModalOpenState = (props: IIsOpenAndPool) => {
+    if (props.isOpen) closePreviousModal();
+    stateCallback(props.isOpen, ModalEnum.removeLiquidity);
+    setRemoveLiquidityModalOpenStateInner(props);
+  };
 
   return (
     <ModalsStoreContextHOC.Provider value={{
@@ -103,6 +176,8 @@ export const ModalsContextProvider = (
       setTitleTooltipModal,
       removeLiquidityModalOpenState,
       setRemoveLiquidityModalOpenState,
+      modalState,
+      setModalState,
     }}
     >
       <Modals>
