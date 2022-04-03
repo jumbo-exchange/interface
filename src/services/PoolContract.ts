@@ -51,7 +51,6 @@ const basicChangeMethods = [
 const config = getConfig();
 const CREATE_POOL_NEAR_AMOUNT = '0.05';
 const CONTRACT_ID = config.contractId;
-
 export interface IPoolVolumes {
   [tokenId: string]: { input: string; output: string };
 }
@@ -271,7 +270,6 @@ export default class PoolContract {
             token_id: tokenId,
             amount: minAmounts[tokenId],
           },
-          gas: '100000000000000',
           amount: ONE_YOCTO_NEAR,
         },
       ],
@@ -308,7 +306,6 @@ export default class PoolContract {
             token_id: tokenId,
             amount: value,
           },
-          gas: '100000000000000',
           amount: ONE_YOCTO_NEAR,
         },
       ],

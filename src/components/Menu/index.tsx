@@ -1,7 +1,7 @@
-import React, { useRef, useState } from 'react';
+import React, { MutableRefObject, useRef, useState } from 'react';
 import { ReactComponent as MenuIcon } from 'assets/images-app/menu.svg';
 import { ReactComponent as ClaimArrow } from 'assets/images-app/claim-arrow.svg';
-
+import i18n from 'i18n';
 import useOnClickOutside from 'hooks/useOnClickOutside';
 import { useModalsStore } from 'store';
 import {
@@ -17,8 +17,8 @@ export default function Menu() {
 
   const menu = [
     {
-      title: 'Claim',
-      logo: ClaimArrow,
+      title: i18n.t('action.claim'),
+      Logo: ClaimArrow,
       onClick: () => {
         setShow(false);
         setWithdrawDepositModalOpen(true);
@@ -27,7 +27,7 @@ export default function Menu() {
   ];
 
   return (
-    <StyledMenu ref={node as any}>
+    <StyledMenu ref={node as MutableRefObject<HTMLDivElement>}>
       <StyledMenuButton
         onClick={handleClick}
       >
@@ -36,15 +36,12 @@ export default function Menu() {
 
       {show && (
         <MenuFlyout>
-          {menu.map(({ title, logo, onClick }) => {
-            const Logo = logo;
-            return (
-              <MenuItem key={title} onClick={onClick}>
-                <Logo />
-                <p>{title}</p>
-              </MenuItem>
-            );
-          })}
+          {menu.map(({ title, Logo, onClick }) => (
+            <MenuItem key={title} onClick={onClick}>
+              <Logo />
+              <p>{title}</p>
+            </MenuItem>
+          ))}
         </MenuFlyout>
       )}
 

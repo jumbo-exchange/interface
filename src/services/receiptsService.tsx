@@ -8,6 +8,7 @@ import { providers } from 'near-api-js';
 import { useEffect } from 'react';
 import { toast, Slide } from 'react-toastify';
 import { colors } from 'theme';
+import { useNavigate } from 'react-router-dom';
 
 const config = getConfig();
 
@@ -170,7 +171,6 @@ function parseTransactions(txs: any) {
     hash: string
   } = analyzeTransactions(txs);
   const href = `${config.explorerUrl}/transactions/${result.hash}`;
-  // eslint-disable-next-line default-case
   switch (result.type) {
     case TransactionType.Swap:
       if (result.status === StatusType.SuccessValue) {
@@ -214,20 +214,27 @@ function parseTransactions(txs: any) {
         getToast(href, i18n.t('toast.removeLiquidity'), ToastType.Error);
       }
       break;
+    default: {
+      break;
+    }
   }
 }
+
+const TRANSACTION_HASHES = 'transactionHashes';
+const ERROR_CODE = 'errorCode';
+const ERROR_MESSAGE = 'errorMessage';
 
 export default function useTransactionHash(
   query: string | undefined,
   wallet: SpecialWallet | null,
 ) {
+  const navigate = useNavigate();
   return useEffect(() => {
     if (wallet) {
       const queryParams = new URLSearchParams(query);
-      const transactions = queryParams?.get('transactionHashes');
-      const errorCode = queryParams?.get('errorCode');
-      const errorMessage = queryParams?.get('errorMessage');
-      const { pathname } = window.location;
+      const transactions = queryParams?.get(TRANSACTION_HASHES);
+      const errorCode = queryParams?.get(ERROR_CODE);
+      const errorMessage = queryParams?.get(ERROR_MESSAGE);
       if (errorCode || errorMessage) {
         toast.error(i18n.t('toast.transactionFailed'), {
           theme: 'dark',
@@ -254,7 +261,17 @@ export default function useTransactionHash(
           console.warn(`${e} error while loading tx`);
         }
       }
-      window.history.replaceState({}, '', window.location.origin + pathname);
+      if (queryParams.has(TRANSACTION_HASHES)
+      || queryParams.has(ERROR_CODE)
+      || queryParams.has(ERROR_MESSAGE)) {
+        queryParams.delete(TRANSACTION_HASHES);
+        queryParams.delete(ERROR_CODE);
+        queryParams.delete(ERROR_MESSAGE);
+
+        navigate({
+          search: queryParams.toString(),
+        });
+      }
     }
-  }, [query, wallet]);
+  }, [navigate, query, wallet]);
 }

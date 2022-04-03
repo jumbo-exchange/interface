@@ -30,7 +30,7 @@ import {
 export default function WithdrawDepositModal() {
   const isConnected = wallet.isSignedIn();
 
-  const [tokensArray, setTokensArray] = useState<{[key:string]: string} | null>(null);
+  const [tokensArray, setTokensArray] = useState<{[key:string]: string}>({});
   const poolContract = useMemo(() => new PoolContract(), []);
   const { isWithdrawDepositModalOpen, setWithdrawDepositModalOpen } = useModalsStore();
   const { tokens, loading } = useStore();
@@ -39,18 +39,55 @@ export default function WithdrawDepositModal() {
   const getDeposits = useCallback(async () => {
     if (!isConnected) return;
     const useDeposits = await poolContract.getDeposits();
-    setTokensArray((useDeposits));
+    setTokensArray(useDeposits);
   }, [setTokensArray, poolContract, isConnected]);
 
   useEffect(() => {
     getDeposits();
   }, [getDeposits]);
-  if (!tokensArray || loading) return null;
+
   const claimList = Object.entries(tokensArray).filter(([, value]) => Big(value).gt(0));
 
   const canClaim = claimList.length !== 0;
   const titleButton = canClaim ? t('action.claim') : t('action.ok');
 
+  const claimListArray = useMemo(() => claimList.map(([tokenId, value]) => {
+    const isShowing = Big(value).lte(0);
+    const token = tokens[tokenId] || null;
+    if (isShowing || !token) return null;
+    const {
+      symbol, decimals, icon, name,
+    } = token.metadata;
+    const formatValue = removeTrailingZeros(
+      formatBalance(formatTokenAmount(value, decimals)),
+    );
+    return (
+      <TokenRowContainer key={symbol}>
+        <LogoContainer>
+          <img src={icon} alt={symbol} />
+        </LogoContainer>
+        <TokenDescriptionBlock>
+          <TokenTitle>
+            <div>{symbol}</div>
+            <div>{formatValue}</div>
+          </TokenTitle>
+          <TokenSubtitle>
+            <div>{name}</div>
+          </TokenSubtitle>
+        </TokenDescriptionBlock>
+      </TokenRowContainer>
+    );
+  }), [claimList, tokens]);
+
+  const onClaim = useCallback(() => {
+    if (!canClaim) {
+      setWithdrawDepositModalOpen(false);
+      return;
+    }
+    poolContract.withdraw({ claimList });
+  }, [canClaim, poolContract, claimList, setWithdrawDepositModalOpen]);
+
+  if (loading) return null;
   return (
     <>
       {isWithdrawDepositModalOpen && (
@@ -67,33 +104,7 @@ export default function WithdrawDepositModal() {
             </ModalBlock>
             <ClaimModalBlock canClaim={canClaim}>
               {tokensArray && canClaim
-                ? claimList.map(([tokenId, value]) => {
-                  const isShowing = Big(value).lte(0);
-                  const token = tokens[tokenId] || null;
-                  if (isShowing || !token) return null;
-                  const {
-                    symbol, decimals, icon, name,
-                  } = token.metadata;
-                  const formatValue = removeTrailingZeros(
-                    formatBalance(formatTokenAmount(value, decimals)),
-                  );
-                  return (
-                    <TokenRowContainer key={symbol}>
-                      <LogoContainer>
-                        <img src={icon} alt={symbol} />
-                      </LogoContainer>
-                      <TokenDescriptionBlock>
-                        <TokenTitle>
-                          <div>{symbol}</div>
-                          <div>{formatValue}</div>
-                        </TokenTitle>
-                        <TokenSubtitle>
-                          <div>{name}</div>
-                        </TokenSubtitle>
-                      </TokenDescriptionBlock>
-                    </TokenRowContainer>
-                  );
-                })
+                ? claimListArray
                 : (
                   <NoClaimBlock>
                     <img src={GifLoading} alt="loading" />
@@ -103,14 +114,7 @@ export default function WithdrawDepositModal() {
             </ClaimModalBlock>
             <ModalFooter>
               <ButtonPrimary
-                onClick={() => {
-                  if (!canClaim) {
-                    setWithdrawDepositModalOpen(false);
-                    return;
-                  }
-                  poolContract.withdraw({ claimList });
-                }}
-                disabled={canClaim ? !canClaim : canClaim}
+                onClick={onClaim}
               >
                 {canClaim ? <IconClaim /> : null}
                 {titleButton}
@@ -118,7 +122,6 @@ export default function WithdrawDepositModal() {
             </ModalFooter>
           </ClaimModal>
         </Container>
-
       </Layout>
       )}
     </>

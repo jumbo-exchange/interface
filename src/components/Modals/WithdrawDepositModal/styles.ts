@@ -14,11 +14,11 @@ export const ClaimModal = styled(Modal)`
   display: flex;
   flex-direction: column;
   min-width: 360px;
-  min-height: 560px;
+  max-height: 560px;
+  min-height: 400px;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     min-width: 320px;
     width: 100%;
-    min-height: 150px;
     border-radius: 24px 24px 0 0;
     ::before {
       border-radius: 24px 24px 0 0;
@@ -28,7 +28,7 @@ export const ClaimModal = styled(Modal)`
 
 export const ClaimModalBlock = styled(ModalBlock)<{canClaim: boolean}>`
   flex-direction: column;
-  justify-content: ${({ canClaim }) => (!canClaim ? 'center' : 'flex-start')};
+  justify-content: ${({ canClaim }) => (canClaim ? 'flex-start' : 'center')};
   overflow-x: hidden;
   flex: 1;
   margin: 0 1rem 0 1rem;
