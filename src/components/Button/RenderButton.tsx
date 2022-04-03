@@ -8,6 +8,8 @@ import { ReactComponent as LogoWallet } from 'assets/images-app/wallet.svg';
 import { ReactComponent as SwapIcon } from 'assets/images-app/swap-icon.svg';
 import { ReactComponent as AddIcon } from 'assets/images-app/icon-add.svg';
 import { useTranslation } from 'react-i18next';
+import { POOL } from 'utils/routes';
+import { useNavigate } from 'react-router-dom';
 
 const Wallet = styled(LogoWallet)`
   margin-right: .625rem;
@@ -38,8 +40,14 @@ export default function RenderButton({
   disabled: boolean,
   }) {
   const isConnected = wallet.isSignedIn();
-  const { setAccountModalOpen } = useModalsStore();
+  const {
+    setAccountModalOpen,
+    setAddLiquidityModalOpenState,
+    setCreatePoolModalOpen,
+    setRemoveLiquidityModalOpenState,
+  } = useModalsStore();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   function CurrentTitle(variant: CurrentButton) {
     switch (variant) {
@@ -81,7 +89,17 @@ export default function RenderButton({
     );
   }
   return (
-    <ButtonSecondary onClick={() => setAccountModalOpen(true)}>
+    <ButtonSecondary onClick={() => {
+      const { pathname } = window.location;
+      if (pathname.includes(POOL)) {
+        navigate(POOL);
+      }
+      setAccountModalOpen(true);
+      setAddLiquidityModalOpenState({ isOpen: false, pool: null });
+      setCreatePoolModalOpen(false);
+      setRemoveLiquidityModalOpenState({ isOpen: false, pool: null });
+    }}
+    >
       <Wallet />
       {title}
     </ButtonSecondary>
