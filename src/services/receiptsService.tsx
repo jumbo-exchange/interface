@@ -1,6 +1,3 @@
-/* eslint-disable no-prototype-builtins */
-/* eslint-disable default-case */
-/* eslint-disable max-len */
 import getConfig from 'services/config';
 import SpecialWallet from 'services/wallet';
 import styled from 'styled-components';
@@ -91,7 +88,7 @@ const getToast = (href: string, title: string, type: ToastType) => {
 
 const detailsTransaction = (transaction: any, type: TransactionType) => {
   const { hash } = transaction.transaction;
-  const successStatus = transaction.status.hasOwnProperty('SuccessValue');
+  const successStatus = Object.prototype.hasOwnProperty.call(transaction.status, 'SuccessValue');
 
   if (type === TransactionType.Swap) {
     const successValue = atob(transaction.status.SuccessValue);
@@ -108,12 +105,13 @@ const detailsTransaction = (transaction: any, type: TransactionType) => {
 };
 
 const getTransaction = (transactions: any, method: { [key: string]: string }) => {
-  const [transaction] = transactions.filter((tx:any) => Object.values(method).indexOf(tx.transaction.actions[0][PROPERTY_NAME].method_name) !== -1);
+  const [transaction] = transactions.filter((tx:any) => Object.values(method)
+    .indexOf(tx.transaction.actions[0][PROPERTY_NAME].method_name) !== -1);
 
   let type = TransactionType.None;
   if (!transaction) {
-    const [swapTransaction] = transactions.filter((tx:any) => swapMethod.indexOf(tx.transaction.actions[0][PROPERTY_NAME].method_name) !== -1);
-    console.log('swapTransaction: ', swapTransaction);
+    const [swapTransaction] = transactions.filter((tx:any) => swapMethod
+      .indexOf(tx.transaction.actions[0][PROPERTY_NAME].method_name) !== -1);
 
     if (swapTransaction) {
       return {
@@ -143,6 +141,9 @@ const getTransaction = (transactions: any, method: { [key: string]: string }) =>
       type = TransactionType.NearWithdraw;
       break;
     }
+    default: {
+      type = TransactionType.None;
+    }
   }
   return {
     type,
@@ -169,6 +170,7 @@ function parseTransactions(txs: any) {
     hash: string
   } = analyzeTransactions(txs);
   const href = `${config.explorerUrl}/transactions/${result.hash}`;
+  // eslint-disable-next-line default-case
   switch (result.type) {
     case TransactionType.Swap:
       if (result.status === StatusType.SuccessValue) {
@@ -225,6 +227,7 @@ export default function useTransactionHash(
       const transactions = queryParams?.get('transactionHashes');
       const errorCode = queryParams?.get('errorCode');
       const errorMessage = queryParams?.get('errorMessage');
+      const { pathname } = window.location;
       if (errorCode || errorMessage) {
         toast.error(i18n.t('toast.transactionFailed'), {
           theme: 'dark',
@@ -251,6 +254,7 @@ export default function useTransactionHash(
           console.warn(`${e} error while loading tx`);
         }
       }
+      window.history.replaceState({}, '', window.location.origin + pathname);
     }
   }, [query, wallet]);
 }

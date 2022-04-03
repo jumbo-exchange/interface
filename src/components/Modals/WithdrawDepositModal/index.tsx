@@ -108,7 +108,6 @@ export default function WithdrawDepositModal() {
                     setWithdrawDepositModalOpen(false);
                     return;
                   }
-                  console.log('14');
                   poolContract.withdraw({ claimList });
                 }}
                 disabled={canClaim ? !canClaim : canClaim}
