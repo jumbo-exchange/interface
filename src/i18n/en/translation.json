@@ -18,7 +18,10 @@
     "createPool": "Create Pool",
     "swap": "Swap",
     "addLiquidity": "Add Liquidity",
-    "removeLiquidity": "Withdraw"
+    "removeLiquidity": "Withdraw",
+    "claim": "Claim",
+    "claimAll": "Claim All",
+    "ok": "Ok"
   },
 
   "swap": {
@@ -82,7 +85,8 @@
 
   "noResult": {
     "yourLiquidity": "Your active liquidity positions will appear here.",
-    "noResultFound": "No results found"
+    "noResultFound": "No results found",
+    "nothingToClaim": "Nothing to Claim"
   },
 
   "warningMessage": {

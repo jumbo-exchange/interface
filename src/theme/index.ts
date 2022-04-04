@@ -70,6 +70,7 @@ export interface ThemeColors {
   warningBg: string;
 
   bgToken: string;
+  menuBg: string;
 }
 
 export const colors: ThemeColors = {
@@ -123,6 +124,7 @@ export const colors: ThemeColors = {
 
   warningBg: '#4C2739',
   bgToken: '#dfe2e8',
+  menuBg: '#2A303C',
 };
 
 function theme(): DefaultTheme {

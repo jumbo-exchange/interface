@@ -1,6 +1,3 @@
-/* eslint-disable no-prototype-builtins */
-/* eslint-disable default-case */
-/* eslint-disable max-len */
 import getConfig from 'services/config';
 import SpecialWallet from 'services/wallet';
 import styled from 'styled-components';
@@ -11,6 +8,7 @@ import { providers } from 'near-api-js';
 import { useEffect } from 'react';
 import { toast, Slide } from 'react-toastify';
 import { colors } from 'theme';
+import { useNavigate } from 'react-router-dom';
 
 const config = getConfig();
 
@@ -36,7 +34,7 @@ enum TransactionType {
   AddLiquidity,
   RemoveLiquidity,
   NearDeposit,
-  NearWithdraw
+  NearWithdraw,
 }
 
 enum StatusType {
@@ -53,6 +51,7 @@ const methodName: { [key: string]: string } = {
   removeLiquidityMethod: 'remove_liquidity',
   nearDeposit: 'near_deposit',
   nearWithdraw: 'near_withdraw',
+  withdraw: 'withdraw',
 };
 
 const PROPERTY_NAME = 'FunctionCall';
@@ -90,7 +89,7 @@ const getToast = (href: string, title: string, type: ToastType) => {
 
 const detailsTransaction = (transaction: any, type: TransactionType) => {
   const { hash } = transaction.transaction;
-  const successStatus = transaction.status.hasOwnProperty('SuccessValue');
+  const successStatus = Object.prototype.hasOwnProperty.call(transaction.status, 'SuccessValue');
 
   if (type === TransactionType.Swap) {
     const successValue = atob(transaction.status.SuccessValue);
@@ -107,11 +106,14 @@ const detailsTransaction = (transaction: any, type: TransactionType) => {
 };
 
 const getTransaction = (transactions: any, method: { [key: string]: string }) => {
-  const [transaction] = transactions.filter((tx:any) => Object.values(method).indexOf(tx.transaction.actions[0][PROPERTY_NAME].method_name) !== -1);
+  const [transaction] = transactions.filter((tx:any) => Object.values(method)
+    .indexOf(tx.transaction.actions[0][PROPERTY_NAME].method_name) !== -1);
 
   let type = TransactionType.None;
   if (!transaction) {
-    const [swapTransaction] = transactions.filter((tx:any) => swapMethod.indexOf(tx.transaction.actions[0][PROPERTY_NAME].method_name) !== -1);
+    const [swapTransaction] = transactions.filter((tx:any) => swapMethod
+      .indexOf(tx.transaction.actions[0][PROPERTY_NAME].method_name) !== -1);
+
     if (swapTransaction) {
       return {
         type: TransactionType.Swap,
@@ -139,6 +141,9 @@ const getTransaction = (transactions: any, method: { [key: string]: string }) =>
     case method.nearWithdraw: {
       type = TransactionType.NearWithdraw;
       break;
+    }
+    default: {
+      type = TransactionType.None;
     }
   }
   return {
@@ -209,19 +214,27 @@ function parseTransactions(txs: any) {
         getToast(href, i18n.t('toast.removeLiquidity'), ToastType.Error);
       }
       break;
+    default: {
+      break;
+    }
   }
 }
+
+const TRANSACTION_HASHES = 'transactionHashes';
+const ERROR_CODE = 'errorCode';
+const ERROR_MESSAGE = 'errorMessage';
 
 export default function useTransactionHash(
   query: string | undefined,
   wallet: SpecialWallet | null,
 ) {
+  const navigate = useNavigate();
   return useEffect(() => {
     if (wallet) {
       const queryParams = new URLSearchParams(query);
-      const transactions = queryParams?.get('transactionHashes');
-      const errorCode = queryParams?.get('errorCode');
-      const errorMessage = queryParams?.get('errorMessage');
+      const transactions = queryParams?.get(TRANSACTION_HASHES);
+      const errorCode = queryParams?.get(ERROR_CODE);
+      const errorMessage = queryParams?.get(ERROR_MESSAGE);
       if (errorCode || errorMessage) {
         toast.error(i18n.t('toast.transactionFailed'), {
           theme: 'dark',
@@ -248,6 +261,17 @@ export default function useTransactionHash(
           console.warn(`${e} error while loading tx`);
         }
       }
+      if (queryParams.has(TRANSACTION_HASHES)
+      || queryParams.has(ERROR_CODE)
+      || queryParams.has(ERROR_MESSAGE)) {
+        queryParams.delete(TRANSACTION_HASHES);
+        queryParams.delete(ERROR_CODE);
+        queryParams.delete(ERROR_MESSAGE);
+
+        navigate({
+          search: queryParams.toString(),
+        });
+      }
     }
-  }, [query, wallet]);
+  }, [navigate, query, wallet]);
 }
