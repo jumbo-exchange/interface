@@ -159,6 +159,7 @@ export const StoreContextProvider = (
           .filter((pool: IPool) => pool.type === PoolType.SIMPLE_POOL
           || (pool.type === PoolType.STABLE_SWAP && pool.id === config.stablePoolId));
 
+        console.log(poolArray);
         let newPoolArray = poolArray;
 
         const farmArray = farmsResult.map((farm: any) => formatFarm(farm, poolArray, seeds));

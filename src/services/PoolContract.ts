@@ -8,9 +8,12 @@ import {
   STORAGE_PER_TOKEN,
   ONE_YOCTO_NEAR,
   NEAR_TOKEN_ID,
+  STABLE_LP_TOKEN_DECIMALS,
 } from 'utils/constants';
-import { toNonDivisibleNumber } from 'utils/calculations';
-import { IPool } from 'store';
+import {
+  calculateAddLiquidity, percentLess, toComparableAmount, toNonDivisibleNumber,
+} from 'utils/calculations';
+import { IPool, PoolType } from 'store';
 import sendTransactions, { wallet } from './near';
 import { createContract, Transaction } from './wallet';
 import getConfig from './config';
@@ -44,6 +47,7 @@ const basicChangeMethods = [
   'swap',
   'storage_deposit',
   'add_liquidity',
+  'add_stable_liquidity',
   'remove_liquidity',
   'withdraw',
 ];
@@ -156,14 +160,47 @@ export default class PoolContract {
     );
     if (isOutputTokenStorage.length) transactions.push(...isOutputTokenStorage);
 
-    transactions.push({
-      receiverId: this.contractId,
-      functionCalls: [{
-        methodName: 'add_liquidity',
-        args: { pool_id: pool.id, amounts: [tokenInAmount, tokenOutAmount] },
-        amount: LP_STORAGE_AMOUNT,
-      }],
-    });
+    if (pool.type === PoolType.SIMPLE_POOL) {
+      transactions.push({
+        receiverId: this.contractId,
+        functionCalls: [{
+          methodName: 'add_liquidity',
+          args: { pool_id: pool.id, amounts: [tokenInAmount, tokenOutAmount] },
+          amount: LP_STORAGE_AMOUNT,
+        }],
+      });
+    } else {
+      const depositAmounts = [tokenInAmount, tokenOutAmount].map(
+        (amount) => Number(toNonDivisibleNumber(STABLE_LP_TOKEN_DECIMALS, amount)),
+      );
+      const comparableAmounts = toComparableAmount(
+        pool.supplies,
+        [firstToken.token, secondToken.token],
+      );
+      if (!comparableAmounts) return;
+
+      const [shares] = calculateAddLiquidity(
+        Number(pool.amp),
+        depositAmounts,
+        comparableAmounts,
+        Number(pool.sharesTotalSupply),
+        pool.totalFee,
+      );
+      const minShares = percentLess(20, Big(shares).toFixed());
+      console.log(Big(shares).toFixed());
+      transactions.push({
+        receiverId: this.contractId,
+        functionCalls: [{
+          methodName: 'add_stable_liquidity',
+          args: {
+            pool_id: pool.id,
+            amounts: [tokenInAmount, tokenOutAmount],
+            min_shares: minShares,
+          },
+          amount: LP_STORAGE_AMOUNT,
+        }],
+      });
+    }
 
     sendTransactions(transactions, this.walletInstance);
   }
