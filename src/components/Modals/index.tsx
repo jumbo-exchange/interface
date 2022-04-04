@@ -5,6 +5,7 @@ import CreatePoolModal from './CreatePoolModal';
 import SearchModal from './SearchModal';
 import TooltipModal from './TooltipModal';
 import RemoveLiquidityModal from './RemoveLiquidityModal';
+import WithdrawDepositModal from './WithdrawDepositModal';
 
 export default function Modals({ children }: {children: JSX.Element}) {
   return (
@@ -15,6 +16,7 @@ export default function Modals({ children }: {children: JSX.Element}) {
       <RemoveLiquidityModal />
       <SearchModal />
       <TooltipModal />
+      <WithdrawDepositModal />
       {children}
     </>
   );
