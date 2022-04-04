@@ -20,6 +20,7 @@
     "addLiquidity": "Add Liquidity",
     "removeLiquidity": "Withdraw",
     "claim": "Claim",
+    "claimAll": "Claim All",
     "ok": "Ok"
   },
 

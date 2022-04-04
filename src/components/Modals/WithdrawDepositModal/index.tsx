@@ -49,7 +49,7 @@ export default function WithdrawDepositModal() {
   const claimList = Object.entries(tokensArray).filter(([, value]) => Big(value).gt(0));
 
   const canClaim = claimList.length !== 0;
-  const titleButton = canClaim ? t('action.claim') : t('action.ok');
+  const titleButton = canClaim ? t('action.claimAll') : t('action.ok');
 
   const claimListArray = useMemo(() => claimList.map(([tokenId, value]) => {
     const isShowing = Big(value).lte(0);
