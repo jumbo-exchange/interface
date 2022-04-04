@@ -6,6 +6,7 @@ import {
   ONE_YOCTO_NEAR,
 } from 'utils/constants';
 import { parseTokenAmount } from 'utils/calculations';
+import { BN } from 'bn.js';
 import sendTransactions, { wallet } from './near';
 import { createContract, Transaction } from './wallet';
 import getConfig from './config';
@@ -188,22 +189,21 @@ export default class FarmContract {
     sendTransactions(transactions, this.walletInstance);
   }
 
-  async claimRewardBySeed(seedId: string) {
-    const transactions: Transaction[] = [];
-    transactions.push({
-      receiverId: this.contractId,
-      functionCalls: [{
-        methodName: 'claim_reward_by_seed',
-        args: { seed_id: seedId },
-        amount: '0',
-        gas: '100000000000000',
-      }],
+  async claimRewardBySeed(seedIds: string[]) {
+    seedIds.forEach((seedId) => {
+      wallet
+        .account()
+        .functionCall({
+          contractId: this.contractId,
+          methodName: 'claim_reward_by_seed',
+          args: { seed_id: seedId },
+          attachedDeposit: new BN('0'),
+          gas: new BN('100000000000000'),
+        });
     });
-    return transactions;
   }
 
   async withdrawAllReward(
-    //! the seed farms and the array to be output should be returned
     rewardList: {
       token: FungibleTokenContract;
       value: string;

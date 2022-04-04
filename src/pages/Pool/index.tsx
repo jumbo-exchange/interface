@@ -3,7 +3,9 @@ import React, {
 } from 'react';
 import { FilterButton, ButtonClaim } from 'components/Button';
 import { isMobile } from 'utils/userAgent';
-import { IPool, useModalsStore, useStore } from 'store';
+import {
+  IFarm, IPool, useModalsStore, useStore,
+} from 'store';
 import { useLocation, useParams } from 'react-router-dom';
 import {
   toAddLiquidityPage, toRemoveLiquidityPage, toStakePage, toUnStakeAndClaimPage,
@@ -15,6 +17,9 @@ import getConfig from 'services/config';
 import Big from 'big.js';
 import { formatTokenAmount, removeTrailingZeros } from 'utils/calculations';
 import FarmContract from 'services/FarmContract';
+import { wallet } from 'services/near';
+import moment from 'moment';
+import { UPDATE_CLAIM_REWARD_DATE, CLAIM_REWARD_DATE_KEY } from 'utils/constants';
 import {
   Container,
   FilterBlock,
@@ -73,10 +78,11 @@ export interface IMainInfo {
 }
 
 export default function Pool() {
+  const isConnected = wallet.isSignedIn();
   const { t } = useTranslation();
-  const contract = useMemo(() => new FarmContract(), []);
+  const farmContract = useMemo(() => new FarmContract(), []);
   const {
-    pools, loading, prices, userRewards, tokens,
+    pools, loading, prices, userRewards, tokens, farms, setUserRewards,
   } = useStore();
   const {
     setAddLiquidityModalOpenState,
@@ -135,8 +141,8 @@ export default function Pool() {
     });
     const filteredRewards = rewards.filter((el) => el.token !== null && Big(el.value).gt(0));
     if (!filteredRewards.length) return;
-    contract.withdrawAllReward(filteredRewards);
-  }, [contract, canClaimAll, tokens, rewardList]);
+    farmContract.withdrawAllReward(filteredRewards);
+  }, [farmContract, canClaimAll, tokens, rewardList]);
 
   useEffect(() => {
     const newPools = toArray(pools);
@@ -188,6 +194,53 @@ export default function Pool() {
       </p>
     );
   }), [tokens, rewardList]);
+
+  const userUnclaimedRewards = Object.values(farms)
+    .reduce((acc: {[key: string]: string}, farm: IFarm) => {
+      if (!farm.userUnclaimedReward) return acc;
+      const rewardAmount = acc[farm.seedId];
+      if (rewardAmount) {
+        acc[farm.seedId] = Big(rewardAmount).add(farm.userUnclaimedReward).toString();
+        return acc;
+      }
+      if (Big(farm.userUnclaimedReward || 0).lte(0)) {
+        return acc;
+      }
+      return {
+        ...acc,
+        [farm.seedId]: farm.userUnclaimedReward,
+      };
+    }, {});
+
+  const haveUserUnclaimReward = Object.values(userUnclaimedRewards).length > 0;
+
+  const tryGetLocalStorage = (localKey: string) => {
+    const date = localStorage.getItem(localKey);
+    if (!date) {
+      const currentDate = moment().format();
+      localStorage.setItem(localKey, currentDate);
+      return moment(currentDate).valueOf();
+    }
+    return moment(date).valueOf();
+  };
+
+  const getUpdateUserReward = useCallback(async () => {
+    await farmContract.claimRewardBySeed(Object.keys(userUnclaimedRewards));
+    const newRewards = await farmContract.getRewards();
+    setUserRewards(newRewards);
+    localStorage.setItem(CLAIM_REWARD_DATE_KEY, moment().format());
+  }, [farmContract, setUserRewards, userUnclaimedRewards]);
+
+  useEffect(() => {
+    const currentDate = moment().valueOf();
+    const previousDate = tryGetLocalStorage(CLAIM_REWARD_DATE_KEY);
+    if (!isConnected
+      || loading
+      || !haveUserUnclaimReward
+      || currentDate - previousDate < UPDATE_CLAIM_REWARD_DATE) return;
+
+    getUpdateUserReward();
+  }, [getUpdateUserReward, haveUserUnclaimReward, isConnected, loading, userUnclaimedRewards]);
 
   return (
     <Container>

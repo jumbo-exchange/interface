@@ -139,3 +139,5 @@ export const checkInvalidAmount = (
   const balance = token ? balances[token.contractId] : '0';
   return Big(amount).gt(formatTokenAmount(balance, token.metadata.decimals));
 };
+
+export const minToMilliseconds = (min: number) => min * 60000;

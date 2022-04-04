@@ -1,5 +1,6 @@
 import Big from 'big.js';
 import { parseNearAmount } from 'near-api-js/lib/utils/format';
+import { minToMilliseconds } from 'utils/calculations';
 
 export const docsLink = 'https://jumbo-exchange.gitbook.io/product-docs/';
 export const telegramLink = 'https://t.me/jumbo_ann';
@@ -66,3 +67,6 @@ export const URL_OUTPUT_TOKEN = 'outputToken';
 export const INITIAL_INPUT_PLACEHOLDER = '';
 export const ZERO_AMOUNT = '0';
 export const SMALL_SHARE = '0.001';
+
+export const UPDATE_CLAIM_REWARD_DATE = minToMilliseconds(10);
+export const CLAIM_REWARD_DATE_KEY = 'CLAIM_REWARD_DATE';
