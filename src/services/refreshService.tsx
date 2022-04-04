@@ -62,7 +62,7 @@ export const RefreshContextProvider = (
         return { poolInfo, id: pool.id };
       }));
       if (!results.length) return;
-      const parsedPools: IPool[] = results.map((pool: any) => formatPool(pool.poolInfo, pool.id));
+      const parsedPools: IPool[] = results.map((pool: any) => formatPool(pool.poolInfo));
       updatePools(parsedPools);
     } catch (e) {
       console.warn(`Error ${e} while updating pools with id ${trackedPools.map((el) => el.id)}`);

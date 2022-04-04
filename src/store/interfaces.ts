@@ -32,6 +32,7 @@ export interface IPool {
   farms: string[] | null,
 
   totalLiquidity: string;
+  dayVolume: string;
 }
 
 export interface ITokenMetadata {
@@ -70,6 +71,15 @@ export interface IFarm {
 
   userStaked?: string;
   userUnclaimedReward?: string;
+}
+
+export interface IDayVolume {
+  id: string,
+  volume24hFirst: string,
+  volume24hSecond: string,
+  tokenFirst: string,
+  tokenSecond: string,
+  updatedAt: string,
 }
 
 export type StoreContextType = {

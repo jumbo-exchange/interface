@@ -43,7 +43,7 @@ export default function PoolCard({ pool } : { pool: IPool }) {
     },
     {
       title: t('pool.dayVolume'),
-      label: '-',
+      label: pool.dayVolume && Big(pool.dayVolume).gt(0) ? `$${pool.dayVolume}` : '-',
       tooltip: t('tooltipTitle.dayVolume'),
     },
     {
