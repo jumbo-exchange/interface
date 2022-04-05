@@ -6,7 +6,9 @@ import {
   IFarm, IPool, ITokenPrice, PoolType, IDayVolume,
 } from 'store';
 import { formatTokenAmount, removeTrailingZeros } from './calculations';
-import { LP_TOKEN_DECIMALS, SWAP_INPUT_KEY, SWAP_OUTPUT_KEY } from './constants';
+import {
+  LP_TOKEN_DECIMALS, STABLE_LP_TOKEN_DECIMALS, SWAP_INPUT_KEY, SWAP_OUTPUT_KEY,
+} from './constants';
 
 const ACCOUNT_TRIM_LENGTH = 10;
 
@@ -29,9 +31,14 @@ export function escapeRegExp(string: string): string {
 }
 
 export function formatPool(pool: any): IPool {
+  const CURRENT_LP_TOKEN_DECIMALS = pool.pool_kind === PoolType.SIMPLE_POOL
+    ? LP_TOKEN_DECIMALS
+    : STABLE_LP_TOKEN_DECIMALS;
+
   return {
     id: pool.id,
     lpTokenId: `:${pool.id}`,
+    lpTokenDecimals: CURRENT_LP_TOKEN_DECIMALS,
     type: pool.pool_kind === PoolType.STABLE_SWAP ? PoolType.STABLE_SWAP : PoolType.SIMPLE_POOL,
     tokenAccountIds: pool.token_account_ids,
     amounts: pool.amounts,

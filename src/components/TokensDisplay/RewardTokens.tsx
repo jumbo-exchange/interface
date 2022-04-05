@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from 'store';
 import styled from 'styled-components';
+import { onlyUniqueValues } from 'utils';
 
 const Container = styled.div`
   display: flex;
@@ -42,10 +43,11 @@ export default function RewardTokens(
 ) {
   const { tokens } = useStore();
   const { t } = useTranslation();
+  const uniqueRewardTokens = onlyUniqueValues(rewardTokens);
   return (
     <Container>
       <p>{t('farm.rewardTokens')}</p>
-      {rewardTokens.map((tokenId) => {
+      {uniqueRewardTokens.map((tokenId) => {
         const token = tokens[tokenId] || null;
         if (!token) return null;
         return (

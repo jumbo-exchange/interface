@@ -19,6 +19,7 @@ export enum CurrentButton {
 export interface IPool {
   id: number;
   lpTokenId: string;
+  lpTokenDecimals: number;
   type: PoolType;
   tokenAccountIds: string[];
   amounts: string[];

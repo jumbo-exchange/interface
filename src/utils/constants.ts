@@ -52,7 +52,7 @@ export const YOCTO_IN_NEAR_DECIMALS = 24;
 export const FEE_DIVISOR = 100;
 
 export const LP_TOKEN_DECIMALS = 24;
-export const STABLE_LP_TOKEN_DECIMALS = 24;
+export const STABLE_LP_TOKEN_DECIMALS = 18;
 
 export const BAD_PRICE_IMPACT = 2;
 export const SHOW_WARNING_PRICE_IMPACT = 10;

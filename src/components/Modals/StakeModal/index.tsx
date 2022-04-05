@@ -37,6 +37,7 @@ export default function StakeModal() {
 
   const formattedPoolShares = formatTokenAmount(pool.shares ?? '0', LP_TOKEN_DECIMALS);
 
+  // Smart contract panicked: E34: below min_deposit of this seed 10000000000000000000"
   const buttonDisabled = stakeValue
     ? (new Big(stakeValue).lte(0)
   || new Big(stakeValue).gt(formattedPoolShares))

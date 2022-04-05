@@ -84,11 +84,11 @@ export default function RemoveLiquidityModal() {
   const tokensData = [
     {
       token: tokenInput,
-      value: formatTokenAmount(inputToken, tokenInput.metadata.decimals, 5),
+      value: formatTokenAmount(inputToken, tokenInput.metadata.decimals),
     },
     {
       token: tokenOutput,
-      value: formatTokenAmount(outputToken, tokenOutput.metadata.decimals, 5),
+      value: formatTokenAmount(outputToken, tokenOutput.metadata.decimals),
     },
   ];
 
