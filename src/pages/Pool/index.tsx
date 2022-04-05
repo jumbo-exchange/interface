@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 
 import getConfig from 'services/config';
 import Big from 'big.js';
-import { formatTokenAmount, removeTrailingZeros } from 'utils/calculations';
+import { formatBalance, formatTokenAmount, removeTrailingZeros } from 'utils/calculations';
 import FarmContract from 'services/FarmContract';
 import { wallet } from 'services/near';
 import moment from 'moment';
@@ -190,12 +190,12 @@ export default function Pool() {
     const tokenContract = tokens[token];
     if (isShowing || !tokenContract) return null;
     const claimReward = formatTokenAmount(
-      value, tokenContract.metadata.decimals, 6,
+      value, tokenContract.metadata.decimals,
     );
     const tokenSymbol = tokenContract.metadata.symbol;
     return (
       <p key={tokenSymbol}>
-        {claimReward} <span>{tokenSymbol}</span>
+        {formatBalance(claimReward)} <span>{tokenSymbol}</span>
       </p>
     );
   }), [tokens, rewardList]);

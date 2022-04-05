@@ -58,7 +58,7 @@ export default function FarmCard({ pool } : { pool: IPool }) {
     },
     {
       title: t('farm.APY'),
-      label: Big(yourStaked || 0).gt(0) ? `${totalAPY}%` : '-',
+      label: Big(totalAPY).gt(0) ? `${totalAPY}%` : '-',
       color: true,
       tooltip: t('tooltipTitle.APY'),
     },
