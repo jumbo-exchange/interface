@@ -25,3 +25,13 @@ export const TokensBlock = styled.div`
   display: flex;
   margin: .7rem 0 3rem;
 `;
+
+export const Warning = styled.div`
+text-align: left;
+margin-bottom: 1rem;
+font-style: normal;
+font-weight: 300;
+font-size: .75rem;
+line-height: .875rem;
+color: ${({ theme }) => theme.error};
+`;

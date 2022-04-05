@@ -71,3 +71,5 @@ export const SMALL_SHARE = '0.001';
 
 export const UPDATE_CLAIM_REWARD_DATE = minToMilliseconds(10);
 export const CLAIM_REWARD_DATE_KEY = 'CLAIM_REWARD_DATE';
+
+export const MIN_DEPOSIT_SHARES = '10000000000000000000';

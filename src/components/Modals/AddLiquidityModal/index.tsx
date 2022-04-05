@@ -14,7 +14,7 @@ import {
 } from 'utils/calculations';
 import { wallet } from 'services/near';
 import {
-  INITIAL_INPUT_PLACEHOLDER, LP_TOKEN_DECIMALS, ZERO_AMOUNT, SMALL_SHARE,
+  INITIAL_INPUT_PLACEHOLDER, ZERO_AMOUNT, SMALL_SHARE,
 } from 'utils/constants';
 import Big from 'big.js';
 import Refresh from 'components/Refresh';
@@ -87,7 +87,7 @@ export default function AddLiquidityModal() {
       }
       setInputTokenValue(value);
       setOutputTokenValue(outputValue);
-      setPreShare(formatTokenAmount(fairShares, LP_TOKEN_DECIMALS));
+      setPreShare(formatTokenAmount(fairShares, pool.lpTokenDecimals));
     }
   };
 
@@ -113,7 +113,7 @@ export default function AddLiquidityModal() {
       }
       setOutputTokenValue(value);
       setInputTokenValue(inputValue);
-      setPreShare(formatTokenAmount(fairShares, LP_TOKEN_DECIMALS));
+      setPreShare(formatTokenAmount(fairShares, pool.lpTokenDecimals));
     }
   };
 

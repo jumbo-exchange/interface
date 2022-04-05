@@ -263,8 +263,8 @@ export const saveSwapTokens = (
 export const calcStakedAmount = (shares: string, pool: IPool) => {
   const { sharesTotalSupply, totalLiquidity } = pool;
   if (Big(sharesTotalSupply).lte('0') || Big(shares).lte('0')) return null;
-  const formatTotalShares = formatTokenAmount(sharesTotalSupply, LP_TOKEN_DECIMALS);
-  const formatShares = formatTokenAmount(shares, LP_TOKEN_DECIMALS);
+  const formatTotalShares = formatTokenAmount(sharesTotalSupply, pool.lpTokenDecimals);
+  const formatShares = formatTokenAmount(shares, pool.lpTokenDecimals);
 
   const numerator = Big(formatShares).times(totalLiquidity);
   const sharesInUsdt = Big(numerator).div(formatTotalShares).toFixed(2);

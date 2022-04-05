@@ -7,6 +7,7 @@ import {
 } from 'utils/constants';
 import { parseTokenAmount } from 'utils/calculations';
 import { BN } from 'bn.js';
+import { IPool } from 'store';
 import sendTransactions, { wallet } from './near';
 import { createContract, Transaction } from './wallet';
 import getConfig from './config';
@@ -36,12 +37,8 @@ const basicChangeMethods = [
 
 const config = getConfig();
 
-const LP_TOKEN_DECIMALS = 24;
-const LP_STABLE_TOKEN_DECIMALS = 18;
-
 const EXCHANGE_CONTRACT_ID = config.contractId;
 const FARM_CONTRACT_ID = config.farmContractId;
-const STABLE_POOL_ID = config.stablePoolId;
 
 const STORAGE_TO_REGISTER_MFT = '0.045';
 const MIN_DEPOSIT_PER_TOKEN_FARM = new Big('45000000000000000000000');
@@ -137,7 +134,7 @@ export default class FarmContract {
   async stake(
     tokenId: string,
     amount: string,
-    poolId: number,
+    pool: IPool,
     message: string = '',
   ) {
     const transactions: Transaction[] = [];
@@ -150,9 +147,7 @@ export default class FarmContract {
         args: {
           receiver_id: this.contractId,
           token_id: tokenId,
-          amount: STABLE_POOL_ID === poolId
-            ? parseTokenAmount(amount, LP_STABLE_TOKEN_DECIMALS)
-            : parseTokenAmount(amount, LP_TOKEN_DECIMALS),
+          amount: parseTokenAmount(amount, pool.lpTokenDecimals),
           msg: message,
         },
         amount: ONE_YOCTO_NEAR,
@@ -165,7 +160,7 @@ export default class FarmContract {
   async unstake(
     seedId: string,
     amount: string,
-    poolId: number,
+    pool: IPool,
     message: string = '',
   ) {
     const transactions: Transaction[] = [];
@@ -177,9 +172,7 @@ export default class FarmContract {
         methodName: 'withdraw_seed',
         args: {
           seed_id: seedId,
-          amount: STABLE_POOL_ID === poolId
-            ? parseTokenAmount(amount, LP_STABLE_TOKEN_DECIMALS)
-            : parseTokenAmount(amount, LP_TOKEN_DECIMALS),
+          amount: parseTokenAmount(amount, pool.lpTokenDecimals),
           msg: message,
         },
         amount: ONE_YOCTO_NEAR,
