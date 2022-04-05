@@ -71,6 +71,9 @@ export interface IFarm {
 
   userStaked?: string;
   userUnclaimedReward?: string;
+  totalStaked?: string;
+  yourStaked?: string;
+  apy: string;
 }
 
 export interface IDayVolume {

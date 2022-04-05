@@ -224,7 +224,7 @@ export default function Pool() {
     if (!date) {
       const currentDate = moment().format();
       localStorage.setItem(localKey, currentDate);
-      return moment(currentDate).valueOf();
+      return moment(currentDate).valueOf() - UPDATE_CLAIM_REWARD_DATE;
     }
     return moment(date).valueOf();
   };
@@ -237,10 +237,10 @@ export default function Pool() {
   }, [farmContract, setUserRewards, userUnclaimedRewards]);
 
   useEffect(() => {
+    if (loading) return;
     const currentDate = moment().valueOf();
     const previousDate = tryGetLocalStorage(CLAIM_REWARD_DATE_KEY);
     if (!isConnected
-      || loading
       || !haveUserUnclaimReward
       || currentDate - previousDate < UPDATE_CLAIM_REWARD_DATE) return;
 
@@ -308,6 +308,7 @@ export default function Pool() {
       <PoolResult
         poolsArray={poolsArray}
         currentFilterPools={currentFilterPools}
+        setCurrentFilterPools={setCurrentFilterPools}
         isShowingEndedOnly={isShowingEndedOnly}
       />
     </Container>

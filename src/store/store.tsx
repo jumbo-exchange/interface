@@ -14,6 +14,7 @@ import {
   onlyUniqueValues,
   isNotNullOrUndefined,
   calculateTotalAmountAndDayVolume,
+  calcAprAndStakedAmount,
 } from 'utils';
 
 import getConfig from 'services/config';
@@ -161,7 +162,6 @@ export const StoreContextProvider = (
           .filter((pool: IPool) => pool.type === PoolType.SIMPLE_POOL
           || (pool.type === PoolType.STABLE_SWAP && pool.id === config.stablePoolId));
 
-        console.log(poolArray);
         let newPoolArray = poolArray;
 
         const farmArray = farmsResult.map((farm: any) => formatFarm(farm, poolArray, seeds));
@@ -245,10 +245,16 @@ export const StoreContextProvider = (
             newPoolMap,
             dayVolumesData,
           );
+          const resultedFarmsArray = calcAprAndStakedAmount(
+            pricesDataWithJumbo,
+            metadataMap,
+            resultedPoolsArray,
+            newFarmMap,
+          );
           setTokens(metadataMap);
           setPools(resultedPoolsArray);
           setPrices(pricesDataWithJumbo);
-          setFarms(newFarmMap);
+          setFarms(resultedFarmsArray);
         } else {
           setTokens(metadataMap);
           setPrices(pricesData);

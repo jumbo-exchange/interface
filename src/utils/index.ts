@@ -10,6 +10,9 @@ import { LP_TOKEN_DECIMALS, SWAP_INPUT_KEY, SWAP_OUTPUT_KEY } from './constants'
 
 const ACCOUNT_TRIM_LENGTH = 10;
 
+Big.RM = Big.roundDown;
+Big.DP = 30;
+
 export const trimAccountId = (accountId: string) => {
   if (accountId.length > 20) {
     return `${accountId.slice(0, ACCOUNT_TRIM_LENGTH)}...`;
@@ -230,6 +233,7 @@ export function formatFarm(
 
     poolId: pool.id,
     totalSeedAmount,
+    apy: '0',
   };
 }
 
@@ -258,4 +262,58 @@ export const calcStakedAmount = (shares: string, pool: IPool) => {
   const numerator = Big(formatShares).times(totalLiquidity);
   const sharesInUsdt = Big(numerator).div(formatTotalShares).toFixed(2);
   return removeTrailingZeros(sharesInUsdt);
+};
+
+export const getTotalApr = (farms: IFarm[]) => {
+  let apy = new Big('0');
+  if (farms.length > 1) {
+    farms.forEach((item) => {
+      apy = Big(item.apy).add(apy);
+    });
+  } else {
+    apy = Big(farms[0].apy);
+  }
+  return apy.toFixed(2);
+};
+
+export const calcAprAndStakedAmount = (
+  pricesData: {[key: string]: ITokenPrice},
+  metadataMap: {[key: string]: FungibleTokenContract},
+  resultedPoolsArray: {[key:string]: IPool},
+  newFarmMap: {[key:string]: IFarm},
+) => {
+  const calculatedFarms = toArray(newFarmMap).map((farm: IFarm) => {
+    const pool = toArray(resultedPoolsArray)
+      .find((item: IPool) => item.id === farm.poolId);
+
+    const rewardToken = metadataMap[farm.rewardTokenId] || null;
+    const rewardTokenPrice = pricesData[farm.rewardTokenId]?.price || '0';
+    const totalStaked = calcStakedAmount(farm.totalSeedAmount, pool);
+    const yourStaked = calcStakedAmount(farm.userStaked || '0', pool);
+    if (totalStaked && Big(totalStaked).gt(0)) {
+      const rewardNumberPerWeek = Big(farm.rewardPerSession)
+        .div(farm.sessionInterval)
+        .mul(604800).toFixed(0);
+
+      const rewardsPerWeek = formatTokenAmount(rewardNumberPerWeek, rewardToken.metadata.decimals);
+      const firstMultiplier = Big(1).div(totalStaked);
+      const secondMultiplier = Big(rewardsPerWeek).mul(rewardTokenPrice);
+      const mulFirstAndSecond = firstMultiplier.mul(secondMultiplier);
+      const farmAPY = mulFirstAndSecond.mul(52).mul(100).toFixed(2);
+      return {
+        ...farm,
+        totalStaked,
+        yourStaked,
+        apy: farmAPY,
+      };
+    }
+    return {
+      ...farm,
+      totalStaked,
+      yourStaked,
+      apy: '0',
+    };
+  });
+
+  return toMap(calculatedFarms);
 };

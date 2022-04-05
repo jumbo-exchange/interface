@@ -67,11 +67,15 @@ export const FarmBlock = styled.div<{type: FarmStatusEnum}>`
   line-height: .875rem;
   padding: .5rem;
   border-radius: 12px;
+  user-select: none;
   color: ${({ theme, type }) => {
     if (type === FarmStatusEnum.Active) return theme.statusActive;
     if (type === FarmStatusEnum.Pending) return theme.statusPending;
     return theme.statusEnded;
   }};
+  :hover {
+    cursor: pointer;
+  }
 `;
 
 export const LogoArrowContainer = styled.div<{type: FarmStatusEnum}>`

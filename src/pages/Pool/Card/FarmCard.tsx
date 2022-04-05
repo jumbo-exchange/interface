@@ -8,9 +8,9 @@ import { useTranslation } from 'react-i18next';
 import TokenPairDisplay from 'components/TokensDisplay/TokenPairDisplay';
 import RewardTokens from 'components/TokensDisplay/RewardTokens';
 import { PoolOrFarmButtons } from 'components/Button/RenderButton';
-import { calcStakedAmount } from 'utils';
 import moment from 'moment';
 import { FarmStatusLocales, getAvailableTimestamp } from 'components/FarmStatus';
+import { getTotalApr } from 'utils';
 import {
   FarmWrapper,
   FarmContainer,
@@ -42,10 +42,8 @@ export default function FarmCard({ pool } : { pool: IPool }) {
   const [timeToStartFarm, setTimeToStart] = useState<number>(0);
 
   const farmsInPool = !pool.farms?.length ? [] : pool.farms.map((el) => farms[el]);
-  const { totalSeedAmount, userStaked } = farmsInPool[0];
-
-  const totalStaked = calcStakedAmount(totalSeedAmount, pool);
-  const yourStaked = calcStakedAmount(userStaked || '0', pool);
+  const { totalStaked, yourStaked } = farmsInPool[0];
+  const totalAPY = getTotalApr(farmsInPool);
 
   const volume: IVolume[] = [
     {
@@ -60,7 +58,7 @@ export default function FarmCard({ pool } : { pool: IPool }) {
     },
     {
       title: t('farm.APY'),
-      label: '-',
+      label: Big(yourStaked || 0).gt(0) ? `${totalAPY}%` : '-',
       color: true,
       tooltip: t('tooltipTitle.APY'),
     },

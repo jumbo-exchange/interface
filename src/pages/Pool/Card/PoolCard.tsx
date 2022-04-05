@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import Tooltip from 'components/Tooltip';
 import Big from 'big.js';
 import { IPool, useStore } from 'store';
@@ -22,6 +22,7 @@ import {
   LabelVolume,
   BlockButton,
 } from './styles';
+import { FilterPoolsEnum } from '..';
 
 interface IVolume {
   title: string;
@@ -30,7 +31,15 @@ interface IVolume {
   tooltip: string;
 }
 
-export default function PoolCard({ pool } : { pool: IPool }) {
+export default function PoolCard(
+  {
+    pool,
+    setCurrentFilterPools,
+  } : {
+    pool: IPool,
+    setCurrentFilterPools: Dispatch<SetStateAction<FilterPoolsEnum>>,
+  },
+) {
   const { farms } = useStore();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -65,7 +74,10 @@ export default function PoolCard({ pool } : { pool: IPool }) {
         <LabelPool>
           <>
             {pool.farms && status !== FarmStatusEnum.Ended && (
-            <FarmBlock type={status}>
+            <FarmBlock
+              type={status}
+              onClick={() => setCurrentFilterPools(FilterPoolsEnum.Farming)}
+            >
               Farming {FarmStatusLocalesInPool[status].toLowerCase()}
               <LogoArrowContainer type={status}>
                 <Arrow />
