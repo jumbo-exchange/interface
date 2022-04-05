@@ -9,6 +9,7 @@ import TokenPairDisplay from 'components/TokensDisplay/TokenPairDisplay';
 import { PoolOrFarmButtons } from 'components/Button/RenderButton';
 import { ReactComponent as Arrow } from 'assets/images-app/route-arrow.svg';
 import { FarmStatusEnum, FarmStatusLocalesInPool, getAvailableTimestamp } from 'components/FarmStatus';
+import { calcYourLiquidity, displayPriceWithSpace } from 'utils/calculations';
 import {
   Wrapper,
   UpperRow,
@@ -29,37 +30,54 @@ interface IVolume {
   label: string;
   color?: boolean;
   tooltip: string;
+  show: boolean;
 }
 
 export default function PoolCard(
   {
     pool,
+    currentFilterPools,
     setCurrentFilterPools,
   } : {
     pool: IPool,
+    currentFilterPools: FilterPoolsEnum,
     setCurrentFilterPools: Dispatch<SetStateAction<FilterPoolsEnum>>,
   },
 ) {
-  const { farms } = useStore();
+  const { farms, tokens, prices } = useStore();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const yourLiquidityAmount = calcYourLiquidity(tokens, prices, pool);
 
   const volume: IVolume[] = [
     {
       title: t('pool.totalLiquidity'),
-      label: pool.totalLiquidity && Big(pool.totalLiquidity).gt(0) ? `$${pool.totalLiquidity}` : '-',
+      label: pool.totalLiquidity && Big(pool.totalLiquidity).gt(0)
+        ? `$${displayPriceWithSpace(pool.totalLiquidity)}`
+        : '-',
       tooltip: t('tooltipTitle.totalLiquidity'),
+      show: true,
     },
     {
       title: t('pool.dayVolume'),
-      label: pool.dayVolume && Big(pool.dayVolume).gt(0) ? `$${pool.dayVolume}` : '-',
+      label: pool.dayVolume && Big(pool.dayVolume).gt(0)
+        ? `$${displayPriceWithSpace(pool.dayVolume)}`
+        : '-',
       tooltip: t('tooltipTitle.dayVolume'),
+      show: currentFilterPools === FilterPoolsEnum.AllPools,
+    },
+    {
+      title: t('pool.yourLiquidity'),
+      label: `$${yourLiquidityAmount}`,
+      tooltip: t('tooltipTitle.yourLiquidity'),
+      show: currentFilterPools === FilterPoolsEnum.YourLiquidity,
     },
     {
       title: t('pool.APY'),
       label: '-',
       color: true,
       tooltip: t('tooltipTitle.APY'),
+      show: true,
     },
   ];
 
@@ -89,15 +107,18 @@ export default function PoolCard(
       </UpperRow>
       <LowerRow>
         <BlockVolume>
-          {volume.map((el) => (
-            <Column key={el.title}>
-              <TitleVolume>
-                <span>{el.title}</span>
-                <Tooltip title={el.tooltip} />
-              </TitleVolume>
-              <LabelVolume isColor={el.color}>{el.label}</LabelVolume>
-            </Column>
-          ))}
+          {volume.map((el) => {
+            if (!el.show) return null;
+            return (
+              <Column key={el.title}>
+                <TitleVolume>
+                  <span>{el.title}</span>
+                  <Tooltip title={el.tooltip} />
+                </TitleVolume>
+                <LabelVolume isColor={el.color}>{el.label}</LabelVolume>
+              </Column>
+            );
+          })}
         </BlockVolume>
         <BlockButton>
           <PoolOrFarmButtons

@@ -15,7 +15,9 @@ import { useTranslation } from 'react-i18next';
 
 import getConfig from 'services/config';
 import Big from 'big.js';
-import { formatBalance, formatTokenAmount, removeTrailingZeros } from 'utils/calculations';
+import {
+  displayPriceWithComma, formatBalance, formatTokenAmount, removeTrailingZeros,
+} from 'utils/calculations';
 import FarmContract from 'services/FarmContract';
 import { wallet } from 'services/near';
 import moment from 'moment';
@@ -165,17 +167,17 @@ export default function Pool() {
   const mainInfo: IMainInfo[] = [
     {
       title: t('pool.totalValueLocked'),
-      label: Big(totalValueLocked ?? 0).lte(0) ? '-' : `$${totalValueLocked}`,
+      label: Big(totalValueLocked ?? 0).lte(0) ? '-' : `$${displayPriceWithComma(totalValueLocked)}`,
       show: true,
     },
     {
       title: t('pool.totalDayLocked'),
-      label: Big(totalValueLocked ?? 0).lte(0) ? '-' : `$${totalDayVolume}`,
+      label: Big(totalDayVolume).lte(0) ? '-' : `$${displayPriceWithComma(totalDayVolume)}`,
       show: true,
     },
     {
       title: t('pool.jumboPrice'),
-      label: `$${prices[config.jumboAddress].price ?? 0}` || '-',
+      label: `$${prices[config.jumboAddress].price}` || '-',
       show: true,
     },
     {

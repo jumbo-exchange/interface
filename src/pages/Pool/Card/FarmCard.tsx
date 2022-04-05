@@ -11,6 +11,7 @@ import { PoolOrFarmButtons } from 'components/Button/RenderButton';
 import moment from 'moment';
 import { FarmStatusLocales, getAvailableTimestamp } from 'components/FarmStatus';
 import { getTotalApr } from 'utils';
+import { displayPriceWithSpace } from 'utils/calculations';
 import {
   FarmWrapper,
   FarmContainer,
@@ -48,12 +49,16 @@ export default function FarmCard({ pool } : { pool: IPool }) {
   const volume: IVolume[] = [
     {
       title: t('farm.totalStaked'),
-      label: Big(totalStaked || 0).gt(0) ? `$${totalStaked}` : '-',
+      label: totalStaked && Big(totalStaked).gt(0)
+        ? `$${displayPriceWithSpace(totalStaked)}`
+        : '-',
       tooltip: t('tooltipTitle.totalStaked'),
     },
     {
       title: t('farm.yourStaked'),
-      label: Big(yourStaked || 0).gt(0) ? `$${yourStaked}` : '-',
+      label: yourStaked && Big(yourStaked).gt(0)
+        ? `$${displayPriceWithSpace(yourStaked)}`
+        : '-',
       tooltip: t('tooltipTitle.yourStaked'),
     },
     {

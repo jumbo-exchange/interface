@@ -83,6 +83,7 @@ export default function PoolResult(
           <PoolCard
             key={pool.id}
             pool={pool}
+            currentFilterPools={currentFilterPools}
             setCurrentFilterPools={setCurrentFilterPools}
           />
         ))}
@@ -152,6 +153,7 @@ export default function PoolResult(
         <PoolCard
           key={pool.id}
           pool={pool}
+          currentFilterPools={currentFilterPools}
           setCurrentFilterPools={setCurrentFilterPools}
         />
       ))}
