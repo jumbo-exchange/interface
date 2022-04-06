@@ -105,10 +105,17 @@ export default function PoolResult(
         const poolFarms = poolFarmIds.map((id) => farms[id]);
         if (!poolFarms) return acc;
         const isAnyActive = poolFarms.some(
-          (farm) => farm.status === FarmStatusEnum.Active || farm.status === FarmStatusEnum.Pending,
+          (farm) => farm.status === FarmStatusEnum.Active,
         );
-
-        if (isAnyActive) return { ...acc, active: [...acc.active, pool] };
+        const isAnyPending = poolFarms.some(
+          (farm) => farm.status === FarmStatusEnum.Pending,
+        );
+        if (isAnyActive || isAnyPending) {
+          return {
+            ...acc,
+            active: isAnyActive ? [pool, ...acc.active] : [...acc.active, pool],
+          };
+        }
         return { ...acc, ended: [...acc.ended, pool] };
       }, { active: [], ended: [] },
     );
