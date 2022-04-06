@@ -302,7 +302,7 @@ export const calcAprAndStakedAmount = (
       .find((item: IPool) => item.id === farm.poolId);
 
     const rewardToken = metadataMap[farm.rewardTokenId] || null;
-    const rewardTokenPrice = pricesData[farm.rewardTokenId]?.price || '1';
+    const rewardTokenPrice = pricesData[farm.rewardTokenId]?.price || '0';
     const totalStaked = calcStakedAmount(farm.totalSeedAmount, pool);
     const yourStaked = calcStakedAmount(farm.userStaked || '0', pool);
     if (totalStaked && Big(totalStaked).gt(0)) {
