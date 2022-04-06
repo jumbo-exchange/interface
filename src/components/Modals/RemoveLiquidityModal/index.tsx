@@ -2,14 +2,10 @@ import React, { useState } from 'react';
 import tokenLogo from 'assets/images-app/placeholder-token.svg';
 import PoolContract from 'services/PoolContract';
 import Big from 'big.js';
-import Toggle from 'components/Toggle';
-import Tooltip from 'components/Tooltip';
+
 import RenderButton from 'components/Button/RenderButton';
 
 import {
-  COEFFICIENT_SLIPPAGE,
-  MAX_SLIPPAGE_TOLERANCE,
-  MIN_SLIPPAGE_TOLERANCE,
   slippageToleranceOptions,
   SLIPPAGE_TOLERANCE_DEFAULT,
   LP_TOKEN_DECIMALS,
@@ -30,6 +26,7 @@ import {
 } from 'utils/calculations';
 import { wallet } from 'services/near';
 import { POOL } from 'utils/routes';
+import SlippageBlock from 'components/SlippageBlock';
 import Input from './Input';
 import {
   Layout, ModalBlock, ModalIcon, ModalTitle,
@@ -42,8 +39,6 @@ import {
   LogoContainer,
   TokenBlock,
   TokenValueBlock,
-  SlippageBlock,
-  Warning,
 } from './styles';
 
 export default function RemoveLiquidityModal() {
@@ -58,7 +53,6 @@ export default function RemoveLiquidityModal() {
   const { pool } = removeLiquidityModalOpenState;
 
   const [withdrawValue, setWithdrawValue] = useState<string>('');
-  const [warning, setWarning] = useState<boolean>(false);
   const [slippageTolerance, setSlippageTolerance] = useState<string>(SLIPPAGE_TOLERANCE_DEFAULT);
 
   if (!pool) return null;
@@ -115,25 +109,6 @@ export default function RemoveLiquidityModal() {
     || new Big(withdrawValue).gt(formattedPoolShares))
     : true;
 
-  const onChangeSlippage = (value:string) => {
-    if (!value || Number(value) <= 0) {
-      setSlippageTolerance(MIN_SLIPPAGE_TOLERANCE.toString());
-      setWarning(true);
-      return;
-    }
-    if (Number(value) < MIN_SLIPPAGE_TOLERANCE) {
-      setSlippageTolerance(value);
-      setWarning(true);
-      return;
-    }
-    if (Number(value) >= (MAX_SLIPPAGE_TOLERANCE)) {
-      setSlippageTolerance(MAX_SLIPPAGE_TOLERANCE.toString());
-      return;
-    }
-
-    setSlippageTolerance(value);
-    setWarning(false);
-  };
   return (
     <>
       {removeLiquidityModalOpenState.isOpen && (
@@ -161,23 +136,11 @@ export default function RemoveLiquidityModal() {
               withdrawValue={withdrawValue}
               setWithdrawValue={setWithdrawValue}
             />
-            <SlippageBlock>
-              <TitleAction>
-                {t('removeLiquidityModal.slippageTolerance')}
-                <Tooltip title={t('tooltipTitle.slippageTolerance')} />
-              </TitleAction>
-              <Toggle
-                value={slippageTolerance}
-                coefficient={COEFFICIENT_SLIPPAGE}
-                options={slippageToleranceOptions}
-                onChange={onChangeSlippage}
-              />
-              {warning && (
-                <Warning>
-                  {t('warningMessage.transactionMayFail')}
-                </Warning>
-              )}
-            </SlippageBlock>
+            <SlippageBlock
+              onChange={setSlippageTolerance}
+              slippageValue={slippageTolerance}
+              slippageToleranceOptions={slippageToleranceOptions}
+            />
             <TitleAction>
               {t('removeLiquidityModal.withdrawalAmount')}
             </TitleAction>

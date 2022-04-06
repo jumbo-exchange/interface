@@ -1,6 +1,7 @@
 import Big, { BigSource } from 'big.js';
 import FungibleTokenContract from 'services/FungibleToken';
 import { toArray } from 'utils';
+import { STABLE_LP_TOKEN_DECIMALS } from './constants';
 
 const BASE = 10;
 Big.RM = Big.roundDown;
@@ -141,11 +142,9 @@ export const checkInvalidAmount = (
   return Big(amount).gt(formatTokenAmount(balance, token.metadata.decimals));
 };
 
-export const minToMilliseconds = (min: number) => min * 60000;
-
 export const calcD = (amp: number, comparableAmounts: number[]) => {
   const tokenNumber = comparableAmounts.length;
-  const sumAmounts = comparableAmounts.reduce((acc, item) => acc.add(item), Big(0)).toNumber();
+  const sumAmounts = comparableAmounts.reduce((acc, item) => acc + item, 0);
   let dPrev = 0;
   let d = sumAmounts;
   for (let i = 0; i < 256; i += 1) {
@@ -249,7 +248,9 @@ export const toComparableAmount = (
     return suppliesArray.map(([tokenId, supply]) => {
       const token = tokens.find((el) => el.contractId === tokenId);
       if (!token) return 0;
-      return Big(supply).mul(Big(BASE).pow(token.metadata.decimals)).toNumber();
+      return Big(supply).mul(Big(BASE).pow(
+        STABLE_LP_TOKEN_DECIMALS - token.metadata.decimals,
+      )).toNumber();
     });
   } catch (e) {
     return null;

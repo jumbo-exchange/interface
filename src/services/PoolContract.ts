@@ -108,10 +108,12 @@ export default class PoolContract {
     {
       tokenAmounts,
       pool,
+      slippage = '0',
     }:
     {
       tokenAmounts: ILiquidityToken[],
       pool: IPool,
+      slippage: string
     },
   ) {
     const transactions: Transaction[] = [];
@@ -170,13 +172,14 @@ export default class PoolContract {
         }],
       });
     } else {
-      const depositAmounts = [tokenInAmount, tokenOutAmount].map(
+      const depositAmounts = [firstToken.amount, secondToken.amount].map(
         (amount) => Number(toNonDivisibleNumber(STABLE_LP_TOKEN_DECIMALS, amount)),
       );
       const comparableAmounts = toComparableAmount(
         pool.supplies,
         [firstToken.token, secondToken.token],
       );
+
       if (!comparableAmounts) return;
 
       const [shares] = calculateAddLiquidity(
@@ -186,8 +189,9 @@ export default class PoolContract {
         Number(pool.sharesTotalSupply),
         pool.totalFee,
       );
-      const minShares = percentLess(20, Big(shares).toFixed());
-      console.log(Big(shares).toFixed());
+
+      const minShares = percentLess(slippage, Big(shares).toFixed(0), 0);
+
       transactions.push({
         receiverId: this.contractId,
         functionCalls: [{

@@ -21,7 +21,11 @@ import SpecialWallet from 'services/wallet';
 import FungibleTokenContract from 'services/FungibleToken';
 import PoolContract from 'services/PoolContract';
 import {
-  NEAR_TOKEN_ID, SWAP_INPUT_KEY, SWAP_OUTPUT_KEY, URL_INPUT_TOKEN, URL_OUTPUT_TOKEN,
+  NEAR_TOKEN_ID,
+  SWAP_INPUT_KEY,
+  SWAP_OUTPUT_KEY,
+  URL_INPUT_TOKEN,
+  URL_OUTPUT_TOKEN,
 } from 'utils/constants';
 import FarmContract from 'services/FarmContract';
 import { IFarm, ITokenPrice, PoolType } from './interfaces';
@@ -159,7 +163,6 @@ export const StoreContextProvider = (
           .filter((pool: IPool) => pool.type === PoolType.SIMPLE_POOL
           || (pool.type === PoolType.STABLE_SWAP && pool.id === config.stablePoolId));
 
-        console.log(poolArray);
         let newPoolArray = poolArray;
 
         const farmArray = farmsResult.map((farm: any) => formatFarm(farm, poolArray, seeds));
