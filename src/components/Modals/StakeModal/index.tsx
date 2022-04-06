@@ -61,6 +61,18 @@ export default function StakeModal() {
     );
   };
 
+  const handleChange = (event: string) => {
+    const value = event.toString();
+    setStakeValue(value);
+    if (!value) return;
+    setWarning(false);
+    if (Big(value).lte(formattedMinDepositShares) && !Big(value).eq(0)) {
+      setWarning(true);
+      return;
+    }
+    setWarning(false);
+  };
+
   return (
     <>
       {stakeModalOpenState.isOpen && (
@@ -89,15 +101,7 @@ export default function StakeModal() {
             <Input
               shares={formattedPoolShares}
               stakeValue={stakeValue}
-              setStakeValue={(event) => {
-                const value = event.toString();
-                setStakeValue(value);
-                if (Big(value).lte(formattedMinDepositShares) && !Big(value).eq(0)) {
-                  setWarning(true);
-                  return;
-                }
-                setWarning(false);
-              }}
+              setStakeValue={handleChange}
             />
             {warning && (
             <Warning>
