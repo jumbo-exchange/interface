@@ -285,14 +285,12 @@ export const calcYourLiquidity = (
   const [inputToken, outputToken] = Object.values(minAmounts).map((el) => el);
 
   const inputAmount = formatTokenAmount(
-    Big(inputToken).mul(priceInputToken).toFixed(0),
+    Big(inputToken).mul(priceInputToken).toFixed(),
     tokenInput.metadata.decimals,
-    10,
   );
   const outputAmount = formatTokenAmount(
-    Big(outputToken).mul(priceOutputToken).toFixed(0),
+    Big(outputToken).mul(priceOutputToken).toFixed(),
     tokenOutput.metadata.decimals,
-    10,
   );
 
   const yourLiquidityAmount = removeTrailingZeros(formatBalance(

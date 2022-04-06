@@ -34,6 +34,7 @@ export interface IPool {
 
   totalLiquidity: string;
   dayVolume: string;
+  apy: string;
 }
 
 export interface ITokenMetadata {
