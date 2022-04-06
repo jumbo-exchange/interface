@@ -94,7 +94,13 @@ export default function PoolCard(
             {pool.farms && status !== FarmStatusEnum.Ended && (
             <FarmBlock
               type={status}
-              onClick={() => setCurrentFilterPools(FilterPoolsEnum.Farming)}
+              onClick={() => {
+                document.querySelector('body')?.scrollTo({
+                  top: 0,
+                  behavior: 'smooth',
+                });
+                setCurrentFilterPools(FilterPoolsEnum.Farming);
+              }}
             >
               Farming {FarmStatusLocalesInPool[status].toLowerCase()}
               <LogoArrowContainer type={status}>
