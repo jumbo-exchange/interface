@@ -44,6 +44,7 @@
     "totalLiquidity": "Total Liquidity",
     "dayVolume": "24h Volume",
     "APY": "APY",
+    "yourLiquidity": "Your Liquidity",
 
     "search": "Search",
     "sortBy": "Sort by",
@@ -120,7 +121,8 @@
     "transactionMayFail": "Your transaction may be frontrun",
     "zeroFee": "Total Fee cannot be zero",
     "badPriceImpact": "Price impact is TOO HIGH.",
-    "badPriceImpactDesc": "DON'T SWAP unless you know what you are doing"
+    "badPriceImpactDesc": "DON'T SWAP unless you know what you are doing",
+    "stakeMinDeposit": "Your deposit must be greater than 0.00001"
   },
 
   "tooltipTitle": {
@@ -134,7 +136,8 @@
     "totalLiquidity": "Amount of liquidity currently available in the given pool",
     "dayVolume": "Daily volume of trading activity",
     "APY": "Annual Percentage Yield",
-  
+    "yourLiquidity": "Shows how much dollar liquidity you have in this pool",
+
     "totalFee": "A sum paid for creating a pool",
     "lPFee": "A sum paid for providing liquidity",
     "protocolFee": "A sum deducted from pool creation that accrues on platform",

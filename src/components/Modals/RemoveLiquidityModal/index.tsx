@@ -8,7 +8,6 @@ import RenderButton from 'components/Button/RenderButton';
 import {
   slippageToleranceOptions,
   SLIPPAGE_TOLERANCE_DEFAULT,
-  LP_TOKEN_DECIMALS,
 } from 'utils/constants';
 import { useModalsStore, useStore, CurrentButton } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
@@ -68,7 +67,7 @@ export default function RemoveLiquidityModal() {
   }>((acc, [tokenId, totalSupply]) => {
     acc[tokenId] = percentLess(slippageTolerance, calculateFairShare(
       totalSupply,
-      withdrawValue ? toNonDivisibleNumber(LP_TOKEN_DECIMALS, withdrawValue) : '0',
+      withdrawValue ? toNonDivisibleNumber(pool.lpTokenDecimals, withdrawValue) : '0',
       checkTotalSupply,
     ), 0);
     return acc;
@@ -78,17 +77,17 @@ export default function RemoveLiquidityModal() {
   const tokensData = [
     {
       token: tokenInput,
-      value: formatTokenAmount(inputToken, tokenInput.metadata.decimals, 5),
+      value: formatTokenAmount(inputToken, tokenInput.metadata.decimals),
     },
     {
       token: tokenOutput,
-      value: formatTokenAmount(outputToken, tokenOutput.metadata.decimals, 5),
+      value: formatTokenAmount(outputToken, tokenOutput.metadata.decimals),
     },
   ];
 
   const onSubmit = () => {
     const withdrawValueBN = new Big(withdrawValue);
-    const shareBN = new Big(formatTokenAmount(pool?.shares ?? '', LP_TOKEN_DECIMALS));
+    const shareBN = new Big(formatTokenAmount(pool?.shares ?? '', pool.lpTokenDecimals));
     if (Number(withdrawValue) === 0) return;
     if (withdrawValueBN.gt(shareBN)) return;
 
@@ -96,12 +95,12 @@ export default function RemoveLiquidityModal() {
     if (!tokenInput || !tokenOutput || !removeLiquidityModalOpenState.pool) return;
     contract.removeLiquidity({
       pool,
-      shares: parseTokenAmount(withdrawValue, LP_TOKEN_DECIMALS),
+      shares: parseTokenAmount(withdrawValue, pool.lpTokenDecimals),
       minAmounts,
     });
   };
 
-  const formattedPoolShares = formatTokenAmount(pool?.shares ?? '0', LP_TOKEN_DECIMALS);
+  const formattedPoolShares = formatTokenAmount(pool?.shares ?? '0', pool.lpTokenDecimals);
 
   const buttonDisabled = isConnected
     && withdrawValue

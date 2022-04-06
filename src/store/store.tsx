@@ -12,8 +12,9 @@ import {
   formatFarm,
   getPoolsPath,
   onlyUniqueValues,
-  calculateTotalAmount,
   isNotNullOrUndefined,
+  calculateTotalAmountAndDayVolume,
+  calcAprAndStakedAmount,
 } from 'utils';
 
 import getConfig from 'services/config';
@@ -42,6 +43,7 @@ import {
   tryTokenByKey,
   getPrices,
   retrieveFarmsResult,
+  getDayVolumeData,
 } from './helpers';
 
 const config = getConfig();
@@ -147,11 +149,12 @@ export const StoreContextProvider = (
         const pages = Math.ceil(poolsLength / DEFAULT_PAGE_LIMIT);
         const farmsPages = Math.ceil(farmsLength / DEFAULT_PAGE_LIMIT);
 
-        const [poolsResult, farmsResult, pricesData, seeds] = await Promise.all([
+        const [poolsResult, farmsResult, pricesData, seeds, dayVolumesData] = await Promise.all([
           await retrievePoolResult(pages, poolContract),
           await retrieveFarmsResult(farmsPages, farmContract),
           await getPrices(),
           await farmContract.getSeeds(0, DEFAULT_PAGE_LIMIT),
+          await getDayVolumeData(),
         ]);
 
         const userTokens = await getUserWalletTokens();
@@ -159,7 +162,7 @@ export const StoreContextProvider = (
         const tokenAddresses = retrieveTokenAddresses(poolsResult, userTokens);
 
         const poolArray = poolsResult
-          .map((pool: any, index: number) => formatPool(pool, index))
+          .map((pool: any) => formatPool(pool))
           .filter((pool: IPool) => pool.type === PoolType.SIMPLE_POOL
           || (pool.type === PoolType.STABLE_SWAP && pool.id === config.stablePoolId));
 
@@ -240,15 +243,22 @@ export const StoreContextProvider = (
           && pricesData[config.nearAddress]
         ) {
           const pricesDataWithJumbo = retrievePricesData(pricesData, newPoolMap, metadataMap);
-          const resultedPoolsArray = calculateTotalAmount(
+          const resultedPoolsArray = calculateTotalAmountAndDayVolume(
             pricesDataWithJumbo,
             metadataMap,
             newPoolMap,
+            dayVolumesData,
+          );
+          const resultedFarmsArray = calcAprAndStakedAmount(
+            pricesDataWithJumbo,
+            metadataMap,
+            resultedPoolsArray,
+            newFarmMap,
           );
           setTokens(metadataMap);
           setPools(resultedPoolsArray);
           setPrices(pricesDataWithJumbo);
-          setFarms(newFarmMap);
+          setFarms(resultedFarmsArray);
         } else {
           setTokens(metadataMap);
           setPrices(pricesData);

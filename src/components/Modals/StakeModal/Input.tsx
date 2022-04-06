@@ -121,7 +121,7 @@ export default function Input({
 {
   shares: string,
   stakeValue: string,
-  setStakeValue: React.Dispatch<React.SetStateAction<string>>,
+  setStakeValue: (value: string) => void,
 }) {
   const { t } = useTranslation();
 

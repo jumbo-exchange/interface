@@ -15,7 +15,9 @@ import { useTranslation } from 'react-i18next';
 
 import getConfig from 'services/config';
 import Big from 'big.js';
-import { formatTokenAmount, removeTrailingZeros } from 'utils/calculations';
+import {
+  displayPriceWithComma, formatBalance, formatTokenAmount, removeTrailingZeros,
+} from 'utils/calculations';
 import FarmContract from 'services/FarmContract';
 import { wallet } from 'services/near';
 import moment from 'moment';
@@ -94,6 +96,7 @@ export default function Pool() {
   const config = getConfig();
   const location = useLocation();
   const [totalValueLocked, setTotalValueLocked] = useState('0');
+  const [totalDayVolume, setTotalDayVolume] = useState('0');
   const [poolsArray, setPoolsArray] = useState<IPool[]>([]);
   const [isShowingEndedOnly, setIsShowingEndedOnly] = useState<boolean>(false);
 
@@ -152,7 +155,11 @@ export default function Pool() {
     const newTotalValueLocked = newPools.reduce(
       (acc, item:IPool) => acc.add(item.totalLiquidity), Big(0),
     );
+    const newTotalDayVolume = newPools.reduce(
+      (acc, item:IPool) => acc.add(item.dayVolume), Big(0),
+    );
     setTotalValueLocked(newTotalValueLocked.toFixed(2));
+    setTotalDayVolume(newTotalDayVolume.toFixed());
   }, [pools, poolsArray.length, loading]);
 
   const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum.AllPools);
@@ -160,17 +167,17 @@ export default function Pool() {
   const mainInfo: IMainInfo[] = [
     {
       title: t('pool.totalValueLocked'),
-      label: Big(totalValueLocked ?? 0).lte(0) ? '-' : `$${totalValueLocked}`,
+      label: Big(totalValueLocked ?? 0).lte(0) ? '-' : `$${displayPriceWithComma(totalValueLocked)}`,
       show: true,
     },
     {
       title: t('pool.totalDayLocked'),
-      label: '-',
+      label: Big(totalDayVolume).lte(0) ? '-' : `$${displayPriceWithComma(totalDayVolume)}`,
       show: true,
     },
     {
       title: t('pool.jumboPrice'),
-      label: `$${prices[config.jumboAddress].price ?? 0}` || '-',
+      label: `$${prices[config.jumboAddress].price}` || '-',
       show: true,
     },
     {
@@ -185,12 +192,12 @@ export default function Pool() {
     const tokenContract = tokens[token];
     if (isShowing || !tokenContract) return null;
     const claimReward = formatTokenAmount(
-      value, tokenContract.metadata.decimals, 6,
+      value, tokenContract.metadata.decimals,
     );
     const tokenSymbol = tokenContract.metadata.symbol;
     return (
       <p key={tokenSymbol}>
-        {claimReward} <span>{tokenSymbol}</span>
+        {formatBalance(claimReward)} <span>{tokenSymbol}</span>
       </p>
     );
   }), [tokens, rewardList]);
@@ -219,7 +226,7 @@ export default function Pool() {
     if (!date) {
       const currentDate = moment().format();
       localStorage.setItem(localKey, currentDate);
-      return moment(currentDate).valueOf();
+      return moment(currentDate).valueOf() - UPDATE_CLAIM_REWARD_DATE;
     }
     return moment(date).valueOf();
   };
@@ -232,10 +239,10 @@ export default function Pool() {
   }, [farmContract, setUserRewards, userUnclaimedRewards]);
 
   useEffect(() => {
+    if (loading) return;
     const currentDate = moment().valueOf();
     const previousDate = tryGetLocalStorage(CLAIM_REWARD_DATE_KEY);
     if (!isConnected
-      || loading
       || !haveUserUnclaimReward
       || currentDate - previousDate < UPDATE_CLAIM_REWARD_DATE) return;
 
@@ -303,6 +310,7 @@ export default function Pool() {
       <PoolResult
         poolsArray={poolsArray}
         currentFilterPools={currentFilterPools}
+        setCurrentFilterPools={setCurrentFilterPools}
         isShowingEndedOnly={isShowingEndedOnly}
       />
     </Container>

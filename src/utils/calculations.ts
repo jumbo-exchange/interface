@@ -1,5 +1,6 @@
 import Big, { BigSource } from 'big.js';
 import FungibleTokenContract from 'services/FungibleToken';
+import { IPool, ITokenPrice } from 'store';
 import { toArray } from 'utils';
 import { STABLE_LP_TOKEN_DECIMALS } from './constants';
 
@@ -256,3 +257,50 @@ export const toComparableAmount = (
     return null;
   }
 };
+
+export const calcYourLiquidity = (
+  tokensData: {[key:string]: FungibleTokenContract},
+  pricesData: {[key: string]: ITokenPrice},
+  pool: IPool,
+) => {
+  const [tokenInputName, tokenOutputName] = pool.tokenAccountIds;
+  const tokenInput = tokensData[tokenInputName] ?? null;
+  const tokenOutput = tokensData[tokenOutputName] ?? null;
+  const priceInputToken = pricesData[tokenInputName]?.price ?? 0;
+  const priceOutputToken = pricesData[tokenOutputName]?.price ?? 0;
+
+  if (!tokenInput || !tokenOutput) return null;
+
+  const checkTotalSupply = pool?.sharesTotalSupply === '0' ? '1' : pool?.sharesTotalSupply;
+
+  const minAmounts = Object.entries(pool.supplies).reduce<{
+    [tokenId: string]: string;
+  }>((acc, [tokenId, totalSupply]) => {
+    acc[tokenId] = calculateFairShare(
+      totalSupply,
+      pool.shares || '0',
+      checkTotalSupply,
+    );
+    return acc;
+  }, {});
+  const [inputToken, outputToken] = Object.values(minAmounts).map((el) => el);
+
+  const inputAmount = formatTokenAmount(
+    Big(inputToken).mul(priceInputToken).toFixed(0),
+    tokenInput.metadata.decimals,
+    10,
+  );
+  const outputAmount = formatTokenAmount(
+    Big(outputToken).mul(priceOutputToken).toFixed(0),
+    tokenOutput.metadata.decimals,
+    10,
+  );
+
+  const yourLiquidityAmount = removeTrailingZeros(formatBalance(
+    Big(inputAmount).plus(outputAmount).toFixed(2),
+  ));
+  return yourLiquidityAmount;
+};
+
+export const displayPriceWithComma = (str: string) => str.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+export const displayPriceWithSpace = (str: string) => str.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');

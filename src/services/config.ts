@@ -10,7 +10,7 @@ export default function getConfig(
         walletUrl: 'https://wallet.testnet.near.org',
         helperUrl: 'https://helper.testnet.near.org',
         explorerUrl: 'https://explorer.testnet.near.org',
-        indexerUrl: 'https://testnet-indexer.ref-finance.com',
+        indexerUrl: 'http://localhost:3000',
         contractId: 'jumbo-exchange-v1.rkonoval.testnet',
 
         //!
@@ -19,7 +19,7 @@ export default function getConfig(
 
         nearAddress: 'wrap.testnet',
         jumboAddress: 'jumbo_exchange_v2.solniechniy.testnet',
-        jumboPoolId: 4,
+        jumboPoolId: 1,
         stablePoolId: 3, // ?
       };
     default:

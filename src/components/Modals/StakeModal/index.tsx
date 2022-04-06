@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { POOL, toAddLiquidityPage } from 'utils/routes';
 import { formatTokenAmount } from 'utils/calculations';
-import { INITIAL_INPUT_PLACEHOLDER, LP_TOKEN_DECIMALS } from 'utils/constants';
+import { INITIAL_INPUT_PLACEHOLDER, MIN_DEPOSIT_SHARES } from 'utils/constants';
 import FarmContract from 'services/FarmContract';
 import Big from 'big.js';
 
@@ -18,7 +18,7 @@ import {
 } from '../styles';
 import Input from './Input';
 import {
-  StakeModalContainer, ModalBody, GetShareBtn, TokensBlock,
+  StakeModalContainer, ModalBody, GetShareBtn, TokensBlock, Warning,
 } from './styles';
 
 export default function StakeModal() {
@@ -32,29 +32,45 @@ export default function StakeModal() {
   } = useModalsStore();
   const { pool } = stakeModalOpenState;
   const [stakeValue, setStakeValue] = useState<string>(INITIAL_INPUT_PLACEHOLDER);
+  const [warning, setWarning] = useState(false);
 
   if (!pool) return null;
 
-  const formattedPoolShares = formatTokenAmount(pool.shares ?? '0', LP_TOKEN_DECIMALS);
+  const formattedPoolShares = formatTokenAmount(pool.shares ?? '0', pool.lpTokenDecimals);
+  const formattedMinDepositShares = formatTokenAmount(MIN_DEPOSIT_SHARES, pool.lpTokenDecimals);
 
   const buttonDisabled = stakeValue
-    ? (new Big(stakeValue).lte(0)
-  || new Big(stakeValue).gt(formattedPoolShares))
+    ? (
+      new Big(stakeValue).lte(0)
+      || new Big(stakeValue).gt(formattedPoolShares)
+      || new Big(stakeValue).lte(formattedMinDepositShares)
+    )
     : true;
 
   const onSubmit = () => {
     const stakeValueBN = new Big(stakeValue);
-    const shareBN = new Big(formatTokenAmount(pool.shares ?? '', LP_TOKEN_DECIMALS));
     if (Big(stakeValue).eq(0)) return;
-    if (stakeValueBN.gt(shareBN)) return;
+    if (stakeValueBN.gt(formattedPoolShares)) return;
 
     const contract = new FarmContract();
     if (!stakeModalOpenState.pool) return;
     contract.stake(
       pool.lpTokenId,
       stakeValue,
-      pool.id,
+      pool,
     );
+  };
+
+  const handleChange = (event: string) => {
+    const value = event.toString();
+    setStakeValue(value);
+    if (!value) return;
+    setWarning(false);
+    if (Big(value).lte(formattedMinDepositShares) && !Big(value).eq(0)) {
+      setWarning(true);
+      return;
+    }
+    setWarning(false);
   };
 
   return (
@@ -85,8 +101,13 @@ export default function StakeModal() {
             <Input
               shares={formattedPoolShares}
               stakeValue={stakeValue}
-              setStakeValue={setStakeValue}
+              setStakeValue={handleChange}
             />
+            {warning && (
+            <Warning>
+              {t('warningMessage.stakeMinDeposit')}
+            </Warning>
+            )}
             <RenderButton
               typeButton={CurrentButton.Stake}
               onSubmit={onSubmit}

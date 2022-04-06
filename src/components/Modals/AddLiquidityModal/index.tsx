@@ -75,9 +75,6 @@ export default function AddLiquidityModal() {
   if (!tokenInput || !tokenOutput) return null;
 
   const [inputTokenSupplies, outputTokenSupplies] = Object.values(pool.supplies);
-  const lpTokenDecimals = pool.type === PoolType.STABLE_SWAP
-    ? STABLE_LP_TOKEN_DECIMALS : LP_TOKEN_DECIMALS;
-
   const handleInputChange = (value: string) => {
     if (Object.values(pool.supplies).every((s) => s === '0')) {
       setInputTokenValue(value);
@@ -100,7 +97,7 @@ export default function AddLiquidityModal() {
       }
       setInputTokenValue(value);
       setOutputTokenValue(outputValue);
-      setPreShare(formatTokenAmount(fairShares, lpTokenDecimals));
+      setPreShare(formatTokenAmount(fairShares, pool.lpTokenDecimals));
     }
   };
 
@@ -126,7 +123,7 @@ export default function AddLiquidityModal() {
       }
       setOutputTokenValue(value);
       setInputTokenValue(inputValue);
-      setPreShare(formatTokenAmount(fairShares, lpTokenDecimals));
+      setPreShare(formatTokenAmount(fairShares, pool.lpTokenDecimals));
     }
   };
 

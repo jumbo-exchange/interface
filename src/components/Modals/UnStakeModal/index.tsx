@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { POOL } from 'utils/routes';
 import { formatTokenAmount } from 'utils/calculations';
 import Big from 'big.js';
-import { INITIAL_INPUT_PLACEHOLDER, LP_TOKEN_DECIMALS } from 'utils/constants';
+import { INITIAL_INPUT_PLACEHOLDER } from 'utils/constants';
 import TokenPairDisplay from 'components/TokensDisplay/TokenPairDisplay';
 import {
   Layout, ModalBlock, ModalIcon, ModalTitle,
@@ -40,7 +40,7 @@ export default function UnStakeModal() {
   if (!farmsInPool) return null;
 
   const { userStaked, seedId } = farmsInPool;
-  const formattedFarmShares = formatTokenAmount(userStaked ?? '0', LP_TOKEN_DECIMALS);
+  const formattedFarmShares = formatTokenAmount(userStaked ?? '0', pool.lpTokenDecimals);
 
   const buttonDisabled = unStakeValue
     ? (new Big(unStakeValue).lte(0)
@@ -48,15 +48,15 @@ export default function UnStakeModal() {
     : true;
 
   const onSubmit = () => {
-    const stakeValueBN = new Big(unStakeValue);
+    const unstakeValueBN = new Big(unStakeValue);
     if (Big(unStakeValue).eq(0)) return;
-    if (stakeValueBN.gt(formattedFarmShares)) return;
+    if (unstakeValueBN.gt(formattedFarmShares)) return;
 
     if (!unStakeModalOpenState.pool) return;
     contract.unstake(
       seedId,
       unStakeValue,
-      pool.id,
+      pool,
     );
   };
 

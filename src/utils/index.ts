@@ -3,12 +3,17 @@ import { farmStatus, getFarmStatus } from 'components/FarmStatus';
 import getConfig from 'services/config';
 import FungibleTokenContract from 'services/FungibleToken';
 import {
-  IFarm, IPool, ITokenPrice, PoolType,
+  IFarm, IPool, ITokenPrice, PoolType, IDayVolume,
 } from 'store';
 import { formatTokenAmount, removeTrailingZeros } from './calculations';
-import { LP_TOKEN_DECIMALS, SWAP_INPUT_KEY, SWAP_OUTPUT_KEY } from './constants';
+import {
+  LP_TOKEN_DECIMALS, STABLE_LP_TOKEN_DECIMALS, SWAP_INPUT_KEY, SWAP_OUTPUT_KEY,
+} from './constants';
 
 const ACCOUNT_TRIM_LENGTH = 10;
+
+Big.RM = Big.roundDown;
+Big.DP = 30;
 
 export const trimAccountId = (accountId: string) => {
   if (accountId.length > 20) {
@@ -25,10 +30,15 @@ export function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
-export function formatPool(pool: any, id: number): IPool {
+export function formatPool(pool: any): IPool {
+  const CURRENT_LP_TOKEN_DECIMALS = pool.pool_kind === PoolType.SIMPLE_POOL
+    ? LP_TOKEN_DECIMALS
+    : STABLE_LP_TOKEN_DECIMALS;
+
   return {
-    id,
-    lpTokenId: `:${id}`,
+    id: pool.id,
+    lpTokenId: `:${pool.id}`,
+    lpTokenDecimals: CURRENT_LP_TOKEN_DECIMALS,
     type: pool.pool_kind === PoolType.STABLE_SWAP ? PoolType.STABLE_SWAP : PoolType.SIMPLE_POOL,
     tokenAccountIds: pool.token_account_ids,
     amounts: pool.amounts,
@@ -44,6 +54,7 @@ export function formatPool(pool: any, id: number): IPool {
     amp: pool.amp,
     totalLiquidity: '0',
     farms: null,
+    dayVolume: '0',
   };
 }
 
@@ -122,10 +133,11 @@ export const calculatePriceForToken = (
     .mul(price).div(secondAmount).toFixed(2);
 };
 
-export const calculateTotalAmount = (
+export const calculateTotalAmountAndDayVolume = (
   pricesData: {[key: string]: ITokenPrice},
   metadataMap: {[key: string]: FungibleTokenContract},
-  newPoolMap: {[key:string]: IPool},
+  newPoolMap: {[key: string]: IPool},
+  dayVolumesData: {[key: string]: IDayVolume},
 ):{[key:string]: IPool} => {
   const calculatedPools = toArray(newPoolMap).map((pool: IPool) => {
     const config = getConfig();
@@ -160,9 +172,36 @@ export const calculateTotalAmount = (
       const secondLiquidity = new Big(secondAmount).mul(secondPrice);
       const totalLiquidityAmount = new Big(firstLiquidity).add(secondLiquidity);
       const totalLiquidityValue = removeTrailingZeros(totalLiquidityAmount.toFixed(2));
-      return { ...pool, totalLiquidity: totalLiquidityValue };
+
+      const dayVolumeData = dayVolumesData[pool.id] || null;
+      if (!dayVolumeData) return { ...pool, totalLiquidity: totalLiquidityValue };
+
+      const tokenFirst = pricesData[dayVolumeData.tokenFirst]?.price ?? 0;
+      const tokenSecond = pricesData[dayVolumeData.tokenSecond]?.price ?? 0;
+      const tokenFirstDecimals = metadataMap[dayVolumeData.tokenFirst]?.metadata.decimals;
+      const tokenSecondDecimals = metadataMap[dayVolumeData.tokenSecond]?.metadata.decimals;
+      const tokenFirstAmount = formatTokenAmount(
+        dayVolumeData.volume24hFirst, tokenFirstDecimals,
+      );
+      const tokenSecondAmount = formatTokenAmount(
+        dayVolumeData.volume24hSecond, tokenSecondDecimals,
+      );
+
+      const firstDayVolume = new Big(tokenFirst).mul(tokenFirstAmount);
+      const secondDayVolume = new Big(tokenSecond).mul(tokenSecondAmount);
+      const totalDayVolumeAmount = firstDayVolume.add(secondDayVolume);
+      const totalDayVolumeValue = removeTrailingZeros(totalDayVolumeAmount.toFixed(2));
+      return {
+        ...pool,
+        totalLiquidity: totalLiquidityValue,
+        dayVolume: totalDayVolumeValue,
+      };
     }
-    return { ...pool, totalLiquidity: 0 };
+    return {
+      ...pool,
+      totalLiquidity: 0,
+      dayVolume: 0,
+    };
   });
 
   return toMap(calculatedPools);
@@ -201,6 +240,7 @@ export function formatFarm(
 
     poolId: pool.id,
     totalSeedAmount,
+    apy: '0',
   };
 }
 
@@ -223,10 +263,64 @@ export const saveSwapTokens = (
 export const calcStakedAmount = (shares: string, pool: IPool) => {
   const { sharesTotalSupply, totalLiquidity } = pool;
   if (Big(sharesTotalSupply).lte('0') || Big(shares).lte('0')) return null;
-  const formatTotalShares = formatTokenAmount(sharesTotalSupply, LP_TOKEN_DECIMALS);
-  const formatShares = formatTokenAmount(shares, LP_TOKEN_DECIMALS);
+  const formatTotalShares = formatTokenAmount(sharesTotalSupply, pool.lpTokenDecimals);
+  const formatShares = formatTokenAmount(shares, pool.lpTokenDecimals);
 
   const numerator = Big(formatShares).times(totalLiquidity);
   const sharesInUsdt = Big(numerator).div(formatTotalShares).toFixed(2);
   return removeTrailingZeros(sharesInUsdt);
+};
+
+export const getTotalApr = (farms: IFarm[]) => {
+  let apy = new Big('0');
+  if (farms.length > 1) {
+    farms.forEach((item) => {
+      apy = Big(item.apy).add(apy);
+    });
+  } else {
+    apy = Big(farms[0].apy);
+  }
+  return apy.toFixed(2);
+};
+
+export const calcAprAndStakedAmount = (
+  pricesData: {[key: string]: ITokenPrice},
+  metadataMap: {[key: string]: FungibleTokenContract},
+  resultedPoolsArray: {[key:string]: IPool},
+  newFarmMap: {[key:string]: IFarm},
+) => {
+  const calculatedFarms = toArray(newFarmMap).map((farm: IFarm) => {
+    const pool = toArray(resultedPoolsArray)
+      .find((item: IPool) => item.id === farm.poolId);
+
+    const rewardToken = metadataMap[farm.rewardTokenId] || null;
+    const rewardTokenPrice = pricesData[farm.rewardTokenId]?.price || '0';
+    const totalStaked = calcStakedAmount(farm.totalSeedAmount, pool);
+    const yourStaked = calcStakedAmount(farm.userStaked || '0', pool);
+    if (totalStaked && Big(totalStaked).gt(0)) {
+      const rewardNumberPerWeek = Big(farm.rewardPerSession)
+        .div(farm.sessionInterval)
+        .mul(604800).toFixed(0);
+
+      const rewardsPerWeek = formatTokenAmount(rewardNumberPerWeek, rewardToken.metadata.decimals);
+      const firstMultiplier = Big(1).div(totalStaked);
+      const secondMultiplier = Big(rewardsPerWeek).mul(rewardTokenPrice);
+      const mulFirstAndSecond = firstMultiplier.mul(secondMultiplier);
+      const farmAPY = mulFirstAndSecond.mul(52).mul(100).toFixed(2);
+      return {
+        ...farm,
+        totalStaked,
+        yourStaked,
+        apy: farmAPY,
+      };
+    }
+    return {
+      ...farm,
+      totalStaked,
+      yourStaked,
+      apy: '0',
+    };
+  });
+
+  return toMap(calculatedFarms);
 };

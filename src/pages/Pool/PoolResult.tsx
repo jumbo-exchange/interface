@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import { IPool, useStore } from 'store';
 import { FilterPoolsEnum } from 'pages/Pool';
 import styled from 'styled-components';
@@ -46,10 +46,12 @@ export default function PoolResult(
   {
     poolsArray,
     currentFilterPools,
+    setCurrentFilterPools,
     isShowingEndedOnly,
   }:{
     poolsArray: IPool[],
-    currentFilterPools:FilterPoolsEnum,
+    currentFilterPools: FilterPoolsEnum,
+    setCurrentFilterPools: Dispatch<SetStateAction<FilterPoolsEnum>>,
     isShowingEndedOnly:boolean,
   },
 ) {
@@ -81,6 +83,8 @@ export default function PoolResult(
           <PoolCard
             key={pool.id}
             pool={pool}
+            currentFilterPools={currentFilterPools}
+            setCurrentFilterPools={setCurrentFilterPools}
           />
         ))}
         {filteredPools.length === 0
@@ -149,6 +153,8 @@ export default function PoolResult(
         <PoolCard
           key={pool.id}
           pool={pool}
+          currentFilterPools={currentFilterPools}
+          setCurrentFilterPools={setCurrentFilterPools}
         />
       ))}
       {poolsArraySorted.length === 0

@@ -123,7 +123,12 @@ const getTransaction = (transactions: any, method: { [key: string]: string }) =>
         transaction: swapTransaction,
       };
     }
+    return {
+      type,
+      transaction,
+    };
   }
+
   switch (transaction.transaction.actions[0][PROPERTY_NAME].method_name) {
     case method.createPoolMethod: {
       type = TransactionType.CreatePool;
@@ -156,6 +161,13 @@ export function analyzeTransactions(
   transactions: any,
 ): {type: TransactionType, status: StatusType, hash: string } {
   const { type, transaction } = getTransaction(transactions, methodName);
+  if (!transaction || type === TransactionType.None) {
+    return {
+      type,
+      status: StatusType.None,
+      hash: '',
+    };
+  }
   const { hash, status } = detailsTransaction(transaction, type);
   return {
     type,
