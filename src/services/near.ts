@@ -1,12 +1,9 @@
-import {
-  Near, keyStores, utils,
-} from 'near-api-js';
-import SpecialWallet, { Transaction } from 'services/wallet';
+import { Near, keyStores, utils } from 'near-api-js';
+import SpecialWallet from 'services/wallet';
 import BN from 'bn.js';
-
 import { functionCall } from 'near-api-js/lib/transaction';
-
 import getConfig from './config';
+import { Transaction } from './interfaces';
 
 const config = getConfig();
 const CONTRACT_ID = config.contractId;

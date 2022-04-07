@@ -301,3 +301,5 @@ export const calcYourLiquidity = (
 
 export const displayPriceWithComma = (str: string) => str.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 export const displayPriceWithSpace = (str: string) => str.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+export const secondsToMilliseconds = (date: number): number => date * 1000;

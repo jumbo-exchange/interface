@@ -19,9 +19,11 @@ const Container = styled.div<{isAllPools: boolean}>`
   width: 100%;
   margin: 1.5rem 0;
   justify-content: ${({ isAllPools }) => (isAllPools ? 'space-between' : 'flex-start')};
-  & > div:not(:first-child), & > button {
-    margin-left: ${({ isAllPools }) => (isAllPools ? ' 0' : '1.5rem')};
-  }
+  & > div:not(:first-child){
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+  };
 `;
 
 const SearchInputBlock = styled.div`

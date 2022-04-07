@@ -10,6 +10,7 @@ import { PoolOrFarmButtons } from 'components/Button/RenderButton';
 import { ReactComponent as Arrow } from 'assets/images-app/route-arrow.svg';
 import { FarmStatusEnum, FarmStatusLocalesInPool, getAvailableTimestamp } from 'components/FarmStatus';
 import { calcYourLiquidity, displayPriceWithSpace } from 'utils/calculations';
+import { FilterPoolsEnum } from 'pages/Pool';
 import {
   Wrapper,
   UpperRow,
@@ -23,7 +24,6 @@ import {
   LabelVolume,
   BlockButton,
 } from './styles';
-import { FilterPoolsEnum } from '..';
 
 interface IVolume {
   title: string;

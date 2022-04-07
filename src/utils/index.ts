@@ -7,7 +7,13 @@ import {
 } from 'store';
 import { formatTokenAmount, removeTrailingZeros } from './calculations';
 import {
-  LP_TOKEN_DECIMALS, STABLE_LP_TOKEN_DECIMALS, SWAP_INPUT_KEY, SWAP_OUTPUT_KEY,
+  DAYS_A_YEAR,
+  LP_TOKEN_DECIMALS,
+  SECONDS_IN_A_DAY,
+  STABLE_LP_TOKEN_DECIMALS,
+  SWAP_INPUT_KEY,
+  SWAP_OUTPUT_KEY,
+  ONE_HUNDRED,
 } from './constants';
 
 const ACCOUNT_TRIM_LENGTH = 10;
@@ -308,13 +314,13 @@ export const calcAprAndStakedAmount = (
     if (totalStaked && Big(totalStaked).gt(0)) {
       const rewardNumberPerDay = Big(farm.rewardPerSession)
         .div(farm.sessionInterval)
-        .mul(86400).toFixed();
+        .mul(SECONDS_IN_A_DAY).toFixed();
 
       const rewardsPerDay = formatTokenAmount(rewardNumberPerDay, rewardToken.metadata.decimals);
       const firstMultiplier = Big(1).div(totalStaked);
       const secondMultiplier = Big(rewardsPerDay).mul(rewardTokenPrice);
       const mulFirstAndSecond = firstMultiplier.mul(secondMultiplier);
-      const farmAPY = mulFirstAndSecond.mul(365).mul(100).toFixed();
+      const farmAPY = mulFirstAndSecond.mul(DAYS_A_YEAR).mul(ONE_HUNDRED).toFixed();
       return {
         ...farm,
         totalStaked,

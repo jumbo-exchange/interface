@@ -2,7 +2,7 @@ import Big from 'big.js';
 import { IPool, PoolType } from 'store';
 import { formatTokenAmount, percent, scientificNotationToString } from 'utils/calculations';
 import FungibleTokenContract from './FungibleToken';
-import { SWAP_ENUM } from './SwapContract';
+import { SWAP_ENUM } from './interfaces';
 
 export const calculateMarketPrice = (
   pool: IPool,
