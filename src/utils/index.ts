@@ -142,7 +142,7 @@ export const calculatePriceForToken = (
 
 export const calcPoolApy = (pool: IPool, dayVolume: string, totalLiquidity: string): string => {
   const firstMultiplier = Big(1).div(totalLiquidity);
-  const secondMultiplier = Big(pool.totalFee).mul(dayVolume);
+  const secondMultiplier = Big(pool.totalFee).mul(dayVolume).div(10);
   const mulFirstAndSecond = firstMultiplier.mul(secondMultiplier);
   const poolAPY = mulFirstAndSecond.mul(365);
   return poolAPY.toFixed();
@@ -285,7 +285,7 @@ export const calcStakedAmount = (shares: string, pool: IPool) => {
   return removeTrailingZeros(sharesInUsdt);
 };
 
-export const getTotalApr = (farms: IFarm[]) => {
+export const getTotalApy = (farms: IFarm[]) => {
   let apy = new Big('0');
   if (farms.length > 1) {
     farms.forEach((item) => {
@@ -294,7 +294,14 @@ export const getTotalApr = (farms: IFarm[]) => {
   } else {
     apy = Big(farms[0].apy);
   }
-  return apy.toFixed(0);
+  return apy.toFixed();
+};
+
+export const displayAPY = (apy: string) => {
+  const apyBig = new Big(apy);
+  if (apyBig.eq('0')) return '-';
+  if (apyBig.lte('0.01')) return '>0.01%';
+  return `${removeTrailingZeros(apyBig.toFixed(2))}%`;
 };
 
 export const calcAprAndStakedAmount = (
@@ -304,7 +311,7 @@ export const calcAprAndStakedAmount = (
   newFarmMap: {[key:string]: IFarm},
 ) => {
   const calculatedFarms = toArray(newFarmMap).map((farm: IFarm) => {
-    const pool = toArray(resultedPoolsArray)
+    const pool: IPool = toArray(resultedPoolsArray)
       .find((item: IPool) => item.id === farm.poolId);
 
     const rewardToken = metadataMap[farm.rewardTokenId] || null;

@@ -10,7 +10,7 @@ import RewardTokens from 'components/TokensDisplay/RewardTokens';
 import { PoolOrFarmButtons } from 'components/Button/RenderButton';
 import moment from 'moment';
 import { FarmStatusLocales, getAvailableTimestamp } from 'components/FarmStatus';
-import { getTotalApr } from 'utils';
+import { displayAPY, getTotalApy } from 'utils';
 import { displayPriceWithSpace } from 'utils/calculations';
 import {
   FarmWrapper,
@@ -44,7 +44,8 @@ export default function FarmCard({ pool } : { pool: IPool }) {
 
   const farmsInPool = !pool.farms?.length ? [] : pool.farms.map((el) => farms[el]);
   const { totalStaked, yourStaked } = farmsInPool[0];
-  const totalAPY = getTotalApr(farmsInPool);
+  const totalAPY = getTotalApy(farmsInPool);
+  const sumAPY = Big(pool.apy).add(totalAPY).toFixed();
 
   const volume: IVolume[] = [
     {
@@ -63,7 +64,7 @@ export default function FarmCard({ pool } : { pool: IPool }) {
     },
     {
       title: t('farm.APY'),
-      label: Big(totalAPY).gt(0) ? `${totalAPY}%` : '-',
+      label: displayAPY(sumAPY),
       color: true,
       tooltip: t('tooltipTitle.APY'),
     },
