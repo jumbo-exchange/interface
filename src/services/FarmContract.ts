@@ -1,17 +1,17 @@
 import Big from 'big.js';
-
 import {
   ACCOUNT_MIN_STORAGE_AMOUNT,
-  FT_GAS,
-  ONE_YOCTO_NEAR,
+  FT_GAS, ONE_YOCTO_NEAR,
+  STORAGE_TO_REGISTER_MFT,
+  MIN_DEPOSIT_PER_TOKEN_FARM,
 } from 'utils/constants';
 import { parseTokenAmount } from 'utils/calculations';
-import { BN } from 'bn.js';
 import { IPool } from 'store';
 import sendTransactions, { wallet } from './near';
-import { createContract, Transaction } from './wallet';
+import { createContract } from './wallet';
 import getConfig from './config';
 import FungibleTokenContract from './FungibleToken';
+import { FarmContractMethod, Transaction } from './interfaces';
 
 const basicViewMethods = [
   'get_number_of_farms',
@@ -39,13 +39,6 @@ const config = getConfig();
 
 const EXCHANGE_CONTRACT_ID = config.contractId;
 const FARM_CONTRACT_ID = config.farmContractId;
-
-const STORAGE_TO_REGISTER_MFT = '0.045';
-const MIN_DEPOSIT_PER_TOKEN_FARM = new Big('45000000000000000000000');
-
-export interface IPoolVolumes {
-  [tokenId: string]: { input: string; output: string };
-}
 
 export default class FarmContract {
   contract = createContract(
@@ -119,7 +112,7 @@ export default class FarmContract {
       transactions.push({
         receiverId: this.contractId,
         functionCalls: [{
-          methodName: 'storage_deposit',
+          methodName: FarmContractMethod.storageDeposit,
           args: {
             registration_only: false,
             account_id: accountId,
@@ -143,7 +136,7 @@ export default class FarmContract {
     transactions.push({
       receiverId: EXCHANGE_CONTRACT_ID,
       functionCalls: [{
-        methodName: 'mft_transfer_call',
+        methodName: FarmContractMethod.mftTransferCall,
         args: {
           receiver_id: this.contractId,
           token_id: tokenId,
@@ -169,7 +162,7 @@ export default class FarmContract {
     transactions.push({
       receiverId: this.contractId,
       functionCalls: [{
-        methodName: 'withdraw_seed',
+        methodName: FarmContractMethod.withdrawSeed,
         args: {
           seed_id: seedId,
           amount: parseTokenAmount(amount, pool.lpTokenDecimals),
@@ -188,10 +181,8 @@ export default class FarmContract {
         .account()
         .functionCall({
           contractId: this.contractId,
-          methodName: 'claim_reward_by_seed',
+          methodName: FarmContractMethod.claimRewardBySeed,
           args: { seed_id: seedId },
-          attachedDeposit: new BN('0'),
-          gas: new BN('100000000000000'),
         });
     });
   }
@@ -205,7 +196,9 @@ export default class FarmContract {
     let transactions: Transaction[] = [];
 
     const storageDeposits = await Promise.all(
-      rewardList.map((reward) => reward.token.checkSwapStorageBalance(wallet.getAccountId())),
+      rewardList.map((reward) => reward.token.checkSwapStorageBalance({
+        accountId: wallet.getAccountId(),
+      })),
     );
     if (storageDeposits.length) transactions = transactions.concat(...storageDeposits);
 
@@ -213,7 +206,7 @@ export default class FarmContract {
       transactions.push({
         receiverId: this.contractId,
         functionCalls: [{
-          methodName: 'withdraw_reward',
+          methodName: FarmContractMethod.withdrawReward,
           args: {
             token_id: farmReward.token.contractId,
             amount: farmReward.value,

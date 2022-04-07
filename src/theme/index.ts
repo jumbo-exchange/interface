@@ -79,6 +79,7 @@ export interface ThemeColors {
   statusPendingOp01: string;
   statusEnded: string;
   statusFarmInPoolBg: string;
+  menuBg: string;
 }
 
 export const colors: ThemeColors = {
@@ -141,6 +142,7 @@ export const colors: ThemeColors = {
   statusPendingOp01: '#31302D',
   statusEnded: '#8991A3',
   statusFarmInPoolBg: '#1C212C',
+  menuBg: '#2A303C',
 };
 
 function theme(): DefaultTheme {

@@ -26,7 +26,7 @@ import {
 import { wallet } from 'services/near';
 import { POOL } from 'utils/routes';
 import SlippageBlock from 'components/SlippageBlock';
-import Input from './Input';
+import InputSharesContainer from 'components/CurrencyInputPanel/InputSharesContainer';
 import {
   Layout, ModalBlock, ModalIcon, ModalTitle,
 } from '../styles';
@@ -49,7 +49,7 @@ export default function RemoveLiquidityModal() {
 
   const navigate = useNavigate();
   const { removeLiquidityModalOpenState, setRemoveLiquidityModalOpenState } = useModalsStore();
-  const { pool } = removeLiquidityModalOpenState;
+  const { pool, isOpen } = removeLiquidityModalOpenState;
 
   const [withdrawValue, setWithdrawValue] = useState<string>('');
   const [slippageTolerance, setSlippageTolerance] = useState<string>(SLIPPAGE_TOLERANCE_DEFAULT);
@@ -86,13 +86,15 @@ export default function RemoveLiquidityModal() {
   ];
 
   const onSubmit = () => {
-    const withdrawValueBN = new Big(withdrawValue);
     const shareBN = new Big(formatTokenAmount(pool?.shares ?? '', pool.lpTokenDecimals));
-    if (Number(withdrawValue) === 0) return;
-    if (withdrawValueBN.gt(shareBN)) return;
+    if (
+      Big(withdrawValue).eq(0)
+      || Big(withdrawValue).gt(shareBN)
+      || !pool
+    ) return;
 
     const contract = new PoolContract();
-    if (!tokenInput || !tokenOutput || !removeLiquidityModalOpenState.pool) return;
+    if (!tokenInput || !tokenOutput || !pool) return;
     contract.removeLiquidity({
       pool,
       shares: parseTokenAmount(withdrawValue, pool.lpTokenDecimals),
@@ -110,7 +112,7 @@ export default function RemoveLiquidityModal() {
 
   return (
     <>
-      {removeLiquidityModalOpenState.isOpen && (
+      {isOpen && (
       <Layout onClick={() => {
         navigate(POOL);
         setRemoveLiquidityModalOpenState({ isOpen: false, pool: null });
@@ -130,10 +132,10 @@ export default function RemoveLiquidityModal() {
             </ModalIcon>
           </ModalBlock>
           <ModalBody>
-            <Input
+            <InputSharesContainer
               shares={formattedPoolShares}
-              withdrawValue={withdrawValue}
-              setWithdrawValue={setWithdrawValue}
+              value={withdrawValue}
+              setValue={setWithdrawValue}
             />
             <SlippageBlock
               onChange={setSlippageTolerance}

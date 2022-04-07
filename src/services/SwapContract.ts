@@ -5,10 +5,10 @@ import { percentLess } from 'utils/calculations';
 import Big from 'big.js';
 import FungibleTokenContract from './FungibleToken';
 import sendTransactions, { wallet } from './near';
-import { createContract, Transaction } from './wallet';
+import { createContract } from './wallet';
 import getConfig from './config';
+import { SwapContractMethod, SWAP_ENUM, Transaction } from './interfaces';
 
-export enum SWAP_ENUM { DIRECT_SWAP = 1, INDIRECT_SWAP = 2 }
 const basicViewMethods = ['get_return'];
 const basicChangeMethods = ['swap'];
 const config = getConfig();
@@ -90,7 +90,7 @@ export default class SwapContract {
 
       if (
         firstPool.tokenAccountIds.includes(tokenOut.contractId)
-       && secondPool.tokenAccountIds.includes(tokenIn.contractId)
+        && secondPool.tokenAccountIds.includes(tokenIn.contractId)
       ) {
         // Swap tokens in case calculations should be done for output token direction
         [secondPool, firstPool] = pools;
@@ -218,7 +218,7 @@ export default class SwapContract {
       transactions.push({
         receiverId: inputToken.contractId,
         functionCalls: [{
-          methodName: 'ft_transfer_call',
+          methodName: SwapContractMethod.ftTransferCall,
           args: {
             receiver_id: CONTRACT_ID,
             msg: JSON.stringify({

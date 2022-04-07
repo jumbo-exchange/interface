@@ -2,12 +2,12 @@ import moment from 'moment';
 import { IFarm } from 'store';
 import i18n from 'i18n';
 import Big from 'big.js';
+import { secondsToMilliseconds } from 'utils/calculations';
 
-export const enum farmStatus {
+export enum farmStatus {
   created = 'Created',
   running = 'Running',
   ended = 'Ended',
-  cleared = 'Cleared',
 }
 
 export enum FarmStatusEnum {
@@ -15,8 +15,6 @@ export enum FarmStatusEnum {
   'Pending',
   'Ended'
 }
-
-export const secondsToMilliseconds = (date: number): number => date * 1000;
 
 export const getFarmStatus = (
   status: string,
@@ -59,26 +57,24 @@ export const getAvailableTimestamp = (farms: IFarm[]): IGetAvailableTimestamp =>
   const currentDate = moment().valueOf();
 
   if (farms.length !== 0) {
-    farms.map((farm) => {
-      if (farm.startAt === 0) return null;
-
-      farmStarts.push(farm.startAt);
-      farmEnds.push(
-        Big(farm.rewardPerSession).gt(0)
-          ? moment(farm.startAt).valueOf()
+    farms.forEach((farm) => {
+      if (farm.startAt !== 0) {
+        farmStarts.push(farm.startAt);
+        farmEnds.push(
+          Big(farm.rewardPerSession).gt(0)
+            ? moment(farm.startAt).valueOf()
           + (farm.sessionInterval * Number(farm.totalReward))
           / Number(farm.rewardPerSession)
-          : 0,
-      );
+            : 0,
+        );
 
-      if (
-        secondsToMilliseconds(farm.startAt) > currentDate
+        if (
+          secondsToMilliseconds(farm.startAt) > currentDate
         && farm.status === FarmStatusEnum.Pending
-      ) {
-        timeToStarts.push(farm.startAt);
-        return null;
+        ) {
+          timeToStarts.push(farm.startAt);
+        }
       }
-      return null;
     });
   }
 

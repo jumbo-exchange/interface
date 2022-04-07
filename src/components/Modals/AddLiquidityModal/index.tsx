@@ -56,7 +56,7 @@ export default function AddLiquidityModal() {
   );
 
   const { addLiquidityModalOpenState, setAddLiquidityModalOpenState } = useModalsStore();
-  const { pool } = addLiquidityModalOpenState;
+  const { pool, isOpen } = addLiquidityModalOpenState;
 
   useEffect(() => {
     if (inputTokenValue !== INITIAL_INPUT_PLACEHOLDER
@@ -152,7 +152,7 @@ export default function AddLiquidityModal() {
 
   return (
     <>
-      {addLiquidityModalOpenState.isOpen && (
+      {isOpen && (
       <Layout onClick={() => {
         navigate(POOL);
         setAddLiquidityModalOpenState({ isOpen: false, pool: null });

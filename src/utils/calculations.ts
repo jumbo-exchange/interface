@@ -286,14 +286,12 @@ export const calcYourLiquidity = (
   const [inputToken, outputToken] = Object.values(minAmounts).map((el) => el);
 
   const inputAmount = formatTokenAmount(
-    Big(inputToken).mul(priceInputToken).toFixed(0),
+    Big(inputToken).mul(priceInputToken).toFixed(),
     tokenInput.metadata.decimals,
-    10,
   );
   const outputAmount = formatTokenAmount(
-    Big(outputToken).mul(priceOutputToken).toFixed(0),
+    Big(outputToken).mul(priceOutputToken).toFixed(),
     tokenOutput.metadata.decimals,
-    10,
   );
 
   const yourLiquidityAmount = removeTrailingZeros(formatBalance(
@@ -304,3 +302,5 @@ export const calcYourLiquidity = (
 
 export const displayPriceWithComma = (str: string) => str.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 export const displayPriceWithSpace = (str: string) => str.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+export const secondsToMilliseconds = (date: number): number => date * 1000;

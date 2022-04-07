@@ -10,6 +10,7 @@ import { PoolOrFarmButtons } from 'components/Button/RenderButton';
 import { ReactComponent as Arrow } from 'assets/images-app/route-arrow.svg';
 import { FarmStatusEnum, FarmStatusLocalesInPool, getAvailableTimestamp } from 'components/FarmStatus';
 import { calcYourLiquidity, displayPriceWithSpace } from 'utils/calculations';
+import { FilterPoolsEnum } from 'pages/Pool';
 import {
   Wrapper,
   UpperRow,
@@ -23,7 +24,6 @@ import {
   LabelVolume,
   BlockButton,
 } from './styles';
-import { FilterPoolsEnum } from '..';
 
 interface IVolume {
   title: string;
@@ -32,6 +32,13 @@ interface IVolume {
   tooltip: string;
   show: boolean;
 }
+
+const displayAPY = (apy: string) => {
+  const apyBig = new Big(apy);
+  if (apyBig.eq('0')) return '-';
+  if (apyBig.lte('0.01')) return '>0.01%';
+  return `${apyBig.toFixed(0)}%`;
+};
 
 export default function PoolCard(
   {
@@ -52,7 +59,7 @@ export default function PoolCard(
   const volume: IVolume[] = [
     {
       title: t('pool.totalLiquidity'),
-      label: pool.totalLiquidity && Big(pool.totalLiquidity).gt(0)
+      label: Big(pool.totalLiquidity).gt(0)
         ? `$${displayPriceWithSpace(pool.totalLiquidity)}`
         : '-',
       tooltip: t('tooltipTitle.totalLiquidity'),
@@ -60,7 +67,7 @@ export default function PoolCard(
     },
     {
       title: t('pool.dayVolume'),
-      label: pool.dayVolume && Big(pool.dayVolume).gt(0)
+      label: Big(pool.dayVolume).gt(0)
         ? `$${displayPriceWithSpace(pool.dayVolume)}`
         : '-',
       tooltip: t('tooltipTitle.dayVolume'),
@@ -68,13 +75,13 @@ export default function PoolCard(
     },
     {
       title: t('pool.yourLiquidity'),
-      label: `$${yourLiquidityAmount}`,
+      label: `$${displayPriceWithSpace(yourLiquidityAmount || '0')}`,
       tooltip: t('tooltipTitle.yourLiquidity'),
       show: currentFilterPools === FilterPoolsEnum.YourLiquidity,
     },
     {
       title: t('pool.APY'),
-      label: '-',
+      label: displayAPY(pool.apy),
       color: true,
       tooltip: t('tooltipTitle.APY'),
       show: true,
@@ -94,7 +101,13 @@ export default function PoolCard(
             {pool.farms && status !== FarmStatusEnum.Ended && (
             <FarmBlock
               type={status}
-              onClick={() => setCurrentFilterPools(FilterPoolsEnum.Farming)}
+              onClick={() => {
+                document.querySelector('body')?.scrollTo({
+                  top: 0,
+                  behavior: 'smooth',
+                });
+                setCurrentFilterPools(FilterPoolsEnum.Farming);
+              }}
             >
               Farming {FarmStatusLocalesInPool[status].toLowerCase()}
               <LogoArrowContainer type={status}>

@@ -21,7 +21,9 @@
     "removeLiquidity": "Withdraw",
     "stake": "Stake",
     "unStakeAndClaim": "Unstake & Claim",
-    "claim": "Claim"
+    "claim": "Claim",
+    "claimAll": "Claim All",
+    "ok": "Ok"
   },
 
   "swap": {
@@ -103,7 +105,8 @@
 
   "noResult": {
     "yourLiquidity": "Your active liquidity positions will appear here.",
-    "noResultFound": "No results found"
+    "noResultFound": "No results found",
+    "nothingToClaim": "Nothing to Claim"
   },
 
   "warningMessage": {
@@ -208,7 +211,10 @@
     "removeLiquidity": "Remove Liquidity",
     "transactionFailed": "Transaction failed",
     "nearDeposit": "Near Deposit",
-    "nearWithdraw": "Near Withdraw"
+    "nearWithdraw": "Near Withdraw",
+
+    "stake": "Stake",
+    "unstake": "Unstake"
   },
 
   "stakeModal" : {

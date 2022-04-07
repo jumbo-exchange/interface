@@ -34,6 +34,8 @@ type ModalsStoreContextType = {
   setStakeModalOpenState: Dispatch<SetStateAction<{isOpen: boolean, pool: IPool | null}>>;
   unStakeModalOpenState: {isOpen: boolean, pool: IPool | null};
   setUnStakeModalOpenState: Dispatch<SetStateAction<{isOpen: boolean, pool: IPool | null}>>;
+  isWithdrawDepositModalOpen: boolean;
+  setWithdrawDepositModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export const initialModalsState: ModalsStoreContextType = {
@@ -60,6 +62,8 @@ export const initialModalsState: ModalsStoreContextType = {
   setStakeModalOpenState: () => {},
   unStakeModalOpenState: { isOpen: false, pool: null },
   setUnStakeModalOpenState: () => {},
+  isWithdrawDepositModalOpen: false,
+  setWithdrawDepositModalOpen: () => {},
 };
 
 const ModalsStoreContextHOC = createContext<ModalsStoreContextType>(initialModalsState);
@@ -109,6 +113,9 @@ export const ModalsContextProvider = (
   }>(
     initialModalsState.unStakeModalOpenState,
   );
+  const [isWithdrawDepositModalOpen, setWithdrawDepositModalOpen] = useState<boolean>(
+    initialModalsState.isWithdrawDepositModalOpen,
+  );
 
   return (
     <ModalsStoreContextHOC.Provider value={{
@@ -131,6 +138,8 @@ export const ModalsContextProvider = (
       setStakeModalOpenState,
       unStakeModalOpenState,
       setUnStakeModalOpenState,
+      isWithdrawDepositModalOpen,
+      setWithdrawDepositModalOpen,
     }}
     >
       <Modals>

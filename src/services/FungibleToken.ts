@@ -12,8 +12,9 @@ import {
 
 import Big from 'big.js';
 import { wallet } from './near';
-import SpecialWallet, { createContract, Transaction } from './wallet';
+import SpecialWallet, { createContract } from './wallet';
 import getConfig from './config';
+import { FTTokenContractMethod, Transaction } from './interfaces';
 
 const {
   utils: {
@@ -130,7 +131,7 @@ export default class FungibleTokenContract {
           {
             receiverId: this.contractId,
             functionCalls: [{
-              methodName: 'storage_deposit',
+              methodName: FTTokenContractMethod.storageDeposit,
               args: {
                 registration_only: true,
                 account_id: accountId,
@@ -166,7 +167,7 @@ export default class FungibleTokenContract {
     transactions.push({
       receiverId: inputToken,
       functionCalls: [{
-        methodName: 'ft_transfer_call',
+        methodName: FTTokenContractMethod.ftTransferCall,
         args: {
           receiver_id: CONTRACT_ID,
           amount,
@@ -186,7 +187,7 @@ export default class FungibleTokenContract {
     transactions.push({
       receiverId: this.contractId,
       functionCalls: [{
-        methodName: 'near_deposit',
+        methodName: FTTokenContractMethod.nearDeposit,
         amount: formatNearAmount(amount) as string,
         args: {},
         gas: FT_TRANSFER_GAS as string,
@@ -202,7 +203,7 @@ export default class FungibleTokenContract {
     transactions.push({
       receiverId: this.contractId,
       functionCalls: [{
-        methodName: 'near_withdraw',
+        methodName: FTTokenContractMethod.nearWithdraw,
         args: { amount },
         gas: FT_TRANSFER_GAS as string,
         amount: ONE_YOCTO_NEAR,

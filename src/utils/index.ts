@@ -7,7 +7,13 @@ import {
 } from 'store';
 import { formatTokenAmount, removeTrailingZeros } from './calculations';
 import {
-  LP_TOKEN_DECIMALS, STABLE_LP_TOKEN_DECIMALS, SWAP_INPUT_KEY, SWAP_OUTPUT_KEY,
+  DAYS_A_YEAR,
+  LP_TOKEN_DECIMALS,
+  SECONDS_IN_A_DAY,
+  STABLE_LP_TOKEN_DECIMALS,
+  SWAP_INPUT_KEY,
+  SWAP_OUTPUT_KEY,
+  ONE_HUNDRED,
 } from './constants';
 
 const ACCOUNT_TRIM_LENGTH = 10;
@@ -55,6 +61,7 @@ export function formatPool(pool: any): IPool {
     totalLiquidity: '0',
     farms: null,
     dayVolume: '0',
+    apy: '0',
   };
 }
 
@@ -133,6 +140,14 @@ export const calculatePriceForToken = (
     .mul(price).div(secondAmount).toFixed(2);
 };
 
+export const calcPoolApy = (pool: IPool, dayVolume: string, totalLiquidity: string): string => {
+  const firstMultiplier = Big(1).div(totalLiquidity);
+  const secondMultiplier = Big(pool.totalFee).mul(dayVolume);
+  const mulFirstAndSecond = firstMultiplier.mul(secondMultiplier);
+  const poolAPY = mulFirstAndSecond.mul(365);
+  return poolAPY.toFixed();
+};
+
 export const calculateTotalAmountAndDayVolume = (
   pricesData: {[key: string]: ITokenPrice},
   metadataMap: {[key: string]: FungibleTokenContract},
@@ -195,12 +210,11 @@ export const calculateTotalAmountAndDayVolume = (
         ...pool,
         totalLiquidity: totalLiquidityValue,
         dayVolume: totalDayVolumeValue,
+        apy: calcPoolApy(pool, totalDayVolumeValue, totalLiquidityValue),
       };
     }
     return {
       ...pool,
-      totalLiquidity: 0,
-      dayVolume: 0,
     };
   });
 
@@ -280,7 +294,7 @@ export const getTotalApr = (farms: IFarm[]) => {
   } else {
     apy = Big(farms[0].apy);
   }
-  return apy.toFixed(2);
+  return apy.toFixed(0);
 };
 
 export const calcAprAndStakedAmount = (
@@ -298,15 +312,15 @@ export const calcAprAndStakedAmount = (
     const totalStaked = calcStakedAmount(farm.totalSeedAmount, pool);
     const yourStaked = calcStakedAmount(farm.userStaked || '0', pool);
     if (totalStaked && Big(totalStaked).gt(0)) {
-      const rewardNumberPerWeek = Big(farm.rewardPerSession)
+      const rewardNumberPerDay = Big(farm.rewardPerSession)
         .div(farm.sessionInterval)
-        .mul(604800).toFixed(0);
+        .mul(SECONDS_IN_A_DAY).toFixed();
 
-      const rewardsPerWeek = formatTokenAmount(rewardNumberPerWeek, rewardToken.metadata.decimals);
+      const rewardsPerDay = formatTokenAmount(rewardNumberPerDay, rewardToken.metadata.decimals);
       const firstMultiplier = Big(1).div(totalStaked);
-      const secondMultiplier = Big(rewardsPerWeek).mul(rewardTokenPrice);
+      const secondMultiplier = Big(rewardsPerDay).mul(rewardTokenPrice);
       const mulFirstAndSecond = firstMultiplier.mul(secondMultiplier);
-      const farmAPY = mulFirstAndSecond.mul(52).mul(100).toFixed(2);
+      const farmAPY = mulFirstAndSecond.mul(DAYS_A_YEAR).mul(ONE_HUNDRED).toFixed();
       return {
         ...farm,
         totalStaked,

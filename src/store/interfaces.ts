@@ -1,7 +1,7 @@
 import { FarmStatusEnum } from 'components/FarmStatus';
 import { Dispatch, SetStateAction } from 'react';
 import FungibleTokenContract from 'services/FungibleToken';
-import { IPoolVolumes } from 'services/PoolContract';
+import { IPoolVolumes } from 'services/interfaces';
 import SpecialWallet from 'services/wallet';
 
 export enum StatusLink { Swap = 'swap', Pool ='pool', Farm = 'farm' }
@@ -34,6 +34,7 @@ export interface IPool {
 
   totalLiquidity: string;
   dayVolume: string;
+  apy: string;
 }
 
 export interface ITokenMetadata {

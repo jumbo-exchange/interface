@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useModalsStore, CurrentButton } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
 import RenderButton from 'components/Button/RenderButton';
@@ -13,10 +13,10 @@ import FarmContract from 'services/FarmContract';
 import Big from 'big.js';
 
 import TokenPairDisplay from 'components/TokensDisplay/TokenPairDisplay';
+import InputSharesContainer from 'components/CurrencyInputPanel/InputSharesContainer';
 import {
   Layout, ModalBlock, ModalIcon, ModalTitle,
 } from '../styles';
-import Input from './Input';
 import {
   StakeModalContainer, ModalBody, GetShareBtn, TokensBlock, Warning,
 } from './styles';
@@ -24,13 +24,14 @@ import {
 export default function StakeModal() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const farmContract = useMemo(() => new FarmContract(), []);
 
   const {
     stakeModalOpenState,
     setStakeModalOpenState,
     setAddLiquidityModalOpenState,
   } = useModalsStore();
-  const { pool } = stakeModalOpenState;
+  const { pool, isOpen } = stakeModalOpenState;
   const [stakeValue, setStakeValue] = useState<string>(INITIAL_INPUT_PLACEHOLDER);
   const [warning, setWarning] = useState(false);
 
@@ -48,24 +49,23 @@ export default function StakeModal() {
     : true;
 
   const onSubmit = () => {
-    const stakeValueBN = new Big(stakeValue);
-    if (Big(stakeValue).eq(0)) return;
-    if (stakeValueBN.gt(formattedPoolShares)) return;
+    if (
+      Big(stakeValue).eq(0)
+      || Big(stakeValue).gt(formattedPoolShares)
+      || !pool
+    ) return;
 
-    const contract = new FarmContract();
-    if (!stakeModalOpenState.pool) return;
-    contract.stake(
+    if (!pool) return;
+    farmContract.stake(
       pool.lpTokenId,
       stakeValue,
       pool,
     );
   };
 
-  const handleChange = (event: string) => {
-    const value = event.toString();
+  const handleChange = (value: string) => {
     setStakeValue(value);
     if (!value) return;
-    setWarning(false);
     if (Big(value).lte(formattedMinDepositShares) && !Big(value).eq(0)) {
       setWarning(true);
       return;
@@ -75,7 +75,7 @@ export default function StakeModal() {
 
   return (
     <>
-      {stakeModalOpenState.isOpen && (
+      {isOpen && (
       <Layout onClick={() => {
         navigate(POOL);
         setStakeModalOpenState({ isOpen: false, pool: null });
@@ -98,10 +98,11 @@ export default function StakeModal() {
             <TokensBlock>
               <TokenPairDisplay pool={pool} />
             </TokensBlock>
-            <Input
+            <InputSharesContainer
               shares={formattedPoolShares}
-              stakeValue={stakeValue}
-              setStakeValue={handleChange}
+              value={stakeValue}
+              setValue={handleChange}
+              isShowingButtonHalf={false}
             />
             {warning && (
             <Warning>

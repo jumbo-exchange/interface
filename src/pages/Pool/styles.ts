@@ -79,30 +79,3 @@ export const LabelInfo = styled.div`
 export const LogoSoon = styled(Soon)`
   margin-left: .25rem;
 `;
-
-export const ButtonAndClaimList = styled.div`
-  position: relative;
-  margin-left: 1rem;
-  :hover div {
-    display: flex;
-  }
-`;
-
-export const RewardList = styled.div`
-  z-index: 1;
-  position: absolute;
-  display: none;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-  background-color: ${({ theme }) => theme.claimListBg};
-  padding: .75rem 1rem;
-  border-radius: 12px;
-  top: 45px;
-  & > p {
-    margin: 4px 0;
-    font-weight: 300;
-    font-size: .75rem;
-    line-height: .875rem;
-  }
-`;

@@ -25,6 +25,7 @@ import { RefreshContextProvider } from 'services/refreshService';
 import { ModalsContextProvider, useStore } from 'store';
 import { ToastContainer } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import Menu from 'components/Menu';
 import {
   Container,
   Header,
@@ -90,11 +91,11 @@ export default function App() {
                 {t('general.pool')}
               </CustomLink>
               <NavButton disabled>{t('general.staking')}</NavButton>
-              <NavButton disabled>...</NavButton>
             </NavBar>
             <BlockButton>
               <ConnectionButton />
             </BlockButton>
+            <Menu />
           </Header>
           <Body>
             <Suspense fallback={(

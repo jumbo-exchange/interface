@@ -107,6 +107,7 @@ export default function AccountModal() {
             <ButtonSecondary onClick={() => {
               nearWallet.signOut();
               setWallet(null);
+              window.location.reload();
             }}
             >
               <WalletIcon /> {t('accountModal.disconnect')}

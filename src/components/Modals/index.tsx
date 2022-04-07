@@ -7,6 +7,7 @@ import TooltipModal from './TooltipModal';
 import RemoveLiquidityModal from './RemoveLiquidityModal';
 import StakeModal from './StakeModal';
 import UnStakeModal from './UnStakeModal';
+import WithdrawDepositModal from './WithdrawDepositModal';
 
 export default function Modals({ children }: {children: JSX.Element}) {
   return (
@@ -19,6 +20,7 @@ export default function Modals({ children }: {children: JSX.Element}) {
       <TooltipModal />
       <StakeModal />
       <UnStakeModal />
+      <WithdrawDepositModal />
       {children}
     </>
   );

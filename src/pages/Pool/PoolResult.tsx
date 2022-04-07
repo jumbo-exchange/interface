@@ -100,9 +100,7 @@ export default function PoolResult(
   if (currentFilterPools === FilterPoolsEnum.Farming) {
     const filteredFarms = poolsArraySorted.reduce(
       (acc: {active:IPool[], ended: IPool[]}, pool:IPool) => {
-        const poolFarmIds = pool.farms;
-        if (!poolFarmIds) return acc;
-        const poolFarms = poolFarmIds.map((id) => farms[id]);
+        const poolFarms = pool?.farms?.map((id) => farms[id]);
         if (!poolFarms) return acc;
         const isAnyActive = poolFarms.some(
           (farm) => farm.status === FarmStatusEnum.Active,

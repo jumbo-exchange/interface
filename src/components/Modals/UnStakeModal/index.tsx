@@ -12,10 +12,10 @@ import { formatTokenAmount } from 'utils/calculations';
 import Big from 'big.js';
 import { INITIAL_INPUT_PLACEHOLDER } from 'utils/constants';
 import TokenPairDisplay from 'components/TokensDisplay/TokenPairDisplay';
+import InputSharesContainer from 'components/CurrencyInputPanel/InputSharesContainer';
 import {
   Layout, ModalBlock, ModalIcon, ModalTitle,
 } from '../styles';
-import Input from './Input';
 import {
   UnStakeModalContainer,
   ModalBody,
@@ -26,13 +26,13 @@ export default function UnStakeModal() {
   const { farms } = useStore();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const contract = useMemo(() => new FarmContract(), []);
+  const farmContract = useMemo(() => new FarmContract(), []);
 
   const {
     unStakeModalOpenState,
     setUnStakeModalOpenState,
   } = useModalsStore();
-  const { pool } = unStakeModalOpenState;
+  const { pool, isOpen } = unStakeModalOpenState;
   const [unStakeValue, setUnStakeValue] = useState<string>(INITIAL_INPUT_PLACEHOLDER);
 
   if (!pool || !pool.farms?.length) return null;
@@ -48,12 +48,14 @@ export default function UnStakeModal() {
     : true;
 
   const onSubmit = () => {
-    const unstakeValueBN = new Big(unStakeValue);
-    if (Big(unStakeValue).eq(0)) return;
-    if (unstakeValueBN.gt(formattedFarmShares)) return;
+    if (
+      Big(unStakeValue).eq(0)
+      || Big(unStakeValue).gt(formattedFarmShares)
+      || !pool
+    ) return;
 
-    if (!unStakeModalOpenState.pool) return;
-    contract.unstake(
+    if (!pool) return;
+    farmContract.unstake(
       seedId,
       unStakeValue,
       pool,
@@ -62,7 +64,7 @@ export default function UnStakeModal() {
 
   return (
     <>
-      {unStakeModalOpenState.isOpen && (
+      {isOpen && (
       <Layout onClick={() => {
         navigate(POOL);
         setUnStakeModalOpenState({ isOpen: false, pool: null });
@@ -85,10 +87,11 @@ export default function UnStakeModal() {
             <TokensBlock>
               <TokenPairDisplay pool={pool} />
             </TokensBlock>
-            <Input
+            <InputSharesContainer
               shares={formattedFarmShares}
-              unStakeValue={unStakeValue}
-              setUnStakeValue={setUnStakeValue}
+              value={unStakeValue}
+              setValue={setUnStakeValue}
+              isShowingButtonHalf={false}
             />
             <RenderButton
               typeButton={CurrentButton.UnStake}
