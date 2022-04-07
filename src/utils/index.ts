@@ -151,7 +151,7 @@ export const calcPoolApy = (pool: IPool, dayVolume: string, totalLiquidity: stri
 export const calculateTotalAmountAndDayVolume = (
   pricesData: {[key: string]: ITokenPrice},
   metadataMap: {[key: string]: FungibleTokenContract},
-  newPoolMap: {[key:string]: IPool},
+  newPoolMap: {[key: string]: IPool},
   dayVolumesData: {[key: string]: IDayVolume},
 ):{[key:string]: IPool} => {
   const calculatedPools = toArray(newPoolMap).map((pool: IPool) => {

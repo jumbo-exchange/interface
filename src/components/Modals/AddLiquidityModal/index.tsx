@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { useModalsStore, useStore, CurrentButton } from 'store';
+import React, { useEffect, useState, useMemo } from 'react';
+import {
+  useModalsStore, useStore, CurrentButton, PoolType,
+} from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
 import PoolContract from 'services/PoolContract';
 import RenderButton from 'components/Button/RenderButton';
@@ -14,11 +16,17 @@ import {
 } from 'utils/calculations';
 import { wallet } from 'services/near';
 import {
-  INITIAL_INPUT_PLACEHOLDER, ZERO_AMOUNT, SMALL_SHARE,
+  LP_TOKEN_DECIMALS,
+  ZERO_AMOUNT, SMALL_SHARE,
+  INITIAL_INPUT_PLACEHOLDER,
+  SLIPPAGE_TOLERANCE_DEFAULT_ADD_STABLE_LIQ,
+  slippageToleranceOptionsAddStableLiq,
+  STABLE_LP_TOKEN_DECIMALS,
 } from 'utils/constants';
 import Big from 'big.js';
 import Refresh from 'components/Refresh';
 import { POOL } from 'utils/routes';
+import SlippageBlock from 'components/SlippageBlock';
 import {
   Layout, ModalBlock, ModalIcon, ModalTitle,
 } from '../styles';
@@ -39,10 +47,13 @@ export default function AddLiquidityModal() {
   } = useStore();
   const navigate = useNavigate();
   const { t } = useTranslation();
-
+  const contract = useMemo(() => new PoolContract(), []);
   const [inputTokenValue, setInputTokenValue] = useState<string>(INITIAL_INPUT_PLACEHOLDER);
   const [outputTokenValue, setOutputTokenValue] = useState<string>(INITIAL_INPUT_PLACEHOLDER);
   const [preShare, setPreShare] = useState<string>(INITIAL_INPUT_PLACEHOLDER);
+  const [slippageTolerance, setSlippageTolerance] = useState<string>(
+    SLIPPAGE_TOLERANCE_DEFAULT_ADD_STABLE_LIQ,
+  );
 
   const { addLiquidityModalOpenState, setAddLiquidityModalOpenState } = useModalsStore();
   const { pool, isOpen } = addLiquidityModalOpenState;
@@ -64,7 +75,6 @@ export default function AddLiquidityModal() {
   if (!tokenInput || !tokenOutput) return null;
 
   const [inputTokenSupplies, outputTokenSupplies] = Object.values(pool.supplies);
-
   const handleInputChange = (value: string) => {
     if (Object.values(pool.supplies).every((s) => s === '0')) {
       setInputTokenValue(value);
@@ -175,6 +185,13 @@ export default function AddLiquidityModal() {
               setValue={handleOutputChange}
               balance={balances[tokenOutput.contractId ?? '']}
             />
+            {pool.type === PoolType.STABLE_SWAP ? (
+              <SlippageBlock
+                onChange={setSlippageTolerance}
+                slippageValue={slippageTolerance}
+                slippageToleranceOptions={slippageToleranceOptionsAddStableLiq}
+              />
+            ) : null}
             <YourSharesBlock>
               {t('addLiquidityModal.yourShares')}: &nbsp;
               <span>{shareDisplay()}</span>
@@ -185,7 +202,6 @@ export default function AddLiquidityModal() {
             <RenderButton
               typeButton={CurrentButton.AddLiquidity}
               onSubmit={() => {
-                const contract = new PoolContract();
                 if (!tokenInput || !tokenOutput || !pool) return;
                 contract.addLiquidity({
                   tokenAmounts: [
@@ -193,6 +209,7 @@ export default function AddLiquidityModal() {
                     { token: tokenOutput, amount: outputTokenValue },
                   ],
                   pool,
+                  slippage: slippageTolerance,
                 });
               }}
               disabled={!canAddLiquidity}

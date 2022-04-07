@@ -114,6 +114,7 @@ export default function PoolResult(
             active: isAnyActive ? [pool, ...acc.active] : [...acc.active, pool],
           };
         }
+
         return { ...acc, ended: [...acc.ended, pool] };
       }, { active: [], ended: [] },
     );

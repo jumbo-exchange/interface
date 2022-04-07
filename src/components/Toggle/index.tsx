@@ -83,6 +83,7 @@ const PercentBtn = styled.button<PropsWithChildren<IActive>>`
     cursor: pointer;
     color: ${({ theme }) => theme.globalWhite};
   }
+  user-select: none;
 `;
 
 export default function Toggle({
