@@ -99,7 +99,7 @@ export const getCanClaimAll = (rewardList: [string, string][]) => (rewardList.le
 
 const displayUSD = (value: string) => {
   const apyBig = new Big(value);
-  if (apyBig.eq('0')) return '-';
+  if (apyBig.eq('0')) return '$0';
   if (apyBig.lte('0.01')) return '> $0.01';
   return `$${removeTrailingZeros(apyBig.toFixed(2))}`;
 };
