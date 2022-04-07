@@ -158,7 +158,7 @@ export const StoreContextProvider = (
         const tokenAddresses = retrieveTokenAddresses(poolsResult, userTokens);
 
         const poolArray = poolsResult
-          .map((pool: any) => formatPool(pool))
+          .map(formatPool)
           .filter((pool: IPool) => pool.type === PoolType.SIMPLE_POOL
           || (pool.type === PoolType.STABLE_SWAP && pool.id === config.stablePoolId));
 

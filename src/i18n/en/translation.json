@@ -211,7 +211,10 @@
     "removeLiquidity": "Remove Liquidity",
     "transactionFailed": "Transaction failed",
     "nearDeposit": "Near Deposit",
-    "nearWithdraw": "Near Withdraw"
+    "nearWithdraw": "Near Withdraw",
+
+    "stake": "Stake",
+    "unstake": "Unstake"
   },
 
   "stakeModal" : {

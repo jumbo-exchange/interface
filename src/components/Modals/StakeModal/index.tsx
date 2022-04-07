@@ -63,10 +63,10 @@ export default function StakeModal() {
     );
   };
 
-  const handleChange = (event: string) => {
-    setStakeValue(event);
-    if (!event) return;
-    if (Big(event).lte(formattedMinDepositShares) && !Big(event).eq(0)) {
+  const handleChange = (value: string) => {
+    setStakeValue(value);
+    if (!value) return;
+    if (Big(value).lte(formattedMinDepositShares) && !Big(value).eq(0)) {
       setWarning(true);
       return;
     }
