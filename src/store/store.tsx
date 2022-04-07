@@ -163,8 +163,8 @@ export const StoreContextProvider = (
 
         const poolArray = poolsResult
           .map((pool: any) => formatPool(pool))
-          .filter((pool: IPool) => pool.type === PoolType.SIMPLE_POOL
-          || (pool.type === PoolType.STABLE_SWAP && pool.id === config.stablePoolId));
+          .filter((pool: IPool) => pool.type === PoolType.SIMPLE_POOL);
+          // || (pool.type === PoolType.STABLE_SWAP && pool.id === config.stablePoolId));
 
         let newPoolArray = poolArray;
 

@@ -26,20 +26,28 @@ export const NEAR_INITIAL_DATA = {
   price: '0',
 };
 
+function assertFulfilled<T>(item: PromiseSettledResult<T>): item is PromiseFulfilledResult<T> {
+  return item.status === 'fulfilled';
+}
+
 export async function retrievePoolResult(pages: number, contract: PoolContract) {
-  return (await Promise.all(
+  return (await Promise.allSettled(
     [...Array(pages)]
       .map((_, i) => contract.getPools(i * DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_LIMIT)),
-  )).flat();
+  )).filter(assertFulfilled)
+    .map(({ value }) => value)
+    .flat();
 }
 
 export async function retrieveFarmsResult(farmsPages: number, farmContract: FarmContract) {
-  return (await Promise.all(
+  return (await Promise.allSettled(
     [...Array(farmsPages)]
       .map((_, i) => farmContract.getListFarms(
         i * DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_LIMIT,
       )),
-  )).flat();
+  )).filter(assertFulfilled)
+    .map(({ value }) => value)
+    .flat();
 }
 
 export function retrieveTokenAddresses(poolsResult: any, userTokens: any): string[] {
