@@ -35,6 +35,8 @@ enum TransactionType {
   RemoveLiquidity,
   NearDeposit,
   NearWithdraw,
+  Stake,
+  Unstake,
 }
 
 enum StatusType {
@@ -51,10 +53,10 @@ const methodName: { [key: string]: string } = {
   removeLiquidityMethod: 'remove_liquidity',
   nearDeposit: 'near_deposit',
   nearWithdraw: 'near_withdraw',
-
-  // TODO: add toasty and clear url
   stake: 'mft_transfer_call',
-  unStake: 'withdraw_seed',
+  unstake: 'withdraw_seed',
+
+  // TODO: add toasty
   withdrawReward: 'withdraw_reward',
   withdraw: 'withdraw',
 };
@@ -152,6 +154,14 @@ const getTransaction = (transactions: any, method: { [key: string]: string }) =>
       type = TransactionType.NearWithdraw;
       break;
     }
+    case method.stake: {
+      type = TransactionType.Stake;
+      break;
+    }
+    case method.unstake: {
+      type = TransactionType.Unstake;
+      break;
+    }
     default: {
       type = TransactionType.None;
     }
@@ -229,6 +239,20 @@ function parseTransactions(txs: any) {
         getToast(href, i18n.t('toast.removeLiquidity'), ToastType.Success);
       } else if (result.status === StatusType.Failure) {
         getToast(href, i18n.t('toast.removeLiquidity'), ToastType.Error);
+      }
+      break;
+    case TransactionType.Stake:
+      if (result.status === StatusType.SuccessValue) {
+        getToast(href, i18n.t('toast.stake'), ToastType.Success);
+      } else if (result.status === StatusType.Failure) {
+        getToast(href, i18n.t('toast.stake'), ToastType.Error);
+      }
+      break;
+    case TransactionType.Unstake:
+      if (result.status === StatusType.SuccessValue) {
+        getToast(href, i18n.t('toast.unstake'), ToastType.Success);
+      } else if (result.status === StatusType.Failure) {
+        getToast(href, i18n.t('toast.unstake'), ToastType.Error);
       }
       break;
     default: {

@@ -11,6 +11,7 @@ import { ReactComponent as Arrow } from 'assets/images-app/route-arrow.svg';
 import { FarmStatusEnum, FarmStatusLocalesInPool, getAvailableTimestamp } from 'components/FarmStatus';
 import { calcYourLiquidity, displayPriceWithSpace } from 'utils/calculations';
 import { FilterPoolsEnum } from 'pages/Pool';
+import { displayAPY } from 'utils';
 import {
   Wrapper,
   UpperRow,
@@ -32,13 +33,6 @@ interface IVolume {
   tooltip: string;
   show: boolean;
 }
-
-const displayAPY = (apy: string) => {
-  const apyBig = new Big(apy);
-  if (apyBig.eq('0')) return '-';
-  if (apyBig.lte('0.01')) return '>0.01%';
-  return `${apyBig.toFixed(0)}%`;
-};
 
 export default function PoolCard(
   {
