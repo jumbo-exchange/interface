@@ -10,7 +10,7 @@ export default function getConfig(
         walletUrl: 'https://wallet.testnet.near.org',
         helperUrl: 'https://helper.testnet.near.org',
         explorerUrl: 'https://explorer.testnet.near.org',
-        indexerUrl: 'https://jumbo-ps.hapi.farm/',
+        indexerUrl: 'https://jumbo-ps.hapi.farm',
         contractId: 'jumbo-exchange-v1.rkonoval.testnet',
 
         //!
