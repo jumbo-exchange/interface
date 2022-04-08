@@ -4,7 +4,7 @@ import React, {
 } from 'react';
 import { IPool } from 'store';
 import Modals from 'components/Modals';
-import FungibleTokenContract from 'services/FungibleToken';
+import FungibleTokenContract from 'services/contracts/FungibleToken';
 
 type ModalsStoreContextType = {
   isAccountModalOpen: boolean;

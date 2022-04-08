@@ -1,5 +1,5 @@
 import Big, { BigSource } from 'big.js';
-import FungibleTokenContract from 'services/FungibleToken';
+import FungibleTokenContract from 'services/contracts/FungibleToken';
 import { IPool, ITokenPrice } from 'store';
 import { toArray } from 'utils';
 import { STABLE_LP_TOKEN_DECIMALS } from './constants';

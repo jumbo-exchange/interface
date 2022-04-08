@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useModalsStore, useStore, CurrentButton } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
-import FarmContract from 'services/FarmContract';
+import FarmContract from 'services/contracts/FarmContract';
 import RenderButton from 'components/Button/RenderButton';
 
 import { useTranslation } from 'react-i18next';

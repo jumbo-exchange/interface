@@ -11,10 +11,10 @@ import {
 } from 'utils/constants';
 
 import Big from 'big.js';
-import { wallet } from './near';
-import SpecialWallet, { createContract } from './wallet';
-import getConfig from './config';
-import { FTTokenContractMethod, Transaction } from './interfaces';
+import { wallet } from 'services/near';
+import SpecialWallet, { createContract } from 'services/wallet';
+import getConfig from 'services/config';
+import { FTTokenContractMethod, Transaction } from 'services/interfaces';
 
 const {
   utils: {

@@ -1,7 +1,8 @@
 import React, {
   createContext, useCallback, useContext, useEffect, useMemo, useState,
 } from 'react';
-import { getUserWalletTokens, wallet as nearWallet } from 'services/near';
+import { wallet as nearWallet } from 'services/near';
+import ApiService from 'services/helpers/apiService';
 import {
   IPool, StoreContextType, TokenType,
 } from 'store';
@@ -19,8 +20,8 @@ import {
 
 import getConfig from 'services/config';
 import SpecialWallet from 'services/wallet';
-import FungibleTokenContract from 'services/FungibleToken';
-import PoolContract from 'services/PoolContract';
+import FungibleTokenContract from 'services/contracts/FungibleToken';
+import PoolContract from 'services/contracts/PoolContract';
 import {
   NEAR_TOKEN_ID,
   SWAP_INPUT_KEY,
@@ -28,7 +29,7 @@ import {
   URL_INPUT_TOKEN,
   URL_OUTPUT_TOKEN,
 } from 'utils/constants';
-import FarmContract from 'services/FarmContract';
+import FarmContract from 'services/contracts/FarmContract';
 import { IFarm, ITokenPrice, PoolType } from './interfaces';
 import {
   JUMBO_INITIAL_DATA,
@@ -43,7 +44,6 @@ import {
   tryTokenByKey,
   getPrices,
   retrieveFarmsResult,
-  getDayVolumeData,
 } from './helpers';
 
 const config = getConfig();
@@ -154,10 +154,10 @@ export const StoreContextProvider = (
           await retrieveFarmsResult(farmsPages, farmContract),
           await getPrices(),
           await farmContract.getSeeds(0, DEFAULT_PAGE_LIMIT),
-          await getDayVolumeData(),
+          await ApiService.getDayVolumeData(),
         ]);
 
-        const userTokens = await getUserWalletTokens();
+        const userTokens = await ApiService.getUserWalletTokens();
 
         const tokenAddresses = retrieveTokenAddresses(poolsResult, userTokens);
 

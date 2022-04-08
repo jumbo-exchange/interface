@@ -7,11 +7,11 @@ import {
 } from 'utils/constants';
 import { parseTokenAmount } from 'utils/calculations';
 import { IPool } from 'store';
-import sendTransactions, { wallet } from './near';
-import { createContract } from './wallet';
-import getConfig from './config';
+import sendTransactions, { wallet } from 'services/near';
+import { createContract } from 'services/wallet';
+import getConfig from 'services/config';
+import { FarmContractMethod, Transaction } from 'services/interfaces';
 import FungibleTokenContract from './FungibleToken';
-import { FarmContractMethod, Transaction } from './interfaces';
 
 const basicViewMethods = [
   'get_number_of_farms',

@@ -8,7 +8,8 @@ import {
 } from 'store';
 import { useLocation, useParams } from 'react-router-dom';
 import {
-  toAddLiquidityPage, toRemoveLiquidityPage, toStakePage, toUnStakeAndClaimPage,
+  toAddLiquidityPage, toRemoveLiquidityPage,
+  toStakePage, toUnStakeAndClaimPage,
 } from 'utils/routes';
 import { toArray } from 'utils';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import getConfig from 'services/config';
 import Big from 'big.js';
 import { displayPriceWithComma } from 'utils/calculations';
-import FarmContract from 'services/FarmContract';
+import FarmContract from 'services/contracts/FarmContract';
 import { wallet } from 'services/near';
 import moment from 'moment';
 import { UPDATE_CLAIM_REWARD_DATE, CLAIM_REWARD_DATE_KEY } from 'utils/constants';

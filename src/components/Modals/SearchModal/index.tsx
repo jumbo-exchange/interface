@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import {
   initialModalsState, useModalsStore, useStore,
 } from 'store';
-import FungibleTokenContract from 'services/FungibleToken';
+import FungibleTokenContract from 'services/contracts/FungibleToken';
 import {
   Layout, Modal, ModalBlock, ModalTitle, ModalIcon,
 } from '../styles';

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import tokenLogo from 'assets/images-app/placeholder-token.svg';
-import PoolContract from 'services/PoolContract';
+import PoolContract from 'services/contracts/PoolContract';
 import Big from 'big.js';
 
 import RenderButton from 'components/Button/RenderButton';

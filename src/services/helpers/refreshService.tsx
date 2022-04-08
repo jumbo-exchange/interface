@@ -10,8 +10,8 @@ import getConfig from 'services/config';
 
 import { formatPool } from 'utils';
 import useUpdateService from './updatePoolService';
-import FungibleTokenContract from './FungibleToken';
-import PoolContract from './PoolContract';
+import FungibleTokenContract from '../contracts/FungibleToken';
+import PoolContract from '../contracts/PoolContract';
 
 const config = getConfig();
 

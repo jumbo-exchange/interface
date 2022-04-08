@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import Big from 'big.js';
-import FarmContract from 'services/FarmContract';
+import FarmContract from 'services/contracts/FarmContract';
 import styled from 'styled-components';
 import { useStore } from 'store';
 import { ButtonClaim } from 'components/Button';

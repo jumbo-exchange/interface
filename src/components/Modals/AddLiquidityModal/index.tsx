@@ -3,7 +3,7 @@ import {
   useModalsStore, useStore, CurrentButton, PoolType,
 } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
-import PoolContract from 'services/PoolContract';
+import PoolContract from 'services/contracts/PoolContract';
 import RenderButton from 'components/Button/RenderButton';
 
 import { useTranslation } from 'react-i18next';
@@ -16,12 +16,10 @@ import {
 } from 'utils/calculations';
 import { wallet } from 'services/near';
 import {
-  LP_TOKEN_DECIMALS,
   ZERO_AMOUNT, SMALL_SHARE,
   INITIAL_INPUT_PLACEHOLDER,
   SLIPPAGE_TOLERANCE_DEFAULT_ADD_STABLE_LIQ,
   slippageToleranceOptionsAddStableLiq,
-  STABLE_LP_TOKEN_DECIMALS,
 } from 'utils/constants';
 import Big from 'big.js';
 import Refresh from 'components/Refresh';

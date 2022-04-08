@@ -1,4 +1,4 @@
-import FungibleTokenContract from './FungibleToken';
+import FungibleTokenContract from 'services/contracts/FungibleToken';
 
 export interface Transaction {
   receiverId: string;

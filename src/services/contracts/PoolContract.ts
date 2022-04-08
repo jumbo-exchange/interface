@@ -14,13 +14,13 @@ import {
   calculateAddLiquidity, percentLess, toComparableAmount, toNonDivisibleNumber,
 } from 'utils/calculations';
 import { IPool, PoolType } from 'store';
-import sendTransactions, { wallet } from './near';
-import { createContract } from './wallet';
-import getConfig from './config';
-import FungibleTokenContract from './FungibleToken';
+import sendTransactions, { wallet } from 'services/near';
+import { createContract } from 'services/wallet';
+import getConfig from 'services/config';
 import {
   ILiquidityToken, IPoolVolumes, PoolContractMethod, Transaction,
-} from './interfaces';
+} from 'services/interfaces';
+import FungibleTokenContract from './FungibleToken';
 
 export const registerTokensAction = (contractId: string, tokenIds: string[]) => ({
   receiverId: contractId,

@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { POOL, toAddLiquidityPage } from 'utils/routes';
 import { formatTokenAmount } from 'utils/calculations';
 import { INITIAL_INPUT_PLACEHOLDER, MIN_DEPOSIT_SHARES } from 'utils/constants';
-import FarmContract from 'services/FarmContract';
+import FarmContract from 'services/contracts/FarmContract';
 import Big from 'big.js';
 
 import TokenPairDisplay from 'components/TokensDisplay/TokenPairDisplay';

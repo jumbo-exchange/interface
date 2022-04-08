@@ -1,6 +1,6 @@
 import { FarmStatusEnum } from 'components/FarmStatus';
 import { Dispatch, SetStateAction } from 'react';
-import FungibleTokenContract from 'services/FungibleToken';
+import FungibleTokenContract from 'services/contracts/FungibleToken';
 import { IPoolVolumes } from 'services/interfaces';
 import SpecialWallet from 'services/wallet';
 

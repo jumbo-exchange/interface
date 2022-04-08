@@ -1,7 +1,7 @@
 import Big from 'big.js';
 import { farmStatus, getFarmStatus } from 'components/FarmStatus';
 import getConfig from 'services/config';
-import FungibleTokenContract from 'services/FungibleToken';
+import FungibleTokenContract from 'services/contracts/FungibleToken';
 import {
   IFarm, IPool, ITokenPrice, PoolType, IDayVolume,
 } from 'store';

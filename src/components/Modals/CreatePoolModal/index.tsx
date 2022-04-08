@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import Big from 'big.js';
-import PoolContract from 'services/PoolContract';
+import PoolContract from 'services/contracts/PoolContract';
 import RenderButton from 'components/Button/RenderButton';
 import {
   useModalsStore, useStore, CurrentButton,
@@ -14,7 +14,7 @@ import {
   NEAR_TOKEN_ID,
 } from 'utils/constants';
 import { wallet } from 'services/near';
-import FungibleTokenContract from 'services/FungibleToken';
+import FungibleTokenContract from 'services/contracts/FungibleToken';
 import getConfig from 'services/config';
 import { getToken } from 'store/helpers';
 import {

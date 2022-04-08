@@ -3,11 +3,11 @@ import { SWAP_FAILED, SWAP_TOKENS_NOT_IN_SWAP_POOL } from 'utils/errors';
 import { ONE_YOCTO_NEAR, NEAR_TOKEN_ID, FT_GAS } from 'utils/constants';
 import { percentLess } from 'utils/calculations';
 import Big from 'big.js';
+import sendTransactions, { wallet } from 'services/near';
+import { createContract } from 'services/wallet';
+import getConfig from 'services/config';
+import { SwapContractMethod, SWAP_ENUM, Transaction } from 'services/interfaces';
 import FungibleTokenContract from './FungibleToken';
-import sendTransactions, { wallet } from './near';
-import { createContract } from './wallet';
-import getConfig from './config';
-import { SwapContractMethod, SWAP_ENUM, Transaction } from './interfaces';
 
 const basicViewMethods = ['get_return'];
 const basicChangeMethods = ['swap'];
