@@ -198,6 +198,7 @@ export default function RenderWarning({ priceImpact }: {priceImpact: string}) {
                 setOutputToken(wNear);
                 if (near && wNear) {
                   navigateSwapTokens(near.metadata.symbol, wNear.metadata.symbol);
+                  setCurrentPools([]);
                 }
               }}
             >
