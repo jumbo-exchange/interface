@@ -60,3 +60,5 @@ export const SWAP_OUTPUT_KEY = 'JUMBO_SWAP_OUTPUT_TOKEN';
 
 export const URL_INPUT_TOKEN = 'inputToken';
 export const URL_OUTPUT_TOKEN = 'outputToken';
+
+export const INITIAL_INPUT_PLACEHOLDER = '';
