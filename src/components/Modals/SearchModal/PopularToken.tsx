@@ -136,8 +136,10 @@ export default function PopularToken() {
 
   const near = useMemo(() => getToken(NEAR_TOKEN_ID, tokens), [tokens]);
   const wNear = useMemo(() => getToken(config.nearAddress, tokens), [tokens]);
-  if (!near || !wNear) return null;
-  const popularTokensArray = [near, wNear];
+  const jumbo = useMemo(() => getToken(config.jumboAddress, tokens), [tokens]);
+
+  if (!near || !wNear || !jumbo) return null;
+  const popularTokensArray = [near, wNear, jumbo];
 
   return (
     <Container>

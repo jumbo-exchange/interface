@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import getConfig from 'services/config';
 import Big from 'big.js';
+import { INITIAL_INPUT_PLACEHOLDER } from 'utils/constants';
 import {
   Container,
   FilterBlock,
@@ -76,6 +77,8 @@ export default function Pool() {
   const location = useLocation();
   const [totalValueLocked, setTotalValueLocked] = useState('0');
   const [poolsArray, setPoolsArray] = useState<IPool[]>([]);
+  const [searchValue, setSearchValue] = useState<string>(INITIAL_INPUT_PLACEHOLDER);
+  const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum['All Pools']);
 
   useEffect(() => {
     if (id && pools[Number(id)]) {
@@ -96,16 +99,15 @@ export default function Pool() {
 
   useEffect(() => {
     const newPools = toArray(pools);
-    if (newPools.length !== poolsArray.length) {
+    if (loading) setPoolsArray(newPools);
+    if (newPools.length !== poolsArray.length && searchValue === INITIAL_INPUT_PLACEHOLDER) {
       setPoolsArray(newPools);
     }
     const newTotalValueLocked = newPools.reduce(
       (acc, item:IPool) => acc.add(item.totalLiquidity), Big(0),
     );
     setTotalValueLocked(newTotalValueLocked.toFixed(2));
-  }, [pools, poolsArray.length, loading]);
-
-  const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum['All Pools']);
+  }, [pools, poolsArray.length, loading, searchValue]);
 
   const mainInfo: IMainInfo[] = [
     {
@@ -166,6 +168,8 @@ export default function Pool() {
       <PoolSettings
         setPoolsArray={setPoolsArray}
         currentFilterPools={currentFilterPools}
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
       />
       <PoolResult
         poolsArray={poolsArray}
