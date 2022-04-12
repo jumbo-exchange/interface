@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { IPool } from 'store';
 import { FilterPoolsEnum } from 'pages/Pool';
 import styled from 'styled-components';
@@ -44,6 +44,17 @@ export default function PoolResult(
       .minus(a.totalLiquidity).toNumber(),
   );
 
+  const allPools = useMemo(() => poolsArraySorted
+    .filter((pool) => (isHiddenLowTL
+      ? Big(pool.totalLiquidity).gte(SHOW_MIN_TOTAL_LIQUIDITY)
+      : pool))
+    .map((pool) => (
+      <PoolCard
+        key={pool.id}
+        pool={pool}
+      />
+    )), [isHiddenLowTL, poolsArraySorted]);
+
   if (loading) {
     return (
       <Wrapper>
@@ -78,16 +89,7 @@ export default function PoolResult(
 
   return (
     <Wrapper>
-      {poolsArraySorted
-        .filter((pool) => (isHiddenLowTL
-          ? Big(pool.totalLiquidity).gte(SHOW_MIN_TOTAL_LIQUIDITY)
-          : pool))
-        .map((pool) => (
-          <PoolCard
-            key={pool.id}
-            pool={pool}
-          />
-        ))}
+      {allPools}
       {poolsArraySorted.length === 0
         && (
         <NoResult>
