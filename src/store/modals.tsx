@@ -42,6 +42,9 @@ type ModalsStoreContextType = {
   setRemoveLiquidityModalOpenState: (props: IIsOpenAndPool) => void;
   modalState: ModalEnum | null;
   setModalState: (modal: ModalEnum | null) => void;
+
+  isWithdrawDepositModalOpen: boolean;
+  setWithdrawDepositModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export const initialModalsState: ModalsStoreContextType = {
@@ -65,6 +68,9 @@ export const initialModalsState: ModalsStoreContextType = {
   setRemoveLiquidityModalOpenState: () => {},
   modalState: null,
   setModalState: () => {},
+
+  isWithdrawDepositModalOpen: false,
+  setWithdrawDepositModalOpen: () => {},
 };
 
 const ModalsStoreContextHOC = createContext<ModalsStoreContextType>(initialModalsState);
@@ -160,6 +166,10 @@ export const ModalsContextProvider = (
     setRemoveLiquidityModalOpenStateInner(props);
   };
 
+  const [isWithdrawDepositModalOpen, setWithdrawDepositModalOpen] = useState<boolean>(
+    initialModalsState.isWithdrawDepositModalOpen,
+  );
+
   return (
     <ModalsStoreContextHOC.Provider value={{
       isAccountModalOpen,
@@ -178,6 +188,8 @@ export const ModalsContextProvider = (
       setRemoveLiquidityModalOpenState,
       modalState,
       setModalState,
+      isWithdrawDepositModalOpen,
+      setWithdrawDepositModalOpen,
     }}
     >
       <Modals>

@@ -51,7 +51,6 @@ const basicChangeMethods = [
 const config = getConfig();
 const CREATE_POOL_NEAR_AMOUNT = '0.05';
 const CONTRACT_ID = config.contractId;
-
 export interface IPoolVolumes {
   [tokenId: string]: { input: string; output: string };
 }
@@ -271,7 +270,6 @@ export default class PoolContract {
             token_id: tokenId,
             amount: minAmounts[tokenId],
           },
-          gas: '100000000000000',
           amount: ONE_YOCTO_NEAR,
         },
       ],
@@ -291,6 +289,29 @@ export default class PoolContract {
       return acc;
     }, {});
     return sumValues;
+  }
+
+  async withdraw({ claimList }:{claimList: [string, string][]}) {
+    const transactions: Transaction[] = [];
+    const storageAmount = await this.checkStorageBalance();
+
+    if (storageAmount.length) transactions.push(...storageAmount);
+
+    claimList.map(([tokenId, value]) => transactions.push({
+      receiverId: this.contractId,
+      functionCalls: [
+        {
+          methodName: 'withdraw',
+          args: {
+            token_id: tokenId,
+            amount: value,
+          },
+          amount: ONE_YOCTO_NEAR,
+        },
+      ],
+    }));
+
+    sendTransactions(transactions, this.walletInstance);
   }
 
   async getWhitelistedTokens() {
@@ -313,6 +334,13 @@ export default class PoolContract {
     // @ts-expect-error: Property 'get_pool_shares' does not exist on type 'Contract'.
     return this.contract.get_pool_shares(
       { pool_id: poolId, account_id: accountId },
+    );
+  }
+
+  async getDeposits(accountId = wallet.getAccountId()) {
+    // @ts-expect-error: Property 'get_deposits' does not exist on type 'Contract'.
+    return this.contract.get_deposits(
+      { account_id: accountId },
     );
   }
 }
