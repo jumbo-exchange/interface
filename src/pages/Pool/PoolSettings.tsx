@@ -13,12 +13,17 @@ import { useTranslation } from 'react-i18next';
 import { getToken } from 'store/helpers';
 import { FilterPoolsEnum } from '.';
 
-const Container = styled.div`
+const Container = styled.div<{isAllPools: boolean}>`
   display: flex;
-  justify-content: space-between;
   align-items: center;
   width: 100%;
   margin: 1.5rem 0;
+  justify-content: ${({ isAllPools }) => (isAllPools ? 'space-between' : 'flex-start')};
+  & > div:not(:first-child){
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+  };
 `;
 
 const SearchInputBlock = styled.div`
@@ -26,7 +31,7 @@ const SearchInputBlock = styled.div`
   border: 1px solid ${({ theme }) => theme.globalGreyOp04};
   box-sizing: border-box;
   border-radius: 12px;
-  padding: 9px 9px;
+  padding: .563rem;
   max-width: 180px;
   & > svg {
     margin-right: .75rem;
@@ -88,6 +93,10 @@ const Title = styled.div`
   color: ${({ theme }) => theme.globalGrey};
 `;
 
+const NoWrapTitle = styled(Title)`
+  white-space: nowrap;
+`;
+
 const FilterBlock = styled.div`
   display: flex;
   & > button:nth-child(2) {
@@ -146,6 +155,54 @@ const RefreshBlock = styled.div`
   margin-left: 1.5rem;
 `;
 
+const WrapperRow = styled.div`
+  display: flex;
+  align-self: center;
+`;
+
+const Toggle = styled.div`
+  display: flex;
+  margin-left: .5rem;
+`;
+
+const LabelCheckbox = styled.label`
+  cursor: pointer;
+  display: flex;
+  & > input {
+    position: absolute;
+    visibility: hidden;
+  }
+`;
+
+const ToggleSwitch = styled.div`
+  display: inline-block;
+  background: ${({ theme }) => theme.globalGrey};
+  width: 32px;
+  height: 16px;
+  position: relative;
+  border-radius: 8px;
+  transition: background 0.25s;
+  &:before {
+    content: "";
+    display: block;
+    background: ${({ theme }) => theme.globalWhite};
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    position: absolute;
+    top: 2px;
+    left: 3px;
+    transition: left 0.25s;
+  }
+  #toggle:checked + & {
+    background: ${({ theme }) => theme.globalGreen0p02};
+    &:before {
+      background: ${({ theme }) => theme.globalGreen};
+      left: 18px;
+    }
+  }
+`;
+
 enum APRFiletEnum {
   '24H',
   '7D',
@@ -180,17 +237,22 @@ export default function PoolSettings({
   currentFilterPools,
   searchValue,
   setSearchValue,
+  setIsShowingEndedOnly,
 }:{
   setPoolsArray: Dispatch<SetStateAction<IPool[]>>,
   currentFilterPools: FilterPoolsEnum,
   searchValue: string,
   setSearchValue: Dispatch<SetStateAction<string>>,
+  setIsShowingEndedOnly: Dispatch<SetStateAction<boolean>>,
 }) {
   const { setCreatePoolModalOpen } = useModalsStore();
   const { pools, tokens } = useStore();
   const { t } = useTranslation();
 
   const [currentAPRFilter, setCurrentAPRFilter] = useState(APRFiletEnum['24H']);
+
+  const isAllPools = currentFilterPools === FilterPoolsEnum.AllPools;
+  const isFarming = currentFilterPools === FilterPoolsEnum.Farming;
 
   const onChange = (value: string) => {
     const newValue = value.trim().toUpperCase();
@@ -229,7 +291,7 @@ export default function PoolSettings({
           </RefreshBlock>
         </MobileRow>
         <MobileRow>
-          {currentFilterPools === FilterPoolsEnum['All Pools']
+          {isAllPools
           && (
           <Wrapper>
             <Title>{t('pool.sortBy')}</Title>
@@ -238,6 +300,21 @@ export default function PoolSettings({
               <ArrowDown />
             </SortBlock>
           </Wrapper>
+          )}
+          {isFarming && (
+          <WrapperRow>
+            <NoWrapTitle>{t('pool.endedOnly')}</NoWrapTitle>
+            <Toggle>
+              <LabelCheckbox htmlFor="toggle">
+                <input
+                  id="toggle"
+                  type="checkbox"
+                  onChange={(e) => setIsShowingEndedOnly(e.target.checked)}
+                />
+                <ToggleSwitch />
+              </LabelCheckbox>
+            </Toggle>
+          </WrapperRow>
           )}
           <APYWrapper>
             <Title>{t('pool.APYBasis')} <Tooltip title={t('tooltipTitle.APYBasis')} /></Title>
@@ -255,17 +332,19 @@ export default function PoolSettings({
             </FilterBlock>
           </APYWrapper>
         </MobileRow>
+        {!isFarming && (
         <ButtonSecondary
           onClick={() => setCreatePoolModalOpen(true)}
         >
           <LogoPlus /> {t('action.createPool')}
         </ButtonSecondary>
+        )}
       </MobileContainer>
     );
   }
 
   return (
-    <Container>
+    <Container isAllPools={isAllPools}>
       <SearchInputBlock>
         <SearchIcon />
         <SearchInput
@@ -274,6 +353,7 @@ export default function PoolSettings({
           placeholder={t('pool.search')}
         />
       </SearchInputBlock>
+      {isAllPools && (
       <Wrapper>
         <Title>{t('pool.sortBy')}</Title>
         <SortBlock>
@@ -281,6 +361,7 @@ export default function PoolSettings({
           <ArrowDown />
         </SortBlock>
       </Wrapper>
+      )}
       <APYWrapper>
         <Title>{t('pool.APYBasis')} <Tooltip title={t('tooltipTitle.APYBasis')} /></Title>
         <FilterBlock>
@@ -297,11 +378,29 @@ export default function PoolSettings({
         </FilterBlock>
       </APYWrapper>
       <Title><Refresh /></Title>
-      <ButtonSecondary
-        onClick={() => setCreatePoolModalOpen(true)}
-      >
-        <LogoPlus /> {t('action.createPool')}
-      </ButtonSecondary>
+      { isFarming
+        ? (
+          <WrapperRow>
+            <Title>{t('pool.endedOnly')}</Title>
+            <Toggle>
+              <LabelCheckbox htmlFor="toggle">
+                <input
+                  id="toggle"
+                  type="checkbox"
+                  onChange={(e) => setIsShowingEndedOnly(e.target.checked)}
+                />
+                <ToggleSwitch />
+              </LabelCheckbox>
+            </Toggle>
+          </WrapperRow>
+        )
+        : (
+          <ButtonSecondary
+            onClick={() => setCreatePoolModalOpen(true)}
+          >
+            <LogoPlus /> {t('action.createPool')}
+          </ButtonSecondary>
+        )}
     </Container>
   );
 }

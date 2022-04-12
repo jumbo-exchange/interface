@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import {
   initialModalsState, useModalsStore, useStore,
 } from 'store';
-import FungibleTokenContract from 'services/FungibleToken';
+import FungibleTokenContract from 'services/contracts/FungibleToken';
 import {
   Layout, Modal, ModalBlock, ModalTitle, ModalIcon,
 } from '../styles';
@@ -145,6 +145,7 @@ export default function SearchModal() {
   const { loading, tokens } = useStore();
   const { isSearchModalOpen, setSearchModalOpen } = useModalsStore();
   const { t } = useTranslation();
+  const { isOpen } = isSearchModalOpen;
 
   const initialTokens = Object.values(tokens);
   const [tokensArray, setTokensArray] = useState<FungibleTokenContract[]>([]);
@@ -172,7 +173,7 @@ export default function SearchModal() {
 
   return (
     <>
-      {isSearchModalOpen.isOpen && (
+      {isOpen && (
       <Layout onClick={() => setSearchModalOpen(initialModalsState.isSearchModalOpen)}>
         <Container>
           <SearchModalContainer onClick={(e) => e.stopPropagation()}>

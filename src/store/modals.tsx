@@ -4,7 +4,7 @@ import React, {
 } from 'react';
 import { IPool } from 'store';
 import Modals from 'components/Modals';
-import FungibleTokenContract from 'services/FungibleToken';
+import FungibleTokenContract from 'services/contracts/FungibleToken';
 
 enum ModalEnum {
   search,
@@ -43,6 +43,10 @@ type ModalsStoreContextType = {
   modalState: ModalEnum | null;
   setModalState: (modal: ModalEnum | null) => void;
 
+  stakeModalOpenState: {isOpen: boolean, pool: IPool | null};
+  setStakeModalOpenState: Dispatch<SetStateAction<{isOpen: boolean, pool: IPool | null}>>;
+  unStakeModalOpenState: {isOpen: boolean, pool: IPool | null};
+  setUnStakeModalOpenState: Dispatch<SetStateAction<{isOpen: boolean, pool: IPool | null}>>;
   isWithdrawDepositModalOpen: boolean;
   setWithdrawDepositModalOpen: Dispatch<SetStateAction<boolean>>;
 }
@@ -69,6 +73,10 @@ export const initialModalsState: ModalsStoreContextType = {
   modalState: null,
   setModalState: () => {},
 
+  stakeModalOpenState: { isOpen: false, pool: null },
+  setStakeModalOpenState: () => {},
+  unStakeModalOpenState: { isOpen: false, pool: null },
+  setUnStakeModalOpenState: () => {},
   isWithdrawDepositModalOpen: false,
   setWithdrawDepositModalOpen: () => {},
 };
@@ -166,6 +174,18 @@ export const ModalsContextProvider = (
     setRemoveLiquidityModalOpenStateInner(props);
   };
 
+  const [stakeModalOpenState, setStakeModalOpenState] = useState<{
+    isOpen: boolean,
+    pool: IPool | null
+  }>(
+    initialModalsState.stakeModalOpenState,
+  );
+  const [unStakeModalOpenState, setUnStakeModalOpenState] = useState<{
+    isOpen: boolean,
+    pool: IPool | null
+  }>(
+    initialModalsState.unStakeModalOpenState,
+  );
   const [isWithdrawDepositModalOpen, setWithdrawDepositModalOpen] = useState<boolean>(
     initialModalsState.isWithdrawDepositModalOpen,
   );
@@ -188,6 +208,11 @@ export const ModalsContextProvider = (
       setRemoveLiquidityModalOpenState,
       modalState,
       setModalState,
+
+      stakeModalOpenState,
+      setStakeModalOpenState,
+      unStakeModalOpenState,
+      setUnStakeModalOpenState,
       isWithdrawDepositModalOpen,
       setWithdrawDepositModalOpen,
     }}

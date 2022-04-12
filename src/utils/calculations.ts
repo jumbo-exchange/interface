@@ -1,10 +1,13 @@
 import Big, { BigSource } from 'big.js';
-import FungibleTokenContract from 'services/FungibleToken';
+import FungibleTokenContract from 'services/contracts/FungibleToken';
+import { IPool, ITokenPrice } from 'store';
 import { toArray } from 'utils';
+import { STABLE_LP_TOKEN_DECIMALS } from './constants';
 
 const BASE = 10;
 Big.RM = Big.roundDown;
 Big.DP = 30;
+const FEE_DIVISOR = 10000;
 
 export const round = (decimals: number, minAmountOut: string) => (
   Number.isInteger(Number(minAmountOut))
@@ -56,9 +59,9 @@ export function scientificNotationToString(strParam: string) {
   const flag = /e/.test(strParam);
   if (!flag) return strParam;
 
-  let sysbol = true;
+  let symbol = true;
   if (/e-/.test(strParam)) {
-    sysbol = false;
+    symbol = false;
   }
 
   const negative = Number(strParam) < 0 ? '-' : '';
@@ -80,7 +83,7 @@ export function scientificNotationToString(strParam: string) {
     fractionStr = '';
   }
 
-  if (sysbol) {
+  if (symbol) {
     if (!ifFraction) {
       return negative + wholeStr.padEnd(index + wholeStr.length, '0');
     }
@@ -139,3 +142,165 @@ export const checkInvalidAmount = (
   const balance = token ? balances[token.contractId] : '0';
   return Big(amount).gt(formatTokenAmount(balance, token.metadata.decimals));
 };
+
+export const calcD = (amp: number, comparableAmounts: number[]) => {
+  const tokenNumber = comparableAmounts.length;
+  const sumAmounts = comparableAmounts.reduce((acc, item) => acc + item, 0);
+  let dPrev = 0;
+  let d = sumAmounts;
+  for (let i = 0; i < 256; i += 1) {
+    let dProd = d;
+    for (let k = 0; k < comparableAmounts.length; k += 1) {
+      dProd = (dProd * d) / (comparableAmounts[k] * tokenNumber);
+    }
+    dPrev = d;
+    const ann = amp * tokenNumber ** tokenNumber;
+    const numerator = dPrev * (dProd * tokenNumber + ann * sumAmounts);
+    const denominator = dPrev * (ann - 1) + dProd * (tokenNumber + 1);
+    d = numerator / denominator;
+    if (Math.abs(d - dPrev) <= 1) break;
+  }
+  return d;
+};
+
+export const calcY = (
+  amp: number,
+  xcamount: number,
+  currentComparableAmounts: number[],
+  indexX: number,
+  indexY: number,
+) => {
+  const tokenNumber = currentComparableAmounts.length;
+  const ann = amp * tokenNumber ** tokenNumber;
+  const d = calcD(amp, currentComparableAmounts);
+  let s = xcamount;
+  let c = (d * d) / xcamount;
+  for (let i = 0; i < tokenNumber; i += 1) {
+    if (i !== indexX && i !== indexY) {
+      s += currentComparableAmounts[i];
+      c = (c * d) / currentComparableAmounts[i];
+    }
+  }
+  c = (c * d) / (ann * tokenNumber ** tokenNumber);
+  const b = d / ann + s;
+  let yPrev = 0;
+  let y = d;
+  for (let i = 0; i < 256; i += 1) {
+    yPrev = y;
+    const yNumerator = y ** 2 + c;
+    const yDenominator = 2 * y + b - d;
+    y = yNumerator / yDenominator;
+    if (Math.abs(y - yPrev) <= 1) break;
+  }
+
+  return y;
+};
+
+const normalizedTradeFee = (
+  tokenNumber: number,
+  amount: number,
+  tradeFee: number,
+) => {
+  const adjustedTradeFee = Number(
+    Math.floor((tradeFee * tokenNumber) / (4 * (tokenNumber - 1))),
+  );
+  return (amount * adjustedTradeFee) / FEE_DIVISOR;
+};
+
+export const calculateAddLiquidity = (
+  amp: number,
+  depositAmounts: number[],
+  oldAmounts: number[],
+  poolTokenSupply: number,
+  tradeFee: number,
+) => {
+  const tokenNum = oldAmounts.length;
+  const d0 = calcD(amp, oldAmounts);
+  const comparableAmounts = [];
+  for (let i = 0; i < oldAmounts.length; i += 1) {
+    comparableAmounts[i] = oldAmounts[i] + depositAmounts[i];
+  }
+  const d1 = calcD(amp, comparableAmounts);
+
+  if (Number(d1) <= Number(d0)) { throw new Error('D1 need less then or equal to D0.'); }
+
+  for (let i = 0; i < tokenNum; i += 1) {
+    const idealBalance = (oldAmounts[i] * d1) / d0;
+    const difference = Math.abs(idealBalance - comparableAmounts[i]);
+    const fee = normalizedTradeFee(tokenNum, difference, tradeFee);
+    comparableAmounts[i] -= fee;
+  }
+  const d2 = calcD(amp, comparableAmounts);
+
+  if (Number(d1) < Number(d2)) throw new Error('D2 need less then D1.');
+
+  if (Number(d2) <= Number(d0)) { throw new Error('D1 need less then or equal to D0.'); }
+  const mintShares = (poolTokenSupply * (d2 - d0)) / d0;
+  const diffShares = (poolTokenSupply * (d1 - d0)) / d0;
+
+  return [mintShares, diffShares - mintShares];
+};
+
+export const toComparableAmount = (
+  supplies: { [key: string]: string }, tokens: FungibleTokenContract[],
+): number[] | null => {
+  try {
+    const suppliesArray = Object.entries(supplies);
+    return suppliesArray.map(([tokenId, supply]) => {
+      const token = tokens.find((el) => el.contractId === tokenId);
+      if (!token) return 0;
+      return Big(supply).mul(Big(BASE).pow(
+        STABLE_LP_TOKEN_DECIMALS - token.metadata.decimals,
+      )).toNumber();
+    });
+  } catch (e) {
+    return null;
+  }
+};
+
+export const calcYourLiquidity = (
+  tokensData: {[key:string]: FungibleTokenContract},
+  pricesData: {[key: string]: ITokenPrice},
+  pool: IPool,
+) => {
+  const [tokenInputName, tokenOutputName] = pool.tokenAccountIds;
+  const tokenInput = tokensData[tokenInputName] ?? null;
+  const tokenOutput = tokensData[tokenOutputName] ?? null;
+  const priceInputToken = pricesData[tokenInputName]?.price ?? 0;
+  const priceOutputToken = pricesData[tokenOutputName]?.price ?? 0;
+
+  if (!tokenInput || !tokenOutput) return null;
+
+  const checkTotalSupply = pool?.sharesTotalSupply === '0' ? '1' : pool?.sharesTotalSupply;
+
+  const minAmounts = Object.entries(pool.supplies).reduce<{
+    [tokenId: string]: string;
+  }>((acc, [tokenId, totalSupply]) => {
+    acc[tokenId] = calculateFairShare(
+      totalSupply,
+      pool.shares || '0',
+      checkTotalSupply,
+    );
+    return acc;
+  }, {});
+  const [inputToken, outputToken] = Object.values(minAmounts).map((el) => el);
+
+  const inputAmount = formatTokenAmount(
+    Big(inputToken).mul(priceInputToken).toFixed(),
+    tokenInput.metadata.decimals,
+  );
+  const outputAmount = formatTokenAmount(
+    Big(outputToken).mul(priceOutputToken).toFixed(),
+    tokenOutput.metadata.decimals,
+  );
+
+  const yourLiquidityAmount = removeTrailingZeros(formatBalance(
+    Big(inputAmount).plus(outputAmount).toFixed(2),
+  ));
+  return yourLiquidityAmount;
+};
+
+export const displayPriceWithComma = (str: string) => str.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+export const displayPriceWithSpace = (str: string) => str.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+export const secondsToMilliseconds = (date: number): number => date * 1000;

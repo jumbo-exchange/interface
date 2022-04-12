@@ -6,7 +6,7 @@ import {
 } from 'store';
 
 import { useTranslation } from 'react-i18next';
-import FungibleTokenContract from 'services/FungibleToken';
+import FungibleTokenContract from 'services/contracts/FungibleToken';
 import { getCurrentBalance, getCurrentPrice } from './constants';
 
 interface ICurrentToken {

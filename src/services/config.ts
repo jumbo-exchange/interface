@@ -10,12 +10,17 @@ export default function getConfig(
         walletUrl: 'https://wallet.testnet.near.org',
         helperUrl: 'https://helper.testnet.near.org',
         explorerUrl: 'https://explorer.testnet.near.org',
-        indexerUrl: 'https://testnet-indexer.ref-finance.com',
-        contractId: 'jumbo-testnet-v3.solniechniy.testnet',
+        indexerUrl: 'https://jumbo-ps.hapi.farm',
+        contractId: 'jumbo-exchange-v1.rkonoval.testnet',
+
+        //!
+        farmContractId: 'jumbo-farming-v2.rkonoval.testnet',
+        //!
+
         nearAddress: 'wrap.testnet',
         jumboAddress: 'jumbo_exchange_v2.solniechniy.testnet',
-        jumboPoolId: 4,
-        stablePoolId: 0,
+        jumboPoolId: 1,
+        stablePoolId: 3,
       };
     default:
       return {
@@ -26,6 +31,11 @@ export default function getConfig(
         explorerUrl: 'https://explorer.mainnet.near.org',
         indexerUrl: 'https://price-service.jumbo.exchange',
         contractId: 'v1.jumbo_exchange.near',
+
+        //!
+        farmContractId: 'jumbo-farming-v2.rkonoval.testnet',
+        //!
+
         nearAddress: 'wrap.near',
         jumboAddress: 'token.jumbo_exchange.near',
         jumboPoolId: 4,

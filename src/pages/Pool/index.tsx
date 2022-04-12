@@ -1,15 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, {
+  useEffect, useState, useMemo, useCallback,
+} from 'react';
 import { FilterButton } from 'components/Button';
 import { isMobile } from 'utils/userAgent';
-import { IPool, useModalsStore, useStore } from 'store';
+import {
+  IFarm, IPool, useModalsStore, useStore,
+} from 'store';
 import { useLocation, useParams } from 'react-router-dom';
-import { toAddLiquidityPage, toRemoveLiquidityPage } from 'utils/routes';
+import {
+  toAddLiquidityPage, toRemoveLiquidityPage,
+  toStakePage, toUnStakeAndClaimPage,
+} from 'utils/routes';
 import { toArray } from 'utils';
 import { useTranslation } from 'react-i18next';
 
 import getConfig from 'services/config';
 import Big from 'big.js';
-import { INITIAL_INPUT_PLACEHOLDER } from 'utils/constants';
+import { displayPriceWithComma } from 'utils/calculations';
+import FarmContract from 'services/contracts/FarmContract';
+import { wallet } from 'services/near';
+import moment from 'moment';
+import { UPDATE_CLAIM_REWARD_DATE, CLAIM_REWARD_DATE_KEY, INITIAL_INPUT_PLACEHOLDER } from 'utils/constants';
 import {
   Container,
   FilterBlock,
@@ -23,38 +34,38 @@ import {
 import PoolSettings from './PoolSettings';
 import PoolResult from './PoolResult';
 import Slider from './Slider';
+import ClaimAllButton, { getCanClaimAll } from './ClaimAllButton';
 
 export enum FilterPoolsEnum {
-  'All Pools',
-  'Your Liquidity',
+  'AllPools',
+  'YourLiquidity',
   'Farming',
-  'Smart Pools',
+  'SmartPools',
 }
 
-interface IFilters {
+export interface IFilters {
   title: string
   isActive: FilterPoolsEnum,
   disabled?: boolean,
   logoSoon?: boolean,
 }
 
-const filters: IFilters[] = [
+export const filters: IFilters[] = [
   {
     title: 'All Pools',
-    isActive: FilterPoolsEnum['All Pools'],
+    isActive: FilterPoolsEnum.AllPools,
   },
   {
     title: 'Your Liquidity',
-    isActive: FilterPoolsEnum['Your Liquidity'],
+    isActive: FilterPoolsEnum.YourLiquidity,
   },
   {
     title: 'Farming',
     isActive: FilterPoolsEnum.Farming,
-    disabled: true,
   },
   {
     title: 'Smart Pools',
-    isActive: FilterPoolsEnum['Smart Pools'],
+    isActive: FilterPoolsEnum.SmartPools,
     disabled: true,
     logoSoon: !isMobile,
   },
@@ -63,22 +74,34 @@ const filters: IFilters[] = [
 export interface IMainInfo {
   title: string,
   label: string,
+  show: boolean,
 }
 
 export default function Pool() {
+  const isConnected = wallet.isSignedIn();
   const { t } = useTranslation();
-
+  const farmContract = useMemo(() => new FarmContract(), []);
   const {
-    pools, loading, prices,
+    pools, loading, prices, userRewards, farms, setUserRewards,
   } = useStore();
-  const { setAddLiquidityModalOpenState, setRemoveLiquidityModalOpenState } = useModalsStore();
+  const {
+    setAddLiquidityModalOpenState,
+    setRemoveLiquidityModalOpenState,
+    setStakeModalOpenState,
+    setUnStakeModalOpenState,
+  } = useModalsStore();
   const { id } = useParams<'id'>();
   const config = getConfig();
   const location = useLocation();
   const [totalValueLocked, setTotalValueLocked] = useState('0');
+  const [totalDayVolume, setTotalDayVolume] = useState('0');
   const [poolsArray, setPoolsArray] = useState<IPool[]>([]);
   const [searchValue, setSearchValue] = useState<string>(INITIAL_INPUT_PLACEHOLDER);
-  const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum['All Pools']);
+  const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum.AllPools);
+  const [isShowingEndedOnly, setIsShowingEndedOnly] = useState<boolean>(false);
+
+  const rewardList = Object.entries(userRewards);
+  const canClaimAll = useMemo(() => getCanClaimAll(rewardList), [rewardList]);
 
   useEffect(() => {
     if (id && pools[Number(id)]) {
@@ -87,12 +110,20 @@ export default function Pool() {
         setRemoveLiquidityModalOpenState({ isOpen: true, pool });
       } else if (location.pathname === toAddLiquidityPage(pool.id)) {
         setAddLiquidityModalOpenState({ isOpen: true, pool });
+      } else if (location.pathname === toStakePage(pool.id)) {
+        setStakeModalOpenState({ isOpen: true, pool });
+      } else if (location.pathname === toUnStakeAndClaimPage(pool.id)) {
+        setUnStakeModalOpenState({ isOpen: true, pool });
       }
     }
   }, [
     id,
     pools,
     location.pathname,
+    setRemoveLiquidityModalOpenState,
+    setAddLiquidityModalOpenState,
+    setStakeModalOpenState,
+    setUnStakeModalOpenState,
   ]);
 
   useEffect(() => {
@@ -104,27 +135,82 @@ export default function Pool() {
     const newTotalValueLocked = newPools.reduce(
       (acc, item:IPool) => acc.add(item.totalLiquidity), Big(0),
     );
+    const newTotalDayVolume = newPools.reduce(
+      (acc, item:IPool) => acc.add(item.dayVolume), Big(0),
+    );
     setTotalValueLocked(newTotalValueLocked.toFixed(2));
+    setTotalDayVolume(newTotalDayVolume.toFixed());
   }, [pools, poolsArray.length, loading, searchValue]);
 
   const mainInfo: IMainInfo[] = [
     {
       title: t('pool.totalValueLocked'),
-      label: Big(totalValueLocked ?? 0).lte(0) ? '-' : `$${totalValueLocked}`,
+      label: Big(totalValueLocked ?? 0).lte(0) ? '-' : `$${displayPriceWithComma(totalValueLocked)}`,
+      show: true,
     },
     {
       title: t('pool.totalDayLocked'),
-      label: '-',
+      label: Big(totalDayVolume).lte(0) ? '-' : `$${displayPriceWithComma(totalDayVolume)}`,
+      show: true,
     },
     {
       title: t('pool.jumboPrice'),
-      label: `$${prices[config.jumboAddress].price ?? 0}` || '-',
+      label: `$${prices[config.jumboAddress].price}` || '-',
+      show: true,
     },
     {
       title: t('pool.weeklyEmissions'),
       label: '-',
+      show: !canClaimAll,
     },
   ];
+
+  const userUnclaimedRewards = Object.values(farms)
+    .reduce((acc: {[key: string]: string}, farm: IFarm) => {
+      if (!farm.userUnclaimedReward) return acc;
+      const rewardAmount = acc[farm.seedId];
+      if (rewardAmount) {
+        acc[farm.seedId] = Big(rewardAmount).add(farm.userUnclaimedReward).toString();
+        return acc;
+      }
+      if (Big(farm.userUnclaimedReward || 0).lte(0)) {
+        return acc;
+      }
+      return {
+        ...acc,
+        [farm.seedId]: farm.userUnclaimedReward,
+      };
+    }, {});
+
+  const haveUserUnclaimReward = Object.values(userUnclaimedRewards).length > 0;
+
+  const tryGetLocalStorage = (localKey: string) => {
+    const date = localStorage.getItem(localKey);
+    if (!date) {
+      const currentDate = moment().format();
+      localStorage.setItem(localKey, currentDate);
+      return moment(currentDate).valueOf() - UPDATE_CLAIM_REWARD_DATE;
+    }
+    return moment(date).valueOf();
+  };
+
+  const getUpdateUserReward = useCallback(async () => {
+    await farmContract.claimRewardBySeed(Object.keys(userUnclaimedRewards));
+    const newRewards = await farmContract.getRewards();
+    setUserRewards(newRewards);
+    localStorage.setItem(CLAIM_REWARD_DATE_KEY, moment().format());
+  }, [farmContract, setUserRewards, userUnclaimedRewards]);
+
+  useEffect(() => {
+    if (loading) return;
+    const currentDate = moment().valueOf();
+    const previousDate = tryGetLocalStorage(CLAIM_REWARD_DATE_KEY);
+    if (!isConnected
+      || !haveUserUnclaimReward
+      || currentDate - previousDate < UPDATE_CLAIM_REWARD_DATE) return;
+
+    getUpdateUserReward();
+  }, [getUpdateUserReward, haveUserUnclaimReward, isConnected, loading, userUnclaimedRewards]);
 
   return (
     <Container>
@@ -143,23 +229,27 @@ export default function Pool() {
         ))}
       </FilterBlock>
       {isMobile
-        ? <Slider mainInfo={mainInfo} />
+        ? <Slider mainInfo={mainInfo} rewardList={rewardList} />
         : (
           <InformationBlock>
             <WrapperInfoBlock>
-              {mainInfo.map((el) => (
-                <InfoBLock
-                  key={el.title}
-                >
-                  <TitleInfo>
-                    {el.title}
-                  </TitleInfo>
-                  <LabelInfo>
-                    {el.label}
-                  </LabelInfo>
-                </InfoBLock>
-              ))}
+              {mainInfo.map((el) => {
+                if (!el.show) return null;
+                return (
+                  <InfoBLock
+                    key={el.title}
+                  >
+                    <TitleInfo>
+                      {el.title}
+                    </TitleInfo>
+                    <LabelInfo>
+                      {el.label}
+                    </LabelInfo>
+                  </InfoBLock>
+                );
+              })}
             </WrapperInfoBlock>
+            <ClaimAllButton rewardList={rewardList} />
           </InformationBlock>
         )}
 
@@ -168,11 +258,13 @@ export default function Pool() {
         currentFilterPools={currentFilterPools}
         searchValue={searchValue}
         setSearchValue={setSearchValue}
+        setIsShowingEndedOnly={setIsShowingEndedOnly}
       />
       <PoolResult
         poolsArray={poolsArray}
         currentFilterPools={currentFilterPools}
-        loading={loading}
+        setCurrentFilterPools={setCurrentFilterPools}
+        isShowingEndedOnly={isShowingEndedOnly}
       />
     </Container>
   );

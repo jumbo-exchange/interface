@@ -5,6 +5,8 @@ import CreatePoolModal from './CreatePoolModal';
 import SearchModal from './SearchModal';
 import TooltipModal from './TooltipModal';
 import RemoveLiquidityModal from './RemoveLiquidityModal';
+import StakeModal from './StakeModal';
+import UnStakeModal from './UnStakeModal';
 import WithdrawDepositModal from './WithdrawDepositModal';
 
 export default function Modals({ children }: {children: JSX.Element}) {
@@ -16,6 +18,8 @@ export default function Modals({ children }: {children: JSX.Element}) {
       <RemoveLiquidityModal />
       <SearchModal />
       <TooltipModal />
+      <StakeModal />
+      <UnStakeModal />
       <WithdrawDepositModal />
       {children}
     </>

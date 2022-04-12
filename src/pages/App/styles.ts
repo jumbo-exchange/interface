@@ -32,6 +32,7 @@ export const Header = styled.div`
   `}
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     padding: 1.5rem 1rem 0.875rem 1rem;
+    margin-bottom: 1.125rem;
   `}
 `;
 

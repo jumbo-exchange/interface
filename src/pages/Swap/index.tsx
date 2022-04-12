@@ -9,13 +9,13 @@ import {
 import {
   BAD_PRICE_IMPACT, FEE_DIVISOR, NEAR_TOKEN_ID, SLIPPAGE_TOLERANCE_DEFAULT,
 } from 'utils/constants';
-import SwapContract from 'services/SwapContract';
+import SwapContract from 'services/contracts/SwapContract';
 import useDebounce from 'hooks/useDebounce';
 import {
   formatTokenAmount, parseTokenAmount, removeTrailingZeros,
   percentLess, checkInvalidAmount, formatBalance,
 } from 'utils/calculations';
-import FungibleTokenContract from 'services/FungibleToken';
+import FungibleTokenContract from 'services/contracts/FungibleToken';
 import getConfig from 'services/config';
 import Big from 'big.js';
 
@@ -23,7 +23,7 @@ import { calculatePriceImpact } from 'services/swap';
 import { useTranslation } from 'react-i18next';
 
 import Refresh from 'components/Refresh';
-import { useRefresh } from 'services/refreshService';
+import { useRefresh } from 'services/helpers/refreshService';
 import Tooltip from 'components/Tooltip';
 import useNavigateSwapParams from 'hooks/useNavigateSwapParams';
 import Input from './SwapInput';

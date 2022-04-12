@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { SpecialContainer } from 'components/SpecialContainer';
-import { IMainInfo } from './index';
-import { InfoBLock, TitleInfo, LabelInfo } from './styles';
+import { IMainInfo } from '.';
+import {
+  InfoBLock, TitleInfo, LabelInfo,
+} from './styles';
+import ClaimAllButton, { getCanClaimAll } from './ClaimAllButton';
 
 const Container = styled(SpecialContainer)`
   border-radius: 24px;
@@ -31,13 +34,11 @@ const Slide = styled.div`
   scroll-snap-align: center;
 `;
 
-const SliderNav = styled.div`
-  position: absolute;
-  bottom: 15%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  text-align: center;
+const SliderNav = styled.div<{canClaimAll: boolean}>`
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  margin-bottom: ${({ canClaimAll }) => (canClaimAll ? '1rem' : '0')};
 `;
 
 const SliderLink = styled.div`
@@ -49,7 +50,15 @@ const SliderLink = styled.div`
   margin: 0 .25rem 0;
 `;
 
-export default function Slider({ mainInfo }: {mainInfo: IMainInfo[]}) {
+export default function Slider(
+  {
+    mainInfo,
+    rewardList,
+  }: {
+    mainInfo: IMainInfo[],
+    rewardList: [string, string][]
+},
+) {
   const newMainInfo = [
     {
       array: [mainInfo[0], mainInfo[2]],
@@ -58,6 +67,8 @@ export default function Slider({ mainInfo }: {mainInfo: IMainInfo[]}) {
       array: [mainInfo[1], mainInfo[3]],
     },
   ];
+
+  const canClaimAll = useMemo(() => getCanClaimAll(rewardList), [rewardList]);
 
   return (
     <Container>
@@ -77,10 +88,11 @@ export default function Slider({ mainInfo }: {mainInfo: IMainInfo[]}) {
           </Slide>
         ))}
       </Slides>
-      <SliderNav>
+      <SliderNav canClaimAll={canClaimAll}>
         <SliderLink />
         <SliderLink />
       </SliderNav>
+      <ClaimAllButton rewardList={rewardList} />
     </Container>
   );
 }

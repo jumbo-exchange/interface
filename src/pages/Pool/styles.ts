@@ -36,6 +36,7 @@ export const InformationBlock = styled(SpecialContainer)`
   border-radius: 24px;
   justify-content: space-between;
   margin: 0;
+  min-height: 90px;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     flex-direction: column;
     & > button {

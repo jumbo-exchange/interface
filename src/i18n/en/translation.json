@@ -19,6 +19,8 @@
     "swap": "Swap",
     "addLiquidity": "Add Liquidity",
     "removeLiquidity": "Withdraw",
+    "stake": "Stake",
+    "unStakeAndClaim": "Unstake & Claim",
     "claim": "Claim",
     "claimAll": "Claim All",
     "ok": "Ok"
@@ -44,10 +46,28 @@
     "totalLiquidity": "Total Liquidity",
     "dayVolume": "24h Volume",
     "APY": "APY",
+    "yourLiquidity": "Your Liquidity",
 
     "search": "Search",
     "sortBy": "Sort by",
-    "APYBasis": "APY Basis"
+    "APYBasis": "APY Basis",
+    "endedOnly": "Ended Only"
+  },
+
+  "farm": {
+    "totalStaked": "Total Staked",
+    "yourStaked": "Your Staked",
+    "APY": "APY",
+
+    "rewardTokens": "Reward Tokens",
+
+    "status": {
+      "active": "Active",
+      "pending": "Pending",
+      "ended": "Ended",
+
+      "available": "Available"
+    }
   },
 
   "accountModal": {
@@ -104,7 +124,8 @@
     "transactionMayFail": "Your transaction may be frontrun",
     "zeroFee": "Total Fee cannot be zero",
     "badPriceImpact": "Price impact is TOO HIGH.",
-    "badPriceImpactDesc": "DON'T SWAP unless you know what you are doing"
+    "badPriceImpactDesc": "DON'T SWAP unless you know what you are doing",
+    "stakeMinDeposit": "Your deposit must be greater than 0.00001"
   },
 
   "tooltipTitle": {
@@ -118,11 +139,15 @@
     "totalLiquidity": "Amount of liquidity currently available in the given pool",
     "dayVolume": "Daily volume of trading activity",
     "APY": "Annual Percentage Yield",
-  
+    "yourLiquidity": "Shows how much dollar liquidity you have in this pool",
+
     "totalFee": "A sum paid for creating a pool",
     "lPFee": "A sum paid for providing liquidity",
     "protocolFee": "A sum deducted from pool creation that accrues on platform",
-    "referralFee": "A sum you get from referred user as reward"
+    "referralFee": "A sum you get from referred user as reward",
+    
+    "totalStaked": "Amount of staked in the current pool",
+    "yourStaked": "Amount of YOUR staked in the current pool"
   },
   
   "footer": {
@@ -186,6 +211,19 @@
     "removeLiquidity": "Remove Liquidity",
     "transactionFailed": "Transaction failed",
     "nearDeposit": "Near Deposit",
-    "nearWithdraw": "Near Withdraw"
+    "nearWithdraw": "Near Withdraw",
+
+    "stake": "Stake",
+    "unstake": "Unstake"
+  },
+
+  "stakeModal" : {
+    "stake": "Stake",
+    "shares": "Shares"
+  },
+
+  "unStakeModal" : {
+    "unStake": "Unstake and Claim",
+    "shares": "Shares"
   }
 }

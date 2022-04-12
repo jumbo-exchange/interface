@@ -93,7 +93,7 @@ export default function AccountModal() {
                 </WalletRow>
               )
               : (
-                <WalletRow onClick={() => nearWallet.requestSignIn(config.contractId)}>
+                <WalletRow onClick={() => nearWallet.requestSignIn(config.farmContractId)}>
                   <WalletTitle>
                     <img src={nearLogo} alt="logo" />
                     Near
@@ -107,6 +107,7 @@ export default function AccountModal() {
             <ButtonSecondary onClick={() => {
               nearWallet.signOut();
               setWallet(null);
+              window.location.reload();
             }}
             >
               <WalletIcon /> {t('accountModal.disconnect')}
