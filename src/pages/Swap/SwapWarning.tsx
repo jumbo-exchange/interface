@@ -149,6 +149,7 @@ export default function RenderWarning() {
     ? currentPools[0].tokenAccountIds.find((el) => el !== inputToken?.contractId) : null;
 
   const intersectionToken = tokens[intersectionTokenId ?? ''] ?? null;
+  const intersectionTokenBalance = getTokenBalance(intersectionToken?.contractId);
 
   const isBalancesEmpty = Big(firstTokenBalance).lte('0') || Big(secondTokenBalance).lte('0');
 
@@ -333,7 +334,7 @@ export default function RenderWarning() {
               </LogoContainer>
               {outputToken?.metadata.symbol}
             </div>
-            {!isBalancesEmpty ? (
+            {(!isBalancesEmpty || Big(intersectionTokenBalance).gt('0')) ? (
               <ButtonSecondary
                 onClick={() => {
                   navigate(toAddLiquidityPage(poolWithoutLiquidity?.id));
