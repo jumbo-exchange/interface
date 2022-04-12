@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import getConfig from 'services/config';
 import Warning from 'components/Warning';
 import styled from 'styled-components';
 import Big from 'big.js';
-import { NEAR_TOKEN_ID } from 'utils/constants';
+import { NEAR_TOKEN_ID, SHOW_WARNING_PRICE_IMPACT } from 'utils/constants';
 import { useStore } from 'store';
 import { ReactComponent as RouteArrow } from 'assets/images-app/route-arrow.svg';
 import { ReactComponent as Wallet } from 'assets/images-app/wallet.svg';
@@ -13,6 +13,8 @@ import { useNavigate } from 'react-router-dom';
 import { wallet } from 'services/near';
 import { toAddLiquidityPage } from 'utils/routes';
 import { useTranslation } from 'react-i18next';
+import { getToken } from 'store/helpers';
+import useNavigateSwapParams from 'hooks/useNavigateSwapParams';
 
 const config = getConfig();
 
@@ -96,7 +98,7 @@ const LogoWallet = styled(Wallet)`
   margin-right: .313rem;
 `;
 
-export default function RenderWarning() {
+export default function RenderWarning({ priceImpact }: {priceImpact: string}) {
   const {
     loading,
     tokens,
@@ -106,16 +108,16 @@ export default function RenderWarning() {
     outputToken,
     setOutputToken,
     getTokenBalance,
-    getToken,
     currentPools,
     setCurrentPools,
   } = useStore();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isConnected = wallet.isSignedIn();
+  const navigateSwapTokens = useNavigateSwapParams();
 
-  const near = getToken(NEAR_TOKEN_ID);
-  const wNear = getToken(config.nearAddress);
+  const near = useMemo(() => getToken(NEAR_TOKEN_ID, tokens), [tokens]);
+  const wNear = useMemo(() => getToken(config.nearAddress, tokens), [tokens]);
 
   const poolPathInputToken = getPoolsPath(
     inputToken?.contractId ?? '',
@@ -123,18 +125,21 @@ export default function RenderWarning() {
     toArray(pools),
     tokens,
   );
+
   const poolPathOutputToken = getPoolsPath(
     wNear?.contractId ?? '',
     outputToken?.contractId ?? '',
     toArray(pools),
     tokens,
   );
+
   const poolPathToken = getPoolsPath(
     inputToken?.contractId ?? '',
     outputToken?.contractId ?? '',
     toArray(pools),
     tokens,
   );
+
   const havePoolPathInputToken = poolPathInputToken.length > 0;
   const havePoolPathOutputToken = poolPathOutputToken.length > 0;
   const havePoolPathToken = poolPathToken.length > 0;
@@ -152,6 +157,17 @@ export default function RenderWarning() {
   const intersectionTokenBalance = getTokenBalance(intersectionToken?.contractId);
 
   const isBalancesEmpty = Big(firstTokenBalance).lte('0') || Big(secondTokenBalance).lte('0');
+
+  if (Big(priceImpact).gt(SHOW_WARNING_PRICE_IMPACT)) {
+    return (
+      <WarningBlock>
+        <Warning
+          title={t('warningMessage.badPriceImpact')}
+          description={t('warningMessage.badPriceImpactDesc')}
+        />
+      </WarningBlock>
+    );
+  }
 
   if (!loading
     && (
@@ -195,6 +211,10 @@ export default function RenderWarning() {
               onClick={() => {
                 setInputToken(near);
                 setOutputToken(wNear);
+                if (near && wNear) {
+                  navigateSwapTokens(near.metadata.symbol, wNear.metadata.symbol);
+                  setCurrentPools([]);
+                }
               }}
             >
               <LogoWallet />
@@ -216,10 +236,16 @@ export default function RenderWarning() {
       if (nearIsInput) {
         setInputToken(wNear);
         setOutputToken(outputToken);
+        if (wNear && outputToken) {
+          navigateSwapTokens(wNear.metadata.symbol, outputToken.metadata.symbol);
+        }
         setCurrentPools(poolPathOutputToken);
       } else {
         setInputToken(inputToken);
         setOutputToken(wNear);
+        if (wNear && inputToken) {
+          navigateSwapTokens(inputToken?.metadata.symbol, wNear?.metadata.symbol);
+        }
         setCurrentPools(poolPathInputToken);
       }
     };

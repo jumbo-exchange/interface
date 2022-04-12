@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import styled from 'styled-components';
 import Tooltip from 'components/Tooltip';
 import Refresh from 'components/Refresh';
@@ -7,9 +7,10 @@ import { ReactComponent as SearchIcon } from 'assets/images-app/search-icon.svg'
 import { ReactComponent as ArrowDownIcon } from 'assets/images-app/icon-arrow-down.svg';
 import { ReactComponent as Plus } from 'assets/images-app/plus.svg';
 import { isMobile } from 'utils/userAgent';
-import { useModalsStore, useStore } from 'store';
+import { IPool, useModalsStore, useStore } from 'store';
 import { toArray } from 'utils';
 import { useTranslation } from 'react-i18next';
+import { getToken } from 'store/helpers';
 import { FilterPoolsEnum } from '.';
 
 const Container = styled.div`
@@ -177,16 +178,19 @@ const aprFilters: IAPRFilters[] = [
 export default function PoolSettings({
   setPoolsArray,
   currentFilterPools,
+  searchValue,
+  setSearchValue,
 }:{
-  setPoolsArray: any,
-  currentFilterPools: FilterPoolsEnum
+  setPoolsArray: Dispatch<SetStateAction<IPool[]>>,
+  currentFilterPools: FilterPoolsEnum,
+  searchValue: string,
+  setSearchValue: Dispatch<SetStateAction<string>>,
 }) {
   const { setCreatePoolModalOpen } = useModalsStore();
-  const { pools, getToken } = useStore();
+  const { pools, tokens } = useStore();
   const { t } = useTranslation();
 
   const [currentAPRFilter, setCurrentAPRFilter] = useState(APRFiletEnum['24H']);
-  const [searchValue, setSearchValue] = useState<string>('');
 
   const onChange = (value: string) => {
     const newValue = value.trim().toUpperCase();
@@ -196,11 +200,11 @@ export default function PoolSettings({
         .filter((el) => el.tokenAccountIds
           .some((item) => {
             const formattedValue = newValue.toLowerCase();
-            const tokenData = getToken(item)?.metadata;
-            if (!tokenData) return false;
+            const token = getToken(item, tokens);
+            if (!token || !token.metadata) return false;
 
-            return tokenData.symbol.toLowerCase().includes(formattedValue)
-            || tokenData.name.toLowerCase().includes(formattedValue)
+            return token.metadata.symbol.toLowerCase().includes(formattedValue)
+            || token.metadata.name.toLowerCase().includes(formattedValue)
             || item.includes(formattedValue);
           }))
       : toArray(pools);

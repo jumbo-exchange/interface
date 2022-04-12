@@ -10,7 +10,7 @@ import {
 import type { LinkProps } from 'react-router-dom';
 import useTransactionHash from 'services/receiptsService';
 import { wallet } from 'services/near';
-import Error from 'pages/Error';
+
 import {
   ALL_MATCH,
   LANDING,
@@ -23,6 +23,7 @@ import { RefreshContextProvider } from 'services/refreshService';
 import { ModalsContextProvider, useStore } from 'store';
 import { ToastContainer } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import Menu from 'components/Menu';
 import {
   Container,
   Header,
@@ -39,6 +40,7 @@ import ConnectionButton from './ConnectionButton';
 
 const Swap = lazy(() => import('pages/Swap'));
 const Pool = lazy(() => import('pages/Pool'));
+const Error = lazy(() => import('pages/Error'));
 
 function CustomLink({
   children, to,
@@ -87,18 +89,18 @@ export default function App() {
                 {t('general.pool')}
               </CustomLink>
               <NavButton disabled>{t('general.staking')}</NavButton>
-              <NavButton disabled>...</NavButton>
             </NavBar>
             <BlockButton>
               <ConnectionButton />
             </BlockButton>
+            <Menu />
           </Header>
           <Body>
             <Suspense fallback={(
               <LoadingBlock>
                 <img src={GifLoading} alt="loading" />
               </LoadingBlock>
-        )}
+              )}
             >
               <Routes>
                 <Route path={POOL} element={<Pool />} />

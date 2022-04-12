@@ -51,6 +51,7 @@ export const FEE_DIVISOR = 100;
 export const POOL_SHARES_DECIMALS = 24;
 
 export const BAD_PRICE_IMPACT = 2;
+export const SHOW_WARNING_PRICE_IMPACT = 10;
 
 export const NEAR_TOKEN_ID = 'NEAR';
 
@@ -59,3 +60,5 @@ export const SWAP_OUTPUT_KEY = 'JUMBO_SWAP_OUTPUT_TOKEN';
 
 export const URL_INPUT_TOKEN = 'inputToken';
 export const URL_OUTPUT_TOKEN = 'outputToken';
+
+export const INITIAL_INPUT_PLACEHOLDER = '';

@@ -168,7 +168,7 @@ export default function SearchModal() {
     if (newTokens.length !== tokensArray.length) {
       setTokensArray(newTokens);
     }
-  }, [tokens, loading]);
+  }, [tokensArray.length, tokens, loading]);
 
   return (
     <>
