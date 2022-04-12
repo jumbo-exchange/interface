@@ -116,15 +116,7 @@ export default function Pool() {
         setUnStakeModalOpenState({ isOpen: true, pool });
       }
     }
-  }, [
-    id,
-    pools,
-    location.pathname,
-    setRemoveLiquidityModalOpenState,
-    setAddLiquidityModalOpenState,
-    setStakeModalOpenState,
-    setUnStakeModalOpenState,
-  ]);
+  }, [id, pools, location.pathname]);
 
   useEffect(() => {
     const newPools = toArray(pools);

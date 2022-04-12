@@ -12,6 +12,8 @@ enum ModalEnum {
   createPool,
   addLiquidity,
   removeLiquidity,
+  stake,
+  unstake,
 }
 
 interface IIsSearchModalOpen {
@@ -43,10 +45,10 @@ type ModalsStoreContextType = {
   modalState: ModalEnum | null;
   setModalState: (modal: ModalEnum | null) => void;
 
-  stakeModalOpenState: {isOpen: boolean, pool: IPool | null};
-  setStakeModalOpenState: Dispatch<SetStateAction<{isOpen: boolean, pool: IPool | null}>>;
-  unStakeModalOpenState: {isOpen: boolean, pool: IPool | null};
-  setUnStakeModalOpenState: Dispatch<SetStateAction<{isOpen: boolean, pool: IPool | null}>>;
+  stakeModalOpenState: IIsOpenAndPool;
+  setStakeModalOpenState: (props: IIsOpenAndPool) => void;
+  unStakeModalOpenState: IIsOpenAndPool;
+  setUnStakeModalOpenState: (props: IIsOpenAndPool) => void;
   isWithdrawDepositModalOpen: boolean;
   setWithdrawDepositModalOpen: Dispatch<SetStateAction<boolean>>;
 }
@@ -106,6 +108,17 @@ export const ModalsContextProvider = (
   const [
     removeLiquidityModalOpenState, setRemoveLiquidityModalOpenStateInner,
   ] = useState<IIsOpenAndPool>(initialModalsState.removeLiquidityModalOpenState);
+  const [
+    stakeModalOpenState, setStakeModalOpenStateInner,
+  ] = useState<IIsOpenAndPool>(initialModalsState.stakeModalOpenState);
+  const [
+    unStakeModalOpenState, setUnStakeModalOpenStateInner,
+  ] = useState<IIsOpenAndPool>(
+    initialModalsState.unStakeModalOpenState,
+  );
+  const [isWithdrawDepositModalOpen, setWithdrawDepositModalOpen] = useState<boolean>(
+    initialModalsState.isWithdrawDepositModalOpen,
+  );
 
   const stateCallback = useCallback((isOpen: boolean, modal: ModalEnum) => {
     setModalState(isOpen ? modal : null);
@@ -134,6 +147,18 @@ export const ModalsContextProvider = (
         break;
       case ModalEnum.removeLiquidity:
         setRemoveLiquidityModalOpenStateInner({
+          isOpen: false,
+          pool: null,
+        });
+        break;
+      case ModalEnum.stake:
+        setStakeModalOpenStateInner({
+          isOpen: false,
+          pool: null,
+        });
+        break;
+      case ModalEnum.unstake:
+        setUnStakeModalOpenStateInner({
           isOpen: false,
           pool: null,
         });
@@ -173,22 +198,16 @@ export const ModalsContextProvider = (
     stateCallback(props.isOpen, ModalEnum.removeLiquidity);
     setRemoveLiquidityModalOpenStateInner(props);
   };
-
-  const [stakeModalOpenState, setStakeModalOpenState] = useState<{
-    isOpen: boolean,
-    pool: IPool | null
-  }>(
-    initialModalsState.stakeModalOpenState,
-  );
-  const [unStakeModalOpenState, setUnStakeModalOpenState] = useState<{
-    isOpen: boolean,
-    pool: IPool | null
-  }>(
-    initialModalsState.unStakeModalOpenState,
-  );
-  const [isWithdrawDepositModalOpen, setWithdrawDepositModalOpen] = useState<boolean>(
-    initialModalsState.isWithdrawDepositModalOpen,
-  );
+  const setStakeModalOpenState = (props: IIsOpenAndPool) => {
+    if (props.isOpen) closePreviousModal();
+    stateCallback(props.isOpen, ModalEnum.stake);
+    setStakeModalOpenStateInner(props);
+  };
+  const setUnStakeModalOpenState = (props: IIsOpenAndPool) => {
+    if (props.isOpen) closePreviousModal();
+    stateCallback(props.isOpen, ModalEnum.unstake);
+    setUnStakeModalOpenStateInner(props);
+  };
 
   return (
     <ModalsStoreContextHOC.Provider value={{
