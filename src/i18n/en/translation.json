@@ -47,7 +47,9 @@
 
     "search": "Search",
     "sortBy": "Sort by",
-    "APYBasis": "APY Basis"
+    "APYBasis": "APY Basis",
+
+    "hideLowTL": "Hide low TL"
   },
 
   "accountModal": {

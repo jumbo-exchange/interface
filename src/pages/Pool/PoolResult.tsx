@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import Big from 'big.js';
 import PoolCardPlaceholder from 'components/Placeholder/PoolCardPlaceholder';
 import { useTranslation } from 'react-i18next';
+import { SHOW_MIN_TOTAL_LIQUIDITY } from 'utils/constants';
 import PoolCard from './PoolCard';
 
 const numberPlaceholderCard = Array.from(Array(5).keys());
@@ -29,10 +30,12 @@ export default function PoolResult(
     poolsArray,
     currentFilterPools,
     loading,
+    isHiddenLowTL,
   }:{
     poolsArray: IPool[],
     currentFilterPools:FilterPoolsEnum,
-    loading:boolean,
+    loading: boolean,
+    isHiddenLowTL: boolean,
   },
 ) {
   const { t } = useTranslation();
@@ -75,12 +78,16 @@ export default function PoolResult(
 
   return (
     <Wrapper>
-      {poolsArraySorted.map((pool) => (
-        <PoolCard
-          key={pool.id}
-          pool={pool}
-        />
-      ))}
+      {poolsArraySorted
+        .filter((pool) => (isHiddenLowTL
+          ? Big(pool.totalLiquidity).gte(SHOW_MIN_TOTAL_LIQUIDITY)
+          : pool))
+        .map((pool) => (
+          <PoolCard
+            key={pool.id}
+            pool={pool}
+          />
+        ))}
       {poolsArraySorted.length === 0
         && (
         <NoResult>

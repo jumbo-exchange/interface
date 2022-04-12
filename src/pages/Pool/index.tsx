@@ -79,6 +79,7 @@ export default function Pool() {
   const [poolsArray, setPoolsArray] = useState<IPool[]>([]);
   const [searchValue, setSearchValue] = useState<string>(INITIAL_INPUT_PLACEHOLDER);
   const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum['All Pools']);
+  const [isHiddenLowTL, setIsHiddenLowTL] = useState<boolean>(true);
 
   useEffect(() => {
     if (id && pools[Number(id)]) {
@@ -170,11 +171,13 @@ export default function Pool() {
         currentFilterPools={currentFilterPools}
         searchValue={searchValue}
         setSearchValue={setSearchValue}
+        setIsHiddenLowTL={setIsHiddenLowTL}
       />
       <PoolResult
         poolsArray={poolsArray}
         currentFilterPools={currentFilterPools}
         loading={loading}
+        isHiddenLowTL={isHiddenLowTL}
       />
     </Container>
   );

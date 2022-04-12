@@ -62,3 +62,4 @@ export const URL_INPUT_TOKEN = 'inputToken';
 export const URL_OUTPUT_TOKEN = 'outputToken';
 
 export const INITIAL_INPUT_PLACEHOLDER = '';
+export const SHOW_MIN_TOTAL_LIQUIDITY = '1000';
