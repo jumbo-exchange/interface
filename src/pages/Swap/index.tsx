@@ -215,7 +215,9 @@ export default function Swap() {
   const canSwap = !!slippageTolerance
     && (!!inputTokenValue && !!outputTokenValue)
     && currentPools.length > 0
-    && !isMissingShares;
+    && !isMissingShares
+    && Big(inputTokenValue).gt(0)
+    && Big(outputTokenValue).gt(0);
 
   const isWrap = inputToken && outputToken
     && (inputToken.contractId === config.nearAddress && outputToken.contractId === NEAR_TOKEN_ID);

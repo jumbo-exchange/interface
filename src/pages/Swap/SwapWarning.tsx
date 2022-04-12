@@ -31,14 +31,14 @@ const RouteBlock = styled.div<{intersectionTokenId?: boolean}>`
   & > div {
     display: flex;
     align-items: center;
-    align-self: ${({ intersectionTokenId }) => (intersectionTokenId ? 'flex-start' : 'center')};
+    align-self: flex-start;
     font-style: normal;
     font-weight: 500;
     font-size: 1rem;
     line-height: 1.188rem;
   }
   & > button {
-    margin-top: ${({ intersectionTokenId }) => (intersectionTokenId ? '.5rem' : '0')};
+    margin-top: ${({ intersectionTokenId }) => (intersectionTokenId ? '1rem' : '0')};
     align-self: flex-end;
     padding: .625rem;
     font-weight: 500;
@@ -52,7 +52,7 @@ const RouteBlock = styled.div<{intersectionTokenId?: boolean}>`
       line-height: .875rem;
     }
     & > button {
-      margin-top: .5rem;
+      margin-top: 1rem;
     }
   `}
 `;
@@ -140,7 +140,7 @@ export default function RenderWarning() {
   const havePoolPathToken = poolPathToken.length > 0;
 
   const isMissingShares = poolPathToken.some((el) => new Big(el.sharesTotalSupply).eq(0));
-  const poolWithoutLiquidity = poolPathToken.shift();
+  const poolWithoutLiquidity = poolPathToken.find((pool) => Big(pool.sharesTotalSupply).eq(0));
 
   const firstTokenBalance = getTokenBalance(inputToken?.contractId);
   const secondTokenBalance = getTokenBalance(outputToken?.contractId);
