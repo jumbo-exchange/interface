@@ -8,6 +8,7 @@ import {
   initialModalsState, useModalsStore, useStore,
 } from 'store';
 import FungibleTokenContract from 'services/FungibleToken';
+import { INITIAL_INPUT_PLACEHOLDER } from 'utils/constants';
 import {
   Layout, Modal, ModalBlock, ModalTitle, ModalIcon,
 } from '../styles';
@@ -164,11 +165,10 @@ export default function SearchModal() {
 
   useEffect(() => {
     const newTokens = Object.values(tokens);
-
-    if (newTokens.length !== tokensArray.length) {
+    if (newTokens.length !== tokensArray.length && searchValue === INITIAL_INPUT_PLACEHOLDER) {
       setTokensArray(newTokens);
     }
-  }, [tokensArray.length, tokens, loading]);
+  }, [tokensArray.length, tokens, loading, searchValue]);
 
   return (
     <>
