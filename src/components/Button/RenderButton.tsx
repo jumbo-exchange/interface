@@ -90,14 +90,7 @@ export default function RenderButton({
     );
   }
   return (
-    <ButtonSecondary onClick={() => {
-      const { pathname } = window.location;
-      if (pathname.includes(POOL)) {
-        navigate(POOL);
-      }
-      setAccountModalOpen(true);
-    }}
-    >
+    <ButtonSecondary onClick={() => setAccountModalOpen(true)}>
       <Wallet />
       {title}
     </ButtonSecondary>

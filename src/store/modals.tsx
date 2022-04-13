@@ -25,7 +25,7 @@ interface IIsSearchModalOpen {
   setActiveToken: (token: FungibleTokenContract) => void
 }
 
-interface IIsOpenAndPool {
+interface IBasicModalState {
   isOpen: boolean,
   pool: IPool | null
 }
@@ -33,8 +33,8 @@ interface IIsOpenAndPool {
 type ModalsStoreContextType = {
   isAccountModalOpen: boolean;
   setAccountModalOpen: (isOpen: boolean) => void;
-  addLiquidityModalOpenState: IIsOpenAndPool;
-  setAddLiquidityModalOpenState: (props: IIsOpenAndPool) => void;
+  addLiquidityModalOpenState: IBasicModalState;
+  setAddLiquidityModalOpenState: (props: IBasicModalState) => void;
   isCreatePoolModalOpen: boolean;
   setCreatePoolModalOpen: (isOpen: boolean) => void;
   isSearchModalOpen: IIsSearchModalOpen;
@@ -43,15 +43,15 @@ type ModalsStoreContextType = {
   setTooltipModalOpen: Dispatch<SetStateAction<boolean>>;
   titleTooltipModal: string;
   setTitleTooltipModal: Dispatch<SetStateAction<string>>;
-  removeLiquidityModalOpenState: IIsOpenAndPool;
-  setRemoveLiquidityModalOpenState: (props: IIsOpenAndPool) => void;
+  removeLiquidityModalOpenState: IBasicModalState;
+  setRemoveLiquidityModalOpenState: (props: IBasicModalState) => void;
   modalState: ModalEnum | null;
   setModalState: (modal: ModalEnum | null) => void;
 
-  stakeModalOpenState: IIsOpenAndPool;
-  setStakeModalOpenState: (props: IIsOpenAndPool) => void;
-  unStakeModalOpenState: IIsOpenAndPool;
-  setUnStakeModalOpenState: (props: IIsOpenAndPool) => void;
+  stakeModalOpenState: IBasicModalState;
+  setStakeModalOpenState: (props: IBasicModalState) => void;
+  unStakeModalOpenState: IBasicModalState;
+  setUnStakeModalOpenState: (props: IBasicModalState) => void;
   isWithdrawDepositModalOpen: boolean;
   setWithdrawDepositModalOpen: Dispatch<SetStateAction<boolean>>;
   openModalByUrl: (pool: IPool, locationPathname: string) => void;
@@ -109,16 +109,16 @@ export const ModalsContextProvider = (
   const [modalState, setModalState] = useState<ModalEnum | null>(null);
   const [
     addLiquidityModalOpenState, setAddLiquidityModalOpenStateInner,
-  ] = useState<IIsOpenAndPool>(initialModalsState.addLiquidityModalOpenState);
+  ] = useState<IBasicModalState>(initialModalsState.addLiquidityModalOpenState);
   const [
     removeLiquidityModalOpenState, setRemoveLiquidityModalOpenStateInner,
-  ] = useState<IIsOpenAndPool>(initialModalsState.removeLiquidityModalOpenState);
+  ] = useState<IBasicModalState>(initialModalsState.removeLiquidityModalOpenState);
   const [
     stakeModalOpenState, setStakeModalOpenStateInner,
-  ] = useState<IIsOpenAndPool>(initialModalsState.stakeModalOpenState);
+  ] = useState<IBasicModalState>(initialModalsState.stakeModalOpenState);
   const [
     unStakeModalOpenState, setUnStakeModalOpenStateInner,
-  ] = useState<IIsOpenAndPool>(
+  ] = useState<IBasicModalState>(
     initialModalsState.unStakeModalOpenState,
   );
   const [isWithdrawDepositModalOpen, setWithdrawDepositModalOpen] = useState<boolean>(
@@ -192,23 +192,23 @@ export const ModalsContextProvider = (
     setSearchModalOpenInner(props);
   };
 
-  const setAddLiquidityModalOpenState = (props: IIsOpenAndPool) => {
+  const setAddLiquidityModalOpenState = (props: IBasicModalState) => {
     if (props.isOpen) closePreviousModal();
     stateCallback(props.isOpen, ModalEnum.AddLiquidity);
     setAddLiquidityModalOpenStateInner(props);
   };
 
-  const setRemoveLiquidityModalOpenState = (props: IIsOpenAndPool) => {
+  const setRemoveLiquidityModalOpenState = (props: IBasicModalState) => {
     if (props.isOpen) closePreviousModal();
     stateCallback(props.isOpen, ModalEnum.RemoveLiquidity);
     setRemoveLiquidityModalOpenStateInner(props);
   };
-  const setStakeModalOpenState = (props: IIsOpenAndPool) => {
+  const setStakeModalOpenState = (props: IBasicModalState) => {
     if (props.isOpen) closePreviousModal();
     stateCallback(props.isOpen, ModalEnum.Stake);
     setStakeModalOpenStateInner(props);
   };
-  const setUnStakeModalOpenState = (props: IIsOpenAndPool) => {
+  const setUnStakeModalOpenState = (props: IBasicModalState) => {
     if (props.isOpen) closePreviousModal();
     stateCallback(props.isOpen, ModalEnum.Unstake);
     setUnStakeModalOpenStateInner(props);
