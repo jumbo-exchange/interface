@@ -7,10 +7,6 @@ import {
   IFarm, IPool, useModalsStore, useStore,
 } from 'store';
 import { useLocation, useParams } from 'react-router-dom';
-import {
-  toAddLiquidityPage, toRemoveLiquidityPage,
-  toStakePage, toUnStakeAndClaimPage,
-} from 'utils/routes';
 import { toArray } from 'utils';
 import { useTranslation } from 'react-i18next';
 
@@ -20,7 +16,7 @@ import { displayPriceWithComma } from 'utils/calculations';
 import FarmContract from 'services/contracts/FarmContract';
 import { wallet } from 'services/near';
 import moment from 'moment';
-import { UPDATE_CLAIM_REWARD_DATE, CLAIM_REWARD_DATE_KEY } from 'utils/constants';
+import { UPDATE_CLAIM_REWARD_DATE, CLAIM_REWARD_DATE_KEY, INITIAL_INPUT_PLACEHOLDER } from 'utils/constants';
 import {
   Container,
   FilterBlock,
@@ -84,18 +80,15 @@ export default function Pool() {
   const {
     pools, loading, prices, userRewards, farms, setUserRewards,
   } = useStore();
-  const {
-    setAddLiquidityModalOpenState,
-    setRemoveLiquidityModalOpenState,
-    setStakeModalOpenState,
-    setUnStakeModalOpenState,
-  } = useModalsStore();
+  const { openModalByUrl } = useModalsStore();
   const { id } = useParams<'id'>();
   const config = getConfig();
   const location = useLocation();
   const [totalValueLocked, setTotalValueLocked] = useState('0');
   const [totalDayVolume, setTotalDayVolume] = useState('0');
   const [poolsArray, setPoolsArray] = useState<IPool[]>([]);
+  const [searchValue, setSearchValue] = useState<string>(INITIAL_INPUT_PLACEHOLDER);
+  const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum.AllPools);
   const [isShowingEndedOnly, setIsShowingEndedOnly] = useState<boolean>(false);
 
   const rewardList = Object.entries(userRewards);
@@ -104,29 +97,14 @@ export default function Pool() {
   useEffect(() => {
     if (id && pools[Number(id)]) {
       const pool = pools[Number(id)];
-      if (location.pathname === toRemoveLiquidityPage(pool.id)) {
-        setRemoveLiquidityModalOpenState({ isOpen: true, pool });
-      } else if (location.pathname === toAddLiquidityPage(pool.id)) {
-        setAddLiquidityModalOpenState({ isOpen: true, pool });
-      } else if (location.pathname === toStakePage(pool.id)) {
-        setStakeModalOpenState({ isOpen: true, pool });
-      } else if (location.pathname === toUnStakeAndClaimPage(pool.id)) {
-        setUnStakeModalOpenState({ isOpen: true, pool });
-      }
+      openModalByUrl(pool, location.pathname);
     }
-  }, [
-    id,
-    pools,
-    location.pathname,
-    setRemoveLiquidityModalOpenState,
-    setAddLiquidityModalOpenState,
-    setStakeModalOpenState,
-    setUnStakeModalOpenState,
-  ]);
+  }, [id, pools, location.pathname]);
 
   useEffect(() => {
     const newPools = toArray(pools);
-    if (newPools.length !== poolsArray.length) {
+    if (loading) setPoolsArray(newPools);
+    if (newPools.length !== poolsArray.length && searchValue === INITIAL_INPUT_PLACEHOLDER) {
       setPoolsArray(newPools);
     }
     const newTotalValueLocked = newPools.reduce(
@@ -137,9 +115,7 @@ export default function Pool() {
     );
     setTotalValueLocked(newTotalValueLocked.toFixed(2));
     setTotalDayVolume(newTotalDayVolume.toFixed());
-  }, [pools, poolsArray.length, loading]);
-
-  const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum.AllPools);
+  }, [pools, poolsArray.length, loading, searchValue]);
 
   const mainInfo: IMainInfo[] = [
     {
@@ -255,6 +231,8 @@ export default function Pool() {
       <PoolSettings
         setPoolsArray={setPoolsArray}
         currentFilterPools={currentFilterPools}
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
         setIsShowingEndedOnly={setIsShowingEndedOnly}
       />
       <PoolResult

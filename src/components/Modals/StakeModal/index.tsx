@@ -117,7 +117,6 @@ export default function StakeModal() {
             <GetShareBtn
               onClick={() => {
                 navigate(toAddLiquidityPage(pool.id));
-                setStakeModalOpenState({ isOpen: false, pool: null });
                 setAddLiquidityModalOpenState({ isOpen: true, pool });
               }}
             >

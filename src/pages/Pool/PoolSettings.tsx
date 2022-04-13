@@ -235,10 +235,14 @@ const aprFilters: IAPRFilters[] = [
 export default function PoolSettings({
   setPoolsArray,
   currentFilterPools,
+  searchValue,
+  setSearchValue,
   setIsShowingEndedOnly,
 }:{
   setPoolsArray: Dispatch<SetStateAction<IPool[]>>,
   currentFilterPools: FilterPoolsEnum,
+  searchValue: string,
+  setSearchValue: Dispatch<SetStateAction<string>>,
   setIsShowingEndedOnly: Dispatch<SetStateAction<boolean>>,
 }) {
   const { setCreatePoolModalOpen } = useModalsStore();
@@ -246,7 +250,6 @@ export default function PoolSettings({
   const { t } = useTranslation();
 
   const [currentAPRFilter, setCurrentAPRFilter] = useState(APRFiletEnum['24H']);
-  const [searchValue, setSearchValue] = useState<string>('');
 
   const isAllPools = currentFilterPools === FilterPoolsEnum.AllPools;
   const isFarming = currentFilterPools === FilterPoolsEnum.Farming;
