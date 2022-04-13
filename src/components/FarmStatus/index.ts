@@ -40,6 +40,11 @@ export const FarmStatusLocalesInPool = {
   [FarmStatusEnum.Pending]: i18n.t('farm.status.pending'),
   [FarmStatusEnum.Ended]: '',
 };
+export const FarmStatusLocalesInYourPool = {
+  [FarmStatusEnum.Active]: i18n.t('farm.status.started'),
+  [FarmStatusEnum.Pending]: i18n.t('farm.status.soon'),
+  [FarmStatusEnum.Ended]: '',
+};
 
 interface IGetAvailableTimestamp {
   farmStart: number,

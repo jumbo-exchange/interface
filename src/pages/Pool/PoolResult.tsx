@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { FarmStatusEnum } from 'components/FarmStatus';
 import PoolCard from './Card/PoolCard';
 import FarmCard from './Card/FarmCard';
+import YourLiquidityCard from './Card/YourLiquidityCard';
 
 const numberPlaceholderCard = Array.from(Array(5).keys());
 const Wrapper = styled.div`
@@ -86,11 +87,9 @@ export default function PoolResult(
     return (
       <Wrapper>
         {filteredPools.map((pool) => (
-          <PoolCard
+          <YourLiquidityCard
             key={pool.id}
             pool={pool}
-            currentFilterPools={currentFilterPools}
-            setCurrentFilterPools={setCurrentFilterPools}
           />
         ))}
         {filteredPools.length === 0
@@ -165,7 +164,6 @@ export default function PoolResult(
         <PoolCard
           key={pool.id}
           pool={pool}
-          currentFilterPools={currentFilterPools}
           setCurrentFilterPools={setCurrentFilterPools}
         />
       ))}

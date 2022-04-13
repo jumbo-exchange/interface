@@ -1,17 +1,22 @@
 import React from 'react';
+import styled from 'styled-components';
+import { FarmStatusEnum } from 'components/FarmStatus';
 import { useTranslation } from 'react-i18next';
 import { useStore } from 'store';
-import styled from 'styled-components';
 import { onlyUniqueValues } from 'utils';
 
-const Container = styled.div`
+const Container = styled.div<{isFarming?: boolean, type?: FarmStatusEnum}>`
   display: flex;
   align-items: center;
   padding: .563rem .5rem;
-  background-color: ${({ theme }) => theme.rewardTokensBg};
+  background-color: ${({ theme, isFarming }) => (isFarming ? theme.rewardTokensBg : theme.statusFarmInPoolBg)};
   border-radius: 12px;
   & > p {
-    color: ${({ theme }) => theme.globalGrey};
+    color: ${({ theme, type }) => {
+    if (type === FarmStatusEnum.Active) return theme.statusActive;
+    if (type === FarmStatusEnum.Pending) return theme.statusPending;
+    return theme.globalGrey;
+  }};
     font-style: normal;
     font-weight: 300;
     font-size: .75rem;
@@ -39,14 +44,24 @@ const LogoContainer = styled.div`
 `;
 
 export default function RewardTokens(
-  { rewardTokens }:{ rewardTokens: string[] },
+  {
+    rewardTokens,
+    isFarming,
+    type,
+    title,
+  }:{
+    rewardTokens: string[],
+    isFarming?: boolean,
+    type?: FarmStatusEnum,
+    title?: string,
+  },
 ) {
   const { tokens } = useStore();
   const { t } = useTranslation();
   const uniqueRewardTokens = onlyUniqueValues(rewardTokens);
   return (
-    <Container>
-      <p>{t('farm.rewardTokens')}</p>
+    <Container isFarming={isFarming} type={type}>
+      <p>{title || t('farm.rewardTokens')}</p>
       {uniqueRewardTokens.map((tokenId) => {
         const token = tokens[tokenId] || null;
         if (!token) return null;
