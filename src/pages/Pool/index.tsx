@@ -7,10 +7,6 @@ import {
   IFarm, IPool, useModalsStore, useStore,
 } from 'store';
 import { useLocation, useParams } from 'react-router-dom';
-import {
-  toAddLiquidityPage, toRemoveLiquidityPage,
-  toStakePage, toUnStakeAndClaimPage,
-} from 'utils/routes';
 import { toArray } from 'utils';
 import { useTranslation } from 'react-i18next';
 
@@ -84,12 +80,7 @@ export default function Pool() {
   const {
     pools, loading, prices, userRewards, farms, setUserRewards,
   } = useStore();
-  const {
-    setAddLiquidityModalOpenState,
-    setRemoveLiquidityModalOpenState,
-    setStakeModalOpenState,
-    setUnStakeModalOpenState,
-  } = useModalsStore();
+  const { openModalByUrl } = useModalsStore();
   const { id } = useParams<'id'>();
   const config = getConfig();
   const location = useLocation();
@@ -106,15 +97,7 @@ export default function Pool() {
   useEffect(() => {
     if (id && pools[Number(id)]) {
       const pool = pools[Number(id)];
-      if (location.pathname === toRemoveLiquidityPage(pool.id)) {
-        setRemoveLiquidityModalOpenState({ isOpen: true, pool });
-      } else if (location.pathname === toAddLiquidityPage(pool.id)) {
-        setAddLiquidityModalOpenState({ isOpen: true, pool });
-      } else if (location.pathname === toStakePage(pool.id)) {
-        setStakeModalOpenState({ isOpen: true, pool });
-      } else if (location.pathname === toUnStakeAndClaimPage(pool.id)) {
-        setUnStakeModalOpenState({ isOpen: true, pool });
-      }
+      openModalByUrl(pool, location.pathname);
     }
   }, [id, pools, location.pathname]);
 

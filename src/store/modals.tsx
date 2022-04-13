@@ -5,15 +5,18 @@ import React, {
 import { IPool } from 'store';
 import Modals from 'components/Modals';
 import FungibleTokenContract from 'services/contracts/FungibleToken';
+import {
+  toAddLiquidityPage, toRemoveLiquidityPage, toStakePage, toUnStakeAndClaimPage,
+} from 'utils/routes';
 
 enum ModalEnum {
-  search,
-  account,
-  createPool,
-  addLiquidity,
-  removeLiquidity,
-  stake,
-  unstake,
+  Search,
+  Account,
+  CreatePool,
+  AddLiquidity,
+  RemoveLiquidity,
+  Stake,
+  Unstake,
 }
 
 interface IIsSearchModalOpen {
@@ -51,6 +54,7 @@ type ModalsStoreContextType = {
   setUnStakeModalOpenState: (props: IIsOpenAndPool) => void;
   isWithdrawDepositModalOpen: boolean;
   setWithdrawDepositModalOpen: Dispatch<SetStateAction<boolean>>;
+  openModalByUrl: (pool: IPool, locationPathname: string) => void;
 }
 
 export const initialModalsState: ModalsStoreContextType = {
@@ -81,6 +85,7 @@ export const initialModalsState: ModalsStoreContextType = {
   setUnStakeModalOpenState: () => {},
   isWithdrawDepositModalOpen: false,
   setWithdrawDepositModalOpen: () => {},
+  openModalByUrl: () => {},
 };
 
 const ModalsStoreContextHOC = createContext<ModalsStoreContextType>(initialModalsState);
@@ -126,38 +131,38 @@ export const ModalsContextProvider = (
 
   const closePreviousModal = () => {
     switch (modalState) {
-      case ModalEnum.account:
+      case ModalEnum.Account:
         setAccountModalOpenInner(false);
         break;
-      case ModalEnum.createPool:
+      case ModalEnum.CreatePool:
         setCreatePoolModalOpenInner(false);
         break;
-      case ModalEnum.search:
+      case ModalEnum.Search:
         setSearchModalOpenInner({
           isOpen: false,
           activeToken: null,
           setActiveToken: () => {},
         });
         break;
-      case ModalEnum.addLiquidity:
+      case ModalEnum.AddLiquidity:
         setAddLiquidityModalOpenStateInner({
           isOpen: false,
           pool: null,
         });
         break;
-      case ModalEnum.removeLiquidity:
+      case ModalEnum.RemoveLiquidity:
         setRemoveLiquidityModalOpenStateInner({
           isOpen: false,
           pool: null,
         });
         break;
-      case ModalEnum.stake:
+      case ModalEnum.Stake:
         setStakeModalOpenStateInner({
           isOpen: false,
           pool: null,
         });
         break;
-      case ModalEnum.unstake:
+      case ModalEnum.Unstake:
         setUnStakeModalOpenStateInner({
           isOpen: false,
           pool: null,
@@ -171,42 +176,54 @@ export const ModalsContextProvider = (
 
   const setAccountModalOpen = (isOpen: boolean) => {
     if (isOpen) closePreviousModal();
-    stateCallback(isOpen, ModalEnum.account);
+    stateCallback(isOpen, ModalEnum.Account);
     setAccountModalOpenInner(isOpen);
   };
 
   const setCreatePoolModalOpen = (isOpen: boolean) => {
     if (isOpen) closePreviousModal();
-    stateCallback(isOpen, ModalEnum.createPool);
+    stateCallback(isOpen, ModalEnum.CreatePool);
     setCreatePoolModalOpenInner(isOpen);
   };
 
   const setSearchModalOpen = (props: IIsSearchModalOpen) => {
     if (props.isOpen) closePreviousModal();
-    stateCallback(props.isOpen, ModalEnum.search);
+    stateCallback(props.isOpen, ModalEnum.Search);
     setSearchModalOpenInner(props);
   };
 
   const setAddLiquidityModalOpenState = (props: IIsOpenAndPool) => {
     if (props.isOpen) closePreviousModal();
-    stateCallback(props.isOpen, ModalEnum.addLiquidity);
+    stateCallback(props.isOpen, ModalEnum.AddLiquidity);
     setAddLiquidityModalOpenStateInner(props);
   };
 
   const setRemoveLiquidityModalOpenState = (props: IIsOpenAndPool) => {
     if (props.isOpen) closePreviousModal();
-    stateCallback(props.isOpen, ModalEnum.removeLiquidity);
+    stateCallback(props.isOpen, ModalEnum.RemoveLiquidity);
     setRemoveLiquidityModalOpenStateInner(props);
   };
   const setStakeModalOpenState = (props: IIsOpenAndPool) => {
     if (props.isOpen) closePreviousModal();
-    stateCallback(props.isOpen, ModalEnum.stake);
+    stateCallback(props.isOpen, ModalEnum.Stake);
     setStakeModalOpenStateInner(props);
   };
   const setUnStakeModalOpenState = (props: IIsOpenAndPool) => {
     if (props.isOpen) closePreviousModal();
-    stateCallback(props.isOpen, ModalEnum.unstake);
+    stateCallback(props.isOpen, ModalEnum.Unstake);
     setUnStakeModalOpenStateInner(props);
+  };
+
+  const openModalByUrl = (pool: IPool, locationPathname: string) => {
+    if (locationPathname === toRemoveLiquidityPage(pool.id)) {
+      setRemoveLiquidityModalOpenState({ isOpen: true, pool });
+    } else if (locationPathname === toAddLiquidityPage(pool.id)) {
+      setAddLiquidityModalOpenState({ isOpen: true, pool });
+    } else if (locationPathname === toStakePage(pool.id)) {
+      setStakeModalOpenState({ isOpen: true, pool });
+    } else if (locationPathname === toUnStakeAndClaimPage(pool.id)) {
+      setUnStakeModalOpenState({ isOpen: true, pool });
+    }
   };
 
   return (
@@ -234,6 +251,7 @@ export const ModalsContextProvider = (
       setUnStakeModalOpenState,
       isWithdrawDepositModalOpen,
       setWithdrawDepositModalOpen,
+      openModalByUrl,
     }}
     >
       <Modals>
