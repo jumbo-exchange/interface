@@ -171,6 +171,7 @@ export default function Pool() {
         currentFilterPools={currentFilterPools}
         searchValue={searchValue}
         setSearchValue={setSearchValue}
+        isHiddenLowTL={isHiddenLowTL}
         setIsHiddenLowTL={setIsHiddenLowTL}
       />
       <PoolResult

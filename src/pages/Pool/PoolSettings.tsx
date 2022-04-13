@@ -200,12 +200,14 @@ export default function PoolSettings({
   currentFilterPools,
   searchValue,
   setSearchValue,
+  isHiddenLowTL,
   setIsHiddenLowTL,
 }:{
   setPoolsArray: Dispatch<SetStateAction<IPool[]>>,
   currentFilterPools: FilterPoolsEnum,
   searchValue: string,
   setSearchValue: Dispatch<SetStateAction<string>>
+  isHiddenLowTL: boolean,
   setIsHiddenLowTL: Dispatch<SetStateAction<boolean>>
 }) {
   const { setCreatePoolModalOpen } = useModalsStore();
@@ -218,6 +220,8 @@ export default function PoolSettings({
 
   const onChange = (value: string) => {
     const newValue = value.trim().toUpperCase();
+    if (newValue) setIsHiddenLowTL(false);
+
     setSearchValue(newValue);
     const newPools = newValue !== ''
       ? Object.values(pools)
@@ -263,7 +267,7 @@ export default function PoolSettings({
                     id="toggle"
                     type="checkbox"
                     onChange={(e) => setIsHiddenLowTL(e.target.checked)}
-                    defaultChecked
+                    checked={isHiddenLowTL}
                   />
                   <ToggleSwitch />
                 </LabelCheckbox>
@@ -332,7 +336,7 @@ export default function PoolSettings({
               id="toggle"
               type="checkbox"
               onChange={(e) => setIsHiddenLowTL(e.target.checked)}
-              defaultChecked
+              checked={isHiddenLowTL}
             />
             <ToggleSwitch />
           </LabelCheckbox>
