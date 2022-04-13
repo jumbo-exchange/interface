@@ -76,7 +76,13 @@ export default function PoolResult(
   }
 
   if (currentFilterPools === FilterPoolsEnum.YourLiquidity) {
-    const filteredPools = poolsArraySorted.filter((pool) => pool.shares && Big(pool.shares).gt(0));
+    const filteredPools = poolsArraySorted.filter((pool) => {
+      const poolFarms = pool.farms?.map((id) => farms[id]);
+      const canUnStake = poolFarms?.some((farm) => Big(farm.userStaked || '0').gt('0'));
+      const canWithdraw = Big(pool.shares || '0').gt('0');
+      return (canUnStake || canWithdraw) && pool;
+    });
+
     return (
       <Wrapper>
         {filteredPools.map((pool) => (
