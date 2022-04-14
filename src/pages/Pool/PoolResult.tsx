@@ -39,21 +39,25 @@ export default function PoolResult(
   },
 ) {
   const { t } = useTranslation();
-  const poolsArraySorted = poolsArray.sort(
-    (a, b) => Big(b.totalLiquidity)
-      .minus(a.totalLiquidity).toNumber(),
-  );
+  const poolsArraySorted = useMemo(() => {
+    console.log('poolsArraySorted');
+    return poolsArray.sort(
+      (a, b) => Big(b.totalLiquidity)
+        .minus(a.totalLiquidity).toNumber(),
+    );
+  },
+  [poolsArray]);
 
-  const allPools = useMemo(() => poolsArraySorted
-    .filter((pool) => (isHiddenLowTL
-      ? Big(pool.totalLiquidity).gte(SHOW_MIN_TOTAL_LIQUIDITY)
-      : pool))
-    .map((pool) => (
-      <PoolCard
-        key={pool.id}
-        pool={pool}
-      />
-    )), [isHiddenLowTL, poolsArraySorted]);
+  const filteredPools = useMemo(() => {
+    console.log('filteredPools');
+    return poolsArraySorted
+      .filter((pool) => (
+        Big(pool.totalLiquidity).gte(SHOW_MIN_TOTAL_LIQUIDITY)
+      ));
+  },
+  [poolsArraySorted]);
+
+  const poolsForRender = isHiddenLowTL ? filteredPools : poolsArraySorted;
 
   if (loading) {
     return (
@@ -68,16 +72,17 @@ export default function PoolResult(
   }
 
   if (currentFilterPools === FilterPoolsEnum['Your Liquidity']) {
-    const filteredPools = poolsArraySorted.filter((pool) => pool.shares && Big(pool.shares).gt(0));
+    const filteredPoolsByShares = poolsArraySorted
+      .filter((pool) => pool.shares && Big(pool.shares).gt(0));
     return (
       <Wrapper>
-        {filteredPools.map((pool) => (
+        {filteredPoolsByShares.map((pool) => (
           <PoolCard
             key={pool.id}
             pool={pool}
           />
         ))}
-        {filteredPools.length === 0
+        {filteredPoolsByShares.length === 0
           && (
             <NoResult>
               {t('noResult.yourLiquidity')}
@@ -89,8 +94,13 @@ export default function PoolResult(
 
   return (
     <Wrapper>
-      {allPools}
-      {poolsArraySorted.length === 0
+      {poolsForRender.map((pool) => (
+        <PoolCard
+          key={pool.id}
+          pool={pool}
+        />
+      ))}
+      {poolsForRender.length === 0
         && (
         <NoResult>
           {t('noResult.noResultFound')}
