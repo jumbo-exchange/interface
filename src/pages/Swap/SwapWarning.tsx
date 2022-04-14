@@ -15,6 +15,7 @@ import { toAddLiquidityPage } from 'utils/routes';
 import { useTranslation } from 'react-i18next';
 import { getToken } from 'store/helpers';
 import useNavigateSwapParams from 'hooks/useNavigateSwapParams';
+import { SWAP_ENUM } from 'services/SwapContract';
 
 const config = getConfig();
 
@@ -33,7 +34,7 @@ const RouteBlock = styled.div<{intersectionTokenId?: boolean}>`
   & > div {
     display: flex;
     align-items: center;
-    align-self: flex-start;
+    align-self: ${({ intersectionTokenId }) => (intersectionTokenId ? 'flex-start' : 'center')};
     font-style: normal;
     font-weight: 500;
     font-size: 1rem;
@@ -47,14 +48,14 @@ const RouteBlock = styled.div<{intersectionTokenId?: boolean}>`
     font-size: .75rem;
     line-height: 1.063rem;
   }
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    flex-direction: column;
+  ${({ theme, intersectionTokenId }) => theme.mediaWidth.upToExtraSmall`
+    flex-direction: ${intersectionTokenId ? 'column' : 'row'};
     & > div {
       font-size: .75rem;
       line-height: .875rem;
     }
     & > button {
-      margin-top: 1rem;
+      margin-top: ${intersectionTokenId ? '1rem' : '0'};
     }
   `}
 `;
@@ -144,19 +145,13 @@ export default function RenderWarning({ priceImpact }: {priceImpact: string}) {
   const havePoolPathOutputToken = poolPathOutputToken.length > 0;
   const havePoolPathToken = poolPathToken.length > 0;
 
-  const isMissingShares = poolPathToken.some((el) => new Big(el.sharesTotalSupply).eq(0));
   const poolWithoutLiquidity = poolPathToken.find((pool) => Big(pool.sharesTotalSupply).eq(0));
 
-  const firstTokenBalance = getTokenBalance(inputToken?.contractId);
-  const secondTokenBalance = getTokenBalance(outputToken?.contractId);
-
-  const intersectionTokenId = currentPools.length === 2
+  const intersectionTokenId = currentPools.length === SWAP_ENUM.INDIRECT_SWAP
     ? currentPools[0].tokenAccountIds.find((el) => el !== inputToken?.contractId) : null;
 
   const intersectionToken = tokens[intersectionTokenId ?? ''] ?? null;
-  const intersectionTokenBalance = getTokenBalance(intersectionToken?.contractId);
-
-  const isBalancesEmpty = Big(firstTokenBalance).lte('0') || Big(secondTokenBalance).lte('0');
+  const isBalancesEmpty = poolWithoutLiquidity?.tokenAccountIds.some((tokenId) => Big(getTokenBalance(tokenId)).lte('0'));
 
   if (Big(priceImpact).gt(SHOW_WARNING_PRICE_IMPACT)) {
     return (
@@ -321,7 +316,7 @@ export default function RenderWarning({ priceImpact }: {priceImpact: string}) {
     );
   }
 
-  if (!loading && isMissingShares) {
+  if (!loading && poolWithoutLiquidity) {
     return (
       <WarningBlock>
         <Warning
@@ -360,7 +355,7 @@ export default function RenderWarning({ priceImpact }: {priceImpact: string}) {
               </LogoContainer>
               {outputToken?.metadata.symbol}
             </div>
-            {(!isBalancesEmpty || Big(intersectionTokenBalance).gt('0')) ? (
+            {!isBalancesEmpty ? (
               <ButtonSecondary
                 onClick={() => {
                   navigate(toAddLiquidityPage(poolWithoutLiquidity?.id));
