@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 
 import getConfig from 'services/config';
 import Big from 'big.js';
-import { displayPriceWithComma } from 'utils/calculations';
+import { displayPriceWithSpace } from 'utils/calculations';
 import FarmContract from 'services/contracts/FarmContract';
 import { wallet } from 'services/near';
 import moment from 'moment';
@@ -113,19 +113,23 @@ export default function Pool() {
     const newTotalDayVolume = newPools.reduce(
       (acc, item:IPool) => acc.add(item.dayVolume), Big(0),
     );
-    setTotalValueLocked(newTotalValueLocked.toFixed(2));
-    setTotalDayVolume(newTotalDayVolume.toFixed());
+    setTotalValueLocked(newTotalValueLocked.toFixed(0));
+    setTotalDayVolume(newTotalDayVolume.toFixed(0));
   }, [pools, poolsArray.length, loading, searchValue]);
 
   const mainInfo: IMainInfo[] = [
     {
       title: t('pool.totalValueLocked'),
-      label: Big(totalValueLocked ?? 0).lte(0) ? '-' : `$${displayPriceWithComma(totalValueLocked)}`,
+      label: Big(totalValueLocked ?? 0).lte(0)
+        ? '-'
+        : `$${displayPriceWithSpace(Big(totalValueLocked).toFixed(0))}`,
       show: true,
     },
     {
       title: t('pool.totalDayLocked'),
-      label: Big(totalDayVolume).lte(0) ? '-' : `$${displayPriceWithComma(totalDayVolume)}`,
+      label: Big(totalDayVolume).lte(0)
+        ? '-'
+        : `$${displayPriceWithSpace(Big(totalDayVolume).toFixed(0))}`,
       show: true,
     },
     {

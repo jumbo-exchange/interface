@@ -186,7 +186,7 @@ export const calculateTotalAmountAndDayVolume = (
       const firstLiquidity = new Big(firstAmount).mul(firstPrice);
       const secondLiquidity = new Big(secondAmount).mul(secondPrice);
       const totalLiquidityAmount = new Big(firstLiquidity).add(secondLiquidity);
-      const totalLiquidityValue = removeTrailingZeros(totalLiquidityAmount.toFixed(2));
+      const totalLiquidityValue = removeTrailingZeros(totalLiquidityAmount.toFixed());
 
       const dayVolumeData = dayVolumesData[pool.id] || null;
       if (!dayVolumeData) return { ...pool, totalLiquidity: totalLiquidityValue };
@@ -205,7 +205,7 @@ export const calculateTotalAmountAndDayVolume = (
       const firstDayVolume = new Big(tokenFirst).mul(tokenFirstAmount);
       const secondDayVolume = new Big(tokenSecond).mul(tokenSecondAmount);
       const totalDayVolumeAmount = firstDayVolume.add(secondDayVolume);
-      const totalDayVolumeValue = removeTrailingZeros(totalDayVolumeAmount.toFixed(2));
+      const totalDayVolumeValue = removeTrailingZeros(totalDayVolumeAmount.toFixed());
       return {
         ...pool,
         totalLiquidity: totalLiquidityValue,

@@ -53,17 +53,17 @@ export default function PoolCard(
   const volume: IVolume[] = [
     {
       title: t('pool.totalLiquidity'),
-      label: Big(pool.totalLiquidity).gt(0)
-        ? `$${displayPriceWithSpace(pool.totalLiquidity)}`
-        : '-',
+      label: Big(pool.totalLiquidity).lte(0)
+        ? '-'
+        : `$${displayPriceWithSpace(Big(pool.totalLiquidity).toFixed(0))}`,
       tooltip: t('tooltipTitle.totalLiquidity'),
       show: true,
     },
     {
       title: t('pool.dayVolume'),
-      label: Big(pool.dayVolume).gt(0)
-        ? `$${displayPriceWithSpace(pool.dayVolume)}`
-        : '-',
+      label: Big(pool.dayVolume).lte(0)
+        ? '-'
+        : `$${displayPriceWithSpace(Big(pool.dayVolume).toFixed(0))}`,
       tooltip: t('tooltipTitle.dayVolume'),
       show: currentFilterPools === FilterPoolsEnum.AllPools,
     },
