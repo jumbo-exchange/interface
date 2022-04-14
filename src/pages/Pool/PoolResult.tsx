@@ -138,17 +138,17 @@ export default function PoolResult(
         </Wrapper>
         )}
         {filteredFarms.ended.length
-        && (
-          <EndedFarm isShowingEndedOnly={isShowingEndedOnly}>
-            <p>Ended</p>
-            {filteredFarms.ended.map((pool) => (
-              <FarmCard
-                key={pool.id}
-                pool={pool}
-              />
-            ))}
-          </EndedFarm>
-        )}
+          ? (
+            <EndedFarm isShowingEndedOnly={isShowingEndedOnly}>
+              <p>Ended</p>
+              {filteredFarms.ended.map((pool) => (
+                <FarmCard
+                  key={pool.id}
+                  pool={pool}
+                />
+              ))}
+            </EndedFarm>
+          ) : null}
       </>
     );
   }

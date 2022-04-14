@@ -13,9 +13,7 @@ export default function getConfig(
         indexerUrl: 'https://jumbo-ps.hapi.farm',
         contractId: 'jumbo-exchange-v1.rkonoval.testnet',
 
-        //!
         farmContractId: 'jumbo-farming-v2.rkonoval.testnet',
-        //!
 
         nearAddress: 'wrap.testnet',
         jumboAddress: 'jumbo_exchange_v2.solniechniy.testnet',
@@ -32,9 +30,7 @@ export default function getConfig(
         indexerUrl: 'https://price-service.jumbo.exchange',
         contractId: 'v1.jumbo_exchange.near',
 
-        //!
-        farmContractId: 'jumbo-farming-v2.rkonoval.testnet',
-        //!
+        farmContractId: 'farming-v1.jumbo_exchange.near',
 
         nearAddress: 'wrap.near',
         jumboAddress: 'token.jumbo_exchange.near',
