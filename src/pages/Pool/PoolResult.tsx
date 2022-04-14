@@ -39,22 +39,16 @@ export default function PoolResult(
   },
 ) {
   const { t } = useTranslation();
-  const poolsArraySorted = useMemo(() => {
-    console.log('poolsArraySorted');
-    return poolsArray.sort(
-      (a, b) => Big(b.totalLiquidity)
-        .minus(a.totalLiquidity).toNumber(),
-    );
-  },
+  const poolsArraySorted = useMemo(() => poolsArray.sort(
+    (a, b) => Big(b.totalLiquidity)
+      .minus(a.totalLiquidity).toNumber(),
+  ),
   [poolsArray]);
 
-  const filteredPools = useMemo(() => {
-    console.log('filteredPools');
-    return poolsArraySorted
-      .filter((pool) => (
-        Big(pool.totalLiquidity).gte(SHOW_MIN_TOTAL_LIQUIDITY)
-      ));
-  },
+  const filteredPools = useMemo(() => poolsArraySorted
+    .filter((pool) => (
+      Big(pool.totalLiquidity).gte(SHOW_MIN_TOTAL_LIQUIDITY)
+    )),
   [poolsArraySorted]);
 
   const poolsForRender = isHiddenLowTL ? filteredPools : poolsArraySorted;
