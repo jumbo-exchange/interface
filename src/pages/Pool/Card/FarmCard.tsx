@@ -102,7 +102,10 @@ export default function FarmCard({ pool } : { pool: IPool }) {
             <FarmsStatus type={status}>{FarmStatusLocales[status]}</FarmsStatus>
           </TitlePool>
           <LabelPool>
-            <RewardTokens rewardTokens={farmsInPool.map((el) => el.rewardTokenId)} />
+            <RewardTokens
+              rewardTokens={farmsInPool.map((el) => el.rewardTokenId)}
+              isFarming
+            />
           </LabelPool>
         </UpperRow>
         <LowerRow>

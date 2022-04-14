@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { FarmStatusEnum } from 'components/FarmStatus';
 import PoolCard from './Card/PoolCard';
 import FarmCard from './Card/FarmCard';
+import YourLiquidityCard from './Card/YourLiquidityCard';
 
 const numberPlaceholderCard = Array.from(Array(5).keys());
 const Wrapper = styled.div`
@@ -76,15 +77,19 @@ export default function PoolResult(
   }
 
   if (currentFilterPools === FilterPoolsEnum.YourLiquidity) {
-    const filteredPools = poolsArraySorted.filter((pool) => pool.shares && Big(pool.shares).gt(0));
+    const filteredPools = poolsArraySorted.filter((pool) => {
+      const poolFarms = pool.farms?.map((id) => farms[id]);
+      const canUnStake = poolFarms?.some((farm) => Big(farm.userStaked || '0').gt('0'));
+      const canWithdraw = Big(pool.shares || '0').gt('0');
+      return (canUnStake || canWithdraw) && pool;
+    });
+
     return (
       <Wrapper>
         {filteredPools.map((pool) => (
-          <PoolCard
+          <YourLiquidityCard
             key={pool.id}
             pool={pool}
-            currentFilterPools={currentFilterPools}
-            setCurrentFilterPools={setCurrentFilterPools}
           />
         ))}
         {filteredPools.length === 0
@@ -159,7 +164,6 @@ export default function PoolResult(
         <PoolCard
           key={pool.id}
           pool={pool}
-          currentFilterPools={currentFilterPools}
           setCurrentFilterPools={setCurrentFilterPools}
         />
       ))}

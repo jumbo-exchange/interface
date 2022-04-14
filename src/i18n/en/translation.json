@@ -60,11 +60,14 @@
     "APY": "APY",
 
     "rewardTokens": "Reward Tokens",
+    "farming": "Farming",
 
     "status": {
       "active": "Active",
       "pending": "Pending",
       "ended": "Ended",
+      "started": "started",
+      "soon": "soon",
 
       "available": "Available"
     }
