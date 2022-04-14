@@ -166,6 +166,10 @@ const ToggleSwitch = styled.div`
   }
 `;
 
+const BtnSecondary = styled(ButtonSecondary)`
+  width: 100%;
+`;
+
 enum APRFiletEnum {
   '24H',
   '7D',
@@ -344,11 +348,11 @@ export default function PoolSettings({
       </WrapperRow>
       )}
       {isAllPools && (
-      <ButtonSecondary
+      <BtnSecondary
         onClick={() => setCreatePoolModalOpen(true)}
       >
         <LogoPlus /> {t('action.createPool')}
-      </ButtonSecondary>
+      </BtnSecondary>
       )}
 
     </Container>
