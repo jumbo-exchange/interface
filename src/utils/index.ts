@@ -5,7 +5,7 @@ import FungibleTokenContract from 'services/contracts/FungibleToken';
 import {
   IFarm, IPool, ITokenPrice, PoolType, IDayVolume,
 } from 'store';
-import { displayPriceWithSpace, formatTokenAmount, removeTrailingZeros } from './calculations';
+import { formatTokenAmount, removeTrailingZeros } from './calculations';
 import {
   DAYS_A_YEAR,
   LP_TOKEN_DECIMALS,
