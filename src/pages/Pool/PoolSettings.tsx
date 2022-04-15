@@ -4,7 +4,6 @@ import Tooltip from 'components/Tooltip';
 import Refresh from 'components/Refresh';
 import { ButtonSecondary, FilterButton } from 'components/Button';
 import { ReactComponent as SearchIcon } from 'assets/images-app/search-icon.svg';
-import { ReactComponent as ArrowDownIcon } from 'assets/images-app/icon-arrow-down.svg';
 import { ReactComponent as Plus } from 'assets/images-app/plus.svg';
 import { isMobile } from 'utils/userAgent';
 import { IPool, useModalsStore, useStore } from 'store';
@@ -14,9 +13,11 @@ import { getToken } from 'store/helpers';
 import { FilterPoolsEnum } from '.';
 
 const Container = styled.div<{isAllPools: boolean}>`
-  display: flex;
-  align-items: center;
+  display: grid;
   width: 100%;
+  align-items: center;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr 1.1fr;
+  grid-template-rows: 1fr;
   margin: 1.5rem 0;
   justify-content: ${({ isAllPools }) => (isAllPools ? 'space-between' : 'flex-start')};
   & > div:not(:first-child){
@@ -24,6 +25,8 @@ const Container = styled.div<{isAllPools: boolean}>`
     justify-content: center;
     align-items: center;
   };
+  height: 48px;
+  justify-items: center;
 `;
 
 const SearchInputBlock = styled.div`
@@ -55,16 +58,6 @@ const SearchInput = styled.input`
   transition: all 1s ease;
   ::placeholder {
     color: ${({ theme }) => theme.globalGreyOp04};
-  }
-`;
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
-  & > div:last-child {
-    margin: .25rem 0 .25rem;
   }
 `;
 
@@ -102,29 +95,6 @@ const FilterBlock = styled.div`
   & > button:nth-child(2) {
     margin: 0 1rem;
   }
-`;
-
-const SortBlock = styled.div`
-  display: flex;
-  align-items: center;
-  font-style: normal;
-  font-weight: 500;
-  font-size: .75rem;
-  line-height: .875rem;
-  color: ${({ theme }) => theme.globalGreyOp02};
-  user-select: none;
-  white-space: nowrap;
-  & > svg {
-    path { 
-      fill: ${({ theme }) => theme.globalGreyOp02};
-    }
-  }
-`;
-
-const ArrowDown = styled(ArrowDownIcon)`
-  width: 9.5px;
-  height: 5.5px;
-  margin-left: .453rem;
 `;
 
 const LogoPlus = styled(Plus)`
@@ -203,6 +173,10 @@ const ToggleSwitch = styled.div`
   }
 `;
 
+const BtnSecondary = styled(ButtonSecondary)`
+  width: 100%;
+`;
+
 enum APRFiletEnum {
   '24H',
   '7D',
@@ -238,12 +212,16 @@ export default function PoolSettings({
   searchValue,
   setSearchValue,
   setIsShowingEndedOnly,
+  isHiddenLowTL,
+  setIsHiddenLowTL,
 }:{
   setPoolsArray: Dispatch<SetStateAction<IPool[]>>,
   currentFilterPools: FilterPoolsEnum,
   searchValue: string,
-  setSearchValue: Dispatch<SetStateAction<string>>,
   setIsShowingEndedOnly: Dispatch<SetStateAction<boolean>>,
+  setSearchValue: Dispatch<SetStateAction<string>>
+  isHiddenLowTL: boolean,
+  setIsHiddenLowTL: Dispatch<SetStateAction<boolean>>
 }) {
   const { setCreatePoolModalOpen } = useModalsStore();
   const { pools, tokens } = useStore();
@@ -256,6 +234,8 @@ export default function PoolSettings({
 
   const onChange = (value: string) => {
     const newValue = value.trim().toUpperCase();
+    if (newValue) setIsHiddenLowTL(false);
+
     setSearchValue(newValue);
     const newPools = newValue !== ''
       ? Object.values(pools)
@@ -293,13 +273,20 @@ export default function PoolSettings({
         <MobileRow>
           {isAllPools
           && (
-          <Wrapper>
-            <Title>{t('pool.sortBy')}</Title>
-            <SortBlock>
-              Liquidity (dsc)
-              <ArrowDown />
-            </SortBlock>
-          </Wrapper>
+            <WrapperRow>
+              <NoWrapTitle>{t('pool.hideLowTL')}</NoWrapTitle>
+              <Toggle>
+                <LabelCheckbox htmlFor="toggle">
+                  <input
+                    id="toggle"
+                    type="checkbox"
+                    onChange={(e) => setIsHiddenLowTL(e.target.checked)}
+                    checked={isHiddenLowTL}
+                  />
+                  <ToggleSwitch />
+                </LabelCheckbox>
+              </Toggle>
+            </WrapperRow>
           )}
           {isFarming && (
           <WrapperRow>
@@ -353,15 +340,7 @@ export default function PoolSettings({
           placeholder={t('pool.search')}
         />
       </SearchInputBlock>
-      {isAllPools && (
-      <Wrapper>
-        <Title>{t('pool.sortBy')}</Title>
-        <SortBlock>
-          Liquidity (dsc)
-          <ArrowDown />
-        </SortBlock>
-      </Wrapper>
-      )}
+
       <APYWrapper>
         <Title>{t('pool.APYBasis')} <Tooltip title={t('tooltipTitle.APYBasis')} /></Title>
         <FilterBlock>
@@ -394,13 +373,30 @@ export default function PoolSettings({
             </Toggle>
           </WrapperRow>
         )
-        : (
-          <ButtonSecondary
-            onClick={() => setCreatePoolModalOpen(true)}
-          >
-            <LogoPlus /> {t('action.createPool')}
-          </ButtonSecondary>
-        )}
+        : null}
+      {isAllPools && (
+      <WrapperRow>
+        <Title>{t('pool.hideLowTL')}</Title>
+        <Toggle>
+          <LabelCheckbox htmlFor="toggle">
+            <input
+              id="toggle"
+              type="checkbox"
+              onChange={(e) => setIsHiddenLowTL(e.target.checked)}
+              checked={isHiddenLowTL}
+            />
+            <ToggleSwitch />
+          </LabelCheckbox>
+        </Toggle>
+      </WrapperRow>
+      )}
+      {isAllPools && (
+      <BtnSecondary
+        onClick={() => setCreatePoolModalOpen(true)}
+      >
+        <LogoPlus /> {t('action.createPool')}
+      </BtnSecondary>
+      )}
     </Container>
   );
 }

@@ -15,6 +15,7 @@ import { toAddLiquidityPage } from 'utils/routes';
 import { useTranslation } from 'react-i18next';
 import { getToken } from 'store/helpers';
 import useNavigateSwapParams from 'hooks/useNavigateSwapParams';
+import { SWAP_ENUM } from 'services/SwapContract';
 
 const config = getConfig();
 
@@ -25,28 +26,36 @@ const WarningBlock = styled.div`
   `}
 `;
 
-const RouteBlock = styled.div`
+const RouteBlock = styled.div<{intersectionTokenId?: boolean}>`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-direction: ${({ intersectionTokenId }) => (intersectionTokenId ? 'column' : 'row')};
   & > div {
     display: flex;
     align-items: center;
+    align-self: ${({ intersectionTokenId }) => (intersectionTokenId ? 'flex-start' : 'center')};
     font-style: normal;
     font-weight: 500;
     font-size: 1rem;
     line-height: 1.188rem;
   }
   & > button {
+    margin-top: ${({ intersectionTokenId }) => (intersectionTokenId ? '1rem' : '0')};
+    align-self: flex-end;
     padding: .625rem;
     font-weight: 500;
     font-size: .75rem;
     line-height: 1.063rem;
   }
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+  ${({ theme, intersectionTokenId }) => theme.mediaWidth.upToExtraSmall`
+    flex-direction: ${intersectionTokenId ? 'column' : 'row'};
     & > div {
       font-size: .75rem;
       line-height: .875rem;
+    }
+    & > button {
+      margin-top: ${intersectionTokenId ? '1rem' : '0'};
     }
   `}
 `;
@@ -100,6 +109,7 @@ export default function RenderWarning({ priceImpact }: {priceImpact: string}) {
     outputToken,
     setOutputToken,
     getTokenBalance,
+    currentPools,
     setCurrentPools,
   } = useStore();
   const { t } = useTranslation();
@@ -135,13 +145,13 @@ export default function RenderWarning({ priceImpact }: {priceImpact: string}) {
   const havePoolPathOutputToken = poolPathOutputToken.length > 0;
   const havePoolPathToken = poolPathToken.length > 0;
 
-  const isMissingShares = poolPathToken.some((el) => new Big(el.sharesTotalSupply).eq(0));
-  const poolWithoutLiquidity = poolPathToken.shift();
+  const poolWithoutLiquidity = poolPathToken.find((pool) => Big(pool.sharesTotalSupply).eq(0));
 
-  const firstTokenBalance = getTokenBalance(inputToken?.contractId);
-  const secondTokenBalance = getTokenBalance(outputToken?.contractId);
+  const intersectionTokenId = currentPools.length === SWAP_ENUM.INDIRECT_SWAP
+    ? currentPools[0].tokenAccountIds.find((el) => el !== inputToken?.contractId) : null;
 
-  const isBalancesEmpty = Big(firstTokenBalance).lte('0') || Big(secondTokenBalance).lte('0');
+  const intersectionToken = tokens[intersectionTokenId ?? ''] ?? null;
+  const isBalancesEmpty = poolWithoutLiquidity?.tokenAccountIds.some((tokenId) => Big(getTokenBalance(tokenId)).eq('0'));
 
   if (Big(priceImpact).gt(SHOW_WARNING_PRICE_IMPACT)) {
     return (
@@ -306,14 +316,14 @@ export default function RenderWarning({ priceImpact }: {priceImpact: string}) {
     );
   }
 
-  if (!loading && isMissingShares) {
+  if (!loading && poolWithoutLiquidity) {
     return (
       <WarningBlock>
         <Warning
           title={t('warningMessage.zeroPoolLiquidity')}
           description={t('warningMessage.zeroPoolLiquidityDesc')}
         >
-          <RouteBlock>
+          <RouteBlock intersectionTokenId={!!intersectionTokenId}>
             <div>
               <LogoContainer>
                 <img
@@ -322,6 +332,20 @@ export default function RenderWarning({ priceImpact }: {priceImpact: string}) {
                 />
               </LogoContainer>
               {inputToken?.metadata.symbol}
+              {intersectionTokenId
+                ? (
+                  <>
+                    <RouteArrowLogo />
+                    <LogoContainer>
+                      <img
+                        src={intersectionToken?.metadata.icon}
+                        alt={intersectionToken?.metadata.symbol}
+                      />
+                    </LogoContainer>
+                    {intersectionToken?.metadata.symbol}
+                  </>
+                )
+                : null}
               <RouteArrowLogo />
               <LogoContainer>
                 <img

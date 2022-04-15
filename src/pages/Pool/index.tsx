@@ -90,6 +90,7 @@ export default function Pool() {
   const [searchValue, setSearchValue] = useState<string>(INITIAL_INPUT_PLACEHOLDER);
   const [currentFilterPools, setCurrentFilterPools] = useState(FilterPoolsEnum.AllPools);
   const [isShowingEndedOnly, setIsShowingEndedOnly] = useState<boolean>(false);
+  const [isHiddenLowTL, setIsHiddenLowTL] = useState<boolean>(true);
 
   const rewardList = Object.entries(userRewards);
   const canClaimAll = useMemo(() => getCanClaimAll(rewardList), [rewardList]);
@@ -238,12 +239,15 @@ export default function Pool() {
         searchValue={searchValue}
         setSearchValue={setSearchValue}
         setIsShowingEndedOnly={setIsShowingEndedOnly}
+        isHiddenLowTL={isHiddenLowTL}
+        setIsHiddenLowTL={setIsHiddenLowTL}
       />
       <PoolResult
         poolsArray={poolsArray}
         currentFilterPools={currentFilterPools}
         setCurrentFilterPools={setCurrentFilterPools}
         isShowingEndedOnly={isShowingEndedOnly}
+        isHiddenLowTL={isHiddenLowTL}
       />
     </Container>
   );

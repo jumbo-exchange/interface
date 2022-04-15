@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction, useMemo } from 'react';
 import { IPool, useStore } from 'store';
 import { FilterPoolsEnum } from 'pages/Pool';
 import styled from 'styled-components';
@@ -6,6 +6,7 @@ import Big from 'big.js';
 import PoolCardPlaceholder from 'components/Placeholder/PoolCardPlaceholder';
 import { useTranslation } from 'react-i18next';
 import { FarmStatusEnum } from 'components/FarmStatus';
+import { SHOW_MIN_TOTAL_LIQUIDITY } from 'utils/constants';
 import PoolCard from './Card/PoolCard';
 import FarmCard from './Card/FarmCard';
 import YourLiquidityCard from './Card/YourLiquidityCard';
@@ -49,19 +50,30 @@ export default function PoolResult(
     currentFilterPools,
     setCurrentFilterPools,
     isShowingEndedOnly,
+    isHiddenLowTL,
   }:{
     poolsArray: IPool[],
     currentFilterPools: FilterPoolsEnum,
     setCurrentFilterPools: Dispatch<SetStateAction<FilterPoolsEnum>>,
     isShowingEndedOnly:boolean,
+    isHiddenLowTL: boolean,
   },
 ) {
   const { farms, loading } = useStore();
   const { t } = useTranslation();
-  const poolsArraySorted = poolsArray.sort(
+  const poolsArraySorted = useMemo(() => poolsArray.sort(
     (a, b) => Big(b.totalLiquidity)
       .minus(a.totalLiquidity).toNumber(),
-  );
+  ),
+  [poolsArray]);
+
+  const filteredPools = useMemo(() => poolsArraySorted
+    .filter((pool) => (
+      Big(pool.totalLiquidity).gte(SHOW_MIN_TOTAL_LIQUIDITY)
+    )),
+  [poolsArraySorted]);
+
+  const poolsForRender = isHiddenLowTL ? filteredPools : poolsArraySorted;
 
   if (loading) {
     return (
@@ -77,7 +89,7 @@ export default function PoolResult(
   }
 
   if (currentFilterPools === FilterPoolsEnum.YourLiquidity) {
-    const filteredPools = poolsArraySorted.filter((pool) => {
+    const filteredPoolsLiquidity = poolsArraySorted.filter((pool) => {
       const poolFarms = pool.farms?.map((id) => farms[id]);
       const canUnStake = poolFarms?.some((farm) => Big(farm.userStaked || '0').gt('0'));
       const canWithdraw = Big(pool.shares || '0').gt('0');
@@ -86,13 +98,13 @@ export default function PoolResult(
 
     return (
       <Wrapper>
-        {filteredPools.map((pool) => (
+        {filteredPoolsLiquidity.map((pool) => (
           <YourLiquidityCard
             key={pool.id}
             pool={pool}
           />
         ))}
-        {filteredPools.length === 0
+        {filteredPoolsLiquidity.length === 0
           && (
             <NoResult>
               {t('noResult.yourLiquidity')}
@@ -160,14 +172,14 @@ export default function PoolResult(
 
   return (
     <Wrapper>
-      {poolsArraySorted.map((pool) => (
+      {poolsForRender.map((pool) => (
         <PoolCard
           key={pool.id}
           pool={pool}
           setCurrentFilterPools={setCurrentFilterPools}
         />
       ))}
-      {poolsArraySorted.length === 0
+      {poolsForRender.length === 0
         && (
         <NoResult>
           {t('noResult.noResultFound')}

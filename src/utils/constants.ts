@@ -85,3 +85,4 @@ export const MIN_DEPOSIT_SHARES = '10000000000000000000';
 export const SECONDS_IN_A_DAY = 86400;
 export const DAYS_A_YEAR = 365;
 export const ONE_HUNDRED = 100;
+export const SHOW_MIN_TOTAL_LIQUIDITY = '1000';
