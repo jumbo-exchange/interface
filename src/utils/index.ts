@@ -5,7 +5,7 @@ import FungibleTokenContract from 'services/contracts/FungibleToken';
 import {
   IFarm, IPool, ITokenPrice, PoolType, IDayVolume,
 } from 'store';
-import { formatTokenAmount, removeTrailingZeros } from './calculations';
+import { displayPriceWithSpace, formatTokenAmount, removeTrailingZeros } from './calculations';
 import {
   DAYS_A_YEAR,
   LP_TOKEN_DECIMALS,
@@ -295,13 +295,6 @@ export const getTotalApy = (farms: IFarm[]) => {
     apy = Big(farms[0].apy);
   }
   return apy.toFixed();
-};
-
-export const displayAPY = (apy: string) => {
-  const apyBig = new Big(apy);
-  if (apyBig.eq('0')) return '-';
-  if (apyBig.lte('0.01')) return '>0.01%';
-  return `${removeTrailingZeros(apyBig.toFixed(2))}%`;
 };
 
 export const calcAprAndStakedAmount = (

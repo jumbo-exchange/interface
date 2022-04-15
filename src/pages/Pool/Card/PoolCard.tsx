@@ -9,9 +9,8 @@ import TokenPairDisplay from 'components/TokensDisplay/TokenPairDisplay';
 import { PoolOrFarmButtons } from 'components/Button/RenderButton';
 import { ReactComponent as Arrow } from 'assets/images-app/route-arrow.svg';
 import { FarmStatusEnum, FarmStatusLocalesInPool, getAvailableTimestamp } from 'components/FarmStatus';
-import { displayPriceWithSpace } from 'utils/calculations';
+import { displayAmount, displayPriceWithSpace } from 'utils/calculations';
 import { FilterPoolsEnum } from 'pages/Pool';
-import { displayAPY } from 'utils';
 import {
   Wrapper,
   UpperRow,
@@ -49,21 +48,23 @@ export default function PoolCard(
   const volume: IVolume[] = [
     {
       title: t('pool.totalLiquidity'),
-      label: Big(pool.totalLiquidity).lte(0)
+      label: Big(pool.totalLiquidity).eq(0)
         ? '-'
-        : `$${displayPriceWithSpace(Big(pool.totalLiquidity).toFixed(0))}`,
+        : `$${displayAmount(pool.totalLiquidity)}`,
       tooltip: t('tooltipTitle.totalLiquidity'),
     },
     {
       title: t('pool.dayVolume'),
-      label: Big(pool.dayVolume).lte(0)
+      label: Big(pool.dayVolume).eq(0)
         ? '-'
-        : `$${displayPriceWithSpace(Big(pool.dayVolume).toFixed(0))}`,
+        : `$${displayAmount(pool.dayVolume)}`,
       tooltip: t('tooltipTitle.dayVolume'),
     },
     {
       title: t('pool.APY'),
-      label: displayAPY(pool.apy),
+      label: Big(pool.apy).eq(0)
+        ? '-'
+        : `${displayAmount(pool.apy)}%`,
       color: true,
       tooltip: t('tooltipTitle.APY'),
     },

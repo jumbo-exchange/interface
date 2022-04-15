@@ -10,8 +10,8 @@ import RewardTokens from 'components/TokensDisplay/RewardTokens';
 import { PoolOrFarmButtons } from 'components/Button/RenderButton';
 import moment from 'moment';
 import { FarmStatusLocales, getAvailableTimestamp } from 'components/FarmStatus';
-import { displayAPY, getTotalApy } from 'utils';
-import { displayPriceWithSpace } from 'utils/calculations';
+import { getTotalApy } from 'utils';
+import { displayAmount, displayPriceWithSpace } from 'utils/calculations';
 import {
   FarmWrapper,
   FarmContainer,
@@ -50,21 +50,23 @@ export default function FarmCard({ pool } : { pool: IPool }) {
   const volume: IVolume[] = [
     {
       title: t('farm.totalStaked'),
-      label: totalStaked && Big(totalStaked).gt(0)
-        ? `$${displayPriceWithSpace(totalStaked)}`
+      label: totalStaked && !Big(totalStaked).eq(0)
+        ? `$${displayAmount(totalStaked)}`
         : '-',
       tooltip: t('tooltipTitle.totalStaked'),
     },
     {
       title: t('farm.yourStaked'),
-      label: yourStaked && Big(yourStaked).gt(0)
-        ? `$${displayPriceWithSpace(yourStaked)}`
+      label: yourStaked && !Big(yourStaked).eq(0)
+        ? `$${displayAmount(yourStaked)}`
         : '-',
       tooltip: t('tooltipTitle.yourStaked'),
     },
     {
       title: t('farm.APY'),
-      label: displayAPY(sumAPY),
+      label: Big(sumAPY).eq(0)
+        ? '-'
+        : `${displayAmount(sumAPY)}%`,
       color: true,
       tooltip: t('tooltipTitle.APY'),
     },
