@@ -47,7 +47,9 @@
 
     "search": "Search",
     "sortBy": "Sort by",
-    "APYBasis": "APY Basis"
+    "APYBasis": "APY Basis",
+
+    "hideLowTL": "Hide low TL"
   },
 
   "accountModal": {
@@ -96,7 +98,7 @@
     "doesNotExist": "The given pair doesn't exist",
   
     "noSuchPairExists": "No such pair exists",
-    "noSuchPairExistsDesc": "There is additional pair with wNEAR",
+    "noSuchPairExistsDesc": "In order to trade wNEAR is needed. Click “Go to Pair” to Swap NEAR to wNEAR",
   
     "zeroPoolLiquidity": "Zero liquidity pool",
     "zeroPoolLiquidityDesc": "Zero liquidity pool, you can add liquidity to the pool",
