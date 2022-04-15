@@ -17,7 +17,8 @@ import {
 } from './constants';
 
 const ACCOUNT_TRIM_LENGTH = 10;
-
+const FEE_DIVISOR = 10000;
+const FULL_PROCENT = 100;
 Big.RM = Big.roundDown;
 Big.DP = 30;
 
@@ -142,7 +143,7 @@ export const calculatePriceForToken = (
 
 export const calcPoolApy = (pool: IPool, dayVolume: string, totalLiquidity: string): string => {
   const firstMultiplier = Big(1).div(totalLiquidity);
-  const secondMultiplier = Big(pool.totalFee).mul(dayVolume).div(10);
+  const secondMultiplier = Big(pool.totalFee).mul(dayVolume).div(FEE_DIVISOR).mul(FULL_PROCENT);
   const mulFirstAndSecond = firstMultiplier.mul(secondMultiplier);
   const poolAPY = mulFirstAndSecond.mul(365);
   return poolAPY.toFixed();
