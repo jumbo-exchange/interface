@@ -11,7 +11,7 @@ import { PoolOrFarmButtons } from 'components/Button/RenderButton';
 import moment from 'moment';
 import { FarmStatusLocales, getAvailableTimestamp } from 'components/FarmStatus';
 import { getTotalApy } from 'utils';
-import { displayAmount, displayPriceWithSpace } from 'utils/calculations';
+import { displayAmount } from 'utils/calculations';
 import {
   FarmWrapper,
   FarmContainer,

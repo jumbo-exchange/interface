@@ -9,7 +9,7 @@ import TokenPairDisplay from 'components/TokensDisplay/TokenPairDisplay';
 import { PoolOrFarmButtons } from 'components/Button/RenderButton';
 import { ReactComponent as Arrow } from 'assets/images-app/route-arrow.svg';
 import { FarmStatusEnum, FarmStatusLocalesInPool, getAvailableTimestamp } from 'components/FarmStatus';
-import { displayAmount, displayPriceWithSpace } from 'utils/calculations';
+import { displayAmount } from 'utils/calculations';
 import { FilterPoolsEnum } from 'pages/Pool';
 import {
   Wrapper,

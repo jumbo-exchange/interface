@@ -294,9 +294,7 @@ export const calcYourLiquidity = (
     tokenOutput.metadata.decimals,
   );
 
-  const yourLiquidityAmount = removeTrailingZeros(formatBalance(
-    Big(inputAmount).plus(outputAmount).toFixed(),
-  ));
+  const yourLiquidityAmount = Big(inputAmount).plus(outputAmount).toFixed();
   return yourLiquidityAmount;
 };
 

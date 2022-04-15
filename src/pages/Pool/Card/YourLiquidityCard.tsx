@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import TokenPairDisplay from 'components/TokensDisplay/TokenPairDisplay';
 import { PoolOrFarmButtons } from 'components/Button/RenderButton';
 import { FarmStatusLocalesInYourPool, getAvailableTimestamp } from 'components/FarmStatus';
-import { calcYourLiquidity, displayAmount, displayPriceWithSpace } from 'utils/calculations';
+import { calcYourLiquidity, displayAmount } from 'utils/calculations';
 import RewardTokens from 'components/TokensDisplay/RewardTokens';
 import {
   Wrapper,
@@ -34,7 +34,7 @@ export default function YourLiquidityCard({ pool } : {pool: IPool}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const yourLiquidityAmount = calcYourLiquidity(tokens, prices, pool);
-
+  console.log(yourLiquidityAmount);
   const volume: IVolume[] = [
     {
       title: t('pool.totalLiquidity'),
@@ -45,7 +45,7 @@ export default function YourLiquidityCard({ pool } : {pool: IPool}) {
     },
     {
       title: t('pool.yourLiquidity'),
-      label: yourLiquidityAmount && !Big(pool.totalLiquidity).eq(0)
+      label: yourLiquidityAmount && !Big(yourLiquidityAmount).eq(0)
         ? `$${displayAmount(pool.totalLiquidity)}`
         : '-',
       tooltip: t('tooltipTitle.yourLiquidity'),
