@@ -151,7 +151,7 @@ export default function RenderWarning({ priceImpact }: {priceImpact: string}) {
     ? currentPools[0].tokenAccountIds.find((el) => el !== inputToken?.contractId) : null;
 
   const intersectionToken = tokens[intersectionTokenId ?? ''] ?? null;
-  const isBalancesEmpty = poolWithoutLiquidity?.tokenAccountIds.some((tokenId) => Big(getTokenBalance(tokenId)).lte('0'));
+  const isBalancesEmpty = poolWithoutLiquidity?.tokenAccountIds.some((tokenId) => Big(getTokenBalance(tokenId)).eq('0'));
 
   if (Big(priceImpact).gt(SHOW_WARNING_PRICE_IMPACT)) {
     return (
