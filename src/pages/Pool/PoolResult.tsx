@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { IPool } from 'store';
 import { FilterPoolsEnum } from 'pages/Pool';
 import styled from 'styled-components';
 import Big from 'big.js';
 import PoolCardPlaceholder from 'components/Placeholder/PoolCardPlaceholder';
 import { useTranslation } from 'react-i18next';
+import { SHOW_MIN_TOTAL_LIQUIDITY } from 'utils/constants';
 import PoolCard from './PoolCard';
 
 const numberPlaceholderCard = Array.from(Array(5).keys());
@@ -29,17 +30,28 @@ export default function PoolResult(
     poolsArray,
     currentFilterPools,
     loading,
+    isHiddenLowTL,
   }:{
     poolsArray: IPool[],
     currentFilterPools:FilterPoolsEnum,
-    loading:boolean,
+    loading: boolean,
+    isHiddenLowTL: boolean,
   },
 ) {
   const { t } = useTranslation();
-  const poolsArraySorted = poolsArray.sort(
+  const poolsArraySorted = useMemo(() => poolsArray.sort(
     (a, b) => Big(b.totalLiquidity)
       .minus(a.totalLiquidity).toNumber(),
-  );
+  ),
+  [poolsArray]);
+
+  const filteredPools = useMemo(() => poolsArraySorted
+    .filter((pool) => (
+      Big(pool.totalLiquidity).gte(SHOW_MIN_TOTAL_LIQUIDITY)
+    )),
+  [poolsArraySorted]);
+
+  const poolsForRender = isHiddenLowTL ? filteredPools : poolsArraySorted;
 
   if (loading) {
     return (
@@ -54,16 +66,17 @@ export default function PoolResult(
   }
 
   if (currentFilterPools === FilterPoolsEnum['Your Liquidity']) {
-    const filteredPools = poolsArraySorted.filter((pool) => pool.shares && Big(pool.shares).gt(0));
+    const filteredPoolsByShares = poolsArraySorted
+      .filter((pool) => pool.shares && Big(pool.shares).gt(0));
     return (
       <Wrapper>
-        {filteredPools.map((pool) => (
+        {filteredPoolsByShares.map((pool) => (
           <PoolCard
             key={pool.id}
             pool={pool}
           />
         ))}
-        {filteredPools.length === 0
+        {filteredPoolsByShares.length === 0
           && (
             <NoResult>
               {t('noResult.yourLiquidity')}
@@ -75,13 +88,13 @@ export default function PoolResult(
 
   return (
     <Wrapper>
-      {poolsArraySorted.map((pool) => (
+      {poolsForRender.map((pool) => (
         <PoolCard
           key={pool.id}
           pool={pool}
         />
       ))}
-      {poolsArraySorted.length === 0
+      {poolsForRender.length === 0
         && (
         <NoResult>
           {t('noResult.noResultFound')}
