@@ -34,7 +34,7 @@ export default function YourLiquidityCard({ pool } : {pool: IPool}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const yourLiquidityAmount = calcYourLiquidity(tokens, prices, pool);
-  console.log(yourLiquidityAmount);
+
   const volume: IVolume[] = [
     {
       title: t('pool.totalLiquidity'),
