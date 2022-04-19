@@ -141,6 +141,7 @@ export const LabelVolume = styled.div<{isColor?: boolean}>`
   font-size: .75rem;
   line-height: .875rem;
   color: ${({ theme, isColor }) => (isColor ? theme.globalGreen : theme.globalWhite)};
+  white-space: nowrap;
 `;
 
 export const BlockButton = styled.div`

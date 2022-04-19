@@ -33,7 +33,10 @@ export default function YourLiquidityCard({ pool } : {pool: IPool}) {
   const { farms, tokens, prices } = useStore();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const farmsInPool = !pool.farms?.length ? [] : pool.farms.map((el) => farms[el]);
+  const yourStaked = farmsInPool[0]?.yourStaked;
   const yourLiquidityAmount = calcYourLiquidity(tokens, prices, pool);
+  const totalYourAmount = Big(yourStaked || '0').add(yourLiquidityAmount || '0').toFixed();
 
   const volume: IVolume[] = [
     {
@@ -45,8 +48,8 @@ export default function YourLiquidityCard({ pool } : {pool: IPool}) {
     },
     {
       title: t('pool.yourLiquidity'),
-      label: yourLiquidityAmount && !Big(yourLiquidityAmount).eq(0)
-        ? `$${displayAmount(pool.totalLiquidity)}`
+      label: yourLiquidityAmount && !Big(totalYourAmount).eq(0)
+        ? `$${displayAmount(totalYourAmount)}`
         : '-',
       tooltip: t('tooltipTitle.yourLiquidity'),
     },
@@ -61,11 +64,10 @@ export default function YourLiquidityCard({ pool } : {pool: IPool}) {
   ];
 
   const canWithdraw = Big(pool.shares || '0').gt('0');
-
-  const farmsInPool = !pool.farms?.length ? [] : pool.farms.map((el) => farms[el]);
   const canUnStake = farmsInPool.some((el) => Big(el.userStaked || '0').gt('0'));
   const { status } = getAvailableTimestamp(farmsInPool);
   const titleStatusFarm = `${t('farm.farming')} ${FarmStatusLocalesInYourPool[status].toLowerCase()}`;
+
   return (
     <Wrapper>
       <UpperRow>
