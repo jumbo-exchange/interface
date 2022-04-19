@@ -294,9 +294,7 @@ export const calcYourLiquidity = (
     tokenOutput.metadata.decimals,
   );
 
-  const yourLiquidityAmount = removeTrailingZeros(formatBalance(
-    Big(inputAmount).plus(outputAmount).toFixed(2),
-  ));
+  const yourLiquidityAmount = Big(inputAmount).plus(outputAmount).toFixed();
   return yourLiquidityAmount;
 };
 
@@ -304,3 +302,11 @@ export const displayPriceWithComma = (str: string) => str.replace(/\B(?=(\d{3})+
 export const displayPriceWithSpace = (str: string) => str.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
 export const secondsToMilliseconds = (date: number): number => date * 1000;
+
+export const displayAmount = (amount: string) => {
+  const amountBig = new Big(amount);
+  if (amountBig.eq('0')) return '-';
+  if (amountBig.lte('0.01')) return '>0.01';
+  if (amountBig.lte('5')) return `${removeTrailingZeros(amountBig.toFixed(2))}`;
+  return `${displayPriceWithSpace(amountBig.toFixed(0))}`;
+};

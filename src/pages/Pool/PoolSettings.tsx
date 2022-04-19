@@ -319,7 +319,7 @@ export default function PoolSettings({
             </FilterBlock>
           </APYWrapper>
         </MobileRow>
-        {!isFarming && (
+        {isAllPools && (
         <ButtonSecondary
           onClick={() => setCreatePoolModalOpen(true)}
         >
@@ -340,7 +340,7 @@ export default function PoolSettings({
           placeholder={t('pool.search')}
         />
       </SearchInputBlock>
-
+      <Title><Refresh /></Title>
       <APYWrapper>
         <Title>{t('pool.APYBasis')} <Tooltip title={t('tooltipTitle.APYBasis')} /></Title>
         <FilterBlock>
@@ -356,7 +356,6 @@ export default function PoolSettings({
           ))}
         </FilterBlock>
       </APYWrapper>
-      <Title><Refresh /></Title>
       { isFarming
         ? (
           <WrapperRow>

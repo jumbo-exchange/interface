@@ -298,13 +298,6 @@ export const getTotalApy = (farms: IFarm[]) => {
   return apy.toFixed();
 };
 
-export const displayAPY = (apy: string) => {
-  const apyBig = new Big(apy);
-  if (apyBig.eq('0')) return '-';
-  if (apyBig.lte('0.01')) return '>0.01%';
-  return `${removeTrailingZeros(apyBig.toFixed(2))}%`;
-};
-
 export const calcAprAndStakedAmount = (
   pricesData: {[key: string]: ITokenPrice},
   metadataMap: {[key: string]: FungibleTokenContract},

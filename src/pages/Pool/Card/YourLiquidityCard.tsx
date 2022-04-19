@@ -8,8 +8,7 @@ import { useTranslation } from 'react-i18next';
 import TokenPairDisplay from 'components/TokensDisplay/TokenPairDisplay';
 import { PoolOrFarmButtons } from 'components/Button/RenderButton';
 import { FarmStatusLocalesInYourPool, getAvailableTimestamp } from 'components/FarmStatus';
-import { calcYourLiquidity, displayPriceWithSpace } from 'utils/calculations';
-import { displayAPY } from 'utils';
+import { calcYourLiquidity, displayAmount } from 'utils/calculations';
 import RewardTokens from 'components/TokensDisplay/RewardTokens';
 import {
   Wrapper,
@@ -39,19 +38,23 @@ export default function YourLiquidityCard({ pool } : {pool: IPool}) {
   const volume: IVolume[] = [
     {
       title: t('pool.totalLiquidity'),
-      label: Big(pool.totalLiquidity).gt(0)
-        ? `$${displayPriceWithSpace(pool.totalLiquidity)}`
-        : '-',
+      label: Big(pool.totalLiquidity).eq(0)
+        ? '-'
+        : `$${displayAmount(pool.totalLiquidity)}`,
       tooltip: t('tooltipTitle.totalLiquidity'),
     },
     {
       title: t('pool.yourLiquidity'),
-      label: `$${displayPriceWithSpace(yourLiquidityAmount || '0')}`,
+      label: yourLiquidityAmount && !Big(yourLiquidityAmount).eq(0)
+        ? `$${displayAmount(pool.totalLiquidity)}`
+        : '-',
       tooltip: t('tooltipTitle.yourLiquidity'),
     },
     {
       title: t('pool.APY'),
-      label: displayAPY(pool.apy),
+      label: Big(pool.apy).eq(0)
+        ? '-'
+        : `${displayAmount(pool.apy)}%`,
       color: true,
       tooltip: t('tooltipTitle.APY'),
     },
