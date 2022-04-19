@@ -1,22 +1,36 @@
 import React, {
   createContext, useCallback, useContext, useEffect, useMemo, useState,
 } from 'react';
-import { getUserWalletTokens, wallet as nearWallet } from 'services/near';
+import { wallet as nearWallet } from 'services/near';
+import ApiService from 'services/helpers/apiService';
 import {
   IPool, StoreContextType, TokenType,
 } from 'store';
 import {
-  formatPool, getPoolsPath, toArray, toMap, calculateTotalAmount,
+  toMap,
+  toArray,
+  formatPool,
+  formatFarm,
+  getPoolsPath,
+  onlyUniqueValues,
+  isNotNullOrUndefined,
+  calculateTotalAmountAndDayVolume,
+  calcAprAndStakedAmount,
 } from 'utils';
 
 import getConfig from 'services/config';
 import SpecialWallet from 'services/wallet';
-import FungibleTokenContract from 'services/FungibleToken';
-import PoolContract from 'services/PoolContract';
+import FungibleTokenContract from 'services/contracts/FungibleToken';
+import PoolContract from 'services/contracts/PoolContract';
 import {
-  NEAR_TOKEN_ID, SWAP_INPUT_KEY, SWAP_OUTPUT_KEY, URL_INPUT_TOKEN, URL_OUTPUT_TOKEN,
+  NEAR_TOKEN_ID,
+  SWAP_INPUT_KEY,
+  SWAP_OUTPUT_KEY,
+  URL_INPUT_TOKEN,
+  URL_OUTPUT_TOKEN,
 } from 'utils/constants';
-import { ITokenPrice, PoolType } from './interfaces';
+import FarmContract from 'services/contracts/FarmContract';
+import { IFarm, ITokenPrice, PoolType } from './interfaces';
 import {
   JUMBO_INITIAL_DATA,
   NEAR_INITIAL_DATA,
@@ -29,6 +43,7 @@ import {
   retrievePricesData,
   tryTokenByKey,
   getPrices,
+  retrieveFarmsResult,
 } from './helpers';
 
 const config = getConfig();
@@ -67,6 +82,10 @@ const initialState: StoreContextType = {
   outputToken: null,
   setOutputToken: () => {},
   updatePools: () => {},
+  farms: {},
+  setFarms: () => {},
+  userRewards: {},
+  setUserRewards: () => {},
 };
 
 const StoreContextHOC = createContext<StoreContextType>(initialState);
@@ -75,6 +94,7 @@ export const StoreContextProvider = (
   { children }:{ children: JSX.Element },
 ) => {
   const poolContract = useMemo(() => new PoolContract(), []);
+  const farmContract = useMemo(() => new FarmContract(), []);
 
   const [loading, setLoading] = useState<boolean>(initialState.loading);
   const [priceLoading, setPriceLoading] = useState<boolean>(initialState.loading);
@@ -93,6 +113,8 @@ export const StoreContextProvider = (
   const [outputToken, setOutputToken] = useState<FungibleTokenContract | null>(
     initialState.outputToken,
   );
+  const [farms, setFarms] = useState<{[key: string]: IFarm}>(initialState.farms);
+  const [userRewards, setUserRewards] = useState<{[key:string]: string}>(initialState.userRewards);
 
   const setCurrentToken = useCallback(
     (activeToken: FungibleTokenContract, tokenType: TokenType) => {
@@ -121,48 +143,99 @@ export const StoreContextProvider = (
       try {
         setLoading(true);
         const isSignedIn = nearWallet.isSignedIn();
-        const poolsLength = await poolContract.getNumberOfPools();
+        const [poolsLength, farmsLength] = await Promise.all(
+          [poolContract.getNumberOfPools(), farmContract.getNumberOfFarms()],
+        );
         const pages = Math.ceil(poolsLength / DEFAULT_PAGE_LIMIT);
+        const farmsPages = Math.ceil(farmsLength / DEFAULT_PAGE_LIMIT);
 
-        const [poolsResult, pricesData] = await Promise.all([
+        const [poolsResult, farmsResult, pricesData, seeds, dayVolumesData] = await Promise.all([
           await retrievePoolResult(pages, poolContract),
+          await retrieveFarmsResult(farmsPages, farmContract),
           await getPrices(),
+          await farmContract.getSeeds(0, DEFAULT_PAGE_LIMIT),
+          await ApiService.getDayVolumeData(),
         ]);
 
-        const userTokens = await getUserWalletTokens();
+        const userTokens = await ApiService.getUserWalletTokens();
 
         const tokenAddresses = retrieveTokenAddresses(poolsResult, userTokens);
 
         const poolArray = poolsResult
-          .map((pool: any, index: number) => formatPool(pool, index))
+          .map((pool: any) => formatPool(pool))
           .filter((pool: IPool) => pool.type === PoolType.SIMPLE_POOL);
-          // WILL BE OPENED AS SOON AS STABLE SWAP WILL BE AVAILABLE
-          // || (pool.type === PoolType.STABLE_SWAP && pool.id === config.stablePoolId)
+          // || (pool.type === PoolType.STABLE_SWAP && pool.id === config.stablePoolId));
 
         let newPoolArray = poolArray;
+
+        const farmArray = farmsResult.map((farm: any) => formatFarm(farm, poolArray, seeds));
+
+        let newFarmArray = farmArray.filter(isNotNullOrUndefined);
+
+        const farmingTokens = newFarmArray.map((farm) => farm.rewardTokenId);
+
         const tokensMetadataFiltered = await retrieveFilteredTokenMetadata(
-          tokenAddresses,
+          onlyUniqueValues([...tokenAddresses, ...farmingTokens]),
+        );
+
+        const metadataMap = tokensMetadataFiltered.reduce(
+          (acc, curr) => ({ ...acc, [curr.contractId]: curr }), {},
         );
 
         if (isSignedIn) {
           setWallet(nearWallet);
           const accountId = nearWallet.getAccountId();
           try {
-            const [balancesMap, poolArrayWithShares] = await Promise.all([
+            const [
+              balancesMap,
+              poolArrayWithShares,
+              userRewardsFormFarms,
+              ...farmsDataByUser
+            ] = await Promise.all([
               retrieveBalancesMap(tokensMetadataFiltered, accountId),
               retrieveNewPoolArray(poolArray, poolContract),
+              farmContract.getRewards(),
+              ...newFarmArray.map(async (farm: IFarm) => {
+                const [staked, userUnclaimedReward] = await Promise.all([
+                  farmContract.getStakedListByAccountId(),
+                  farmContract.getUnclaimedReward(farm.id),
+                ]);
+
+                return {
+                  ...farm,
+                  userStaked: staked[farm.seedId] || null,
+                  userUnclaimedReward,
+                };
+              }),
             ]);
             setBalances(balancesMap);
             newPoolArray = poolArrayWithShares;
+            newFarmArray = farmsDataByUser;
+            setUserRewards(userRewardsFormFarms);
           } catch (e) {
             console.warn(`Error: ${e} while initial loading user specific data`);
           }
         }
-        const metadataMap = tokensMetadataFiltered.reduce(
-          (acc, curr) => ({ ...acc, [curr.contractId]: curr }), {},
-        );
 
-        const newPoolMap = toMap(newPoolArray);
+        const newPoolMap: {[key: number]: IPool} = newPoolArray.reduce((
+          acc, pool,
+        ) => {
+          const poolWithFarm = newFarmArray
+            .filter((farm) => farm.poolId === pool.id)
+            .map((farm) => farm.id);
+
+          const farmIds = poolWithFarm.length ? poolWithFarm : null;
+
+          return {
+            ...acc,
+            [pool.id]: {
+              ...pool,
+              farms: farmIds,
+            },
+          };
+        }, {});
+
+        const newFarmMap = toMap(newFarmArray);
 
         if (
           newPoolMap[config.jumboPoolId]
@@ -170,17 +243,26 @@ export const StoreContextProvider = (
           && pricesData[config.nearAddress]
         ) {
           const pricesDataWithJumbo = retrievePricesData(pricesData, newPoolMap, metadataMap);
-          const resultedPoolsArray = calculateTotalAmount(
+          const resultedPoolsArray = calculateTotalAmountAndDayVolume(
             pricesDataWithJumbo,
             metadataMap,
             newPoolMap,
+            dayVolumesData,
+          );
+          const resultedFarmsArray = calcAprAndStakedAmount(
+            pricesDataWithJumbo,
+            metadataMap,
+            resultedPoolsArray,
+            newFarmMap,
           );
           setTokens(metadataMap);
           setPools(resultedPoolsArray);
           setPrices(pricesDataWithJumbo);
+          setFarms(resultedFarmsArray);
         } else {
           setTokens(metadataMap);
           setPrices(pricesData);
+          setFarms(newFarmMap);
         }
       } catch (e) {
         console.warn(e);
@@ -190,7 +272,7 @@ export const StoreContextProvider = (
     };
 
     initialLoading();
-  }, [poolContract]);
+  }, [poolContract, farmContract]);
 
   useEffect(() => {
     if (toArray(pools).length && toArray(tokens).length) {
@@ -264,6 +346,10 @@ export const StoreContextProvider = (
       setInputToken,
       outputToken,
       setOutputToken,
+      farms,
+      setFarms,
+      userRewards,
+      setUserRewards,
     }}
     >
       {children}

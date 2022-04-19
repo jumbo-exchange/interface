@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { useModalsStore } from 'store';
 import { getUpperCase } from 'utils';
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
-import FungibleTokenContract from 'services/FungibleToken';
+import FungibleTokenContract from 'services/contracts/FungibleToken';
 
 const Container = styled.div`
   display: flex;

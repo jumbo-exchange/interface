@@ -1,12 +1,9 @@
-import {
-  Near, keyStores, utils,
-} from 'near-api-js';
-import SpecialWallet, { Transaction } from 'services/wallet';
+import { Near, keyStores, utils } from 'near-api-js';
+import SpecialWallet from 'services/wallet';
 import BN from 'bn.js';
-
 import { functionCall } from 'near-api-js/lib/transaction';
-
 import getConfig from './config';
+import { Transaction } from './interfaces';
 
 const config = getConfig();
 const CONTRACT_ID = config.contractId;
@@ -43,21 +40,4 @@ export const sendTransactions = async (
   walletInstance.requestSignTransactions({ transactions: nearTransactions });
 };
 
-export const getUserWalletTokens = async (): Promise<any> => {
-  try {
-    const account = wallet.getAccountId();
-    if (!account) return [];
-    return await fetch(
-      `${config.helperUrl}/account/${account}/likelyTokens`,
-      {
-        method: 'GET',
-        headers: { 'Content-type': 'application/json; charset=UTF-8' },
-      },
-    )
-      .then((res) => res.json())
-      .then((tokens) => tokens);
-  } catch (e) {
-    return [];
-  }
-};
 export default sendTransactions;

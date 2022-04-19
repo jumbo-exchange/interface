@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 const Block = styled.div`
   display: flex;
   flex-direction: column;
+  margin-bottom: 2rem;
 `;
 
 const InputLabel = styled.div`
@@ -39,7 +40,7 @@ const TotalShares = styled.div`
   `}
 `;
 
-const ButtonHalfWallet = styled.button`
+const ButtonMaxWallet = styled.button`
   background: none;
   border: none;
   padding: 0;
@@ -73,34 +74,34 @@ const ButtonHalfWallet = styled.button`
   `}
 `;
 
-const ButtonMaxWallet = styled(ButtonHalfWallet)`
-  margin-left: 1rem;
+const ButtonHalfWallet = styled(ButtonMaxWallet)`
+  margin-right: 1rem;
 `;
 
-const InputContainer = styled.div`
+const InputWrapper = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: 12px 22px 12px 12px;
+  padding: .75rem 1.375rem .75rem .75rem;
   border: 1px solid ${({ theme }) => theme.globalGreyOp04};
   border-radius: 12px;
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    padding: 10px 16px 10px 10px;
+    padding: .625rem 1rem .625rem .625rem;
   }
   `}
   :focus-within {
     border: 2px solid ${({ theme }) => theme.pink};
-    padding: 11px 21px 11px 11px;
+    padding: .688rem 1.313rem .688rem .688rem;
 
     ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-      padding: 9px 15px 9px 9px;
+      padding: .563rem .938rem .563rem .563rem;
     }
   `}
   }
 `;
 
-const TokenContainer = styled.div`
+const SharesContainer = styled.div`
   flex: 1;
   font-style: normal;
   font-weight: 500;
@@ -116,28 +117,31 @@ const TokenContainer = styled.div`
   `}
 `;
 
-export default function Input({
+export default function InputSharesContainer({
   shares,
-  withdrawValue,
-  setWithdrawValue,
+  value,
+  setValue,
+  isShowingButtonHalf,
 }:
 {
   shares: string,
-  withdrawValue: string,
-  setWithdrawValue: React.Dispatch<React.SetStateAction<string>>,
+  value: string,
+  setValue: (value: string) => void,
+  isShowingButtonHalf?: boolean
 }) {
   const { t } = useTranslation();
+
   const setHalf = () => {
     const halfShares = new Big(shares).div(2);
     if (halfShares.gte(0)) {
-      setWithdrawValue(removeTrailingZeros(halfShares.toFixed()));
+      setValue(removeTrailingZeros(halfShares.toFixed()));
     }
   };
 
   const setMax = () => {
     const maxShares = new Big(shares);
     if (maxShares.gte(0)) {
-      setWithdrawValue(removeTrailingZeros(maxShares.toFixed()));
+      setValue(removeTrailingZeros(maxShares.toFixed()));
     }
   };
 
@@ -145,27 +149,30 @@ export default function Input({
     <Block>
       <InputLabel>
         <TotalShares>
-          {t('removeLiquidityModal.shares')}: &nbsp;
+          {t('stakeModal.shares')}: &nbsp;
           <span>{removeTrailingZeros(formatBalance(shares))}</span>
         </TotalShares>
 
+        {isShowingButtonHalf && (
         <ButtonHalfWallet onClick={setHalf}>
           <span>{t('common.half')}</span>
         </ButtonHalfWallet>
+        )}
+
         <ButtonMaxWallet onClick={setMax}>
           <span>{t('common.max')}</span>
         </ButtonMaxWallet>
 
       </InputLabel>
-      <InputContainer>
+      <InputWrapper>
         <CurrencyInputPanel
-          value={withdrawValue}
-          setValue={setWithdrawValue}
+          value={value}
+          setValue={setValue}
         />
-        <TokenContainer>
-          {getUpperCase(t('removeLiquidityModal.shares'))}
-        </TokenContainer>
-      </InputContainer>
+        <SharesContainer>
+          {getUpperCase(t('stakeModal.shares'))}
+        </SharesContainer>
+      </InputWrapper>
     </Block>
   );
 }

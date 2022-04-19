@@ -4,7 +4,7 @@ import React, {
 import { useModalsStore, useStore } from 'store';
 import { ReactComponent as CloseIcon } from 'assets/images-app/close.svg';
 import GifLoading from 'assets/gif/loading.gif';
-import PoolContract from 'services/PoolContract';
+import PoolContract from 'services/contracts/PoolContract';
 import { formatBalance, formatTokenAmount, removeTrailingZeros } from 'utils/calculations';
 import Big from 'big.js';
 import { ButtonPrimary } from 'components/Button';

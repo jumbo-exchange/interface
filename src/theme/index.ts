@@ -57,6 +57,7 @@ export interface ThemeColors {
 
   greyButton: string;
   claimButton: string;
+  claimListBg: string;
 
   backgroundCard: string;
   boxShadowCard: string;
@@ -64,12 +65,20 @@ export interface ThemeColors {
   error: string;
   tooltip: string;
 
-  jumboLabel: string;
-  miceLabel: string;
-
   warningBg: string;
 
   bgToken: string;
+
+  farmingBg: string;
+  rewardTokensBg: string;
+  farmingTimeBg: string;
+
+  statusActive: string;
+  statusActiveOp01: string;
+  statusPending: string;
+  statusPendingOp01: string;
+  statusEnded: string;
+  statusFarmInPoolBg: string;
   menuBg: string;
 }
 
@@ -112,6 +121,7 @@ export const colors: ThemeColors = {
 
   greyButton: '#454D5C',
   claimButton: '#151922',
+  claimListBg: '#2A303C',
 
   backgroundCard: '#202632',
   boxShadowCard: 'rgba(10, 12, 18, 0.2)',
@@ -119,11 +129,19 @@ export const colors: ThemeColors = {
   error: '#FF6F6F',
   tooltip: '#454D5C',
 
-  jumboLabel: '#47872B',
-  miceLabel: '#A91BAC',
-
   warningBg: '#4C2739',
   bgToken: '#dfe2e8',
+
+  farmingBg: '#2E253E',
+  rewardTokensBg: '#201B2C',
+  farmingTimeBg: '#373048',
+
+  statusActive: '#84DA18',
+  statusActiveOp01: '#26332A',
+  statusPending: '#F0B237',
+  statusPendingOp01: '#31302D',
+  statusEnded: '#8991A3',
+  statusFarmInPoolBg: '#1C212C',
   menuBg: '#2A303C',
 };
 

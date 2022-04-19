@@ -12,12 +12,19 @@ import { useTranslation } from 'react-i18next';
 import { getToken } from 'store/helpers';
 import { FilterPoolsEnum } from '.';
 
-const Container = styled.div`
+const Container = styled.div<{isAllPools: boolean}>`
   display: grid;
   width: 100%;
+  align-items: center;
   grid-template-columns: 1.4fr 1fr 1fr 1fr 1.1fr;
   grid-template-rows: 1fr;
   margin: 1.5rem 0;
+  justify-content: ${({ isAllPools }) => (isAllPools ? 'space-between' : 'flex-start')};
+  & > div:not(:first-child){
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+  };
   height: 48px;
   justify-items: center;
 `;
@@ -204,12 +211,14 @@ export default function PoolSettings({
   currentFilterPools,
   searchValue,
   setSearchValue,
+  setIsShowingEndedOnly,
   isHiddenLowTL,
   setIsHiddenLowTL,
 }:{
   setPoolsArray: Dispatch<SetStateAction<IPool[]>>,
   currentFilterPools: FilterPoolsEnum,
   searchValue: string,
+  setIsShowingEndedOnly: Dispatch<SetStateAction<boolean>>,
   setSearchValue: Dispatch<SetStateAction<string>>
   isHiddenLowTL: boolean,
   setIsHiddenLowTL: Dispatch<SetStateAction<boolean>>
@@ -220,7 +229,8 @@ export default function PoolSettings({
 
   const [currentAPRFilter, setCurrentAPRFilter] = useState(APRFiletEnum['24H']);
 
-  const isAllPools = currentFilterPools === FilterPoolsEnum['All Pools'];
+  const isAllPools = currentFilterPools === FilterPoolsEnum.AllPools;
+  const isFarming = currentFilterPools === FilterPoolsEnum.Farming;
 
   const onChange = (value: string) => {
     const newValue = value.trim().toUpperCase();
@@ -278,6 +288,21 @@ export default function PoolSettings({
               </Toggle>
             </WrapperRow>
           )}
+          {isFarming && (
+          <WrapperRow>
+            <NoWrapTitle>{t('pool.endedOnly')}</NoWrapTitle>
+            <Toggle>
+              <LabelCheckbox htmlFor="toggle">
+                <input
+                  id="toggle"
+                  type="checkbox"
+                  onChange={(e) => setIsShowingEndedOnly(e.target.checked)}
+                />
+                <ToggleSwitch />
+              </LabelCheckbox>
+            </Toggle>
+          </WrapperRow>
+          )}
           <APYWrapper>
             <Title>{t('pool.APYBasis')} <Tooltip title={t('tooltipTitle.APYBasis')} /></Title>
             <FilterBlock>
@@ -306,7 +331,7 @@ export default function PoolSettings({
   }
 
   return (
-    <Container>
+    <Container isAllPools={isAllPools}>
       <SearchInputBlock>
         <SearchIcon />
         <SearchInput
@@ -331,6 +356,23 @@ export default function PoolSettings({
           ))}
         </FilterBlock>
       </APYWrapper>
+      { isFarming
+        ? (
+          <WrapperRow>
+            <Title>{t('pool.endedOnly')}</Title>
+            <Toggle>
+              <LabelCheckbox htmlFor="toggle">
+                <input
+                  id="toggle"
+                  type="checkbox"
+                  onChange={(e) => setIsShowingEndedOnly(e.target.checked)}
+                />
+                <ToggleSwitch />
+              </LabelCheckbox>
+            </Toggle>
+          </WrapperRow>
+        )
+        : null}
       {isAllPools && (
       <WrapperRow>
         <Title>{t('pool.hideLowTL')}</Title>
@@ -354,7 +396,6 @@ export default function PoolSettings({
         <LogoPlus /> {t('action.createPool')}
       </BtnSecondary>
       )}
-
     </Container>
   );
 }
