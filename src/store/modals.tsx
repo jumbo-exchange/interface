@@ -187,7 +187,7 @@ export const ModalsContextProvider = (
   };
 
   const setSearchModalOpen = (props: IIsSearchModalOpen) => {
-    if (props.isOpen) closePreviousModal();
+    if (props.isOpen && modalState !== ModalEnum.CreatePool) closePreviousModal();
     stateCallback(props.isOpen, ModalEnum.Search);
     setSearchModalOpenInner(props);
   };
