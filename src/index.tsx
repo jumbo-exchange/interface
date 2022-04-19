@@ -19,6 +19,9 @@ import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/tracing';
 import './i18n';
 import { LoadingBlock } from 'pages/App/styles';
+import moment from 'moment-timezone';
+
+moment.tz.setDefault('UTC');
 
 Sentry.init({
   dsn: process.env.REACT_APP_NEAR_ENV === 'mainnet'

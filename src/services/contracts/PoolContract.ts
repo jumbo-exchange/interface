@@ -8,18 +8,24 @@ import {
   STORAGE_PER_TOKEN,
   ONE_YOCTO_NEAR,
   NEAR_TOKEN_ID,
+  STABLE_LP_TOKEN_DECIMALS,
 } from 'utils/constants';
-import { toNonDivisibleNumber } from 'utils/calculations';
-import { IPool } from 'store';
-import sendTransactions, { wallet } from './near';
-import { createContract, Transaction } from './wallet';
-import getConfig from './config';
+import {
+  calculateAddLiquidity, percentLess, toComparableAmount, toNonDivisibleNumber,
+} from 'utils/calculations';
+import { IPool, PoolType } from 'store';
+import sendTransactions, { wallet } from 'services/near';
+import { createContract } from 'services/wallet';
+import getConfig from 'services/config';
+import {
+  ILiquidityToken, IPoolVolumes, PoolContractMethod, Transaction,
+} from 'services/interfaces';
 import FungibleTokenContract from './FungibleToken';
 
 export const registerTokensAction = (contractId: string, tokenIds: string[]) => ({
   receiverId: contractId,
   functionCalls: [{
-    methodName: 'register_tokens',
+    methodName: PoolContractMethod.registerTokens,
     args: { token_ids: tokenIds },
     amount: ONE_YOCTO_NEAR,
     gas: '30000000000000',
@@ -44,6 +50,7 @@ const basicChangeMethods = [
   'swap',
   'storage_deposit',
   'add_liquidity',
+  'add_stable_liquidity',
   'remove_liquidity',
   'withdraw',
 ];
@@ -51,14 +58,7 @@ const basicChangeMethods = [
 const config = getConfig();
 const CREATE_POOL_NEAR_AMOUNT = '0.05';
 const CONTRACT_ID = config.contractId;
-export interface IPoolVolumes {
-  [tokenId: string]: { input: string; output: string };
-}
 
-interface ILiquidityToken {
-  token: FungibleTokenContract;
-  amount: string
-}
 export default class PoolContract {
   contract = createContract(
     wallet,
@@ -87,7 +87,7 @@ export default class PoolContract {
     transactions.push({
       receiverId: this.contractId,
       functionCalls: [{
-        methodName: 'add_simple_pool',
+        methodName: PoolContractMethod.addSimplePool,
         args: {
           tokens: tokens.map((token) => token.contractId),
           fee: Number(formattedFee),
@@ -103,10 +103,12 @@ export default class PoolContract {
     {
       tokenAmounts,
       pool,
+      slippage = '0',
     }:
     {
       tokenAmounts: ILiquidityToken[],
       pool: IPool,
+      slippage: string
     },
   ) {
     const transactions: Transaction[] = [];
@@ -155,14 +157,49 @@ export default class PoolContract {
     );
     if (isOutputTokenStorage.length) transactions.push(...isOutputTokenStorage);
 
-    transactions.push({
-      receiverId: this.contractId,
-      functionCalls: [{
-        methodName: 'add_liquidity',
-        args: { pool_id: pool.id, amounts: [tokenInAmount, tokenOutAmount] },
-        amount: LP_STORAGE_AMOUNT,
-      }],
-    });
+    if (pool.type === PoolType.SIMPLE_POOL) {
+      transactions.push({
+        receiverId: this.contractId,
+        functionCalls: [{
+          methodName: PoolContractMethod.addLiquidity,
+          args: { pool_id: pool.id, amounts: [tokenInAmount, tokenOutAmount] },
+          amount: LP_STORAGE_AMOUNT,
+        }],
+      });
+    } else {
+      const depositAmounts = [firstToken.amount, secondToken.amount].map(
+        (amount) => Number(toNonDivisibleNumber(STABLE_LP_TOKEN_DECIMALS, amount)),
+      );
+      const comparableAmounts = toComparableAmount(
+        pool.supplies,
+        [firstToken.token, secondToken.token],
+      );
+
+      if (!comparableAmounts) return;
+
+      const [shares] = calculateAddLiquidity(
+        Number(pool.amp),
+        depositAmounts,
+        comparableAmounts,
+        Number(pool.sharesTotalSupply),
+        pool.totalFee,
+      );
+
+      const minShares = percentLess(slippage, Big(shares).toFixed(0), 0);
+
+      transactions.push({
+        receiverId: this.contractId,
+        functionCalls: [{
+          methodName: PoolContractMethod.addStableLiquidity,
+          args: {
+            pool_id: pool.id,
+            amounts: [tokenInAmount, tokenOutAmount],
+            min_shares: minShares,
+          },
+          amount: LP_STORAGE_AMOUNT,
+        }],
+      });
+    }
 
     sendTransactions(transactions, this.walletInstance);
   }
@@ -222,7 +259,7 @@ export default class PoolContract {
       transactions.push({
         receiverId: this.contractId,
         functionCalls: [{
-          methodName: 'storage_deposit',
+          methodName: PoolContractMethod.storageDeposit,
           args: {
             registration_only: false,
             account_id: accountId,
@@ -242,7 +279,7 @@ export default class PoolContract {
     }:
     {
       pool: IPool,
-      shares: string | undefined;
+      shares: string;
       minAmounts: { [tokenId: string]: string; };
       slippageTolerance?: string
     },
@@ -255,7 +292,7 @@ export default class PoolContract {
     transactions.push({
       receiverId: this.contractId,
       functionCalls: [{
-        methodName: 'remove_liquidity',
+        methodName: PoolContractMethod.removeLiquidity,
         args: { pool_id: pool.id, shares, min_amounts: Object.values(minAmounts) },
         amount: ONE_YOCTO_NEAR,
       }],
@@ -265,7 +302,7 @@ export default class PoolContract {
       receiverId: this.contractId,
       functionCalls: [
         {
-          methodName: 'withdraw',
+          methodName: PoolContractMethod.withdraw,
           args: {
             token_id: tokenId,
             amount: minAmounts[tokenId],
@@ -301,7 +338,7 @@ export default class PoolContract {
       receiverId: this.contractId,
       functionCalls: [
         {
-          methodName: 'withdraw',
+          methodName: PoolContractMethod.withdraw,
           args: {
             token_id: tokenId,
             amount: value,

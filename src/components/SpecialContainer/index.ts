@@ -36,5 +36,5 @@ export const SpecialContainer = styled.div`
     margin: 0 1rem;
     padding: 25px 16px 16px 16px;
   `}
-  transition: all 1s ease-out;
+  transition: all .2s ease-out;
 `;

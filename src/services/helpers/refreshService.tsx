@@ -10,8 +10,8 @@ import getConfig from 'services/config';
 
 import { formatPool } from 'utils';
 import useUpdateService from './updatePoolService';
-import FungibleTokenContract from './FungibleToken';
-import PoolContract from './PoolContract';
+import FungibleTokenContract from '../contracts/FungibleToken';
+import PoolContract from '../contracts/PoolContract';
 
 const config = getConfig();
 
@@ -62,7 +62,7 @@ export const RefreshContextProvider = (
         return { poolInfo, id: pool.id };
       }));
       if (!results.length) return;
-      const parsedPools: IPool[] = results.map((pool: any) => formatPool(pool.poolInfo, pool.id));
+      const parsedPools: IPool[] = results.map((pool: any) => formatPool(pool.poolInfo));
       updatePools(parsedPools);
     } catch (e) {
       console.warn(`Error ${e} while updating pools with id ${trackedPools.map((el) => el.id)}`);

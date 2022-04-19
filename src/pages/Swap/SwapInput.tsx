@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import CurrencyInputPanel from 'components/CurrencyInputPanel';
 import tokenLogo from 'assets/images-app/placeholder-token.svg';
 import Big from 'big.js';
-import FungibleTokenContract from 'services/FungibleToken';
+import FungibleTokenContract from 'services/contracts/FungibleToken';
 
 import { ReactComponent as WalletImage } from 'assets/images-app/wallet.svg';
 import { ReactComponent as IconArrowDown } from 'assets/images-app/icon-arrow-down.svg';
@@ -85,29 +85,29 @@ const InputContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: 12px 22px 12px 12px;
+  padding: .75rem 1.375rem .75rem .75rem;
   border: 1px solid ${({ theme }) => theme.globalGreyOp04};
   border-radius: 12px;
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    padding: 10px 16px 10px 10px;
+    padding: .625rem 1rem .625rem .625rem;
   }
   `}
   :hover {
     border: 2px solid ${({ theme }) => theme.pink};
-    padding: 11px 21px 11px 11px;
+    padding: .688rem 1.313rem .688rem .688rem;
 
     ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-      padding: 9px 15px 9px 9px;
+      padding: .563rem .938rem .563rem .563rem;
     }
   `}
   }
   :focus-within {
     border: 2px solid ${({ theme }) => theme.pink};
-    padding: 11px 21px 11px 11px;
+    padding: .688rem 1.313rem .688rem .688rem;
 
     ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-      padding: 9px 15px 9px 9px;
+      padding: .563rem .938rem .563rem .563rem;
     }
   `}
   }

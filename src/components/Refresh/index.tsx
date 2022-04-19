@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRefresh } from 'services/refreshService';
+import { useRefresh } from 'services/helpers/refreshService';
 import styled from 'styled-components';
 import { colors } from 'theme';
 import { useTranslation } from 'react-i18next';

@@ -1,12 +1,13 @@
 import getConfig from 'services/config';
-import FungibleTokenContract from 'services/FungibleToken';
-import PoolContract from 'services/PoolContract';
+import FungibleTokenContract from 'services/contracts/FungibleToken';
+import PoolContract from 'services/contracts/PoolContract';
+import FarmContract from 'services/contracts/FarmContract';
 import { wallet as nearWallet } from 'services/near';
 import { calculatePriceForToken, isNotNullOrUndefined, toArray } from 'utils';
 import { formatTokenAmount } from 'utils/calculations';
 import { NEAR_TOKEN_ID } from 'utils/constants';
+import ApiService from 'services/helpers/apiService';
 import { IPool, ITokenPrice } from './interfaces';
-import { pricesInitialState } from './store';
 
 const config = getConfig();
 const url = new URL(window.location.href);
@@ -25,11 +26,28 @@ export const NEAR_INITIAL_DATA = {
   price: '0',
 };
 
+function assertFulfilled<T>(item: PromiseSettledResult<T>): item is PromiseFulfilledResult<T> {
+  return item.status === 'fulfilled';
+}
+
 export async function retrievePoolResult(pages: number, contract: PoolContract) {
-  return (await Promise.all(
+  return (await Promise.allSettled(
     [...Array(pages)]
       .map((_, i) => contract.getPools(i * DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_LIMIT)),
-  )).flat();
+  )).filter(assertFulfilled)
+    .map(({ value }) => value)
+    .flat();
+}
+
+export async function retrieveFarmsResult(farmsPages: number, farmContract: FarmContract) {
+  return (await Promise.allSettled(
+    [...Array(farmsPages)]
+      .map((_, i) => farmContract.getListFarms(
+        i * DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_LIMIT,
+      )),
+  )).filter(assertFulfilled)
+    .map(({ value }) => value)
+    .flat();
 }
 
 export function retrieveTokenAddresses(poolsResult: any, userTokens: any): string[] {
@@ -45,43 +63,9 @@ export function retrieveTokenAddresses(poolsResult: any, userTokens: any): strin
   );
 }
 
-export async function getPriceData(): Promise<{[key: string]: ITokenPrice}> {
-  try {
-    const pricesData = await fetch(`${config.indexerUrl}/token-prices`, {
-      method: 'GET',
-      headers: { 'Content-type': 'application/json; charset=UTF-8' },
-    })
-      .then((res) => res.json())
-      .then((list) => list);
-    return pricesData.reduce(
-      (acc: {[key: string]: ITokenPrice}, item: ITokenPrice) => ({
-        ...acc, [item.id]: item,
-      }), {},
-    );
-  } catch (e) {
-    console.warn(`Error ${e} while loading prices from ${config.indexerUrl}/token-prices`);
-    return pricesInitialState;
-  }
-}
-
-export async function getNearPrice(): Promise<string | null> {
-  try {
-    const pricesData = await fetch(`${config.helperUrl}/fiat`, {
-      method: 'GET',
-      headers: { 'Content-type': 'application/json; charset=UTF-8' },
-    })
-      .then((res) => res.json())
-      .then((list) => list.near.usd || 0);
-    return pricesData;
-  } catch (e) {
-    console.warn('Near price loading failed');
-    return null;
-  }
-}
-
 export async function getPrices(): Promise<{[key: string]: ITokenPrice}> {
-  const allPrices = await getPriceData();
-  const nearPrice = await getNearPrice();
+  const allPrices = await ApiService.getPriceData();
+  const nearPrice = await ApiService.getNearPrice();
 
   if (nearPrice) {
     return {

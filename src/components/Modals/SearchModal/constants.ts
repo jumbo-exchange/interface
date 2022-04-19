@@ -1,5 +1,5 @@
 import Big from 'big.js';
-import FungibleTokenContract from 'services/FungibleToken';
+import FungibleTokenContract from 'services/contracts/FungibleToken';
 import { ITokenPrice } from 'store';
 import { formatTokenAmount, removeTrailingZeros } from 'utils/calculations';
 

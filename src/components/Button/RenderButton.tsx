@@ -51,6 +51,10 @@ export default function RenderButton({
         return t('action.swap');
       case CurrentButton.Withdraw:
         return t('action.removeLiquidity');
+      case CurrentButton.Stake:
+        return t('action.stake');
+      case CurrentButton.UnStake:
+        return t('action.unStakeAndClaim');
       default:
         return null;
     }
@@ -65,6 +69,8 @@ export default function RenderButton({
         return <AddIconLogo />;
       case CurrentButton.Swap:
         return <IconSwap />;
+      case CurrentButton.Stake:
+        return <AddIconLogo />;
       default:
         return null;
     }
@@ -87,3 +93,53 @@ export default function RenderButton({
     </ButtonSecondary>
   );
 }
+
+const BtnPrimary = styled(ButtonPrimary)`
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    margin: .75rem 0;
+  `}
+`;
+
+const BtnSecondary = styled(ButtonSecondary)`
+  margin-right: .75rem;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    margin: 0;
+  `}
+`;
+
+const LogoButton = styled(AddIcon)`
+  width: 12px;
+  height: 12px;
+  margin-right: .625rem;
+`;
+
+interface IButtons {
+  toPageAdd: () => void,
+  titleAdd: string,
+  toPageRemove: () => void,
+  titleRemove: string,
+  showRemoveButton: boolean
+  showAddButton?: boolean
+}
+
+export const PoolOrFarmButtons = ({
+  toPageAdd,
+  titleAdd,
+  toPageRemove,
+  titleRemove,
+  showRemoveButton,
+  showAddButton,
+}: IButtons) => (
+  <>
+    {showRemoveButton && (
+      <BtnSecondary onClick={toPageRemove}>
+        {titleRemove}
+      </BtnSecondary>
+    )}
+    {showAddButton && (
+    <BtnPrimary onClick={toPageAdd}>
+      <LogoButton /> {titleAdd}
+    </BtnPrimary>
+    )}
+  </>
+);

@@ -8,3 +8,6 @@ export const toAddLiquidityPage = (id : string|number = ':id') => `/pool/add-liq
 export const toRemoveLiquidityPage = (id : string|number = ':id') => `/pool/remove-liquidity/${id}`;
 
 export const TO_SWAP_URL = `?${URL_INPUT_TOKEN}=:inputToken&${URL_OUTPUT_TOKEN}=:outputToken`;
+
+export const toStakePage = (id : string|number = ':id') => `/pool/stake/${id}`;
+export const toUnStakeAndClaimPage = (id : string|number = ':id') => `/pool/unstake-and-claim/${id}`;

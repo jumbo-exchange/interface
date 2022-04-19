@@ -8,7 +8,7 @@ import {
   Route, Routes, useMatch, useResolvedPath, Link, useLocation,
 } from 'react-router-dom';
 import type { LinkProps } from 'react-router-dom';
-import useTransactionHash from 'services/receiptsService';
+import useTransactionHash from 'services/helpers/receiptsService';
 import { wallet } from 'services/near';
 
 import {
@@ -18,8 +18,10 @@ import {
   SWAP,
   toAddLiquidityPage,
   toRemoveLiquidityPage,
+  toStakePage,
+  toUnStakeAndClaimPage,
 } from 'utils/routes';
-import { RefreshContextProvider } from 'services/refreshService';
+import { RefreshContextProvider } from 'services/helpers/refreshService';
 import { ModalsContextProvider, useStore } from 'store';
 import { ToastContainer } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
@@ -107,6 +109,8 @@ export default function App() {
                 <Route path={SWAP} element={<Swap />} />
                 <Route path={toAddLiquidityPage()} element={<Pool />} />
                 <Route path={toRemoveLiquidityPage()} element={<Pool />} />
+                <Route path={toStakePage()} element={<Pool />} />
+                <Route path={toUnStakeAndClaimPage()} element={<Pool />} />
                 <Route path={ALL_MATCH} element={<Error />} />
               </Routes>
             </Suspense>

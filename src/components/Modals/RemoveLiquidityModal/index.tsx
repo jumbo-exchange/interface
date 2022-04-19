@@ -1,18 +1,13 @@
 import React, { useState } from 'react';
 import tokenLogo from 'assets/images-app/placeholder-token.svg';
-import PoolContract from 'services/PoolContract';
+import PoolContract from 'services/contracts/PoolContract';
 import Big from 'big.js';
-import Toggle from 'components/Toggle';
-import Tooltip from 'components/Tooltip';
+
 import RenderButton from 'components/Button/RenderButton';
 
 import {
-  COEFFICIENT_SLIPPAGE,
-  MAX_SLIPPAGE_TOLERANCE,
-  MIN_SLIPPAGE_TOLERANCE,
   slippageToleranceOptions,
   SLIPPAGE_TOLERANCE_DEFAULT,
-  POOL_SHARES_DECIMALS,
 } from 'utils/constants';
 import { useModalsStore, useStore, CurrentButton } from 'store';
 import { ReactComponent as Close } from 'assets/images-app/close.svg';
@@ -30,7 +25,8 @@ import {
 } from 'utils/calculations';
 import { wallet } from 'services/near';
 import { POOL } from 'utils/routes';
-import Input from './Input';
+import SlippageBlock from 'components/SlippageBlock';
+import InputSharesContainer from 'components/CurrencyInputPanel/InputSharesContainer';
 import {
   Layout, ModalBlock, ModalIcon, ModalTitle,
 } from '../styles';
@@ -42,8 +38,6 @@ import {
   LogoContainer,
   TokenBlock,
   TokenValueBlock,
-  SlippageBlock,
-  Warning,
 } from './styles';
 
 export default function RemoveLiquidityModal() {
@@ -55,10 +49,9 @@ export default function RemoveLiquidityModal() {
 
   const navigate = useNavigate();
   const { removeLiquidityModalOpenState, setRemoveLiquidityModalOpenState } = useModalsStore();
-  const { pool } = removeLiquidityModalOpenState;
+  const { pool, isOpen } = removeLiquidityModalOpenState;
 
   const [withdrawValue, setWithdrawValue] = useState<string>('');
-  const [warning, setWarning] = useState<boolean>(false);
   const [slippageTolerance, setSlippageTolerance] = useState<string>(SLIPPAGE_TOLERANCE_DEFAULT);
 
   if (!pool) return null;
@@ -74,7 +67,7 @@ export default function RemoveLiquidityModal() {
   }>((acc, [tokenId, totalSupply]) => {
     acc[tokenId] = percentLess(slippageTolerance, calculateFairShare(
       totalSupply,
-      withdrawValue ? toNonDivisibleNumber(POOL_SHARES_DECIMALS, withdrawValue) : '0',
+      withdrawValue ? toNonDivisibleNumber(pool.lpTokenDecimals, withdrawValue) : '0',
       checkTotalSupply,
     ), 0);
     return acc;
@@ -84,30 +77,32 @@ export default function RemoveLiquidityModal() {
   const tokensData = [
     {
       token: tokenInput,
-      value: formatTokenAmount(inputToken, tokenInput.metadata.decimals, 5),
+      value: formatTokenAmount(inputToken, tokenInput.metadata.decimals),
     },
     {
       token: tokenOutput,
-      value: formatTokenAmount(outputToken, tokenOutput.metadata.decimals, 5),
+      value: formatTokenAmount(outputToken, tokenOutput.metadata.decimals),
     },
   ];
 
   const onSubmit = () => {
-    const withdrawValueBN = new Big(withdrawValue);
-    const shareBN = new Big(formatTokenAmount(pool?.shares ?? '', POOL_SHARES_DECIMALS));
-    if (Number(withdrawValue) === 0) return;
-    if (withdrawValueBN.gt(shareBN)) return;
+    const shareBN = new Big(formatTokenAmount(pool?.shares ?? '', pool.lpTokenDecimals));
+    if (
+      Big(withdrawValue).eq(0)
+      || Big(withdrawValue).gt(shareBN)
+      || !pool
+    ) return;
 
     const contract = new PoolContract();
-    if (!tokenInput || !tokenOutput || !removeLiquidityModalOpenState.pool) return;
+    if (!tokenInput || !tokenOutput || !pool) return;
     contract.removeLiquidity({
       pool,
-      shares: parseTokenAmount(withdrawValue, POOL_SHARES_DECIMALS),
+      shares: parseTokenAmount(withdrawValue, pool.lpTokenDecimals),
       minAmounts,
     });
   };
 
-  const formattedPoolShares = formatTokenAmount(pool?.shares ?? '0', POOL_SHARES_DECIMALS);
+  const formattedPoolShares = formatTokenAmount(pool?.shares ?? '0', pool.lpTokenDecimals);
 
   const buttonDisabled = isConnected
     && withdrawValue
@@ -115,28 +110,9 @@ export default function RemoveLiquidityModal() {
     || new Big(withdrawValue).gt(formattedPoolShares))
     : true;
 
-  const onChangeSlippage = (value:string) => {
-    if (!value || Number(value) <= 0) {
-      setSlippageTolerance(MIN_SLIPPAGE_TOLERANCE.toString());
-      setWarning(true);
-      return;
-    }
-    if (Number(value) < MIN_SLIPPAGE_TOLERANCE) {
-      setSlippageTolerance(value);
-      setWarning(true);
-      return;
-    }
-    if (Number(value) >= (MAX_SLIPPAGE_TOLERANCE)) {
-      setSlippageTolerance(MAX_SLIPPAGE_TOLERANCE.toString());
-      return;
-    }
-
-    setSlippageTolerance(value);
-    setWarning(false);
-  };
   return (
     <>
-      {removeLiquidityModalOpenState.isOpen && (
+      {isOpen && (
       <Layout onClick={() => {
         navigate(POOL);
         setRemoveLiquidityModalOpenState({ isOpen: false, pool: null });
@@ -156,28 +132,16 @@ export default function RemoveLiquidityModal() {
             </ModalIcon>
           </ModalBlock>
           <ModalBody>
-            <Input
+            <InputSharesContainer
               shares={formattedPoolShares}
-              withdrawValue={withdrawValue}
-              setWithdrawValue={setWithdrawValue}
+              value={withdrawValue}
+              setValue={setWithdrawValue}
             />
-            <SlippageBlock>
-              <TitleAction>
-                {t('removeLiquidityModal.slippageTolerance')}
-                <Tooltip title={t('tooltipTitle.slippageTolerance')} />
-              </TitleAction>
-              <Toggle
-                value={slippageTolerance}
-                coefficient={COEFFICIENT_SLIPPAGE}
-                options={slippageToleranceOptions}
-                onChange={onChangeSlippage}
-              />
-              {warning && (
-                <Warning>
-                  {t('warningMessage.transactionMayFail')}
-                </Warning>
-              )}
-            </SlippageBlock>
+            <SlippageBlock
+              onChange={setSlippageTolerance}
+              slippageValue={slippageTolerance}
+              slippageToleranceOptions={slippageToleranceOptions}
+            />
             <TitleAction>
               {t('removeLiquidityModal.withdrawalAmount')}
             </TitleAction>
