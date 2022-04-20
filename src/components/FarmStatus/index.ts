@@ -89,7 +89,7 @@ export const getAvailableTimestamp = (farms: IFarm[]): IGetAvailableTimestamp =>
 
   const farmStart = secondsToMilliseconds(farmStarts[0]);
   const farmEnd = secondsToMilliseconds(farmEnds[0]);
-  const timeToStart = secondsToMilliseconds(timeToStarts[0]) - currentDate;
+  const timeToStart = secondsToMilliseconds(timeToStarts[0]);
 
   if (farmStart > currentDate) status = FarmStatusEnum.Pending;
   if (currentDate > farmStart && currentDate < farmEnd) status = FarmStatusEnum.Active;
