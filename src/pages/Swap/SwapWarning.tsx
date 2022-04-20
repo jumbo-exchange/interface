@@ -15,7 +15,7 @@ import { toAddLiquidityPage } from 'utils/routes';
 import { useTranslation } from 'react-i18next';
 import { getToken } from 'store/helpers';
 import useNavigateSwapParams from 'hooks/useNavigateSwapParams';
-import { SWAP_ENUM } from 'services/SwapContract';
+import { SWAP_ENUM } from 'services/interfaces';
 
 const config = getConfig();
 
