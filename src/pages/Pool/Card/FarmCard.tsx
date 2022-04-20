@@ -10,7 +10,7 @@ import RewardTokens from 'components/TokensDisplay/RewardTokens';
 import { PoolOrFarmButtons } from 'components/Button/RenderButton';
 import moment from 'moment';
 import { FarmStatusLocales, getAvailableTimestamp } from 'components/FarmStatus';
-import { getTotalApy } from 'utils';
+import { formatDate, getTotalApy } from 'utils';
 import { displayAmount } from 'utils/calculations';
 import {
   FarmWrapper,
@@ -40,7 +40,7 @@ export default function FarmCard({ pool } : { pool: IPool }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const [timeToStartFarm, setTimeToStart] = useState<number>(0);
+  const [timeToStartFarm, setTimeToStart] = useState<string>('Loading...');
 
   const farmsInPool = !pool.farms?.length ? [] : pool.farms.map((el) => farms[el]);
   const { totalStaked, yourStaked } = farmsInPool[0];
@@ -85,12 +85,15 @@ export default function FarmCard({ pool } : { pool: IPool }) {
   \xa0 \u2014 \xa0
   ${moment(farmEnd).format('YYYY-MM-DD HH:mm:ss')}
   `;
-  const pendingTime = `${moment(timeToStartFarm).format('DD [days] \xa0 HH : mm : ss')}`;
+
   const canUnStake = farmsInPool.some((el) => Big(el.userStaked || '0').gt('0'));
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimeToStart(timeToStart);
+      const pendingTimeObj = moment.duration(moment(timeToStart).diff(moment()));
+      const days = Math.floor(pendingTimeObj.asDays());
+      const pendingTime = `${days} days ${formatDate(pendingTimeObj.hours())} : ${formatDate(pendingTimeObj.minutes())} : ${formatDate(pendingTimeObj.seconds())}`;
+      setTimeToStart(pendingTime);
     }, 1000);
     return () => clearInterval(interval);
   }, [timeToStart]);
@@ -134,11 +137,11 @@ export default function FarmCard({ pool } : { pool: IPool }) {
           </BlockButton>
         </LowerRow>
       </FarmContainer>
-      {!isFarmingEnd && (
-      <FarmTime>
-        <p>{isFarmingActive ? activeTime : pendingTime}</p>
-      </FarmTime>
-      )}
+      {!isFarmingEnd ? (
+        <FarmTime>
+          <p>{isFarmingActive ? activeTime : timeToStartFarm}</p>
+        </FarmTime>
+      ) : null}
     </FarmWrapper>
   );
 }
